@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/screen/bloc_screen/bloc_demo.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
 
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
           ],
         );
       },
-      child: const Home(),
+      child: const BlocDemo(),
     );
   }
 }

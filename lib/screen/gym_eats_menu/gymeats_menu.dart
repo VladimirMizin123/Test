@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
-import 'package:gymeats_mobile/constant/pallete.dart';
+import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -47,11 +47,11 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: buildButton(
                         bgColor: homeController.selectedItems[index]
-                            ? Pallete.appColor
+                            ? AppColors.appColor
                             : Colors.white.withOpacity(0.8),
                         textColor: homeController.selectedItems[index]
                             ? const Color(0xFFC1EACE)
-                            : Pallete.appColor,
+                            : AppColors.appColor,
                         onPressed: () {
                           homeController.selectEats(index);
                           Get.to(const SignUpScreen());

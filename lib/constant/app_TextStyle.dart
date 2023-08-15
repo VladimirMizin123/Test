@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gymeats_mobile/constant/pallete.dart';
+import 'package:gymeats_mobile/constant/app_colors.dart';
 
 class AppTextStyle {
   static TextStyle butttonTextStyle = TextStyle(
-    color: Pallete.appColor,
+    color: AppColors.appColor,
     fontSize: 18.sp,
     fontWeight: FontWeight.w500,
   );
