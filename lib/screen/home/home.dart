@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/pallete.dart';
+import 'package:gymeats_mobile/constant/app_colors.dart';
 import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
@@ -52,8 +52,8 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     Get.toNamed('/GymEatsMenu');
                   },
-                  bgColor: Pallete.letsEatButton,
-                  textColor: Pallete.letsEat,
+                  bgColor: AppColors.letsEatButton,
+                  textColor: AppColors.letsEat,
                 ),
                 SizedBox(height: 40.h),
                 Container(
