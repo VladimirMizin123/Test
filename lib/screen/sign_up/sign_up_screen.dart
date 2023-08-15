@@ -26,7 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Container(
             height: size.height.h,
             width: size.width.w,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -87,18 +87,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontSize: 16.sp, color: Color(0xFF004C63))),
                     ],
                   ).paddingOnly(top: 22.h),
-                  Text(
-                    'By clicking "Sign up", you agree to our terms and that you ',
-                    style: TextStyle(fontSize: 12.sp),
-                  ),
-                  Wrap(
+                  Column(
                     children: [
-                      Text('have read our ', style: TextStyle(fontSize: 12.sp)),
-                      Text('Privacy Policy.',
-                          style: TextStyle(
-                              fontSize: 12.sp, color: const Color(0xFF336633))),
+                      Text(
+                        'By clicking "Sign up", you agree to our terms and that you ',
+                        style: TextStyle(fontSize: 12.sp),
+                      ),
+                      Wrap(
+                        children: [
+                          Text('have read our ',
+                              style: TextStyle(fontSize: 12.sp)),
+                          Text('Privacy Policy.',
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: const Color(0xFF336633))),
+                        ],
+                      ),
                     ],
-                  ),
+                  ).paddingSymmetric(vertical: 50.h),
                   Container(
                     height: 4.h,
                     width: 135.w,
@@ -107,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                  ).paddingSymmetric(vertical: 50.h),
+                  ),
                 ],
               ),
             ),
