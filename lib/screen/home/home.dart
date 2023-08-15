@@ -48,6 +48,7 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 50.h),
                 buildButton(
+                  context: context,
                   title: AppStrings.letsEat,
                   onPressed: () {
                     Get.toNamed('/GymEatsMenu');
@@ -56,14 +57,7 @@ class _HomeState extends State<Home> {
                   textColor: AppColors.letsEat,
                 ),
                 SizedBox(height: 40.h),
-                Container(
-                  height: 4.h,
-                  width: 135.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                )
+
               ],
             )
           ],

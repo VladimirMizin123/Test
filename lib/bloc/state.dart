@@ -1,4 +1,4 @@
-abstract class State{}
+abstract class BlocState{}
 
-class InitialState extends State{}
-class LoadState extends State{}
+class InitialState extends BlocState{}
+class LoadState extends BlocState{}

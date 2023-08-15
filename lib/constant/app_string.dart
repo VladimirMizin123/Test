@@ -5,6 +5,10 @@ class AppStrings {
   static const String gymMenuBg = "assets/image/GymMenuBg.png";
   static const String gymEatsSpoon = "assets/image/GymEats.png";
   static const String gymEatsLogo = "assets/icon/GymEatsLogo.png";
+  static const String appleLogo = "assets/image/apple_logo.svg";
+  static const String imReadyBG = "assets/image/im_ready_bg.png";
+  static const String roundBlueLogo = "assets/image/round_blue_logo.svg";
+  static const String premiumScreenBG = "assets/image/premium_screen_bg.png";
 
   /// Text
   static const letsEat = 'Let\'s Eat!';

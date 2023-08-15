@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 
 Widget buildButton(
-    {String? title,
+    {required BuildContext context,
+    String? title,
     void Function()? onPressed,
     Color? bgColor,
-    Color? textColor}) {
+    Color? textColor,
+    bool? hasImage = false,
+    String? imagePath}) {
   return SizedBox(
     width: double.infinity.w,
     height: 48.h,
@@ -18,39 +22,44 @@ Widget buildButton(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: Text(title!,
-          style: AppTextStyle.butttonTextStyle.copyWith(color: textColor)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          hasImage == true
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 10.0, bottom: 4),
+                  child: SvgPicture.asset(
+                    imagePath!,
+                    height: 24.h,
+                    width: 20.w,
+                  ),
+                )
+              : const SizedBox(),
+          Text(title!,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: textColor)),
+        ],
+      ),
     ),
   );
 }
 
-Widget commonTextField({String? hintText, TextEditingController? controller}) {
-  return Container(
+Widget commonTextField(
+    {String? hintText,
+    TextEditingController? controller,
+    required BuildContext context}) {
+  return SizedBox(
     height: 48.h,
     child: TextFormField(
       controller: controller,
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: const Color(0xFF5F5F5F),
+          ),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF5F5F5F)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
       ),
     ),
   );
