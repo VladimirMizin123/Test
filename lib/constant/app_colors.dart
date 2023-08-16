@@ -93,4 +93,9 @@ class AppColors {
       ),
     );
   }
+  static const primaryBlue = Color(0xFF004C63);
+  static const lightGrey = Color(0xFFECECED);
+  static const disable = Color(0xFFC7C8CA);
+  static const terracotta = Color(0xFFCE6B53);
+  static const green = Color(0xFF336633);
 }

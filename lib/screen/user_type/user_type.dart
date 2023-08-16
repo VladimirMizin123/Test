@@ -1,0 +1,308 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+import '../../bloc/user_type/user_type_bloc.dart';
+import '../../bloc/user_type/user_type_event.dart';
+import '../../bloc/user_type/user_type_state.dart';
+import '../../constant/app_TextStyle.dart';
+import '../../constant/app_colors.dart';
+import '../../constant/app_string.dart';
+import '../../widget/app_widget.dart';
+import '../../widget/svg_image.dart';
+
+class UserTypeScreen extends StatefulWidget {
+  const UserTypeScreen({super.key});
+
+  @override
+  State<UserTypeScreen> createState() => _UserTypePageState();
+}
+
+class _UserTypePageState extends State<UserTypeScreen> {
+  final ageController = TextEditingController();
+  final weightController = TextEditingController();
+  final heightController = TextEditingController();
+
+  bool isMale = true;
+  bool isFemale = false;
+  bool isNon = false;
+
+  bool isVisible = false;
+
+  Color color = AppColors.primaryBlue;
+
+  UserTypeBloc bloc = UserTypeBloc();
+
+  String userInfoImage = AppStrings.icMaleChart;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userInfoImage = AppStrings.icMaleChart;
+    bloc.add(UserTypeClickEvent(isFemale: false, isMale: true, isNon: false));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          height: MediaQuery.of(context).size.height.h,
+          width: MediaQuery.of(context).size.width.w,
+          padding: const EdgeInsets.all(12),
+          child: BlocConsumer(
+            builder: (context, state) {
+              return Column(
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(height: 10,),
+                      Center(
+                        child: Image.asset(
+                          AppStrings.gymEatsLogo,
+                          fit: BoxFit.cover,
+                          color: color,
+                          height: 60.h,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        AppStrings.myGenderAgeHeightWeight,
+                        style: AppTextStyle.gymEatsStyle.copyWith(
+                            color: color,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500),
+                      ).paddingOnly(top: 10),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            height: 38.h,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              color: AppColors.lightGrey,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: gender(
+                                  text: AppStrings.male,
+                                  textColor:
+                                      isMale ? Colors.white : Colors.black,
+                                  bgColor: isMale ? color : Colors.transparent,
+                                  onClick: () {
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: false,
+                                        isMale: true,
+                                        isNon: false));
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: gender(
+                                  text: AppStrings.female,
+                                  textColor:
+                                      isFemale ? Colors.white : Colors.black,
+                                  bgColor:
+                                      isFemale ? color : Colors.transparent,
+                                  onClick: () {
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: true,
+                                        isMale: false,
+                                        isNon: false));
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: gender(
+                                  text: AppStrings.nonBinary,
+                                  textColor:
+                                      isNon ? Colors.white : Colors.black,
+                                  bgColor: isNon ? color : Colors.transparent,
+                                  onClick: () {
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: false,
+                                        isMale: false,
+                                        isNon: true));
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: BlocBuilder(
+                        bloc: bloc,
+                        builder: (context, state) {
+                          return Center(
+                            child: SingleChildScrollView(
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 300,
+                                    height: 320,
+                                    child: SvgImage(
+                                      image: userInfoImage,
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          commonUserTypeTextField(
+                                                  width: 70.w,
+                                                  fontColor: Colors.white,
+                                                  controller: ageController,
+                                                  fontSize: 13,
+                                                  hintText: 'required',
+                                                  textInputType:
+                                                      TextInputType.number,
+                                                  context: context,
+                                                  onChange: (String value) {
+                                                    bloc.add(TextChangeEvent(
+                                                        age: ageController.text,
+                                                        height: heightController
+                                                            .text,
+                                                        weight: weightController
+                                                            .text));
+                                                  })
+                                              .paddingOnly(top: 15)
+                                              .marginOnly(left: 70),
+                                          commonUserTypeTextField(
+                                                  width: 70.w,
+                                                  fontColor: Colors.white,
+                                                  controller: heightController,
+                                                  fontSize: 13,
+                                                  hintText: 'required',
+                                                  textInputType:
+                                                      TextInputType.number,
+                                                  context: context,
+                                                  onChange: (String value) {
+                                                    bloc.add(TextChangeEvent(
+                                                        age: ageController.text,
+                                                        height: heightController
+                                                            .text,
+                                                        weight: weightController
+                                                            .text));
+                                                  })
+                                              .paddingOnly(top: 15)
+                                              .marginOnly(right: 80),
+                                        ],
+                                      ),
+                                      commonUserTypeTextField(
+                                          width: 120.w,
+                                          fontColor: Colors.white,
+                                          controller: weightController,
+                                          fontSize: 13,
+                                          hintText: 'required',
+                                          textInputType: TextInputType.number,
+                                          isSuffix: true,
+                                          context: context,
+                                          onChange: (String value) {
+                                            bloc.add(TextChangeEvent(
+                                                age: ageController.text,
+                                                height: heightController.text,
+                                                weight: weightController.text));
+                                          }).marginOnly(top: 70, right: 10),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                  buildButton(
+                          onPressed: () {
+                            if(isVisible){
+
+                            }
+                          },
+                          textColor: Colors.white,
+                          bgColor: isVisible ? color : AppColors.disable,
+                          title: AppStrings.next,
+                          context: context)
+                      .paddingOnly(top: 10.h),
+                ],
+              );
+            },
+            bloc: bloc,
+            listener: (context, state) {
+              if (state is UserTypeClickState) {
+                isMale = state.isMale;
+                isFemale = state.isFemale;
+                isNon = state.isNon;
+
+                ageController.clear();
+                weightController.clear();
+                heightController.clear();
+
+                if (isMale) {
+                  userInfoImage = AppStrings.icMaleChart;
+                  color = AppColors.primaryBlue;
+                  isVisible = false;
+                } else if (isFemale) {
+                  userInfoImage = AppStrings.icFemaleChart;
+                  color = AppColors.terracotta;
+                  isVisible = false;
+                } else {
+                  userInfoImage = AppStrings.icNonChart;
+                  color = AppColors.green;
+                  isVisible = false;
+                }
+              }
+
+              if(state is ChangeButtonState){
+                isVisible = state.isVisible;
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget gender({
+    required String text,
+    required Color textColor,
+    required Color bgColor,
+    required Function() onClick,
+  }) =>
+      InkWell(
+        onTap: () {
+          onClick();
+        },
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          height: 46.h,
+          child: Text(
+            text,
+            style: AppTextStyle.butttonTextStyle.copyWith(
+                color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+        ),
+      );
+}
