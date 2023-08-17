@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/screen/gender_screen/first_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
+import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
 import 'package:gymeats_mobile/screen/login/forgot_password.dart';
@@ -19,12 +20,12 @@ import 'package:gymeats_mobile/screen/login/reset_password.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/screen/user_survey/user_survey.dart';
+import 'package:gymeats_mobile/screen/user_type/user_type.dart';
 
 void main() {
   runApp(const MyApp());
 }
-
-enum GENDER { NON, MALE, FEMALE }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -75,6 +76,14 @@ class MyApp extends StatelessWidget {
                 name: '/PremiumScreen',
                 page: () => const PremiumScreen(),
               ),
+            GetPage(
+                name: '/UserTypeScreen',
+                page: () => const UserTypeScreen(),
+              ),
+             GetPage(
+                name: '/UserInfoSelectionScreen',
+                page: () => const UserSurveyScreen(gender: ''),
+              ),
               GetPage(
                 name: '/GenderScreen',
                 page: () => const GenderScreen(),
@@ -110,6 +119,8 @@ class MyApp extends StatelessWidget {
             ],
           );
         },
+      child: const UserSurveyScreen(gender: AppStrings.male),
+    );
         child: const GymWorkInfoScreen());
   }
 }
