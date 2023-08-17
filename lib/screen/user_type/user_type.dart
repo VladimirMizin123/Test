@@ -11,6 +11,7 @@ import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
+import '../user_survey/user_survey.dart';
 
 class UserTypeScreen extends StatefulWidget {
   const UserTypeScreen({super.key});
@@ -23,7 +24,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
   final ageController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();
-
+  String genderName = AppStrings.male;
   bool isMale = true;
   bool isFemale = false;
   bool isNon = false;
@@ -40,7 +41,6 @@ class _UserTypePageState extends State<UserTypeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    userInfoImage = AppStrings.icMaleChart;
     bloc.add(UserTypeClickEvent(isFemale: false, isMale: true, isNon: false));
   }
 
@@ -146,95 +146,92 @@ class _UserTypePageState extends State<UserTypeScreen> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: BlocBuilder(
-                        bloc: bloc,
-                        builder: (context, state) {
-                          return Center(
-                            child: SingleChildScrollView(
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 300,
-                                    height: 320,
-                                    child: SvgImage(
-                                      image: userInfoImage,
-                                    ),
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          commonUserTypeTextField(
-                                                  width: 70.w,
-                                                  fontColor: Colors.white,
-                                                  controller: ageController,
-                                                  fontSize: 13,
-                                                  hintText: 'required',
-                                                  textInputType:
-                                                      TextInputType.number,
-                                                  context: context,
-                                                  onChange: (String value) {
-                                                    bloc.add(TextChangeEvent(
-                                                        age: ageController.text,
-                                                        height: heightController
-                                                            .text,
-                                                        weight: weightController
-                                                            .text));
-                                                  })
-                                              .paddingOnly(top: 15)
-                                              .marginOnly(left: 70),
-                                          commonUserTypeTextField(
-                                                  width: 70.w,
-                                                  fontColor: Colors.white,
-                                                  controller: heightController,
-                                                  fontSize: 13,
-                                                  hintText: 'required',
-                                                  textInputType:
-                                                      TextInputType.number,
-                                                  context: context,
-                                                  onChange: (String value) {
-                                                    bloc.add(TextChangeEvent(
-                                                        age: ageController.text,
-                                                        height: heightController
-                                                            .text,
-                                                        weight: weightController
-                                                            .text));
-                                                  })
-                                              .paddingOnly(top: 15)
-                                              .marginOnly(right: 80),
-                                        ],
-                                      ),
-                                      commonUserTypeTextField(
-                                          width: 120.w,
-                                          fontColor: Colors.white,
-                                          controller: weightController,
-                                          fontSize: 13,
-                                          hintText: 'required',
-                                          textInputType: TextInputType.number,
-                                          isSuffix: true,
-                                          context: context,
-                                          onChange: (String value) {
-                                            bloc.add(TextChangeEvent(
-                                                age: ageController.text,
-                                                height: heightController.text,
-                                                weight: weightController.text));
-                                          }).marginOnly(top: 70, right: 10),
-                                    ],
-                                  )
-                                ],
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 300,
+                              height: 320,
+                              child: SvgImage(
+                                fit: BoxFit.fill,
+                                image: userInfoImage,
                               ),
                             ),
-                          );
-                        }),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    commonUserTypeTextField(
+                                        width: 70.w,
+                                        fontColor: Colors.white,
+                                        controller: ageController,
+                                        fontSize: 13,
+                                        hintText: AppStrings.required,
+                                        textInputType:
+                                        TextInputType.number,
+                                        context: context,
+                                        onChange: (String value) {
+                                          bloc.add(TextChangeEvent(
+                                              age: ageController.text,
+                                              height: heightController
+                                                  .text,
+                                              weight: weightController
+                                                  .text));
+                                        })
+                                        .paddingOnly(top: 15)
+                                        .marginOnly(left: 70),
+                                    commonUserTypeTextField(
+                                        width: 70.w,
+                                        fontColor: Colors.white,
+                                        controller: heightController,
+                                        fontSize: 13,
+                                        hintText: AppStrings.required,
+                                        textInputType:
+                                        TextInputType.number,
+                                        context: context,
+                                        onChange: (String value) {
+                                          bloc.add(TextChangeEvent(
+                                              age: ageController.text,
+                                              height: heightController
+                                                  .text,
+                                              weight: weightController
+                                                  .text));
+                                        })
+                                        .paddingOnly(top: 15)
+                                        .marginOnly(right: 80),
+                                  ],
+                                ),
+                                commonUserTypeTextField(
+                                    width: 120.w,
+                                    fontColor: Colors.white,
+                                    controller: weightController,
+                                    fontSize: 13,
+                                    hintText: AppStrings.required,
+                                    textInputType: TextInputType.number,
+                                    isSuffix: true,
+                                    context: context,
+                                    onChange: (String value) {
+                                      bloc.add(TextChangeEvent(
+                                          age: ageController.text,
+                                          height: heightController.text,
+                                          weight: weightController.text));
+                                    }).marginOnly(top: 70, right: 10),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   buildButton(
                           onPressed: () {
-                            if(isVisible){
-
+                            if(!isVisible){
+                              Get.to(UserSurveyScreen(gender: genderName,));
                             }
                           },
                           textColor: Colors.white,
@@ -258,14 +255,17 @@ class _UserTypePageState extends State<UserTypeScreen> {
 
                 if (isMale) {
                   userInfoImage = AppStrings.icMaleChart;
+                  genderName = AppStrings.male;
                   color = AppColors.primaryBlue;
                   isVisible = false;
                 } else if (isFemale) {
                   userInfoImage = AppStrings.icFemaleChart;
+                  genderName = AppStrings.female;
                   color = AppColors.terracotta;
                   isVisible = false;
                 } else {
                   userInfoImage = AppStrings.icNonChart;
+                  genderName = AppStrings.nonBinary;
                   color = AppColors.green;
                   isVisible = false;
                 }

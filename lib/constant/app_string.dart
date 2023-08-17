@@ -14,6 +14,10 @@ class AppStrings {
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
   static const icFemaleChart = '${svgPath}ic_female_chart.svg';
   static const icNonChart = '${svgPath}ic_non_chart.svg';
+  static const icBack = '${svgPath}ic_back.svg';
+  static const icCheck = '${svgPath}ic_check.svg';
+  static const icClose = '${svgPath}ic_close.svg';
+  static const icSearch = '${svgPath}ic_search.svg';
 
   /// Text
   static const letsEat = 'Let\'s Eat!';
@@ -27,4 +31,6 @@ class AppStrings {
   static const nonBinary = 'NON-BINARY';
   static const next = 'Next';
   static const lbs = 'Lbs';
+  static const required = 'required';
+  static const previous = 'Previous';
 }
