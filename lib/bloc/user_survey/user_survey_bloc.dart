@@ -19,8 +19,8 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   final GetSurveyRepository getSurveyRepository = GetSurveyRepository();
-  SurveyData? getSurveyList;
-  SurveyData? getNewSurveyList ;
+  SurveyData? getSurvey;
+  SurveyData? getNewSurvey;
 
   _onGetSurveyData(GetSurveyData event, Emitter<UserSurveyState> emit) async {
     emit(LoadingSurveyData());
@@ -29,9 +29,9 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
       response.fold((left) {
         emit(ErrorStateData(errMessage: left.errorMessage!));
       }, (right) {
-        getSurveyList = right.data;
-
-        emit(LoadSurveyData(surveyData: getSurveyList!));
+        getSurvey = right.data;
+        getNewSurvey = getSurvey;
+        emit(LoadSurveyData(surveyData: getNewSurvey!));
       });
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
@@ -39,38 +39,22 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSurveyCheck(CheckSurveyData event, Emitter<UserSurveyState> emit) {
-    // getNewSurveyList..isSelect =
-    //     !getNewSurveyList[event.mainIndex].options[event.index].isSelect;
-    // emit(LoadSurveyData(list: getNewSurveyList));
+    getNewSurvey!.options![event.index].isSelect =
+        !getNewSurvey!.options![event.index].isSelect;
+    emit(LoadSurveyData(surveyData: getNewSurvey!));
   }
 
   _onSearchData(SearchData event, Emitter<UserSurveyState> emit) {
-    /*debugPrint("event.text--> ${event.text.isEmpty}");
-
-    if (event.text.isEmpty) {
-      getSurveyList[event.mainIndex]
-          .options
-          .map((e) => e.isSearch = true)
+    if(event.text.isEmpty){
+      getNewSurvey = getSurvey;
+    }else{
+      getNewSurvey!.options = getSurvey!.options!
+          .where((element) =>
+          element.label!.toLowerCase().contains(event.text.toLowerCase()))
           .toList();
-      getNewSurveyList.clear();
-      getNewSurveyList.addAll(getSurveyList);
-      emit(LoadSurveyData(list: getNewSurveyList));
-    } else {
-      for (var element in getSurveyList[event.mainIndex].options) {
-        if (element.label.toLowerCase().contains(event.text.toLowerCase())) {
-          // element.isSearch = true;
-          getNewSurveyList[event.mainIndex].options.add(element);
-        } *//*else {
-          element.isSearch = false;
-        }*//*
-      }
-      *//*  getNewSurveyList[event.mainIndex].options.map((e) {
-        if (e.isSearch) {
-          getNewSurveyList[event.mainIndex].options.add(e);
-        }
-      });*//*
+    }
 
-      emit(LoadSurveyData(list: getNewSurveyList));
-    }*/
+    emit(LoadSurveyData(surveyData: getNewSurvey!));
+
   }
 }

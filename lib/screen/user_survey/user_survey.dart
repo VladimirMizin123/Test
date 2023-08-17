@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,7 +60,9 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   state.errMessage,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      color: AppColors.primaryBlue, fontSize: 20,fontWeight: FontWeight.w700),
+                      color: AppColors.primaryBlue,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700),
                 ));
               }
               return Container();
@@ -66,6 +70,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
             listener: (context, state) {
               if (state is LoadSurveyData) {
                 getSurveyData = state.surveyData;
+
+
+                // countOptions(getSurveyData);
+                // debugPrint("count --> $count");
                 // percentage = (mainIndex + 1) / getSurveyList.length;
               }
             }),

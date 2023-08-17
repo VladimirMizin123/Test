@@ -65,7 +65,7 @@ class SurveyData {
   };
 }
 
-class StickyQuestion {
+/*class StickyQuestion {
   String? id;
   String? label;
   bool? isPrimary;
@@ -223,16 +223,16 @@ class FluffyQuestion {
     "answerType": answerType,
     "options": options == null ? [] : List<dynamic>.from(options!.map((x) => x.toJson())),
   };
-}
+}*/
 
-class PurpleOption {
+class Option {
   String? id;
   String? label;
   int? questionDiet;
-  FluffyQuestion? question;
+  Question? question;
   dynamic diet;
 
-  PurpleOption({
+  Option({
     this.id,
     this.label,
     this.questionDiet,
@@ -240,11 +240,11 @@ class PurpleOption {
     this.diet,
   });
 
-  factory PurpleOption.fromJson(Map<String, dynamic> json) => PurpleOption(
+  factory Option.fromJson(Map<String, dynamic> json) => Option(
     id: json["id"],
     label: json["label"],
     questionDiet: json["question_Diet"],
-    question: json["question"] == null ? null : FluffyQuestion.fromJson(json["question"]),
+    question: json["question"] == null ? null : Question.fromJson(json["question"]),
     diet: json["diet"],
   );
 
@@ -257,14 +257,14 @@ class PurpleOption {
   };
 }
 
-class PurpleQuestion {
+class Question {
   String? id;
   String? label;
   bool? isPrimary;
   int? answerType;
-  List<PurpleOption>? options;
+  List<Option>? options;
 
-  PurpleQuestion({
+  Question({
     this.id,
     this.label,
     this.isPrimary,
@@ -272,12 +272,12 @@ class PurpleQuestion {
     this.options,
   });
 
-  factory PurpleQuestion.fromJson(Map<String, dynamic> json) => PurpleQuestion(
+  factory Question.fromJson(Map<String, dynamic> json) => Question(
     id: json["id"],
     label: json["label"],
     isPrimary: json["isPrimary"],
     answerType: json["answerType"],
-    options: json["options"] == null ? [] : List<PurpleOption>.from(json["options"]!.map((x) => PurpleOption.fromJson(x))),
+    options: json["options"] == null ? [] : List<Option>.from(json["options"]!.map((x) => Option.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -293,7 +293,7 @@ class DataOption {
   String? id;
   String? label;
   int? questionDiet;
-  PurpleQuestion? question;
+  Question? question;
   Diet? diet;
   bool isSelect;
   Color? color;
@@ -312,7 +312,7 @@ class DataOption {
     id: json["id"],
     label: json["label"],
     questionDiet: json["question_Diet"],
-    question: json["question"] == null ? null : PurpleQuestion.fromJson(json["question"]),
+    question: json["question"] == null ? null : Question.fromJson(json["question"]),
     diet: json["diet"] == null ? null : Diet.fromJson(json["diet"]),
   );
 
