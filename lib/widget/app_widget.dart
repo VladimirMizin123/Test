@@ -51,6 +51,7 @@ Widget commonTextField(
     {String? hintText,
     TextEditingController? controller,
     required BuildContext context}) {
+  GlobalKey globalKey = GlobalKey();
   return SizedBox(
     height: 48.h,
     child: TextFormField(
@@ -61,6 +62,34 @@ Widget commonTextField(
       decoration: InputDecoration(
         hintText: hintText,
       ),
+    ),
+  );
+}
+
+Widget buildBorderButton({
+  required BuildContext context,
+  String? title,
+  void Function()? onPressed,
+  Color? bgColor,
+  Color? textColor,
+  required Color borderColor,
+}) {
+  return SizedBox(
+    width: double.infinity.w,
+    height: 48.h,
+    child: ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: borderColor)),
+      ),
+      child: Text(title!,
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(color: textColor)),
     ),
   );
 }
