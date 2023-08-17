@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
+import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
+import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
+import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/screen/user_survey/user_survey.dart';
+import 'package:gymeats_mobile/screen/user_type/user_type.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,61 +19,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    return ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return GetMaterialApp(
+            title: 'Flutter Demo',
+            debugShowCheckedModeBanner: false,
+            theme: AppColors.lightTheme(),
+            home: child,
+            initialRoute: '/',
+            getPages: [
+              GetPage(
+                name: '/',
+                page: () => const Home(),
+              ),
+              GetPage(
+                name: '/GymEatsMenu',
+                page: () => const GymEatsMenuScreen(),
+              ),
+              GetPage(
+                name: '/SignUpScreen',
+                page: () => const SignUpScreen(),
+              ),
+              GetPage(
+                name: '/PremiumScreen',
+                page: () => const PremiumScreen(),
+              ),
+            GetPage(
+                name: '/UserTypeScreen',
+                page: () => const UserTypeScreen(),
+              ),
+             GetPage(
+                name: '/UserInfoSelectionScreen',
+                page: () => const UserSurveyScreen(gender: ''),
+              ),
+            ],
+          );
+        },
+      child: const UserSurveyScreen(gender: AppStrings.male),
     );
   }
 }

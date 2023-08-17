@@ -1,0 +1,101 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class AppColors {
+  static const letsEatButton = Color(0xFFCE6B53);
+  static const letsEat = Color(0xFFF9D5C5);
+  static const appColor = Color(0xFF336633);
+  static const disabledColor = Color(0xFFC7C8CA);
+
+  static ThemeData lightTheme() {
+    return ThemeData(
+      primaryColor: const Color(0xFF004C63),
+      colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: Color(0xFF004C63),
+        onPrimary: Color(0xFF004C63),
+        secondary: Color(0xFFD9E9EE),
+        onSecondary: Color(0xFFD9E9EE),
+        error: Color(0xFFFF9500),
+        onError: Color(0xFFFF9500),
+        background: Color(0xFFE5E5E5),
+        onBackground: Color(0xFFE5E5E5),
+        surface: Color(0xFFFFFFFF),
+        onSurface: Color(0xFFFFFFFF),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: Color(0xFF004C63),
+        textTheme: ButtonTextTheme.primary,
+      ),
+      fontFamily: 'Avenir',
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w300,
+            height: 1.5,
+            color: const Color(0xFF5F5F5F)),
+        hintStyle: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w300,
+            height: 1.5,
+            color: const Color(0xFF5F5F5F)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: const BorderSide(color: Color(0XFFFF3B30)),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+      ),
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
+          // H1
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          letterSpacing: -2.5,
+        ),
+        displayMedium: TextStyle(
+          // H2
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+        ),
+        headlineSmall: TextStyle(
+          //H5
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+        bodyLarge: TextStyle(
+          // Body 1
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+        ),
+        bodyMedium: TextStyle(
+          // Body 1
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+        ),
+        bodySmall: TextStyle(
+          // Body 2
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
+        ),
+      ),
+    );
+  }
+  static const primaryBlue = Color(0xFF004C63);
+  static const lightGrey = Color(0xFFECECED);
+  static const disable = Color(0xFFC7C8CA);
+  static const terracotta = Color(0xFFCE6B53);
+  static const green = Color(0xFF336633);
+}
