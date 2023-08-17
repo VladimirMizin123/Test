@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_TextStyle.dart';
+import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/widget/svg_image.dart';
 
 import '../constant/app_string.dart';
 
@@ -46,6 +48,34 @@ Widget buildButton(
                   .copyWith(color: textColor)),
         ],
       ),
+    ),
+  );
+}
+
+Widget buildBorderButton({
+  required BuildContext context,
+  String? title,
+  void Function()? onPressed,
+  Color? bgColor,
+  Color? textColor,
+  required Color borderColor,
+}) {
+  return SizedBox(
+    width: double.infinity.w,
+    height: 48.h,
+    child: ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: borderColor)),
+      ),
+      child: Text(title!,
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(color: textColor)),
     ),
   );
 }
@@ -155,6 +185,89 @@ Widget commonUserTypeTextField(
                   fontWeight: FontWeight.w900,
                   color: Colors.white),
             ).marginOnly(right: 5))
+      ],
+    ),
+  );
+}
+
+Widget commonSearchTextField({
+  required String hintText,
+  required TextEditingController controller,
+  required BuildContext context,
+  required double fontSize,
+  required Color fontColor,
+  required TextInputType textInputType,
+  required Function(String value) onChange,
+  required Function() onClear,
+}) {
+  return Container(
+    height: 48.h,
+    width: MediaQuery.of(context).size.width,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.primaryBlue.withOpacity(0.10),
+          spreadRadius: 0,
+          blurRadius: 10,
+          offset: const Offset(0, 0), // changes position of shadow
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        const SvgImage(
+          image: AppStrings.icSearch,
+        ).marginOnly(left: 15),
+        Expanded(
+          child: TextFormField(
+            controller: controller,
+            keyboardType: textInputType,
+            style: TextStyle(
+              fontSize: fontSize.sp,
+              fontWeight: FontWeight.w400,
+            ),
+            onChanged: (value) {
+              onChange(value);
+            },
+            decoration: InputDecoration(
+              filled: false,
+              hintText: hintText,
+              hintStyle: TextStyle(
+                  fontSize: fontSize.sp,
+                  fontWeight: FontWeight.w400,
+                  color: fontColor),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.transparent),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.transparent),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.transparent),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.transparent),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: controller.text.isNotEmpty,
+          child: InkWell(
+            onTap: (){
+              onClear();
+            },
+            child: const SvgImage(
+              image: AppStrings.icClose,
+            ).marginOnly(right: 15),
+          ),
+        ),
       ],
     ),
   );
