@@ -266,4 +266,3 @@ Widget commonSearchTextField({
     ),
   );
 }
-

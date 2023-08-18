@@ -136,8 +136,6 @@ class AppStrings {
   static const male = 'MALE';
   static const female = 'FEMALE';
   static const nonBinary = 'NON-BINARY';
-  static const next = 'Next';
   static const lbs = 'Lbs';
   static const required = 'required';
-  static const previous = 'Previous';
 }
