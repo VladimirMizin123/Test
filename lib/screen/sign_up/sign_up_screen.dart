@@ -40,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       height: 60.h,
                     ),
                   ),
-                   Text(
+                  Text(
                     'You are one step closer to eating better!',
                     style: textTheme.headlineSmall!.copyWith(
                       color: themeData.primaryColor,
@@ -56,58 +56,59 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         fontWeight: FontWeight.w400),
                   ).paddingOnly(top: 18),
                   commonTextField(
-                    context: context,
+                          context: context,
                           controller: homeController.fNameController,
-                          hintText: 'First Name')
+                          hintText: AppStrings.fName)
                       .paddingOnly(top: 8),
                   commonTextField(
-                      context: context,
+                          context: context,
                           controller: homeController.lastNameController,
-                          hintText: 'Last Name')
+                          hintText: AppStrings.lName)
                       .paddingOnly(top: 16),
                   commonTextField(
-                      context: context,
+                          context: context,
                           controller: homeController.emailController,
-                          hintText: 'Email address')
+                          hintText: AppStrings.email)
                       .paddingOnly(top: 16),
                   commonTextField(
-                      context: context,
+                          context: context,
                           controller: homeController.passwordController,
-                          hintText: 'Password')
+                          hintText: AppStrings.password)
                       .paddingOnly(top: 16),
                   buildButton(
-                    context: context,
+                          context: context,
                           onPressed: () {},
-                          textColor: Color(0xFFD9E9EE),
+                          textColor: const Color(0xFFD9E9EE),
                           bgColor: const Color(0xFF004C63),
-                          title: 'Join GYM EATS')
+                          title: AppStrings.joinGymEats)
                       .paddingOnly(top: 25.h),
-                   Text('or',style: textTheme.bodyLarge,).paddingSymmetric(vertical: 15.h),
+                  Text(
+                    AppStrings.or,
+                    style: textTheme.bodyLarge,
+                  ).paddingSymmetric(vertical: 15.h),
                   buildButton(
                       context: context,
-                    hasImage: true,
+                      hasImage: true,
                       imagePath: AppStrings.appleLogo,
-                      onPressed: () async{
-
+                      onPressed: () async {
                         await homeController.appleSignIn();
                       },
                       textColor: const Color(0xFFD9E9EE),
                       bgColor: Colors.black,
-                      title: 'Continue with Apple'),
+                      title: AppStrings.apple),
                   Wrap(
                     children: [
-                      Text('Already have an account?  ',
+                      Text(AppStrings.alreadyAccount,
                           style: textTheme.bodyMedium!.copyWith(
-                              color: const Color(0xFF373737),
-
+                            color: const Color(0xFF373737),
                           )),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           // Login Screen
                         },
-                        child: Text('Log In',
+                        child: Text(AppStrings.logIn,
                             style: textTheme.bodyLarge!.copyWith(
-                              decoration: TextDecoration.underline,
+                                decoration: TextDecoration.underline,
                                 color: themeData.primaryColor,
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w400)),
@@ -117,24 +118,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-
                       children: [
-                         TextSpan(
-                          text: 'By clicking "Sign up", you agree to our terms and that you have read our ',
+                        TextSpan(
+                          text:
+                              'By clicking "Sign up", you agree to our terms and that you have read our ',
                           style: textTheme.bodySmall!.copyWith(
-                              color:  Colors.black,
+                              color: Colors.black,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w400),
                         ),
                         TextSpan(
-                            text: 'Privacy Policy',
-                            style: textTheme.bodySmall!.copyWith(
-                                color: const Color(0XFF336633),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400),
-                          recognizer: TapGestureRecognizer()..onTap = () {
-                            // Single tapped.
-                          },
+                          text: 'Privacy Policy',
+                          style: textTheme.bodySmall!.copyWith(
+                              color: const Color(0XFF336633),
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Single tapped.
+                            },
                         ),
                         TextSpan(
                           text: '.',

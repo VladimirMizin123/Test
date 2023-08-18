@@ -78,7 +78,7 @@ class AppColors {
         bodyLarge: TextStyle(
           // Body 1
           fontSize: 16,
-          fontWeight: FontWeight.normal,
+          fontWeight: FontWeight.w400,
         ),
         bodyMedium: TextStyle(
           // Body 1
@@ -93,9 +93,21 @@ class AppColors {
       ),
     );
   }
+
+  static const green = Color(0xFF336633);
   static const primaryBlue = Color(0xFF004C63);
+  static const terracotta = Color(0xFFCE6B53);
+
+  static const greenPressed = Color(0xFF1F3D1F);
+  static const bluePressed = Color(0xFF002E3B);
+  static const terracottaPressed = Color(0xFFA55642);
+
+  static const mint = Color(0xFFC1EACE);
+  static const skyBlue = Color(0xFFD9E9EE);
+  static const coral = Color(0xFFF9D5C5);
+
   static const lightGrey = Color(0xFFECECED);
   static const disable = Color(0xFFC7C8CA);
-  static const terracotta = Color(0xFFCE6B53);
-  static const green = Color(0xFF336633);
+  static const middleGray = Color(0xFF5F5F5F);
+  static const darkGray = Color(0xFF373737);
 }
