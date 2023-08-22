@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../bloc/forgot_password/forgot_password_bloc.dart';
+import '../../bloc/forgot_password/forgot_password_event.dart';
+import '../../bloc/forgot_password/forgot_password_state.dart';
 import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
+import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final routeName = '/reset-password';
-  final resetPasswordController = TextEditingController();
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final routeName = '/ResetPasswordScreen';
+  final emailController = TextEditingController();
+
+  ForgotPasswordBloc bloc = ForgotPasswordBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -66,18 +73,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               commonTextField(
                       context: context,
-                      controller: resetPasswordController,
+                      controller: emailController,
                       hintText: AppStrings.email)
                   .paddingOnly(top: 20.h),
-              buildButton(
-                      context: context,
-                      onPressed: () {
-                        Get.toNamed('/open-email-app');
-                      },
-                      textColor: Colors.white,
-                      bgColor: AppColors.disable,
-                      title: AppStrings.sendInstructions)
-                  .paddingOnly(top: 25.h),
+              BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
+                  bloc: bloc,
+                  listener: (context, state){
+                    if(state is ForgotSuccessState){
+                      emailController.clear();
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is ForgotLoadingState) {
+                      return const AppCenterLoader();
+                    }
+                    return buildButton(
+                            context: context,
+                            onPressed: () {
+                              bloc.add(ButtonClickEvent(email: emailController.text));
+                            },
+                            textColor: Colors.white,
+                            bgColor: AppColors.primaryBlue,
+                            title: AppStrings.sendInstructions);
+                  }).paddingOnly(top: 25.h)
             ],
           ),
         ),

@@ -7,7 +7,7 @@ import '../constant/app_TextStyle.dart';
 import '../constant/app_string.dart';
 
 class UserSurveyItems extends StatelessWidget {
-  final Options data;
+  final DataOption data;
   final Function() onClick;
 
   const UserSurveyItems({super.key, required this.data, required this.onClick});
@@ -27,7 +27,7 @@ class UserSurveyItems extends StatelessWidget {
                 BoxDecoration(color: data.color, shape: BoxShape.circle),
             padding: const EdgeInsets.all(10),
             child: Text(
-              data.label,
+              data.label!,
               textAlign: TextAlign.center,
               style: AppTextStyle.gymEatsStyle.copyWith(
                 color: Colors.white,
@@ -59,7 +59,7 @@ class UserSurveyItems extends StatelessWidget {
               ),
               child: SvgImage(
                 image: AppStrings.icCheck,
-                color: data.color,
+                color: data.color!,
               ),
             ),
           ),

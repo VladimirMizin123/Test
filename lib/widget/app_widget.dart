@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 
 import '../constant/app_string.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Widget buildButton(
     {required BuildContext context,
@@ -198,6 +199,7 @@ Widget commonSearchTextField({
   required Color fontColor,
   required TextInputType textInputType,
   required Function(String value) onChange,
+  required Function() onClear,
 }) {
   return Container(
     height: 48.h,
@@ -258,11 +260,40 @@ Widget commonSearchTextField({
         ),
         Visibility(
           visible: controller.text.isNotEmpty,
-          child: const SvgImage(
-            image: AppStrings.icClose,
-          ).marginOnly(right: 15),
+          child: InkWell(
+            onTap: (){
+              onClear();
+            },
+            child: const SvgImage(
+              image: AppStrings.icClose,
+            ).marginOnly(right: 15),
+          ),
         ),
       ],
     ),
   );
+}
+
+showToast({required String message, required bool isSuccess}) {
+
+  if(isSuccess){
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+  }else{
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+        fontSize: 16.0
+    );
+  }
+
 }

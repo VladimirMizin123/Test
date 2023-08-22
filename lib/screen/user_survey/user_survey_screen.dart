@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,13 +7,13 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
 import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
-
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../models/get_survey_model.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 import '../../widget/user_survey_item.dart';
@@ -27,12 +29,12 @@ class UserSurveyScreen extends StatefulWidget {
 
 class _UserSurveyScreenState extends State<UserSurveyScreen>
     with SingleTickerProviderStateMixin {
-  int mainIndex = 0;
   UserSurveyBloc bloc = UserSurveyBloc();
-  List<GetSurveyModel> getSurveyList = [];
+  SurveyDataQuestion? getSurveyData;
   double percentage = 0.0;
   final searchController = TextEditingController();
-
+  int optionIndex = 0;
+  List<int> listIndex = [];
   @override
   void initState() {
     super.initState();
@@ -49,12 +51,29 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
               if (state is LoadSurveyData) {
                 return initView();
               }
+              if (state is LoadingSurveyData) {
+                return const AppCenterLoader();
+              }
+              if (state is ErrorStateData) {
+                return Center(
+                    child: Text(
+                  state.errMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: AppColors.primaryBlue,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700),
+                ));
+              }
               return Container();
             },
             listener: (context, state) {
               if (state is LoadSurveyData) {
-                getSurveyList = state.list;
-                percentage = (mainIndex + 1) / getSurveyList.length;
+                getSurveyData = state.surveyData;
+
+                // countOptions(getSurveyData);
+                // debugPrint("count --> $count");
+                // percentage = (mainIndex + 1) / getSurveyList.length;
               }
             }),
       ),
@@ -65,11 +84,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
         padding: EdgeInsets.all(20.0.h),
         child: Column(
           children: [
-            Row(
+            const Row(
               children: [
-                const SvgImage(
+                SvgImage(
                   image: AppStrings.icBack,
                 ),
+/*
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -83,6 +103,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                     ),
                   ),
                 )
+*/
               ],
             ),
             const SizedBox(
@@ -100,7 +121,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
               height: 10.h,
             ),
             Text(
-              getSurveyList[mainIndex].question,
+              getSurveyData!.label!,
               textAlign: TextAlign.center,
               style: AppTextStyle.gymEatsStyle.copyWith(
                   color: setColor(gender: widget.gender),
@@ -118,7 +139,15 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
               textInputType: TextInputType.text,
               context: context,
               onChange: (String value) {
-                bloc.add(SearchData(text: value));
+                bloc.add(SearchData(
+                  text: value,
+                ));
+              },
+              onClear: () {
+                searchController.clear();
+                bloc.add(SearchData(
+                  text: searchController.text,
+                ));
               },
             ),
             SizedBox(
@@ -133,13 +162,15 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   crossAxisSpacing: 6.0,
                   mainAxisSpacing: 8.0,
                   children: List.generate(
-                    getSurveyList[mainIndex].options.length,
+                    getSurveyData!.options!.length,
                     (index) {
                       return UserSurveyItems(
-                        data: getSurveyList[mainIndex].options[index],
+                        data: getSurveyData!.options![index],
                         onClick: () {
+                          optionIndex = index;
                           bloc.add(CheckSurveyData(
-                              index: index, mainIndex: mainIndex));
+                            index: index,
+                          ));
                         },
                       );
                     },
@@ -154,7 +185,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   Expanded(
                     child: buildBorderButton(
                             context: context,
-                            onPressed: () {},
+                            onPressed: () {
+                              optionIndex = listIndex[listIndex.length -1];
+                              listIndex.removeLast();
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: false));
+                            },
                             textColor: setColor(gender: widget.gender),
                             borderColor: setColor(gender: widget.gender),
                             bgColor: Colors.white,
@@ -165,7 +201,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   Expanded(
                     child: buildButton(
                             context: context,
-                            onPressed: () {},
+                            onPressed: () {
+                              optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
+                              listIndex.add(optionIndex);
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: true));
+                            },
                             textColor: Colors.white,
                             bgColor: setColor(gender: widget.gender),
                             title: AppStrings.next)

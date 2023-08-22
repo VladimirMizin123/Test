@@ -11,7 +11,7 @@ import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
-import '../user_survey/user_survey.dart';
+import '../user_survey/user_survey_screen.dart';
 
 class UserTypeScreen extends StatefulWidget {
   const UserTypeScreen({super.key});

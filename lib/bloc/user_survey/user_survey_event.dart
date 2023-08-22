@@ -3,9 +3,14 @@ abstract class UserSurveyEvent{}
 class GetSurveyData extends UserSurveyEvent{}
 
 class CheckSurveyData extends UserSurveyEvent{
-  int mainIndex;
   int index;
-  CheckSurveyData({required this.index, required this.mainIndex});
+  CheckSurveyData({required this.index});
+}
+
+class NextPrevSurveyClick extends UserSurveyEvent{
+  int index;
+  bool isNext;
+  NextPrevSurveyClick({required this.index, required this.isNext});
 }
 
 class SearchData extends UserSurveyEvent{

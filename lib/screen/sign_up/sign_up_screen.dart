@@ -104,6 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           )),
                       InkWell(
                         onTap: () {
+                          Get.toNamed('/LoginScreen');
                           // Login Screen
                         },
                         child: Text(AppStrings.logIn,
