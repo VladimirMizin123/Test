@@ -1,26 +1,28 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-
+import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../models/get_survey_model.dart';
 import '../../repository/get_survey.dart';
+import '../../screen/user_photo_selection/user_photo_selection_screen.dart';
 
 class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   UserSurveyBloc() : super(InitialState()) {
     on<GetSurveyData>(_onGetSurveyData);
     on<CheckSurveyData>(_onSurveyCheck);
     on<SearchData>(_onSearchData);
+    on<NextPrevSurveyClick>(_onNextPrevSurveyClick);
   }
 
   final GetSurveyRepository getSurveyRepository = GetSurveyRepository();
-  SurveyData? getSurvey;
-  SurveyData? getNewSurvey;
+  SurveyDataQuestion? getSurvey;
+  SurveyDataQuestion? getNewSurvey;
+  List<SurveyDataQuestion> listSurveyData = [];
 
   _onGetSurveyData(GetSurveyData event, Emitter<UserSurveyState> emit) async {
     emit(LoadingSurveyData());
@@ -31,6 +33,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
       }, (right) {
         getSurvey = right.data;
         getNewSurvey = getSurvey;
+        listSurveyData.add(getNewSurvey!);
         emit(LoadSurveyData(surveyData: getNewSurvey!));
       });
     } catch (e) {
@@ -45,16 +48,49 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSearchData(SearchData event, Emitter<UserSurveyState> emit) {
-    if(event.text.isEmpty){
-      getNewSurvey = getSurvey;
-    }else{
-      getNewSurvey!.options = getSurvey!.options!
-          .where((element) =>
-          element.label!.toLowerCase().contains(event.text.toLowerCase()))
-          .toList();
-    }
+    debugPrint("getSurvey 1-->${getSurvey!.options!.length}");
+
+    getNewSurvey = SurveyDataQuestion(
+        options: getSurvey!.options!
+            .where((item) =>
+                item.label!.toLowerCase().contains(event.text.toLowerCase()))
+            .toList(),
+        label: getSurvey!.label,
+        answerType: getSurvey!.answerType,
+        createdBy: getSurvey!.createdBy,
+        id: getSurvey!.id,
+        isPrimary: getSurvey!.isPrimary);
 
     emit(LoadSurveyData(surveyData: getNewSurvey!));
+  }
 
+  _onNextPrevSurveyClick(
+      NextPrevSurveyClick event, Emitter<UserSurveyState> emit) {
+    debugPrint("listSurveyData--> ${listSurveyData.length}");
+    if (event.isNext) {
+      bool isTrueInList =
+          getNewSurvey!.options!.any((element) => element.isSelect == true);
+      if (isTrueInList) {
+        if (getNewSurvey!.options![event.index].questionDiet == 1) {
+          getNewSurvey = getNewSurvey!.options![event.index].question;
+          listSurveyData.add(getNewSurvey!);
+          emit(LoadSurveyData(surveyData: getNewSurvey!));
+        } else {
+          Get.to(const UserPhotoSelectionScreen());
+        }
+      } else {
+        showToast(
+            message: AppStrings.userSurveySelectionError, isSuccess: false);
+      }
+    } else {
+      if (listSurveyData.isNotEmpty) {
+        listSurveyData.removeLast();
+        getNewSurvey = listSurveyData[event.index];
+
+        emit(LoadSurveyData(surveyData: getNewSurvey!));
+      } else {
+        Get.back();
+      }
+    }
   }
 }

@@ -1,12 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/screen/login/reset_password.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../bloc/login/login_bloc.dart';
+import '../../bloc/login/login_event.dart';
 import '../../constant/app_string.dart';
+import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  LoginBloc bloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     .paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed('/reset-password');
+                    Get.toNamed('/ForgotPasswordScreen');
+                    clearFiled();
                   },
                   child: Align(
                     alignment: Alignment.centerRight,
@@ -78,13 +85,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ).paddingOnly(top: 20.h),
                 ),
-                buildButton(
-                        context: context,
-                        onPressed: () {},
-                        textColor: Color(0xFFD9E9EE),
-                        bgColor: const Color(0xFF004C63),
-                        title: AppStrings.logIn)
-                    .paddingOnly(top: 25.h),
+                BlocConsumer<LoginBloc, LoginState>(
+                    bloc: bloc,
+                    listener: (context, state){
+                      if(state is LoginSuccessfulState){
+                        clearFiled();
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is LoginLoadingState) {
+                        return const AppCenterLoader();
+                      }
+                      return buildButton(
+                              context: context,
+                              onPressed: () {
+                                bloc.add(LoginClickEvent(
+                                    email: emailController.text,
+                                    password: passwordController.text));
+                              },
+                              textColor: const Color(0xFFD9E9EE),
+                              bgColor: const Color(0xFF004C63),
+                              title: AppStrings.logIn)
+                          .paddingOnly(top: 25.h);
+                    }),
                 Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -157,6 +180,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  clearFiled(){
+    emailController.clear();
+    passwordController.clear();
   }
 
   //Apple Sign In

@@ -41,8 +41,16 @@ dependencies:
   flutter_svg: ^2.0.7
   sign_in_with_apple: ^5.0.0
   percent_indicator: ^4.2.3
-  http: ^1.1.0
+  http:
+  dio:
   either_dart: ^1.0.0
+  fluttertoast: ^8.2.2
+  url_launcher:
+  shared_preferences:
+  android_intent_plus:
+  search_page:
+#  firebase_dynamic_links: ^5.3.5
+#  firebase_core: ^2.15.1
 
 dev_dependencies:
   flutter_test:

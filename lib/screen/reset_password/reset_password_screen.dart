@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../bloc/reset_password/reset_password_bloc.dart';
+import '../../bloc/reset_password/reset_password_event.dart';
+import '../../bloc/reset_password/reset_password_state.dart';
 import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
+import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final routeName = '/forgot-password';
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final routeName = '/ForgotPasswordScreen';
   final newPassController = TextEditingController();
   final confirmPassController = TextEditingController();
+
+  ResetPasswordBloc bloc = ResetPasswordBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +114,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     commonTextField(
                             context: context,
                             controller: confirmPassController,
-                            hintText: AppStrings.writePassword)
+                            hintText: AppStrings.writeConfirmPassword)
                         .paddingOnly(left: 2.w, right: 2.w),
                     Row(
                       children: [
@@ -129,12 +136,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ).paddingOnly(top: 5.h),
                   ],
                 ),
-                buildButton(
-                        context: context,
-                        onPressed: () {},
-                        textColor: AppColors.skyBlue,
-                        bgColor: const Color(0xFF004C63),
-                        title: AppStrings.resetPassword)
+                BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
+                        bloc: bloc,
+                        builder: (context, state) {
+                          if (state is ResetLoadingState) {
+                            return const AppCenterLoader();
+                          }
+                          return buildButton(
+                              context: context,
+                              onPressed: () {
+                                bloc.add(ButtonClickEvent(
+                                    password: newPassController.text,
+                                    confirmPassword: confirmPassController.text,));
+                              },
+                              textColor: AppColors.skyBlue,
+                              bgColor: const Color(0xFF004C63),
+                              title: AppStrings.resetPassword);
+                        },
+                        listener: (context, state) {
+                          if(state is ResetSuccessState){
+                            newPassController.clear();
+                            confirmPassController.clear();
+                          }
+                        })
                     .paddingOnly(top: 25.h, bottom: 10.h),
               ],
             ),

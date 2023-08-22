@@ -79,6 +79,7 @@ class AppStrings {
   static const confirmPassword = 'Confirm New Password';
   static const matchPassword = '      Both passwords must match';
   static const writePassword = 'Write your new password';
+  static const writeConfirmPassword = 'Write your confirm new password';
   static const validatePassLength = '      At least 8 characters';
   static const skipText = 'Skip, I’ll do it later';
   static const checkSubMail =
@@ -138,4 +139,12 @@ class AppStrings {
   static const nonBinary = 'NON-BINARY';
   static const lbs = 'Lbs';
   static const required = 'required';
+  static const pleaseEnterEmail = 'Please enter email';
+  static const enterValidEmail = 'Enter valid email';
+  static const pleaseEnterPassword = 'Please enter password';
+  static const pleaseEnterNewPassword = 'Please enter new password';
+  static const pleaseEnterPasswordValidation = 'Password must be 8 character';
+  static const pleaseEnterConfirmPassword = 'Please enter confirm password';
+  static const passwordNotMatch = 'Password does\'t match';
+  static const userSurveySelectionError = 'Please select at list one option';
 }

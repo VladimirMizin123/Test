@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
 import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
-
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
@@ -31,10 +30,11 @@ class UserSurveyScreen extends StatefulWidget {
 class _UserSurveyScreenState extends State<UserSurveyScreen>
     with SingleTickerProviderStateMixin {
   UserSurveyBloc bloc = UserSurveyBloc();
-  SurveyData? getSurveyData;
+  SurveyDataQuestion? getSurveyData;
   double percentage = 0.0;
   final searchController = TextEditingController();
-
+  int optionIndex = 0;
+  List<int> listIndex = [];
   @override
   void initState() {
     super.initState();
@@ -71,7 +71,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
               if (state is LoadSurveyData) {
                 getSurveyData = state.surveyData;
 
-
                 // countOptions(getSurveyData);
                 // debugPrint("count --> $count");
                 // percentage = (mainIndex + 1) / getSurveyList.length;
@@ -85,11 +84,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
         padding: EdgeInsets.all(20.0.h),
         child: Column(
           children: [
-            Row(
+            const Row(
               children: [
-                const SvgImage(
+                SvgImage(
                   image: AppStrings.icBack,
                 ),
+/*
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -103,6 +103,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                     ),
                   ),
                 )
+*/
               ],
             ),
             const SizedBox(
@@ -139,13 +140,13 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
               context: context,
               onChange: (String value) {
                 bloc.add(SearchData(
-                  text: value, /* mainIndex: mainIndex*/
+                  text: value,
                 ));
               },
               onClear: () {
                 searchController.clear();
                 bloc.add(SearchData(
-                  text: searchController.text, /*mainIndex: mainIndex*/
+                  text: searchController.text,
                 ));
               },
             ),
@@ -166,8 +167,9 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                       return UserSurveyItems(
                         data: getSurveyData!.options![index],
                         onClick: () {
+                          optionIndex = index;
                           bloc.add(CheckSurveyData(
-                            index: index, /*mainIndex: mainIndex*/
+                            index: index,
                           ));
                         },
                       );
@@ -183,7 +185,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   Expanded(
                     child: buildBorderButton(
                             context: context,
-                            onPressed: () {},
+                            onPressed: () {
+                              optionIndex = listIndex[listIndex.length -1];
+                              listIndex.removeLast();
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: false));
+                            },
                             textColor: setColor(gender: widget.gender),
                             borderColor: setColor(gender: widget.gender),
                             bgColor: Colors.white,
@@ -194,7 +201,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen>
                   Expanded(
                     child: buildButton(
                             context: context,
-                            onPressed: () {},
+                            onPressed: () {
+                              optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
+                              listIndex.add(optionIndex);
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: true));
+                            },
                             textColor: Colors.white,
                             bgColor: setColor(gender: widget.gender),
                             title: AppStrings.next)

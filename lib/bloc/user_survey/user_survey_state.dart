@@ -5,7 +5,7 @@ abstract class UserSurveyState{}
 class InitialState extends UserSurveyState{}
 
 class LoadSurveyData extends UserSurveyState{
-  SurveyData surveyData;
+  SurveyDataQuestion surveyData;
   LoadSurveyData({required this.surveyData});
 }
 class ErrorStateData extends UserSurveyState{
