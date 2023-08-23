@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/Gym_works_info.dart';
 import 'package:gymeats_mobile/screen/gender_screen/five_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/forth_gym_instruction.dart';
@@ -20,6 +21,10 @@ import 'package:gymeats_mobile/screen/forgot_password/forgot_password_screen.dar
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
+import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
+import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
+import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_4.dart';
 import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
@@ -29,7 +34,6 @@ import 'constant/app_string.dart';
 import 'models/get_survey_model.dart';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   PreferenceUtils.init();
   /*await Firebase.initializeApp(
@@ -59,7 +63,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: '/',
+          initialRoute: '/FourthPersonalizedWelcome',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -137,14 +141,35 @@ class MyApp extends StatelessWidget {
               name: '/MealPlanHomeScreen',
               page: () => const MealPlanHomeScreen(),
             ),
-         GetPage(
+            GetPage(
               name: '/UserPhotoSelectionScreen',
               page: () => const UserPhotoSelectionScreen(),
+            ),
+            GetPage(
+              name: '/FirstPersonalizedWelcome',
+              page: () => const FirstPersonalizedWelcomeScreen(),
+            ),
+            GetPage(
+              name: '/SecondPersonalizedWelcome',
+              page: () => const SecondPersonalizedWelcomeScreen(),
+            ),
+            GetPage(
+              name: '/ThirdPersonalizedWelcome',
+              page: () => const ThirdPersonalizedWelcomeScreen(),
+            ),
+            GetPage(
+              name: '/FourthPersonalizedWelcome',
+              page: () => const FourthPersonalizedWelcomeScreen(),
+            ),
+            GetPage(
+              name: '/build_my_profile_screen',
+              page: () => const BuildMyProfileScreen(),
             ),
           ],
         );
       },
-      child: const UserSurveyScreen(gender: AppStrings.male,),
+      child: const FourthPersonalizedWelcomeScreen(),
+      // child: const UserSurveyScreen(gender: AppStrings.male,),
     );
   }
 }
