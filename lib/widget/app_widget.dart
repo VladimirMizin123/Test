@@ -261,7 +261,7 @@ Widget commonSearchTextField({
         Visibility(
           visible: controller.text.isNotEmpty,
           child: InkWell(
-            onTap: (){
+            onTap: () {
               onClear();
             },
             child: const SvgImage(
@@ -275,25 +275,96 @@ Widget commonSearchTextField({
 }
 
 showToast({required String message, required bool isSuccess}) {
-
-  if(isSuccess){
+  if (isSuccess) {
     Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
         textColor: Colors.white,
-        fontSize: 16.0
-    );
-  }else{
+        fontSize: 16.0);
+  } else {
     Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         textColor: Colors.white,
         backgroundColor: Colors.red,
-        fontSize: 16.0
-    );
+        fontSize: 16.0);
   }
-
 }
+
+Widget arrowButton({String? icon}) {
+  return Container(
+    height: 36.h,
+    width: 36.w,
+    decoration: BoxDecoration(
+      color: Colors.white60,
+      shape: BoxShape.circle,
+      border: Border.all(
+          style: BorderStyle.solid,
+          color: AppColors.disable,
+          width: 1.0), // Set border width
+    ),
+    child: Center(
+      child: Image.asset(
+        icon.toString(),
+        height: 16.h,
+        width: 16.w,
+      ),
+    ),
+  );
+}
+
+Widget buildGymEatsHeader({Widget? child, Color? bgColor}) {
+  return Container(
+    width: double.infinity.w,
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: child,
+  );
+}
+
+/*Widget mealPlanCard({
+  String mealTitle,
+  String mealDescription,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(12),
+    margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 5.h, bottom: 12.h),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+            color: Color.fromRGBO(0, 76, 99, 0.08),
+            blurRadius: 5,
+            spreadRadius: 2)
+      ],
+      borderRadius: BorderRadius.circular(8.r),
+    ),
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              AppStrings.defaultImage,
+              height: 80.h,
+              width: 80.w,
+            ),
+            Column(
+              children: [
+                Text(''),
+                Text(),
+                Text(),
+              ],
+            ),
+            Icon(Icons.arrow_forward_ios)
+          ],
+        ),
+      ],
+    ),
+  );
+}*/

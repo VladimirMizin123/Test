@@ -1,11 +1,11 @@
 class AppStrings {
   /// Images
+  static const String defaultImage = "assets/image/defaultImage.png";
   static const String welcomeBg = "assets/image/welcome_bg.png";
   static const String emailApp = "assets/image/emailapp.png";
   static const String welcomeLogo = "assets/image/Logo.png";
   static const String gymMenuBg = "assets/image/GymMenuBg.png";
   static const String gymEatsSpoon = "assets/image/GymEats.png";
-  static const String gymEatsLogo = "assets/icon/GymEatsLogo.png";
   static const String appleLogo = "assets/image/apple_logo.svg";
   static const String imReadyBG = "assets/image/im_ready_bg.png";
   static const String roundBlueLogo = "assets/image/round_blue_logo.svg";
@@ -16,6 +16,7 @@ class AppStrings {
   static const String nonGenderBG2 = "assets/image/non_gender_Bg2.png";
   static const String maleBG2 = "assets/image/maleBg2.png";
   static const String femaleBG2 = "assets/image/femaleBg2.png";
+  static const String buildProfileBG = "assets/image/buildProfileBG.png";
   static const String non_meal_Bg = "assets/image/non_meal_Bg.png";
   static const String male_meal_Bg = "assets/image/male_meal_Bg.png";
   static const String female_meal_Bg = "assets/image/female_meal_Bg.png";
@@ -24,11 +25,19 @@ class AppStrings {
   static const String non_instrucion3 = "assets/image/non_instruction3.png";
   static const String non_instrucion4 = "assets/image/non_instruction4.png";
   static const String non_instrucion5 = "assets/image/non_instruction5.png";
+  static const String nonPersonalized1 = "assets/image/non_personalized1.png";
+  static const String nonPersonalized2 = "assets/image/non_personalized2.png";
+  static const String nonPersonalized3 = "assets/image/non_personalized3.png";
+  static const String nonPersonalized4 = "assets/image/non_personalized4.png";
   static const String male_instrucion1 = "assets/image/male_instruction1.png";
   static const String male_instrucion2 = "assets/image/male_instruction2.png";
   static const String male_instrucion3 = "assets/image/male_instruction3.png";
   static const String male_instrucion4 = "assets/image/male_instruction4.png";
   static const String male_instrucion5 = "assets/image/male_instruction5.png";
+  static const String malePersonalized1 = "assets/image/male_personalized1.png";
+  static const String malePersonalized2 = "assets/image/male_personalized2.png";
+  static const String malePersonalized3 = "assets/image/male_personalized3.png";
+  static const String malePersonalized4 = "assets/image/male_personalized4.png";
   static const String female_instrucion1 =
       "assets/image/female_instruction1.png";
   static const String female_instrucion2 =
@@ -39,6 +48,14 @@ class AppStrings {
       "assets/image/female_instruction4.png";
   static const String female_instrucion5 =
       "assets/image/female_instruction5.png";
+  static const String feMalePersonalized1 =
+      "assets/image/female_personalized1.png";
+  static const String feMalePersonalized2 =
+      "assets/image/female_personalized2.png";
+  static const String feMalePersonalized3 =
+      "assets/image/female_personalized3.png";
+  static const String feMalePersonalized4 =
+      "assets/image/female_personalized4.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
@@ -48,6 +65,15 @@ class AppStrings {
   static const icCheck = '${svgPath}ic_check.svg';
   static const icClose = '${svgPath}ic_close.svg';
   static const icSearch = '${svgPath}ic_search.svg';
+
+  /// Icons
+
+  static const user = 'assets/icon/User.png';
+  static const filter = 'assets/icon/filters.png';
+  static const gymEatsLogo = "assets/icon/GymEatsLogo.png";
+  static const arrowBack = "assets/icon/arrow_back.png";
+  static const arrowForward = "assets/icon/arrow_forward.png";
+  static const disableArrowBack = "assets/icon/disable_arrow_back.png";
 
   /// Text
   static const fName = 'First Name';
@@ -60,6 +86,12 @@ class AppStrings {
   static const gainLeanMuscle = 'Gain Lean Muscle ';
   static const healthyDiet = 'Maintain Healthy Diet';
   static const mindy = 'Mindy, you did it!';
+  static const mindyPro = 'Mindy!';
+  static const welcomeCommunity = 'Welcome to the GYM EATS community!';
+  static const welcomeCommunityDescription =
+      'The steps ahead will build your personal profile and the customization of your meal plan.';
+  static const welcomeCommunitySub =
+      'We are proud of you for taking this step in choosing to eat better. Thank you for entrusting us with your nutrition–we are humbled to be on this journey with you.';
   static const maleHeader = 'Mike, you did it! ';
   static const femaleHeader = 'Michelle, you did it! ';
   static const lestItBetter = 'Let\'s Eat Better';
@@ -67,6 +99,7 @@ class AppStrings {
   static const or = 'or';
   static const previous = 'Previous';
   static const welcome = 'Welcome Back';
+  static const welcomeBack = 'Welcome Back!';
   static const resetPassword = 'Reset Password';
   static const subResetPassword =
       'We will send a confirmation email to it. Follow the link and reset your password!';
@@ -147,4 +180,15 @@ class AppStrings {
   static const pleaseEnterConfirmPassword = 'Please enter confirm password';
   static const passwordNotMatch = 'Password does\'t match';
   static const userSurveySelectionError = 'Please select at list one option';
+  static const mealPlan = 'Meal Plan';
+  static const showGroceryList = 'Show Grocery List';
+  static const readyToStep = 'Ready to take step\ntowards your goals!';
+  static const livingPresent =
+      'Living in the present is like giving yourself a gift.';
+  static const neverUnderestimate =
+      'Never underestimate the power of a single good decision.';
+  static const eachMeal =
+      'Each meal is a new opportunity to ove in the right direction.';
+  static const iAmReady = 'I’m Ready';
+  static const buildMyProfile = 'Build My Profile';
 }
