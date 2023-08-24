@@ -3,32 +3,32 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/gym_works_info.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
-import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/forgot_password/forgot_password_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/Gym_works_info.dart';
+import 'package:gymeats_mobile/screen/gender_screen/first_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/five_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/forth_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
-import 'package:gymeats_mobile/screen/gender_screen/first_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
-import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
-import 'package:gymeats_mobile/screen/login/login_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
-import 'package:gymeats_mobile/screen/forgot_password/forgot_password_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
+import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
@@ -42,6 +42,7 @@ import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'constant/app_string.dart';
 import 'models/get_survey_model.dart';
+import 'screen/login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,6 +98,14 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/',
               page: () => const Home(),
+            ),
+             GetPage(
+              name: '/AppManagerScreen',
+              page: () => const AppManagerScreen(),
+            ),
+            GetPage(
+              name: '/DashboardScreen',
+              page: () => const DashBoardScreen(),
             ),
             GetPage(
               name: '/GymEatsMenuScreen',

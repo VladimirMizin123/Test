@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -17,10 +18,10 @@ class HomeScreenController extends GetxController {
   final confirmPasswordController = TextEditingController();
 
   List<String> chooseEatsList = [
-    AppStrings.loseWeight,
-    AppStrings.toneUp,
-    AppStrings.gainLeanMuscle,
-    AppStrings.healthyDiet,
+    StringUtils.loseWeight,
+    StringUtils.toneUp,
+    StringUtils.gainLeanMuscle,
+    StringUtils.healthyDiet,
   ];
 
   List<bool> selectedItems = [];

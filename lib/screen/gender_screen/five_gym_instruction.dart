@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 
 import '../../widget/app_widget.dart';
 
@@ -16,7 +17,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
-          child: gender == AppStrings.male
+          child: gender == StringUtils.male
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
@@ -24,11 +25,11 @@ class FiveGymInstructionScreen extends StatelessWidget {
                   header2: AppColors.primaryBlue,
                   borderColor: AppColors.primaryBlue,
                   Bgcolor: AppColors.primaryBlue,
-                  image: AppStrings.male_instrucion5,
+                  image: AssetsUtils.male_instrucion5,
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
-              : gender == AppStrings.female
+              : gender == StringUtils.female
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
@@ -36,7 +37,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                       header2: AppColors.terracotta,
                       borderColor: AppColors.terracotta,
                       Bgcolor: AppColors.terracotta,
-                      image: AppStrings.female_instrucion5,
+                      image: AssetsUtils.female_instrucion5,
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
@@ -47,7 +48,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                           header2: AppColors.green,
                           borderColor: AppColors.green,
                           Bgcolor: AppColors.green,
-                          image: AppStrings.non_instrucion5,
+                          image: AssetsUtils.non_instrucion5,
                           textColor1: AppColors.green,
                           textColor2: AppColors.mint,
                         )
@@ -55,30 +56,20 @@ class FiveGymInstructionScreen extends StatelessWidget {
     );
   }
 
-  Widget commonInstructionView(
-      {TextTheme? textTheme,
-      BuildContext? context,
-      String? image,
-      Color? header1,
-      Color? header2,
-      Color? borderColor,
-      Color? Bgcolor,
-      Color? textColor1,
-      Color? textColor2}) {
+  Widget commonInstructionView({TextTheme? textTheme, BuildContext? context, String? image, Color? header1, Color? header2, Color? borderColor, Color? Bgcolor, Color? textColor1, Color? textColor2}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.genderInstruction5,
+          StringUtils.genderInstruction5,
           textAlign: TextAlign.center,
-          style:
-              textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
+          style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
-        Text(AppStrings.gendersubInstruction8,
+        Text(StringUtils.gendersubInstruction8,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(AppStrings.gendersubInstruction9,
+        Text(StringUtils.gendersubInstruction9,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w),
@@ -98,7 +89,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 borderColor: borderColor!,
                 bgColor: Colors.white,
                 onPressed: () {Get.back();},
-                title: AppStrings.previous,
+                title: StringUtils.previous,
                 textColor: textColor1,
               ),
             ).paddingOnly(right: 10.w),
@@ -108,7 +99,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 context: context,
                 hasImage: false,
                 textColor: textColor2,
-                title: AppStrings.next,
+                title: StringUtils.next,
                 onPressed: () {
                   Get.toNamed('/ShowMealPlanBtnScreen',arguments: gender );
                 },

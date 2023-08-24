@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_TextStyle.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -25,9 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
     final themeData = Theme.of(context);
-
-
-
     return GetBuilder<HomeScreenController>(builder: (homeController) {
       homeController = homeScreenController;
       return Scaffold(
@@ -41,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   Center(
                     child: Image.asset(
-                      AppStrings.gymEatsLogo,
+                      AssetsUtils.gymEatsLogo,
                       fit: BoxFit.cover,
                       height: 60.h,
                     ),
@@ -56,10 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ).paddingOnly(top: 10),
                   Text(
                     'Create your GYM EATS account to continue',
-                    style: textTheme.bodyMedium!.copyWith(
-                        color: const Color(0xFF5F5F5F),
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400),
+                    style: textTheme.bodyMedium!.copyWith(color: const Color(0xFF5F5F5F), fontSize: 17.sp, fontWeight: FontWeight.w400),
                   ).paddingOnly(top: 18),
                   commonTextField(
                           context: context,
@@ -98,22 +92,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           title: AppStrings.joinGymEats)
                       .paddingOnly(top: 25.h),
                   Text(
-                    AppStrings.or,
+                    StringUtils.or,
                     style: textTheme.bodyLarge,
                   ).paddingSymmetric(vertical: 15.h),
                   buildButton(
                       context: context,
                       hasImage: true,
-                      imagePath: AppStrings.appleLogo,
+                      imagePath: AssetsUtils.appleLogo,
                       onPressed: () async {
                         await homeController.appleSignIn();
                       },
                       textColor: const Color(0xFFD9E9EE),
                       bgColor: Colors.black,
-                      title: AppStrings.apple),
+                      title: StringUtils.apple),
                   Wrap(
                     children: [
-                      Text(AppStrings.alreadyAccount,
+                      Text(StringUtils.alreadyAccount,
                           style: textTheme.bodyMedium!.copyWith(
                             color: const Color(0xFF373737),
                           )),
@@ -122,12 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Get.toNamed('/LoginScreen');
                           // Login Screen
                         },
-                        child: Text(AppStrings.logIn,
-                            style: textTheme.bodyLarge!.copyWith(
-                                decoration: TextDecoration.underline,
-                                color: themeData.primaryColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400)),
+                        child: Text(StringUtils.logIn, style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400)),
                       ),
                     ],
                   ).paddingOnly(top: 22.h),
@@ -136,19 +125,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text:
-                              'By clicking "Sign up", you agree to our terms and that you have read our ',
-                          style: textTheme.bodySmall!.copyWith(
-                              color: Colors.black,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400),
+                          text: 'By clicking "Sign up", you agree to our terms and that you have read our ',
+                          style: textTheme.bodySmall!.copyWith(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.w400),
                         ),
                         TextSpan(
                           text: 'Privacy Policy',
-                          style: textTheme.bodySmall!.copyWith(
-                              color: const Color(0XFF336633),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400),
+                          style: textTheme.bodySmall!.copyWith(color: const Color(0XFF336633), fontSize: 14.sp, fontWeight: FontWeight.w400),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               // Single tapped.

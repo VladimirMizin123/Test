@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GenderScreen extends StatefulWidget {
@@ -27,31 +28,28 @@ class _GenderScreenState extends State<GenderScreen> {
         width: size.width.w,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: gender == AppStrings.male
-                ? const AssetImage(AppStrings.maleBG)
-                : gender == AppStrings.female
-                    ? const AssetImage(AppStrings.femaleBG)
-                    : const AssetImage(AppStrings.nonGenderBG)
+            image: gender == StringUtils.male
+                ? const AssetImage(AssetsUtils.maleBG)
+                : gender == StringUtils.female
+                    ? const AssetImage(AssetsUtils.femaleBG)
+                    : const AssetImage(AssetsUtils.nonGenderBG)
             ,
             fit: BoxFit.fill,
           ),
         ),
-        child: gender == AppStrings.male
+        child: gender == StringUtils.male
             ? ListView(
                 shrinkWrap: true,
                 children: [
                   Text(
-                    AppStrings.maleHeader,
+                    StringUtils.maleHeader,
                     textAlign: TextAlign.center,
-                    style: textTheme.displayLarge!.copyWith(
-                        color: const Color(0xFF004C63),
-                        letterSpacing: -0.8,
-                        fontWeight: FontWeight.w800),
+                    style: textTheme.displayLarge!.copyWith(color: const Color(0xFF004C63), letterSpacing: -0.8, fontWeight: FontWeight.w800),
                   ).paddingOnly(top: 40.h),
                   Align(
                     alignment: Alignment.center,
                     child: SvgPicture.asset(
-                      AppStrings.roundBlueLogo,
+                      AssetsUtils.roundBlueLogo,
                       height: 100.h,
                       width: 100.w,
                     ).paddingOnly(top: 25.h, right: 20.w),
@@ -64,28 +62,24 @@ class _GenderScreenState extends State<GenderScreen> {
                       Get.toNamed('/GymWorkInfoScreen',arguments: gender);
                     },
                     textColor: const Color(0xFFD9E9EE),
-                    title: AppStrings.lestItBetter,
+                    title: StringUtils.lestItBetter,
                     hasImage: false,
-                  ).paddingOnly(
-                      bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
+                  ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
                 ],
               )
-            : gender == AppStrings.female
+            : gender == StringUtils.female
                 ? ListView(
                     shrinkWrap: true,
                     children: [
                       Text(
-                        AppStrings.femaleHeader,
+                        StringUtils.femaleHeader,
                         textAlign: TextAlign.center,
-                        style: textTheme.displayLarge!.copyWith(
-                            color: const Color(0xFFCE6B53),
-                            letterSpacing: -0.8,
-                            fontWeight: FontWeight.w800),
+                        style: textTheme.displayLarge!.copyWith(color: const Color(0xFFCE6B53), letterSpacing: -0.8, fontWeight: FontWeight.w800),
                       ).paddingOnly(top: 20.h),
                       Align(
                         alignment: Alignment.center,
                         child: SvgPicture.asset(
-                          AppStrings.roundBlueLogo,
+                          AssetsUtils.roundBlueLogo,
                           height: 120.h,
                           width: 120.w,
                             colorFilter: const ColorFilter.mode(Color(0xFFCE6B53), BlendMode.srcIn)
@@ -99,27 +93,23 @@ class _GenderScreenState extends State<GenderScreen> {
                           Get.toNamed('/GymWorkInfoScreen',arguments: gender);
                         },
                         textColor: const Color(0xFFF9D5C5),
-                        title: AppStrings.lestItBetter,
+                        title: StringUtils.lestItBetter,
                         hasImage: false,
-                      ).paddingOnly(
-                          bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
+                      ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
                     ],
                   )
                 : ListView(
                         shrinkWrap: true,
                         children: [
                           Text(
-                            AppStrings.mindy,
+                            StringUtils.mindy,
                             textAlign: TextAlign.center,
-                            style: textTheme.displayLarge!.copyWith(
-                                color: const Color(0xFF336633),
-                                letterSpacing: -0.8,
-                                fontWeight: FontWeight.w800),
+                            style: textTheme.displayLarge!.copyWith(color: const Color(0xFF336633), letterSpacing: -0.8, fontWeight: FontWeight.w800),
                           ).paddingOnly(top: 25.h),
                           Align(
                             alignment: Alignment.centerRight,
                             child: SvgPicture.asset(
-                              AppStrings.roundBlueLogo,
+                              AssetsUtils.roundBlueLogo,
                               height: 96.h,
                               width: 96.w,
                              colorFilter: const ColorFilter.mode(Color(0xFF336633), BlendMode.srcIn)
@@ -133,13 +123,9 @@ class _GenderScreenState extends State<GenderScreen> {
                               Get.toNamed('/GymWorkInfoScreen',arguments: gender);
                             },
                             textColor: const Color(0xFFD9E9EE),
-                            title: AppStrings.lestItBetter,
+                            title: StringUtils.lestItBetter,
                             hasImage: false,
-                          ).paddingOnly(
-                              bottom: 10.h,
-                              right: 20.w,
-                              left: 20.w,
-                              top: 380.h),
+                          ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 380.h),
                         ],
                       )
         ,

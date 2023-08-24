@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 
 class AppCenterLoader extends StatefulWidget {
   const AppCenterLoader({super.key});

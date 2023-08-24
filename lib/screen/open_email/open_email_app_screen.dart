@@ -5,10 +5,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 import '../../widget/app_widget.dart';
 
 class OpenEmailAppScreen extends StatelessWidget {
@@ -30,22 +31,20 @@ class OpenEmailAppScreen extends StatelessWidget {
               children: [
                 Center(
                   child: Image.asset(
-                    AppStrings.emailApp,
+                    AssetsUtils.emailApp,
                     fit: BoxFit.cover,
                     height: 150.h,
                     width: 150.w,
                   ),
                 ),
                 Text(
-                  AppStrings.checkMail,
-                  style: textTheme.displayLarge
-                      ?.copyWith(letterSpacing: -0.8, color: const Color(0xFF010101)),
+                  StringUtils.checkMail,
+                  style: textTheme.displayLarge?.copyWith(letterSpacing: -0.8, color: const Color(0xFF010101)),
                 ).paddingOnly(top: 60.h),
                 Text(
-                  AppStrings.checkSubMail,
+                  StringUtils.checkSubMail,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyLarge
-                      ?.copyWith(color: AppColors.middleGray),
+                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
                 buildButton(
                         context: context,
@@ -54,17 +53,16 @@ class OpenEmailAppScreen extends StatelessWidget {
                         },
                         textColor: const Color(0xFFD9E9EE),
                         bgColor: const Color(0xFF004C63),
-                        title: AppStrings.openEmailAppBtn)
+                        title: StringUtils.openEmailAppBtn)
                     .paddingOnly(top: 60.h),
                 InkWell(
                   onTap: () {
                     Get.toNamed('/LoginScreen');
                   },
                   child: Text(
-                    AppStrings.skipText,
+                    StringUtils.skipText,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge
-                        ?.copyWith(color: AppColors.primaryBlue),
+                    style: textTheme.bodyLarge?.copyWith(color: AppColors.primaryBlue),
                   ).paddingOnly(top: 20.h),
                 ),
                 RichText(
@@ -72,19 +70,12 @@ class OpenEmailAppScreen extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text:
-                            'Didn’t receive the email? Check your spam filter or ',
-                        style: textTheme.bodySmall!.copyWith(
-                            color: AppColors.darkGray,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w300),
+                        text: 'Didn’t receive the email? Check your spam filter or ',
+                        style: textTheme.bodySmall!.copyWith(color: AppColors.darkGray, fontSize: 14.sp, fontWeight: FontWeight.w300),
                       ),
                       TextSpan(
                         text: 'try another email address',
-                        style: textTheme.bodySmall!.copyWith(
-                            color: AppColors.terracotta,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w300),
+                        style: textTheme.bodySmall!.copyWith(color: AppColors.terracotta, fontSize: 14.sp, fontWeight: FontWeight.w300),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
@@ -113,10 +104,7 @@ class OpenEmailAppScreen extends StatelessWidget {
         debugPrint(e.toString());
       });
     } else if (Platform.isIOS) {
-      launch("message://").catchError((e) {
-
-      });
+      launch("message://").catchError((e) {});
     }
   }
-
 }

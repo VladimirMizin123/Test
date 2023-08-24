@@ -2,10 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/screen/premiums/puchase_options_widget.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -25,7 +23,7 @@ class PremiumScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0XFFECECED).withOpacity(0.5),
           image: const DecorationImage(
-            image: AssetImage(AppStrings.premiumScreenBG),
+            image: AssetImage(AssetsUtils.premiumScreenBG),
             fit: BoxFit.cover,
           ),
         ),
@@ -68,7 +66,7 @@ class PremiumScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
-                          AppStrings.gymEatsSpoon,
+                          AssetsUtils.gymEatsSpoon,
                           color: AppColors.letsEatButton,
                           height: 22.h,
                           width: 64.w,
@@ -127,12 +125,8 @@ class PremiumScreen extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text:
-                          'Privacy Policy',
-                      style: textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w800),
+                      text: 'Privacy Policy',
+                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.
@@ -140,10 +134,7 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     TextSpan(
                       text: '      Restore',
-                      style: textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w800),
+                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.
@@ -151,10 +142,7 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     TextSpan(
                       text: '      Terms of Use',
-                      style: textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w800),
+                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.

@@ -1,12 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../models/get_survey_model.dart';
 import '../../repository/get_survey.dart';
 import '../../screen/user_photo_selection/user_photo_selection_screen.dart';
@@ -42,8 +41,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSurveyCheck(CheckSurveyData event, Emitter<UserSurveyState> emit) {
-    getNewSurvey!.options![event.index].isSelect =
-        !getNewSurvey!.options![event.index].isSelect;
+    getNewSurvey!.options![event.index].isSelect = !getNewSurvey!.options![event.index].isSelect;
     emit(LoadSurveyData(surveyData: getNewSurvey!));
   }
 
@@ -77,8 +75,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
 
         }
       } else {
-        showToast(
-            message: AppStrings.userSurveySelectionError, isSuccess: false);
+        showToast(message: StringUtils.userSurveySelectionError, isSuccess: false);
       }
     } else {
       if (listSurveyData.isNotEmpty) {

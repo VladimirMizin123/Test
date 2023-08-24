@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/login/login_event.dart';
 import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import '../../app/functions.dart';
 import '../../repository/login.dart';
 import '../../widget/app_widget.dart';
@@ -26,13 +27,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isEmail && isPassword && isValidEmail) {
       emit(LoginLoadingState());
       try {
-        await _repository
-            .login(email: event.email.trim(), password: event.password)
-            .fold((left) {
+        await _repository.login(email: event.email.trim(), password: event.password).fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           emit(LoginSuccessfulState());
-          Get.toNamed('/DashBoardScreen');
+          Get.toNamed('/AppManagerScreen');
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());
@@ -40,11 +39,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } else {
       if (!isEmail) {
-        onFailError(emit: emit, text: AppStrings.pleaseEnterEmail);
+        onFailError(emit: emit, text: StringUtils.pleaseEnterEmail);
       } else if (!isValidEmail) {
-        onFailError(emit: emit, text: AppStrings.enterValidEmail);
+        onFailError(emit: emit, text: StringUtils.enterValidEmail);
       } else if (!isPassword) {
-        onFailError(emit: emit, text: AppStrings.pleaseEnterPassword);
+        onFailError(emit: emit, text: StringUtils.pleaseEnterPassword);
       }
     }
   }

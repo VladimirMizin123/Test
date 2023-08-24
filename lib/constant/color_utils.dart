@@ -31,16 +31,8 @@ class AppColors {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        labelStyle: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w300,
-            height: 1.5,
-            color: const Color(0xFF5F5F5F)),
-        hintStyle: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w300,
-            height: 1.5,
-            color: const Color(0xFF5F5F5F)),
+        labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.5, color: const Color(0xFF5F5F5F)),
+        hintStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.5, color: const Color(0xFF5F5F5F)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -94,6 +86,8 @@ class AppColors {
     );
   }
 
+  static const black = Color(0xFF000000);
+
   static const green = Color(0xFF336633);
   static const primaryBlue = Color(0xFF004C63);
   static const terracotta = Color(0xFFCE6B53);
@@ -110,6 +104,7 @@ class AppColors {
   static const disable = Color(0xFFC7C8CA);
   static const middleGray = Color(0xFF5F5F5F);
   static const darkGray = Color(0xFF373737);
+  static const oxFF010101 = Color(0xFF010101);
   static const newDarkBlue = Color(0xFF6A909D);
   static const inactive = Color(0xFFD9D9D9);
 }

@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
@@ -62,10 +64,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: Text(
                   state.errMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: AppColors.primaryBlue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700),
+                  style: const TextStyle(color: AppColors.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
                 ));
               }
               return Container();
@@ -121,7 +120,7 @@ debugPrint("listOptions--> ${listOptions.length}");
                       Get.back();
                     },
                     child: const SvgImage(
-                      image: AppStrings.icBack,
+                      image: AssetsUtils.icBack,
                     ),
                   ),
                 ),
@@ -147,7 +146,7 @@ debugPrint("listOptions--> ${listOptions.length}");
             ),
             Center(
               child: Image.asset(
-                AppStrings.gymEatsLogo,
+                AssetsUtils.gymEatsLogo,
                 fit: BoxFit.cover,
                 color: setColor(gender: model.gender!),
                 height: 60.h,
@@ -171,7 +170,7 @@ debugPrint("listOptions--> ${listOptions.length}");
               fontColor: Colors.white,
               controller: searchController,
               fontSize: 13,
-              hintText: AppStrings.required,
+              hintText: StringUtils.required,
               textInputType: TextInputType.text,
               context: context,
               onChange: (String value) {
@@ -232,7 +231,7 @@ debugPrint("listOptions--> ${listOptions.length}");
                             textColor: setColor(gender: model.gender!),
                             borderColor: setColor(gender: model.gender!),
                             bgColor: Colors.white,
-                            title: AppStrings.previous)
+                            title: StringUtils.previous)
                         .paddingOnly(top: 25.h),
                   ),
                   SizedBox(width: 10.w),
@@ -249,7 +248,7 @@ debugPrint("listOptions--> ${listOptions.length}");
                             },
                             textColor: Colors.white,
                             bgColor: setColor(gender: model.gender!),
-                            title: AppStrings.next)
+                            title: StringUtils.next)
                         .paddingOnly(top: 25.h),
                   ),
                 ],

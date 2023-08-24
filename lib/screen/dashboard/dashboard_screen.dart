@@ -2,10 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';

@@ -1,7 +1,6 @@
 class ApiUrls{
   static const String baseUrl = 'https://gymeats.azurewebsites.net/';
   static const String apiKey = 'peONDsofens8dfs6sfYi4RvtTwlEXpQBwo==';
-
   static const String login = '${baseUrl}api/Auth/login';
   static const String register = '${baseUrl}api/Auth/signup-form';
   // static const String register = '${baseUrl}api/Auth/register';
