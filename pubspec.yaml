@@ -49,6 +49,7 @@ dependencies:
   shared_preferences:
   android_intent_plus:
   search_page:
+  carousel_slider: ^4.2.1
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 

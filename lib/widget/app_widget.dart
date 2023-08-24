@@ -126,7 +126,11 @@ Widget commonUserTypeTextField(
     required BuildContext context,
     required double width,
     required double fontSize,
+    required FontWeight? fontWeight,
     required Color fontColor,
+    required Color valueColor,
+    Color? borderColor,
+    required Color cursorColor,
     required TextInputType textInputType,
     required Function(String value) onChange,
     bool isSuffix = false}) {
@@ -145,9 +149,8 @@ Widget commonUserTypeTextField(
           child: TextFormField(
             controller: controller,
             keyboardType: textInputType,
-            cursorColor: Colors.white,
-            style: const TextStyle(
-                fontWeight: FontWeight.w900, color: Colors.white),
+            cursorColor: cursorColor,
+            style: TextStyle(fontWeight: fontWeight, color: valueColor),
             onChanged: (value) {
               onChange(value);
             },
@@ -160,19 +163,23 @@ Widget commonUserTypeTextField(
                   color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.transparent),
+                borderSide:
+                    BorderSide(color: borderColor ?? Colors.transparent),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.transparent),
+                borderSide:
+                    BorderSide(color: borderColor ?? Colors.transparent),
               ),
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.transparent),
+                borderSide:
+                    BorderSide(color: borderColor ?? Colors.transparent),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.transparent),
+                borderSide:
+                    BorderSide(color: borderColor ?? Colors.transparent),
               ),
             ),
           ),
@@ -328,43 +335,83 @@ Widget buildGymEatsHeader({Widget? child, Color? bgColor}) {
   );
 }
 
-/*Widget mealPlanCard({
-  String mealTitle,
-  String mealDescription,
+Widget dashBoardCardView(
+    {Widget? child,
+    double? height,
+    double? width,
+    EdgeInsetsGeometry? margin}) {
+  return Container(
+    height: height,
+    width: width,
+    margin: margin,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.r),
+      color: Colors.white,
+      boxShadow: const [
+        BoxShadow(
+          color: Color.fromRGBO(0, 76, 99, 0.08),
+          blurRadius: 5,
+          offset: Offset(1, 1),
+        )
+      ],
+    ),
+    child: child,
+  );
+}
+
+Widget commonSliderView({
+  String? icon,
+  String? title,
+  TextTheme? textTheme,
 }) {
   return Container(
-    padding: const EdgeInsets.all(12),
-    margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 5.h, bottom: 12.h),
+    height: 48.h,
+    width: 170.w,
     decoration: BoxDecoration(
-      color: Colors.white,
-      boxShadow: [
-        BoxShadow(
+        borderRadius: BorderRadius.circular(8.r),
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
             color: Color.fromRGBO(0, 76, 99, 0.08),
-            blurRadius: 5,
-            spreadRadius: 2)
-      ],
-      borderRadius: BorderRadius.circular(8.r),
-    ),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Image.asset(
-              AppStrings.defaultImage,
-              height: 80.h,
-              width: 80.w,
-            ),
-            Column(
-              children: [
-                Text(''),
-                Text(),
-                Text(),
-              ],
-            ),
-            Icon(Icons.arrow_forward_ios)
-          ],
-        ),
-      ],
+            spreadRadius: 0.5,
+            blurRadius: 0.5,
+            offset: Offset(0, 0),
+          ),
+        ]),
+    child: Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Image.asset(
+            icon.toString(),
+            height: 28.h,
+            width: 28.w,
+          ),
+          Text(
+            title.toString(),
+            style:
+                textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+          ),
+          addIcon(),
+        ],
+      ),
     ),
   );
-}*/
+}
+
+Widget addIcon() {
+  return Container(
+    height: 40.h,
+    width: 45.w,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10.r),
+      color: AppColors.skyBlue,
+    ),
+    child: const Center(
+      child: Icon(
+        Icons.add,
+        color: AppColors.primaryBlue,
+      ),
+    ),
+  );
+}
