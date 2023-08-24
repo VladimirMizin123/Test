@@ -1,4 +1,5 @@
 // import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -32,31 +33,40 @@ import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_w
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_4.dart';
 import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_screen.dart';
+import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
+import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
+import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
+import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'constant/app_string.dart';
+import 'models/get_survey_model.dart';
 import 'screen/login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  PreferenceUtils.init();
-  /*await Firebase.initializeApp(
+  await PreferenceUtils.init();
+  await Firebase.initializeApp(
     name: 'GymEats',
     options: FirebaseOptions(
         apiKey: apiKey,
         appId: appId,
         messagingSenderId: messagingSenderId,
         projectId: projectId),
-  );*/
-  // initDynamicLinks();
-  runApp(const MyApp());
+  );
+  await initDynamicLinks();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
 
   @override
   Widget build(BuildContext context) {
+    bloc.add(LatLogEvent());
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,
@@ -67,7 +77,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: '/LoginScreen',
+          initialRoute: '/',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -98,7 +108,7 @@ class MyApp extends StatelessWidget {
               page: () => const DashBoardScreen(),
             ),
             GetPage(
-              name: '/GymEatsMenu',
+              name: '/GymEatsMenuScreen',
               page: () => const GymEatsMenuScreen(),
             ),
             GetPage(
@@ -114,51 +124,47 @@ class MyApp extends StatelessWidget {
               page: () => const UserTypeScreen(),
             ),
             GetPage(
-              name: '/UserInfoSelectionScreen',
-              page: () => const UserSurveyScreen(gender: ''),
+              name: '/UserSurveyScreen',
+              page: () => const UserSurveyScreen(),
             ),
             GetPage(
               name: '/GenderScreen',
               page: () => const GenderScreen(),
             ),
             GetPage(
-              name: '/GymWorkInfo',
-              page: () => const GymWorkInfoScreen(),
+              name: '/GymInstructionScreen',
+              page: () => GymInstructionScreen(),
             ),
             GetPage(
-              name: '/GymInstruction',
-              page: () => const GymInstructionScreen(),
+              name: '/SecondGymInstructionScreen',
+              page: () => SecondGymInstructionScreen(),
             ),
             GetPage(
-              name: '/SecondGymInstruction',
-              page: () => const SecondGymInstructionScreen(),
+              name: '/ThirdGymInstructionScreen',
+              page: () => ThirdGymInstructionScreen(),
             ),
             GetPage(
-              name: '/ThirdGymInstruction',
-              page: () => const ThirdGymInstructionScreen(),
+              name: '/FourthGymInstructionScreen',
+              page: () => FourthGymInstructionScreen(),
             ),
             GetPage(
-              name: '/FourthGymInstruction',
-              page: () => const FourthGymInstructionScreen(),
+              name: '/FiveGymInstructionScreen',
+              page: () => FiveGymInstructionScreen(),
             ),
             GetPage(
-              name: '/FiveGymInstruction',
-              page: () => const FiveGymInstructionScreen(),
+              name: '/ShowMealPlanBtnScreen',
+              page: () => ShowMealPlanBtnScreen(),
             ),
             GetPage(
-              name: '/ShowMealPlanBtn',
-              page: () => const ShowMealPlanBtnScreen(),
-            ),
-            GetPage(
-              name: '/first-dashboard',
+              name: '/FirstDashBoardView',
               page: () => const FirstDashBoardView(),
             ),
             GetPage(
-              name: '/second-dashboard',
+              name: '/SecondDashBoardView',
               page: () => const SecondDashBoardView(),
             ),
             GetPage(
-              name: '/third-dashboard',
+              name: '/ThirdDashBoardView',
               page: () => const ThirdDashBoardView(),
             ),
             GetPage(
@@ -166,15 +172,15 @@ class MyApp extends StatelessWidget {
               page: () => const DashBoardScreen(),
             ),
             GetPage(
-              name: '/add-water-screen',
+              name: '/AddWaterScreen',
               page: () => const AddWaterScreen(),
             ),
             GetPage(
-              name: '/add-Entry-screen',
+              name: '/AddEntryScreen',
               page: () => const AddEntryScreen(),
             ),
             GetPage(
-              name: '/order-history',
+              name: '/OrderHistoryScreen',
               page: () => const OrderHistoryScreen(),
             ),
             GetPage(
@@ -182,30 +188,37 @@ class MyApp extends StatelessWidget {
               page: () => const UserPhotoSelectionScreen(),
             ),
             GetPage(
-              name: '/FirstPersonalizedWelcome',
+              name: '/UserSignUpInfoScreen',
+              page: () => const UserSignUpInfoScreen(),
+            ),
+            GetPage(
+              name: '/FirstPersonalizedWelcomeScreen',
               page: () => const FirstPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/SecondPersonalizedWelcome',
+              name: '/SecondPersonalizedWelcomeScreen',
               page: () => const SecondPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/ThirdPersonalizedWelcome',
+              name: '/ThirdPersonalizedWelcomeScreen',
               page: () => const ThirdPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/FourthPersonalizedWelcome',
+              name: '/FourthPersonalizedWelcomeScreen',
               page: () => const FourthPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/build_my_profile_screen',
+              name: '/BuildMyProfileScreen',
               page: () => const BuildMyProfileScreen(),
+            ),
+            GetPage(
+              name: '/GymWorkInfoScreen',
+              page: () => const GymWorkInfoScreen(),
             ),
           ],
         );
       },
-      child: const OrderHistoryScreen(),
-      // child: const UserSurveyScreen(gender: AppStrings.male),
+      child: const Home(),
     );
   }
 }

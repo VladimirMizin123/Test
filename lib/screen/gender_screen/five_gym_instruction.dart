@@ -8,17 +8,16 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import '../../widget/app_widget.dart';
 
 class FiveGymInstructionScreen extends StatelessWidget {
-  const FiveGymInstructionScreen({super.key, this.chooseGender = 'Non'});
+  FiveGymInstructionScreen({super.key,});
 
-  final String chooseGender;
   final routeName = '/FiveGymInstruction';
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
-          child: chooseGender == 'Male'
+          child: gender == StringUtils.male
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
@@ -30,7 +29,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
-              : chooseGender == 'Female'
+              : gender == StringUtils.female
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
@@ -42,8 +41,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
-                  : chooseGender == 'Non'
-                      ? commonInstructionView(
+                  : commonInstructionView(
                           context: context,
                           textTheme: textTheme,
                           header1: AppColors.greenPressed,
@@ -54,7 +52,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                           textColor1: AppColors.green,
                           textColor2: AppColors.mint,
                         )
-                      : const SizedBox()),
+                      ),
     );
   }
 
@@ -63,12 +61,18 @@ class FiveGymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          StringUtils.gender_Instruction5,
+          StringUtils.genderInstruction5,
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
-        Text(StringUtils.gender_subInstruction8, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(StringUtils.gender_subInstruction9, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(left: 10.w, right: 10.w),
+        Text(StringUtils.genderSubInstruction8,
+                style: textTheme?.bodyLarge
+                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
+            .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
+        Text(StringUtils.genderSubInstruction9,
+                style: textTheme?.bodyLarge
+                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
+            .paddingOnly(left: 10.w, right: 10.w),
         Center(
           child: Image.asset(
             image!,
@@ -84,7 +88,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {Get.back();},
                 title: StringUtils.previous,
                 textColor: textColor1,
               ),
@@ -96,7 +100,9 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 hasImage: false,
                 textColor: textColor2,
                 title: StringUtils.next,
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed('/ShowMealPlanBtnScreen',arguments: gender );
+                },
                 bgColor: Bgcolor,
               ),
             )

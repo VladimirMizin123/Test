@@ -1,0 +1,89 @@
+import 'dart:async';
+
+import 'package:either_dart/either.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
+
+import '../../repository/sign_up.dart';
+import '../../widget/app_widget.dart';
+
+class UserSignUpInfoBloc
+    extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> {
+  UserSignUpInfoBloc() : super(InitialState()) {
+    on<LatLogEvent>(_onLatLog);
+    on<SignUpApiEvent>(_onSignUpApi);
+  }
+
+  _onLatLog(LatLogEvent event, Emitter<UserSignUpInfoState> emit) {
+    getCurrentPosition();
+  }
+
+  Future<void> getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      debugPrint('position data--> $position');
+
+      emit(LatLogState(currentPosition: position));
+    }).catchError((e) async {
+      debugPrint(e.toString());
+      await Geolocator.requestPermission();
+    });
+  }
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings().then((value) async {
+        permission = await Geolocator.checkPermission();
+        debugPrint('permission--> $permission');
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
+            return false;
+          }
+        }
+        if (permission == LocationPermission.deniedForever) {
+          showToast(
+              message:
+                  'Location permissions are permanently denied, we cannot request permissions.',
+              isSuccess: false);
+          return false;
+        }
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  final SignUpRepository _repository = SignUpRepository();
+
+  _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
+    try {
+      emit(SignUpLoadingState());
+      await _repository.signUp(model: event.model).fold((left) {
+        showToast(isSuccess: false, message: left.message!);
+        emit(SignUpErrorState());
+      }, (right) {
+        emit(SignUpSuccessState());
+        Get.toNamed('/GenderScreen',arguments: event.model.gender);
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(SignUpErrorState());
+    }
+  }
+}

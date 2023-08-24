@@ -79,6 +79,7 @@ class OpenEmailAppScreen extends StatelessWidget {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
+                            openGmailHomePage();
                           },
                       ),
                     ],

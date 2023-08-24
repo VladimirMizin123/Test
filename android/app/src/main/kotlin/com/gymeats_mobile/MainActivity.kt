@@ -1,4 +1,4 @@
-package com.example.gymeats_mobile
+package com.gymeats_mobile
 
 import io.flutter.embedding.android.FlutterActivity
 

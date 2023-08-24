@@ -8,17 +8,16 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import '../../widget/app_widget.dart';
 
 class ThirdGymInstructionScreen extends StatelessWidget {
-  const ThirdGymInstructionScreen({super.key, this.chooseGender = 'Non'});
+  ThirdGymInstructionScreen({super.key,});
 
-  final String chooseGender;
   final routeName = '/ThirdGymInstruction';
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
-          child: chooseGender == 'Male'
+          child: gender == StringUtils.male
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
@@ -30,7 +29,7 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
-              : chooseGender == 'Female'
+              : gender == StringUtils.female
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
@@ -42,8 +41,7 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
-                  : chooseGender == 'Non'
-                      ? commonInstructionView(
+                  :commonInstructionView(
                           context: context,
                           textTheme: textTheme,
                           header1: AppColors.greenPressed,
@@ -53,8 +51,7 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                           image: AssetsUtils.non_instrucion3,
                           textColor1: AppColors.green,
                           textColor2: AppColors.mint,
-                        )
-                      : const SizedBox()),
+                        )),
     );
   }
 
@@ -63,12 +60,18 @@ class ThirdGymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          StringUtils.gender_Instruction3,
+          StringUtils.genderInstruction3,
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h),
-        Text(StringUtils.gender_subInstruction4, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(StringUtils.gender_subInstruction5, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(left: 10.w, right: 10.w, bottom: 12.h),
+        Text(StringUtils.genderSubInstruction4,
+                style: textTheme?.bodyLarge
+                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
+            .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
+        Text(StringUtils.genderSubInstruction5,
+                style: textTheme?.bodyLarge
+                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
+            .paddingOnly(left: 10.w, right: 10.w, bottom: 12.h),
         Center(
           child: Image.asset(
             image!,
@@ -84,7 +87,7 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {Get.back();},
                 title: StringUtils.previous,
                 textColor: textColor1,
               ),
@@ -96,7 +99,9 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                 hasImage: false,
                 textColor: textColor2,
                 title: StringUtils.next,
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed('/FourthGymInstructionScreen',arguments: gender );
+                },
                 bgColor: Bgcolor,
               ),
             )

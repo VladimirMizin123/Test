@@ -12,30 +12,37 @@ import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../models/get_survey_model.dart';
+import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 import '../../widget/user_survey_item.dart';
+import '../user_photo_selection/user_photo_selection_screen.dart';
 
 class UserSurveyScreen extends StatefulWidget {
-  final String gender;
-
-  const UserSurveyScreen({super.key, required this.gender});
+  const UserSurveyScreen({
+    super.key,
+  });
 
   @override
   State<UserSurveyScreen> createState() => _UserSurveyScreenState();
 }
 
-class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerProviderStateMixin {
+class _UserSurveyScreenState extends State<UserSurveyScreen> {
   UserSurveyBloc bloc = UserSurveyBloc();
   SurveyDataQuestion? getSurveyData;
   double percentage = 0.0;
   final searchController = TextEditingController();
   int optionIndex = 0;
   List<int> listIndex = [];
+  List<String> listOptions = [];
+  String surveyId = '';
+  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
+
   @override
   void initState() {
     super.initState();
+    debugPrint('widget.gender--> ${model.gender}');
     bloc.add(GetSurveyData());
   }
 
@@ -65,10 +72,35 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
             listener: (context, state) {
               if (state is LoadSurveyData) {
                 getSurveyData = state.surveyData;
+                if (state.isAPIData) {
+                  surveyId = getSurveyData!.surveyId!;
+                }
+                for (var e in getSurveyData!.options!) {
+                  if (e.isSelect) {
+                    listOptions
+                        .add(e.label!);
+                  }
+                }
+debugPrint("listOptions--> ${listOptions.length}");
+              }
+              if (state is NextScreenState) {
+                UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
+                    firstName: model.firstName,
+                    lastName: model.lastName,
+                    email: model.email,
+                    password: model.password,
+                    userName: model.userName,
+                    confirmPassword: model.confirmPassword,
+                    gender: model.gender,
+                    age: model.age,
+                    height: model.height,
+                    weight: model.weight,
+                    dietId: state.dietId,
+                    surveyId: surveyId,
+                    options: listOptions);
 
-                // countOptions(getSurveyData);
-                // debugPrint("count --> $count");
-                // percentage = (mainIndex + 1) / getSurveyList.length;
+                Get.toNamed('/UserPhotoSelectionScreen',
+                    arguments: userSignUpDataModel);
               }
             }),
       ),
@@ -79,10 +111,18 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
         padding: EdgeInsets.all(20.0.h),
         child: Column(
           children: [
-            const Row(
+            Row(
               children: [
-                SvgImage(
-                  image: AssetsUtils.icBack,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: const SvgImage(
+                      image: AssetsUtils.icBack,
+                    ),
+                  ),
                 ),
 /*
                 Expanded(
@@ -108,7 +148,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
               child: Image.asset(
                 AssetsUtils.gymEatsLogo,
                 fit: BoxFit.cover,
-                color: setColor(gender: widget.gender),
+                color: setColor(gender: model.gender!),
                 height: 60.h,
               ),
             ),
@@ -118,7 +158,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
             Text(
               getSurveyData!.label!,
               textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(color: setColor(gender: widget.gender), fontSize: 18.sp, fontWeight: FontWeight.w500),
+              style: AppTextStyle.gymEatsStyle.copyWith(
+                  color: setColor(gender: model.gender!),
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w500),
             ).paddingOnly(top: 10),
             SizedBox(
               height: 20.h,
@@ -178,12 +221,15 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
                     child: buildBorderButton(
                             context: context,
                             onPressed: () {
-                              optionIndex = listIndex[listIndex.length - 1];
-                              listIndex.removeLast();
-                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: false));
+                              if (listIndex.isNotEmpty) {
+                                optionIndex = listIndex[listIndex.length - 1];
+                                listIndex.removeLast();
+                              }
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: false));
                             },
-                            textColor: setColor(gender: widget.gender),
-                            borderColor: setColor(gender: widget.gender),
+                            textColor: setColor(gender: model.gender!),
+                            borderColor: setColor(gender: model.gender!),
                             bgColor: Colors.white,
                             title: StringUtils.previous)
                         .paddingOnly(top: 25.h),
@@ -193,12 +239,15 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
                     child: buildButton(
                             context: context,
                             onPressed: () {
-                              optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
+                              optionIndex = getSurveyData!.options!
+                                  .indexWhere((value) => value.isSelect);
                               listIndex.add(optionIndex);
-                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: true));
+
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: true));
                             },
                             textColor: Colors.white,
-                            bgColor: setColor(gender: widget.gender),
+                            bgColor: setColor(gender: model.gender!),
                             title: StringUtils.next)
                         .paddingOnly(top: 25.h),
                   ),

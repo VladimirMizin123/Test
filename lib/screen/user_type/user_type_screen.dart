@@ -4,16 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
-
 import '../../bloc/user_type/user_type_bloc.dart';
 import '../../bloc/user_type/user_type_event.dart';
 import '../../bloc/user_type/user_type_state.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../constant/string_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
-import '../user_survey/user_survey_screen.dart';
+
 
 class UserTypeScreen extends StatefulWidget {
   const UserTypeScreen({super.key});
@@ -23,6 +23,7 @@ class UserTypeScreen extends StatefulWidget {
 }
 
 class _UserTypePageState extends State<UserTypeScreen> {
+  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
   final ageController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();
@@ -220,10 +221,23 @@ class _UserTypePageState extends State<UserTypeScreen> {
                   ),
                   buildButton(
                           onPressed: () {
-                            if (!isVisible) {
-                              Get.to(UserSurveyScreen(
-                                gender: genderName,
-                              ));
+                            if (isVisible) {
+                              FocusScope.of(context).unfocus();
+
+                              UserSignUpDataModel userSignUpDataModel =
+                                  UserSignUpDataModel(
+                                      firstName: model.firstName,
+                                      lastName: model.lastName,
+                                      email: model.email,
+                                      password: model.password,
+                                      userName: model.userName,
+                                      confirmPassword: model.confirmPassword,
+                                      gender: genderName,
+                                      age: ageController.text,
+                                      height: heightController.text,
+                                      weight: weightController.text);
+                              Get.toNamed('/UserSurveyScreen',
+                                  arguments: userSignUpDataModel);
                             }
                           },
                           textColor: Colors.white,

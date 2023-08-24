@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1041946139722",
+    "project_id": "gymeats-44b7a",
+    "storage_bucket": "gymeats-44b7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041946139722:android:4ab099b1807f65c6555ab3",
+        "android_client_info": {
+          "package_name": "com.gymeats_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1041946139722-8h74m1j1ep8qvtrqrk9in1si3btaogh3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcB_GmcECnoEZ5dg373aOezNEVZCxUn98"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1041946139722-8h74m1j1ep8qvtrqrk9in1si3btaogh3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

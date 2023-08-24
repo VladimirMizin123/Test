@@ -33,7 +33,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
         getSurvey = right.data;
         getNewSurvey = getSurvey;
         listSurveyData.add(getNewSurvey!);
-        emit(LoadSurveyData(surveyData: getNewSurvey!));
+        emit(LoadSurveyData(surveyData: getNewSurvey!,isAPIData: true));
       });
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
@@ -46,34 +46,47 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSearchData(SearchData event, Emitter<UserSurveyState> emit) {
-    debugPrint("getSurvey 1-->${getSurvey!.options!.length}");
-
-    getNewSurvey = SurveyDataQuestion(options: getSurvey!.options!.where((item) => item.label!.toLowerCase().contains(event.text.toLowerCase())).toList(), label: getSurvey!.label, answerType: getSurvey!.answerType, createdBy: getSurvey!.createdBy, id: getSurvey!.id, isPrimary: getSurvey!.isPrimary);
+    getNewSurvey = SurveyDataQuestion(
+        options: getSurvey!.options!
+            .where((item) =>
+                item.label!.toLowerCase().contains(event.text.toLowerCase()))
+            .toList(),
+        label: getSurvey!.label,
+        answerType: getSurvey!.answerType,
+        createdBy: getSurvey!.createdBy,
+        id: getSurvey!.id,
+        isPrimary: getSurvey!.isPrimary);
 
     emit(LoadSurveyData(surveyData: getNewSurvey!));
   }
 
-  _onNextPrevSurveyClick(NextPrevSurveyClick event, Emitter<UserSurveyState> emit) {
-    debugPrint("listSurveyData--> ${listSurveyData.length}");
+  _onNextPrevSurveyClick(
+      NextPrevSurveyClick event, Emitter<UserSurveyState> emit) {
     if (event.isNext) {
-      bool isTrueInList = getNewSurvey!.options!.any((element) => element.isSelect == true);
+      bool isTrueInList =
+          getNewSurvey!.options!.any((element) => element.isSelect == true);
       if (isTrueInList) {
         if (getNewSurvey!.options![event.index].questionDiet == 1) {
           getNewSurvey = getNewSurvey!.options![event.index].question;
           listSurveyData.add(getNewSurvey!);
           emit(LoadSurveyData(surveyData: getNewSurvey!));
         } else {
-          Get.to(const UserPhotoSelectionScreen());
+          emit(NextScreenState(dietId: getNewSurvey!.options![event.index].diet!.id!));
+
         }
       } else {
         showToast(message: StringUtils.userSurveySelectionError, isSuccess: false);
       }
     } else {
       if (listSurveyData.isNotEmpty) {
-        listSurveyData.removeLast();
-        getNewSurvey = listSurveyData[event.index];
+        if (listSurveyData.length > 1) {
+          listSurveyData.removeLast();
+          getNewSurvey = listSurveyData[listSurveyData.length - 1];
 
-        emit(LoadSurveyData(surveyData: getNewSurvey!));
+          emit(LoadSurveyData(surveyData: getNewSurvey!));
+        } else {
+          Get.back();
+        }
       } else {
         Get.back();
       }

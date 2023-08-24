@@ -156,35 +156,35 @@ class AppStrings {
   static const header3 =
       'You can get as involved as you wish OR we can make these decisions for you.';
   static const gymWorkText = 'How GYM EATS Works';
-  static const gender_Instruction1 =
+  static const genderInstruction1 =
       'The dashboard is the center point where all GYM EATS options can be accessed. It’s like home-base.';
-  static const gender_Instruction2 =
+  static const genderInstruction2 =
       'Each meal is curated for you, based on your preferences';
-  static const gender_Instruction3 =
+  static const genderInstruction3 =
       'Eat on-the-go, take-out, delivery or at a restaurant–it’s up to you!';
-  static const gender_Instruction4 =
+  static const genderInstruction4 =
       'Making a grocery list with GYM EATS is a game changer!';
-  static const gender_Instruction5 =
+  static const genderInstruction5 =
       'Your journal is where you record–meals, hydration and exercise!';
-  static const gender_subInstruction =
+  static const gendersubInstruction =
       'Simply click on the “dashboard” icon and you will see the current status of your goals nutritionally–calories, carbs, protein and fats. This area will also give you the opportunity to update hydration, exercise and of course what you’ve eaten.';
-  static const gender_subInstruction1 =
+  static const gendersubInstruction1 =
       'Simply click on the “meal plan” icon. Your meals, breakfast, lunch, snack and dinner are presented for you to enjoy.';
-  static const gender_subInstruction2 =
+  static const gendersubInstruction2 =
       'Perhaps a meal is not what you are in the mood for, simply “swap” if you are wanting something different OR “skip” if you don’t want to eat a meal at all. ';
-  static const gender_subInstruction3 =
+  static const gendersubInstruction3 =
       'Following your customized plan is easy, the meals are delicious and best of all you will be making progress towards your goals with every bite!';
-  static const gender_subInstruction4 =
+  static const gendersubInstruction4 =
       'Simply click on the “Restaurants” icon and we will lead you to eat your meals based on cuisine, cost, ratings and location.';
-  static const gender_subInstruction5 =
+  static const gendersubInstruction5 =
       'Eating “out” while staying on course with your goals has never been this easy. Remove the worry about how your meals impact your body and your goals, we keep you on track.';
-  static const gender_subInstruction6 =
+  static const gendersubInstruction6 =
       'Simply click on the “grocery” icon. Once your meal plan is the way you want it, all the ingredients are added to your grocery list. You can edit the list with the brands you want from the stores you love.';
-  static const gender_subInstruction7 =
+  static const gendersubInstruction7 =
       'Lastly, you choose whether you want your groceries delivered, be ready for pickup, or, if you’d rather, you can go to the store and get the items yourself.';
-  static const gender_subInstruction8 =
+  static const gendersubInstruction8 =
       'Simply click on the “journal” icon then choose the information area you want to update. When you do this, GYM EATS processes your intakes and customizes your meal plan based on your actions.';
-  static const gender_subInstruction9 =
+  static const gendersubInstruction9 =
       'Journaling each day helps us lead you closer to your goals more accurately.';
   static const myGenderAgeHeightWeight = 'My Gender, Age, Height & Weight';
   static const male = 'MALE';
@@ -192,6 +192,8 @@ class AppStrings {
   static const nonBinary = 'NON-BINARY';
   static const lbs = 'Lbs';
   static const required = 'required';
+  static const pleaseEnterFirstName = 'Please enter first name';
+  static const pleaseEnterLastName = 'Please enter last name';
   static const pleaseEnterEmail = 'Please enter email';
   static const enterValidEmail = 'Enter valid email';
   static const pleaseEnterPassword = 'Please enter password';
@@ -199,7 +201,14 @@ class AppStrings {
   static const pleaseEnterPasswordValidation = 'Password must be 8 character';
   static const pleaseEnterConfirmPassword = 'Please enter confirm password';
   static const passwordNotMatch = 'Password does\'t match';
-  static const userSurveySelectionError = 'Please select at list one option';
+  static const userSurveySelectionError = 'Please select at least one option';
+  static const letsUploadYourProfilePicture = 'Let’s upload your profile picture.';
+  static const profileImage = 'Profile Image';
+  static const takePhoto = 'Take Photo';
+  static const uploadPhoto = 'Upload Photo';
+  static const skip = 'Skip';
+  static const howDoesThisProfileLook = 'How does this Profile look?';
+  static const mealPlan = 'Meal Plan';
   static const dashBoard = 'Dashboard';
   static const showGroceryList = 'Show Grocery List';
   static const readyToStep = 'Ready to take step\ntowards your goals!';

@@ -67,6 +67,7 @@ Widget buildBorderButton({
 
 Widget commonTextField({
   String? hintText,
+  bool isPassword = false,
   TextEditingController? controller,
   required BuildContext context,
 }) {
@@ -77,6 +78,7 @@ Widget commonTextField({
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
             color: const Color(0xFF5F5F5F),
           ),
+      obscureText: isPassword,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: const Color(0xFF5F5F5F)),

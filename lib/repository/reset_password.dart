@@ -19,11 +19,12 @@ class ResetPasswordRepository {
   Future<Either<ErrorModel, SuccessModel>> resetPassword({
     required String newPassword,
     required String confirmPassword,
+    required String passwordResetToken,
   }) async {
     final data = {
       'confirmPassword': confirmPassword,
       'password': newPassword,
-      'passwordResetToken': PreferenceUtils.getString(passwordResetToken),
+      'passwordResetToken': passwordResetToken,
     };
     final response = await apiServices.post(ApiUrls.resetPass, data);
     if (response.statusCode == 200 || response.statusCode == 201) {

@@ -7,9 +7,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GenderScreen extends StatefulWidget {
-  const GenderScreen({super.key, this.gender = 'Non'});
+  const GenderScreen({super.key});
 
-  final String gender;
 
   @override
   State<GenderScreen> createState() => _GenderScreenState();
@@ -17,6 +16,7 @@ class GenderScreen extends StatefulWidget {
 
 class _GenderScreenState extends State<GenderScreen> {
   final routeName = '/GenderScreen';
+  String gender = Get.arguments as String;
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +28,16 @@ class _GenderScreenState extends State<GenderScreen> {
         width: size.width.w,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: widget.gender == 'Male'
+            image: gender == StringUtils.male
                 ? const AssetImage(AssetsUtils.maleBG)
-                : widget.gender == 'Female'
+                : gender == StringUtils.female
                     ? const AssetImage(AssetsUtils.femaleBG)
-                    : widget.gender == 'Non'
-                        ? const AssetImage(AssetsUtils.nonGenderBG)
-                        : const AssetImage('AppStrings.mindyBG'),
+                    : const AssetImage(AssetsUtils.nonGenderBG)
+            ,
             fit: BoxFit.fill,
           ),
         ),
-        child: widget.gender == 'Male'
+        child: gender == StringUtils.male
             ? ListView(
                 shrinkWrap: true,
                 children: [
@@ -59,14 +58,16 @@ class _GenderScreenState extends State<GenderScreen> {
                   buildButton(
                     context: context,
                     bgColor: const Color(0xFF004C63),
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.toNamed('/GymWorkInfoScreen',arguments: gender);
+                    },
                     textColor: const Color(0xFFD9E9EE),
                     title: StringUtils.lestItBetter,
                     hasImage: false,
                   ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
                 ],
               )
-            : widget.gender == 'Female'
+            : gender == StringUtils.female
                 ? ListView(
                     shrinkWrap: true,
                     children: [
@@ -81,22 +82,23 @@ class _GenderScreenState extends State<GenderScreen> {
                           AssetsUtils.roundBlueLogo,
                           height: 120.h,
                           width: 120.w,
-                          color: Color(0xFFCE6B53),
+                            colorFilter: const ColorFilter.mode(Color(0xFFCE6B53), BlendMode.srcIn)
                         ).paddingOnly(top: 24.h, right: 20.w),
                       ),
                       const Spacer(),
                       buildButton(
                         context: context,
                         bgColor: const Color(0xFFCE6B53),
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed('/GymWorkInfoScreen',arguments: gender);
+                        },
                         textColor: const Color(0xFFF9D5C5),
                         title: StringUtils.lestItBetter,
                         hasImage: false,
                       ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
                     ],
                   )
-                : widget.gender == 'Non'
-                    ? ListView(
+                : ListView(
                         shrinkWrap: true,
                         children: [
                           Text(
@@ -110,21 +112,23 @@ class _GenderScreenState extends State<GenderScreen> {
                               AssetsUtils.roundBlueLogo,
                               height: 96.h,
                               width: 96.w,
-                              color: Color(0xFF336633),
+                             colorFilter: const ColorFilter.mode(Color(0xFF336633), BlendMode.srcIn)
                             ).paddingOnly(top: 25.h, right: 20.w),
                           ),
                           const Spacer(),
                           buildButton(
                             context: context,
                             bgColor: const Color(0xFF336633),
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed('/GymWorkInfoScreen',arguments: gender);
+                            },
                             textColor: const Color(0xFFD9E9EE),
                             title: StringUtils.lestItBetter,
                             hasImage: false,
                           ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 380.h),
                         ],
                       )
-                    : Container(),
+        ,
       ),
     );
   }

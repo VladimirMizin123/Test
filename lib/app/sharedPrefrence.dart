@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String passwordResetToken = 'passwordResetToken';
+
+const String prefIsLogin = 'isLogin';
+const String prefToken = 'token';
 
 
 class PreferenceUtils {

@@ -9,11 +9,10 @@ import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
 
 class ShowMealPlanBtnScreen extends StatelessWidget {
-  const ShowMealPlanBtnScreen({super.key, this.chooseGender = 'Non'});
+   ShowMealPlanBtnScreen({super.key});
 
   final routeName = '/ShowMealPlanBtn';
-  final String? chooseGender;
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -21,27 +20,23 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
     return Scaffold(
       body: bodyView(
         context: context,
-        bgColor: chooseGender == 'Male'
+        bgColor: gender == StringUtils.male
             ? AppColors.primaryBlue
-            : chooseGender == 'Female'
+            : gender == StringUtils.female
                 ? AppColors.terracotta
-                : chooseGender == 'Non'
-                    ? AppColors.green
-                    : Colors.black,
-        textColor: chooseGender == 'Male'
+                :AppColors.green
+                   ,
+        textColor: gender == StringUtils.male
             ? AppColors.skyBlue
-            : chooseGender == 'Female'
+            : gender ==StringUtils.female
                 ? AppColors.coral
-                : chooseGender == 'Non'
-                    ? AppColors.mint
-                    : Colors.black,
-        image: chooseGender == 'Male'
+                : AppColors.mint
+                    ,
+        image: gender == StringUtils.male
             ? AssetsUtils.male_meal_Bg
-            : chooseGender == 'Female'
+            : gender ==StringUtils.female
                 ? AssetsUtils.female_meal_Bg
-                : chooseGender == 'Non'
-                    ? AssetsUtils.non_meal_Bg
-                    : '',
+                : AssetsUtils.non_meal_Bg,
         textTheme: textTheme,
       ),
     );

@@ -7,6 +7,9 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
+import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -52,11 +55,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     'Create your GYM EATS account to continue',
                     style: textTheme.bodyMedium!.copyWith(color: const Color(0xFF5F5F5F), fontSize: 17.sp, fontWeight: FontWeight.w400),
                   ).paddingOnly(top: 18),
-                  commonTextField(context: context, controller: homeController.fNameController, hintText: StringUtils.fName).paddingOnly(top: 8),
-                  commonTextField(context: context, controller: homeController.lastNameController, hintText: StringUtils.lName).paddingOnly(top: 16),
-                  commonTextField(context: context, controller: homeController.emailController, hintText: StringUtils.email).paddingOnly(top: 16),
-                  commonTextField(context: context, controller: homeController.passwordController, hintText: StringUtils.password).paddingOnly(top: 16),
-                  buildButton(context: context, onPressed: () {}, textColor: const Color(0xFFD9E9EE), bgColor: const Color(0xFF004C63), title: StringUtils.joinGymEats).paddingOnly(top: 25.h),
+                  commonTextField(
+                          context: context,
+                          controller: homeController.fNameController,
+                          hintText: StringUtils.fName)
+                      .paddingOnly(top: 8),
+                  commonTextField(
+                          context: context,
+                          controller: homeController.lastNameController,
+                          hintText: StringUtils.lName)
+                      .paddingOnly(top: 16),
+                  commonTextField(
+                          context: context,
+                          controller: homeController.emailController,
+                          hintText: StringUtils.email)
+                      .paddingOnly(top: 16),
+                  commonTextField(
+                          isPassword: true,
+                          context: context,
+                          controller: homeController.passwordController,
+                          hintText: StringUtils.password)
+                      .paddingOnly(top: 16),
+                  commonTextField(
+                          isPassword: true,
+                          context: context,
+                          controller: homeController.confirmPasswordController,
+                          hintText: StringUtils.confirmPassword)
+                      .paddingOnly(top: 16),
+                  buildButton(
+                          context: context,
+                          onPressed: () {
+                            homeController.joinGymEatButton();
+                          },
+                          textColor: const Color(0xFFD9E9EE),
+                          bgColor: const Color(0xFF004C63),
+                          title: StringUtils.joinGymEats)
+                      .paddingOnly(top: 25.h),
                   Text(
                     StringUtils.or,
                     style: textTheme.bodyLarge,

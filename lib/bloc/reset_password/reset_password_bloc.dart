@@ -27,8 +27,13 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
     if (isConfirmPassword && isNewPassword && isPasswordMatch) {
       emit(ResetLoadingState());
       try {
-        await _repository.resetPassword(newPassword: event.password, confirmPassword: event.confirmPassword).fold((left) {
+        await _repository
+            .resetPassword(
+                newPassword: event.password,
+                confirmPassword: event.confirmPassword,passwordResetToken: event.passwordResetToken)
+            .fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
+          emit(ResetErrorState());
         }, (right) {
           emit(ResetSuccessState());
           Get.toNamed('/LoginScreen', preventDuplicates: false);

@@ -105,4 +105,6 @@ class AppColors {
   static const middleGray = Color(0xFF5F5F5F);
   static const darkGray = Color(0xFF373737);
   static const oxFF010101 = Color(0xFF010101);
+  static const newDarkBlue = Color(0xFF6A909D);
+  static const inactive = Color(0xFFD9D9D9);
 }

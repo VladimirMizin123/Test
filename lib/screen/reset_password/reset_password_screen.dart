@@ -23,6 +23,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final routeName = '/ForgotPasswordScreen';
   final newPassController = TextEditingController();
   final confirmPassController = TextEditingController();
+  String resetToken = Get.arguments as String;
 
   ResetPasswordBloc bloc = ResetPasswordBloc();
 
@@ -120,29 +121,30 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ],
                 ),
                 BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
-                    bloc: bloc,
-                    builder: (context, state) {
-                      if (state is ResetLoadingState) {
-                        return const AppCenterLoader();
-                      }
-                      return buildButton(
-                          context: context,
-                          onPressed: () {
-                            bloc.add(ButtonClickEvent(
-                              password: newPassController.text,
-                              confirmPassword: confirmPassController.text,
-                            ));
-                          },
-                          textColor: AppColors.skyBlue,
-                          bgColor: const Color(0xFF004C63),
-                          title: StringUtils.resetPassword);
-                    },
-                    listener: (context, state) {
-                      if (state is ResetSuccessState) {
-                        newPassController.clear();
-                        confirmPassController.clear();
-                      }
-                    }).paddingOnly(top: 25.h, bottom: 10.h),
+                        bloc: bloc,
+                        builder: (context, state) {
+                          if (state is ResetLoadingState) {
+                            return const AppCenterLoader();
+                          }
+                          return buildButton(
+                              context: context,
+                              onPressed: () {
+                                bloc.add(ButtonClickEvent(
+                                    password: newPassController.text,
+                                    confirmPassword: confirmPassController.text,
+                                passwordResetToken: resetToken));
+                              },
+                              textColor: AppColors.skyBlue,
+                              bgColor: const Color(0xFF004C63),
+                              title: StringUtils.resetPassword);
+                        },
+                        listener: (context, state) {
+                          if(state is ResetSuccessState){
+                            newPassController.clear();
+                            confirmPassController.clear();
+                          }
+                        })
+                    .paddingOnly(top: 25.h, bottom: 10.h),
               ],
             ),
           ),
