@@ -61,6 +61,8 @@ class AssetsUtils {
   static const icDashboard = '${svgPath}ic_dashboard.svg';
   static const icRestaurants = '${svgPath}ic_restaurants.svg';
   static const icJournal = '${svgPath}ic_journal.svg';
+  static const icQuestionMarkIcon = '${svgPath}ic_questionmark_icon.svg';
+  static const icSkippedIcon = '${svgPath}ic_skipped_icon.svg';
 
   /// Icons
 

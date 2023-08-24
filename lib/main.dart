@@ -1,5 +1,4 @@
 // import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -36,26 +35,24 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
-import 'app/firebase_deep_link.dart';
+
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
-import 'constant/app_string.dart';
-import 'models/get_survey_model.dart';
 import 'screen/login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PreferenceUtils.init();
-  await Firebase.initializeApp(
-    name: 'GymEats',
-    options: FirebaseOptions(
-        apiKey: apiKey,
-        appId: appId,
-        messagingSenderId: messagingSenderId,
-        projectId: projectId),
-  );
-  await initDynamicLinks();
+  // await Firebase.initializeApp(
+  //   name: 'GymEats',
+  //   options: FirebaseOptions(
+  //       apiKey: apiKey,
+  //       appId: appId,
+  //       messagingSenderId: messagingSenderId,
+  //       projectId: projectId),
+  // );
+  // await initDynamicLinks();
   runApp(MyApp());
 }
 
@@ -77,7 +74,8 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: '/',
+          // initialRoute: '/',
+          initialRoute: PreferenceUtils.getBool(userLoginState) ? '/AppManagerScreen' : '/LoginScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -99,7 +97,7 @@ class MyApp extends StatelessWidget {
               name: '/',
               page: () => const Home(),
             ),
-             GetPage(
+            GetPage(
               name: '/AppManagerScreen',
               page: () => const AppManagerScreen(),
             ),

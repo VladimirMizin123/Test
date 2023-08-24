@@ -87,10 +87,19 @@ class StringUtils {
   static const restaurants = 'Restaurants';
   static const journal = 'Journal';
   static const showGroceryList = 'Show Grocery List';
+  static const regenerateGroceryList = 'Regenerate Grocery List';
   static const readyToStep = 'Ready to take step\ntowards your goals!';
   static const livingPresent = 'Living in the present is like giving yourself a gift.';
   static const neverUnderestimate = 'Never underestimate the power of a single good decision.';
   static const eachMeal = 'Each meal is a new opportunity to ove in the right direction.';
   static const iAmReady = 'I’m Ready';
   static const buildMyProfile = 'Build My Profile';
+  static const day = 'Day';
+  static const skipped = 'Skipped';
+  static const skipMeal = 'Skip Meal';
+  static const swapMeal = 'Swap Meal';
+  static const doYouWantToSkipMeal = 'Do you want to Skip Meal?';
+  static const cancel = 'Cancel';
+  static const skip = 'Skip';
+  static const back = 'Back';
 }

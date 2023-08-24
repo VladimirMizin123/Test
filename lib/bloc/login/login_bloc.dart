@@ -2,10 +2,11 @@ import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/login/login_event.dart';
 import 'package:gymeats_mobile/bloc/login/login_state.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+
 import '../../app/functions.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../repository/login.dart';
@@ -37,6 +38,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           }
 
           emit(LoginSuccessfulState());
+          PreferenceUtils.setBool(userLoginState,true);
           Get.toNamed('/AppManagerScreen');
         });
       } catch (e) {

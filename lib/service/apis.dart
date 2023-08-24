@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../app/sharedPrefrence.dart';
@@ -213,6 +215,9 @@ class ApiServices {
         'accept': '*/*',
         'Api_Key': ApiUrls.apiKey,
       });
+      log(url, name: 'URL - - - - - ');
+      log('${response.statusCode}', name: 'STATUS CODE - - - - - ');
+      log(response.body, name: 'RESPONSE - - - - - ');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -221,10 +226,10 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
+
 
   http.Response _returnResponse(http.Response response) {
     switch (response.statusCode) {
@@ -240,8 +245,7 @@ class ApiServices {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
+        throw FetchDataException('Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
 }

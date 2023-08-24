@@ -1,13 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
-
 import '../constant/string_utils.dart';
 
 Widget buildButton({required BuildContext context, String? title, void Function()? onPressed, Color? bgColor, Color? textColor, bool? hasImage = false, String? imagePath}) {
@@ -103,20 +104,7 @@ Widget commonTextField({
   );
 }
 
-Widget commonUserTypeTextField(
-    {required String hintText,
-    required TextEditingController controller,
-    required BuildContext context,
-    required double width,
-    required double fontSize,
-    required FontWeight? fontWeight,
-    required Color fontColor,
-    required Color valueColor,
-    Color? borderColor,
-    required Color cursorColor,
-    required TextInputType textInputType,
-    required Function(String value) onChange,
-    bool isSuffix = false}) {
+Widget commonUserTypeTextField({required String hintText, required TextEditingController controller, required BuildContext context, required double width, required double fontSize, required FontWeight? fontWeight, required Color fontColor, required Color valueColor, Color? borderColor, required Color cursorColor, required TextInputType textInputType, required Function(String value) onChange, bool isSuffix = false}) {
   return Container(
     height: 48.h,
     width: width.w,
@@ -143,23 +131,19 @@ Widget commonUserTypeTextField(
               hintStyle: TextStyle(fontSize: fontSize.sp, fontWeight: FontWeight.w400, color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
             ),
           ),
@@ -263,7 +247,7 @@ showToast({required String message, required bool isSuccess}) {
   }
 }
 
-Widget arrowButton({String? icon}) {
+Widget arrowButton({String? icon, bool isDisable = false}) {
   return Container(
     height: 30.h,
     width: 30.w,
@@ -277,6 +261,7 @@ Widget arrowButton({String? icon}) {
         icon.toString(),
         height: 13.h,
         width: 13.w,
+        color: isDisable ? AppColors.disable : null,
       ),
     ),
   );
@@ -294,11 +279,7 @@ Widget buildGymEatsHeader({Widget? child, Color? bgColor}) {
   );
 }
 
-Widget dashBoardCardView(
-    {Widget? child,
-    double? height,
-    double? width,
-    EdgeInsetsGeometry? margin}) {
+Widget dashBoardCardView({Widget? child, double? height, double? width, EdgeInsetsGeometry? margin}) {
   return Container(
     height: height,
     width: width,
@@ -326,17 +307,14 @@ Widget commonSliderView({
   return Container(
     height: 48.h,
     width: 170.w,
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(0, 76, 99, 0.08),
-            spreadRadius: 0.5,
-            blurRadius: 0.5,
-            offset: Offset(0, 0),
-          ),
-        ]),
+    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: Colors.white, boxShadow: const [
+      BoxShadow(
+        color: Color.fromRGBO(0, 76, 99, 0.08),
+        spreadRadius: 0.5,
+        blurRadius: 0.5,
+        offset: Offset(0, 0),
+      ),
+    ]),
     child: Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -348,8 +326,7 @@ Widget commonSliderView({
           ),
           Text(
             title.toString(),
-            style:
-                textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+            style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
           ),
           addIcon(),
         ],
@@ -376,10 +353,14 @@ Widget addIcon() {
 }
 
 Widget mealPlanCard({
-  String? mealTitle,
-  String? mealDescription,
-  String? mealCal,
+  MealData? mealData,
+  // String? image,
+  // String? mealTitle,
+  // String? mealDescription,
+  // String? mealCal,
   required BuildContext context,
+  VoidCallback? onSkipMealTap,
+  VoidCallback? onSwapMealTap,
 }) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
@@ -388,56 +369,166 @@ Widget mealPlanCard({
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Image.asset(
-                AssetsUtils.defaultImage,
-                height: 80.h,
-                width: 90.w,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SizedBox(
-                  height: 80.h,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: mealData!.isSkipped == true
+          ? Column(
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: 80.h,
+                        width: 90.w,
+                        color: AppColors.lightGrey,
+                        child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      height: 80.h,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(StringUtils.skipped,style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            )
+          : Column(
+                children: [
+                  Row(
                     children: [
-                      Text(mealTitle ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                      Text(mealDescription ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                      Text(mealCal ?? '', style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          height: 80.h,
+                          width: 90.w,
+                          color: AppColors.lightGrey,
+                          child: CachedNetworkImage(
+                            imageUrl: mealData.recipe!.mainImage ?? '',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: AppColors.lightGrey,)),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: SizedBox(
+                          height: 80.h,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(mealData.meal ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                              Text(mealData.recipe!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                              Text(mealData.calories!.toStringAsFixed(2), style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: AppColors.middleGray)
                     ],
                   ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: AppColors.middleGray)
-            ],
-          ),
-          SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              simpleTextBorderButton(context, 'Skip Meal'),
-              simpleTextBorderButton(context, 'Swap Meal'),
-            ],
-          ),
-        ],
+                  SizedBox(height: 10.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      simpleTextBorderButton(context: context, buttonLable: StringUtils.skipMeal, onTap: onSkipMealTap),
+                      simpleTextBorderButton(context: context, buttonLable: StringUtils.swapMeal, onTap: onSwapMealTap),
+                    ],
+                  ),
+                ],
+              )
+    ),
+  );
+}
+
+Widget simpleTextBorderButton({BuildContext? context, double? height, double? width, bool isFillColor = false, bool isDarkColor = false, String? buttonLable, VoidCallback? onTap}) {
+  final screenSize = MediaQuery.of(context!).size;
+  return GestureDetector(
+    onTap: onTap,
+    child: Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      child: Container(
+        height: height ?? screenSize.height * 0.04,
+        width: width ?? screenSize.width * 0.41,
+        decoration: isFillColor ? BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(8)),
+        child: Center(child: Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
       ),
     ),
   );
 }
-Widget simpleTextBorderButton(BuildContext context, String buttonLable) {
-  final screenSize = MediaQuery.of(context).size;
+
+Widget swapMealCard({
+  String? mealTitle,
+  String? mealDescription,
+  String? mealCal,
+  required BuildContext context,
+  bool isSelected = false,
+  VoidCallback? onSkipMealTap,
+  VoidCallback? onSwapMealTap,
+}) {
   return Container(
-    height: screenSize.height * 0.04,
-    width: screenSize.width * 0.41,
-    decoration: BoxDecoration(border: Border.all(color: AppColors.primaryBlue), borderRadius: BorderRadius.circular(10)),
-    child: Center(child: Text(buttonLable, style: FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: FWT.regular))),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: isSelected ? Border.all(color: AppColors.primaryBlue) : null,
+      boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
+      borderRadius: BorderRadius.circular(8.r),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Image.asset(
+            AssetsUtils.defaultImage,
+            height: 60.h,
+            width: 70.w,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: SizedBox(
+              height: 60.h,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(mealDescription ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                  Text(mealCal ?? '', style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            height: 20.h,
+            width: 20.w,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.primaryBlue, width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                  height: 14.h,
+                  width: 14.w,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    ),
   );
 }

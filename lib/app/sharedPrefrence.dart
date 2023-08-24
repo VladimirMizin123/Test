@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String prefIsLogin = 'isLogin';
 const String prefToken = 'token';
+const String passwordResetToken = 'passwordResetToken';
+const String userMealPlanCountState = 'userMealPlanCountState';
+const String userLoginState = 'userLoginState';
 
 
 class PreferenceUtils {
@@ -23,6 +26,15 @@ class PreferenceUtils {
   static Future<bool> setString(String key, String value) async {
     var prefs = await _instance;
     return _prefsInstance != null ? prefs.setString(key, value) : Future.value(false);
+  }
+
+    static int getInt(String key) {
+    return _prefsInstance != null ? (_prefsInstance!.getInt(key) ?? 0) : 0;
+  }
+
+  static Future<bool> setInt(String key, int value) async {
+    var prefs = await _instance;
+    return _prefsInstance != null ? prefs.setInt(key, value) : Future.value(false);
   }
 
   static bool getBool(String key) {
