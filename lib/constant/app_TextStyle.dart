@@ -6,7 +6,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 
 class AppTextStyle {
   static TextStyle butttonTextStyle = TextStyle(
-    color: ColorUtils.appColor,
+    color: AppColors.appColor,
     fontSize: 18.sp,
     fontWeight: FontWeight.w500,
   );

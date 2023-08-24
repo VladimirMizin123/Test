@@ -12,7 +12,7 @@ class _AppCenterLoaderState extends State<AppCenterLoader> {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: CircularProgressIndicator(color: ColorUtils.primaryBlue),
+      child: CircularProgressIndicator(color: AppColors.primaryBlue),
     );
   }
 }

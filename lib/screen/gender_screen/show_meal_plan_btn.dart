@@ -22,18 +22,18 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
       body: bodyView(
         context: context,
         bgColor: chooseGender == 'Male'
-            ? ColorUtils.primaryBlue
+            ? AppColors.primaryBlue
             : chooseGender == 'Female'
-                ? ColorUtils.terracotta
+                ? AppColors.terracotta
                 : chooseGender == 'Non'
-                    ? ColorUtils.green
+                    ? AppColors.green
                     : Colors.black,
         textColor: chooseGender == 'Male'
-            ? ColorUtils.skyBlue
+            ? AppColors.skyBlue
             : chooseGender == 'Female'
-                ? ColorUtils.coral
+                ? AppColors.coral
                 : chooseGender == 'Non'
-                    ? ColorUtils.mint
+                    ? AppColors.mint
                     : Colors.black,
         image: chooseGender == 'Male'
             ? AssetsUtils.male_meal_Bg

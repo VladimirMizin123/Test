@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ).paddingOnly(top: 16.h, bottom: 0),
                 Text(
                   StringUtils.loginSubText,
-                  style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
+                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
                 commonTextField(context: context, controller: emailController, hintText: StringUtils.email).paddingOnly(top: 20.h),
                 commonTextField(context: context, controller: passwordController, hintText: StringUtils.password).paddingOnly(top: 16.h),
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       StringUtils.forgot,
-                      style: textTheme.bodyLarge?.copyWith(color: ColorUtils.darkGray),
+                      style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                     ),
                   ).paddingOnly(top: 20.h),
                 ),
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       print(credential.email);
     } catch (e) {
-      print("Error:- " + e.toString());
+      print("Error:- $e");
     }
   }
 }

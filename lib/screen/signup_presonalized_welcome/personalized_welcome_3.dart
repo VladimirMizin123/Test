@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
@@ -40,7 +40,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                     AssetsUtils.gymEatsLogo,
                     height: 60.h,
                     width: 168.w,
-                    color: ColorUtils.primaryBlue,
+                    color: AppColors.primaryBlue,
                   ).paddingOnly(top: 35.h),
                   buildGymEatsHeader(
                       bgColor: Colors.transparent,
@@ -48,21 +48,21 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             StringUtils.welcomeBack,
-                            style: textTheme.displayMedium?.copyWith(color: ColorUtils.primaryBlue),
+                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue),
                           ).paddingOnly(bottom: 10.h),
                           Text(
                             StringUtils.neverUnderestimate,
                             textAlign: TextAlign.center,
-                            style: textTheme.displayMedium?.copyWith(color: ColorUtils.primaryBlue, height: 1.1),
+                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue, height: 1.1),
                           ),
                         ],
                       )).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
                   const Spacer(),
                   buildButton(
                     context: context,
-                    bgColor: ColorUtils.primaryBlue,
+                    bgColor: AppColors.primaryBlue,
                     onPressed: () {},
-                    textColor: ColorUtils.skyBlue,
+                    textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
                     hasImage: false,
                   ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
@@ -98,9 +98,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                       const Spacer(),
                       buildButton(
                         context: context,
-                        bgColor: ColorUtils.terracotta,
+                        bgColor: AppColors.terracotta,
                         onPressed: () {},
-                        textColor: ColorUtils.coral,
+                        textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
                         hasImage: false,
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
@@ -113,7 +113,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                             AssetsUtils.gymEatsLogo,
                             height: 60.h,
                             width: 168.w,
-                            color: ColorUtils.green,
+                            color: AppColors.green,
                           ).paddingOnly(top: 35.h),
                           const Spacer(),
                           buildGymEatsHeader(
@@ -133,9 +133,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                               )).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w),
                           buildButton(
                             context: context,
-                            bgColor: ColorUtils.green,
+                            bgColor: AppColors.green,
                             onPressed: () {},
-                            textColor: ColorUtils.mint,
+                            textColor: AppColors.mint,
                             title: StringUtils.iAmReady,
                             hasImage: false,
                           ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),

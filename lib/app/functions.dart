@@ -8,11 +8,11 @@ import '../constant/color_utils.dart';
 
 Color setColor({required String gender}) {
   if (gender == StringUtils.male) {
-    return ColorUtils.primaryBlue;
+    return AppColors.primaryBlue;
   } else if (gender == StringUtils.female) {
-    return ColorUtils.terracotta;
+    return AppColors.terracotta;
   } else {
-    return ColorUtils.green;
+    return AppColors.green;
   }
 }
 

@@ -55,8 +55,8 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     Get.toNamed('/GymEatsMenu');
                   },
-                  bgColor: ColorUtils.letsEatButton,
-                  textColor: ColorUtils.letsEat,
+                  bgColor: AppColors.letsEatButton,
+                  textColor: AppColors.letsEat,
                 ),
                 SizedBox(height: 40.h),
               ],

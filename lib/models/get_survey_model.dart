@@ -74,7 +74,7 @@ class DataOption {
   bool isSelect;
   Color? color;
 
-  DataOption({this.id, this.label, this.questionDiet, this.question, this.diet, this.isSelect = false, this.color = ColorUtils.primaryBlue});
+  DataOption({this.id, this.label, this.questionDiet, this.question, this.diet, this.isSelect = false, this.color = AppColors.primaryBlue});
 
   factory DataOption.fromJson(Map<String, dynamic> json) => DataOption(
         id: json["id"],

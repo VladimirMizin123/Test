@@ -64,7 +64,7 @@ class PremiumScreen extends StatelessWidget {
                       children: [
                         Image.asset(
                           AssetsUtils.gymEatsSpoon,
-                          color: ColorUtils.letsEatButton,
+                          color: AppColors.letsEatButton,
                           height: 22.h,
                           width: 64.w,
                         ),
@@ -106,7 +106,7 @@ class PremiumScreen extends StatelessWidget {
               buildButton(
                 context: context,
                 title: 'Start 14 days free trial',
-                bgColor: ColorUtils.appColor,
+                bgColor: AppColors.appColor,
                 textColor: Color(0xFFC1EACE),
                 onPressed: () {},
               ).paddingOnly(bottom: 8.h, top: 23.h, right: 20.w, left: 20.w),

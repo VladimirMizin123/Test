@@ -19,7 +19,7 @@ class PurchaseOptions extends StatelessWidget {
       height: isSelected ? 132.h : 122.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: isSelected ? ColorUtils.appColor : ColorUtils.disabledColor),
+        border: Border.all(color: isSelected ? AppColors.appColor : AppColors.disabledColor),
         color: Colors.white.withOpacity(0.95),
       ),
       child: Column(
@@ -28,7 +28,7 @@ class PurchaseOptions extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: isSelected ? ColorUtils.appColor : ColorUtils.disabledColor,
+              color: isSelected ? AppColors.appColor : AppColors.disabledColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8.r),
                 topRight: Radius.circular(8.r),
@@ -65,13 +65,13 @@ class PurchaseOptions extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 4.r, horizontal: 8.r),
                   // margin: EdgeInsets.only(bottom: 12.h),
                   decoration: BoxDecoration(
-                    color: isSelected ? ColorUtils.letsEatButton : const Color(0xFFF9D5C5),
+                    color: isSelected ? AppColors.letsEatButton : const Color(0xFFF9D5C5),
                     borderRadius: BorderRadius.circular(1000.r),
                   ),
                   child: Text(
                     '$savePercentage%',
                     style: textTheme.titleLarge!.copyWith(
-                      color: isSelected ? const Color(0xFFF9D5C5) : ColorUtils.letsEatButton,
+                      color: isSelected ? const Color(0xFFF9D5C5) : AppColors.letsEatButton,
                     ),
                   ),
                 )

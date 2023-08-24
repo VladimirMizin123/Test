@@ -7,8 +7,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import '../../bloc/reset_password/reset_password_bloc.dart';
 import '../../bloc/reset_password/reset_password_event.dart';
 import '../../bloc/reset_password/reset_password_state.dart';
-import '../../constant/string_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
@@ -48,7 +48,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       onTap: () => Get.back(),
                       child: const Icon(
                         Icons.arrow_back_ios,
-                        color: ColorUtils.darkGray,
+                        color: AppColors.darkGray,
                       ),
                     ),
                     Image.asset(
@@ -65,14 +65,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ).paddingOnly(top: 16.h),
                 Text(
                   StringUtils.enterPassword,
-                  style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
+                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       StringUtils.newPassword,
-                      style: textTheme.bodyMedium?.copyWith(color: ColorUtils.darkGray),
+                      style: textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
                     ).paddingOnly(bottom: 5.h, top: 24.h),
                     commonTextField(context: context, controller: newPassController, hintText: StringUtils.writePassword).paddingOnly(left: 2.w, right: 2.w),
                     Row(
@@ -87,7 +87,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         Text(
                           StringUtils.validatePassLength,
-                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: ColorUtils.darkGray),
+                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: AppColors.darkGray),
                         )
                       ],
                     ).paddingOnly(top: 5.h),
@@ -98,7 +98,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   children: [
                     Text(
                       StringUtils.confirmPassword,
-                      style: textTheme.bodyMedium?.copyWith(color: ColorUtils.darkGray),
+                      style: textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
                     ).paddingOnly(bottom: 5.h, top: 24.h),
                     commonTextField(context: context, controller: confirmPassController, hintText: StringUtils.writeConfirmPassword).paddingOnly(left: 2.w, right: 2.w),
                     Row(
@@ -113,7 +113,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         Text(
                           StringUtils.matchPassword,
-                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: ColorUtils.darkGray),
+                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: AppColors.darkGray),
                         )
                       ],
                     ).paddingOnly(top: 5.h),
@@ -133,7 +133,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               confirmPassword: confirmPassController.text,
                             ));
                           },
-                          textColor: ColorUtils.skyBlue,
+                          textColor: AppColors.skyBlue,
                           bgColor: const Color(0xFF004C63),
                           title: StringUtils.resetPassword);
                     },

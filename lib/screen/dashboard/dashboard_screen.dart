@@ -1,12 +1,10 @@
-<<<<<<< Updated upstream
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -384,57 +382,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             ],
           ),
         ),
-=======
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
-import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
-
-class DashboardScreen extends StatefulWidget {
-  final String routeName;
-  const DashboardScreen({super.key, this.routeName = ''});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingObserver {
-  int selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: getScreen(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: SvgPicture.asset(AssetsUtils.icMealPlan, color: selectedIndex == 0 ? ColorUtils.letsEatButton : ColorUtils.middleGray), label: StringUtils.mealPlan),
-          BottomNavigationBarItem(icon: SvgPicture.asset(AssetsUtils.icGrocery, color: selectedIndex == 1 ? ColorUtils.letsEatButton : ColorUtils.middleGray), label: StringUtils.grocery),
-          BottomNavigationBarItem(icon: SvgPicture.asset(AssetsUtils.icDashboard, color: selectedIndex == 2 ? ColorUtils.letsEatButton : ColorUtils.middleGray), label: StringUtils.dashboard),
-          BottomNavigationBarItem(icon: SvgPicture.asset(AssetsUtils.icRestaurants, color: selectedIndex == 3 ? ColorUtils.letsEatButton : ColorUtils.middleGray), label: StringUtils.restaurants),
-          BottomNavigationBarItem(icon: SvgPicture.asset(AssetsUtils.icJournal, color: selectedIndex == 4 ? ColorUtils.letsEatButton : ColorUtils.middleGray), label: StringUtils.journal),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: ColorUtils.letsEatButton,
-        unselectedItemColor: ColorUtils.middleGray,
-        unselectedLabelStyle: FontUtils.h10(fontColor: ColorUtils.letsEatButton, fontWeight: FWT.semiBold),
-        selectedLabelStyle: FontUtils.h10(fontColor: ColorUtils.middleGray, fontWeight: FWT.bold),
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        onTap: (int value) {
-          setState(() {
-            selectedIndex = value;
-          });
-        },
-        elevation: 10,
->>>>>>> Stashed changes
       ),
     );
   }
 
-<<<<<<< Updated upstream
   Widget calDataView(
       {String? imgIcon,
       String? title,
@@ -635,21 +586,5 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         ),
       ),
     );
-=======
-  getScreen() {
-    switch (selectedIndex) {
-      case 0:
-        return const MealPlanHomeScreen();
-      case 1:
-        return Container();
-      case 2:
-        return Container();
-      case 3:
-        return Container();
-      case 4:
-        return Container();
-      default:
-    }
->>>>>>> Stashed changes
   }
 }

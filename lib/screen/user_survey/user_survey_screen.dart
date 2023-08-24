@@ -57,7 +57,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> with SingleTickerPr
                     child: Text(
                   state.errMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: ColorUtils.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
+                  style: const TextStyle(color: AppColors.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
                 ));
               }
               return Container();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class MealPlanHomeScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 AssetsUtils.gymEatsLogo,
                 height: 20.h,
                 width: 56.w,
-                color: ColorUtils.primaryBlue,
+                color: AppColors.primaryBlue,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,19 +40,19 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                     AssetsUtils.user,
                     height: 25.h,
                     width: 25.w,
-                    color: ColorUtils.darkGray,
+                    color: AppColors.darkGray,
                   ),
-                  Text(StringUtils.mealPlan, style: FontUtils.h20(fontColor: ColorUtils.oxFF010101)),
+                  Text(StringUtils.mealPlan, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
                   Image.asset(
                     AssetsUtils.filter,
                     height: 20.h,
                     width: 20.w,
-                    color: ColorUtils.darkGray,
+                    color: AppColors.darkGray,
                   )
                 ],
               ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
-              Divider(color: ColorUtils.darkGray, height: 3.h),
-              Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: ColorUtils.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+              Divider(color: AppColors.darkGray, height: 3.h),
+              Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
               Container(
                 color: Colors.grey.withOpacity(0.05),
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -61,7 +61,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   children: [
                     Text(
                       'Day 1',
-                      style: FontUtils.h20(fontColor: ColorUtils.middleGray, fontWeight: FWT.medium),
+                      style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
                     ),
                     Wrap(
                       children: [

@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
-import '../../constant/string_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 
 class BuildMyProfileScreen extends StatefulWidget {
   const BuildMyProfileScreen({super.key});
@@ -63,9 +63,9 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
                     ).paddingOnly(left: 3.w, right: 3.w),
                     buildButton(
                       context: context,
-                      bgColor: ColorUtils.primaryBlue,
+                      bgColor: AppColors.primaryBlue,
                       onPressed: () {},
-                      textColor: ColorUtils.skyBlue,
+                      textColor: AppColors.skyBlue,
                       title: StringUtils.buildMyProfile,
                       hasImage: false,
                     ).paddingOnly(right: 3.w, left: 3.w, top: 13.h, bottom: 3.h),

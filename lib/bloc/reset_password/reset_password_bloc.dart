@@ -1,14 +1,13 @@
 import 'package:either_dart/either.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/reset_password/reset_password_event.dart';
 import 'package:gymeats_mobile/bloc/reset_password/reset_password_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../app/functions.dart';
-import '../../repository/login.dart';
 import '../../repository/reset_password.dart';
-import '../../widget/app_widget.dart';
 
 class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
   ResetPasswordBloc() : super(InitialState()) {

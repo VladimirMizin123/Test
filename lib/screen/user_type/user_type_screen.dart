@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../bloc/user_type/user_type_bloc.dart';
@@ -32,7 +33,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
 
   bool isVisible = false;
 
-  Color color = ColorUtils.primaryBlue;
+  Color color = AppColors.primaryBlue;
 
   UserTypeBloc bloc = UserTypeBloc();
 
@@ -87,7 +88,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                             height: 38.h,
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
-                              color: ColorUtils.lightGrey,
+                              color: AppColors.lightGrey,
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -150,7 +151,6 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Row(
-<<<<<<< Updated upstream
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
@@ -194,32 +194,6 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             })
                                         .paddingOnly(top: 15)
                                         .marginOnly(right: 80),
-=======
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    commonUserTypeTextField(
-                                        width: 70.w,
-                                        fontColor: Colors.white,
-                                        controller: ageController,
-                                        fontSize: 13,
-                                        hintText: StringUtils.required,
-                                        textInputType: TextInputType.number,
-                                        context: context,
-                                        onChange: (String value) {
-                                          bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
-                                        }).paddingOnly(top: 15).marginOnly(left: 70),
-                                    commonUserTypeTextField(
-                                        width: 70.w,
-                                        fontColor: Colors.white,
-                                        controller: heightController,
-                                        fontSize: 13,
-                                        hintText: StringUtils.required,
-                                        textInputType: TextInputType.number,
-                                        context: context,
-                                        onChange: (String value) {
-                                          bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
-                                        }).paddingOnly(top: 15).marginOnly(right: 80),
->>>>>>> Stashed changes
                                   ],
                                 ),
                                 commonUserTypeTextField(
@@ -229,12 +203,8 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                     cursorColor: Colors.white,
                                     controller: weightController,
                                     fontSize: 13,
-<<<<<<< Updated upstream
                                     fontWeight: FontWeight.w900,
                                     hintText: AppStrings.required,
-=======
-                                    hintText: StringUtils.required,
->>>>>>> Stashed changes
                                     textInputType: TextInputType.number,
                                     isSuffix: true,
                                     context: context,
@@ -257,7 +227,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                             }
                           },
                           textColor: Colors.white,
-                          bgColor: isVisible ? color : ColorUtils.disable,
+                          bgColor: isVisible ? color : AppColors.disable,
                           title: StringUtils.next,
                           context: context)
                       .paddingOnly(top: 10.h),
@@ -278,17 +248,17 @@ class _UserTypePageState extends State<UserTypeScreen> {
                 if (isMale) {
                   userInfoImage = AssetsUtils.icMaleChart;
                   genderName = StringUtils.male;
-                  color = ColorUtils.primaryBlue;
+                  color = AppColors.primaryBlue;
                   isVisible = false;
                 } else if (isFemale) {
                   userInfoImage = AssetsUtils.icFemaleChart;
                   genderName = StringUtils.female;
-                  color = ColorUtils.terracotta;
+                  color = AppColors.terracotta;
                   isVisible = false;
                 } else {
                   userInfoImage = AssetsUtils.icNonChart;
                   genderName = StringUtils.nonBinary;
-                  color = ColorUtils.green;
+                  color = AppColors.green;
                   isVisible = false;
                 }
               }

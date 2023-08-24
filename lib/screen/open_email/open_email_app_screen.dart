@@ -44,7 +44,7 @@ class OpenEmailAppScreen extends StatelessWidget {
                 Text(
                   StringUtils.checkSubMail,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
+                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
                 buildButton(
                         context: context,
@@ -62,7 +62,7 @@ class OpenEmailAppScreen extends StatelessWidget {
                   child: Text(
                     StringUtils.skipText,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge?.copyWith(color: ColorUtils.primaryBlue),
+                    style: textTheme.bodyLarge?.copyWith(color: AppColors.primaryBlue),
                   ).paddingOnly(top: 20.h),
                 ),
                 RichText(
@@ -71,11 +71,11 @@ class OpenEmailAppScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: 'Didn’t receive the email? Check your spam filter or ',
-                        style: textTheme.bodySmall!.copyWith(color: ColorUtils.darkGray, fontSize: 14.sp, fontWeight: FontWeight.w300),
+                        style: textTheme.bodySmall!.copyWith(color: AppColors.darkGray, fontSize: 14.sp, fontWeight: FontWeight.w300),
                       ),
                       TextSpan(
                         text: 'try another email address',
-                        style: textTheme.bodySmall!.copyWith(color: ColorUtils.terracotta, fontSize: 14.sp, fontWeight: FontWeight.w300),
+                        style: textTheme.bodySmall!.copyWith(color: AppColors.terracotta, fontSize: 14.sp, fontWeight: FontWeight.w300),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.

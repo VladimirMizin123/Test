@@ -48,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onTap: () => Get.back(),
                       child: const Icon(
                         Icons.arrow_back_ios,
-                        color: ColorUtils.darkGray,
+                        color: AppColors.darkGray,
                       ),
                     ),
                   ),
@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ).paddingOnly(top: 16.h, bottom: 0),
               Text(
                 StringUtils.subResetPassword,
-                style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
+                style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
               ),
               commonTextField(context: context, controller: emailController, hintText: StringUtils.email).paddingOnly(top: 20.h),
               BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
@@ -86,7 +86,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           bloc.add(ButtonClickEvent(email: emailController.text));
                         },
                         textColor: Colors.white,
-                        bgColor: ColorUtils.primaryBlue,
+                        bgColor: AppColors.primaryBlue,
                         title: StringUtils.sendInstructions);
                   }).paddingOnly(top: 25.h)
             ],

@@ -33,7 +33,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 6,
       fontFamily: 'Avenir',
@@ -45,7 +45,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 8,
       fontFamily: 'Avenir',
@@ -57,7 +57,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 10,
       fontFamily: 'Avenir',
@@ -69,7 +69,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 12,
       fontFamily: 'Avenir',
@@ -81,7 +81,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 14,
       fontFamily: 'Avenir',
@@ -93,7 +93,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 15,
       fontFamily: 'Avenir',
@@ -105,7 +105,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 16,
       fontFamily: 'Avenir',
@@ -117,7 +117,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 18,
       fontFamily: 'Avenir',
@@ -129,7 +129,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 20,
       fontFamily: 'Avenir',
@@ -141,7 +141,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 22,
       fontFamily: 'Avenir',
@@ -153,7 +153,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 24,
       fontFamily: 'Avenir',
@@ -165,7 +165,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 26,
       fontFamily: 'Avenir',
@@ -177,7 +177,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 28,
       fontFamily: 'Avenir',
@@ -189,7 +189,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 34,
       fontFamily: 'Avenir',
@@ -201,7 +201,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 40,
       fontFamily: 'Avenir',
@@ -213,7 +213,7 @@ class FontUtils {
     FWT fontWeight = FWT.regular,
   }) {
     return TextStyle(
-      color: fontColor ?? ColorUtils.green,
+      color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 48,
       fontFamily: 'Avenir',

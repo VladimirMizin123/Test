@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../widget/app_widget.dart';
 
@@ -22,37 +22,37 @@ class ThirdGymInstructionScreen extends StatelessWidget {
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
-                  header1: ColorUtils.bluePressed,
-                  header2: ColorUtils.primaryBlue,
-                  borderColor: ColorUtils.primaryBlue,
-                  Bgcolor: ColorUtils.primaryBlue,
+                  header1: AppColors.bluePressed,
+                  header2: AppColors.primaryBlue,
+                  borderColor: AppColors.primaryBlue,
+                  Bgcolor: AppColors.primaryBlue,
                   image: AssetsUtils.male_instrucion3,
-                  textColor1: ColorUtils.primaryBlue,
-                  textColor2: ColorUtils.skyBlue,
+                  textColor1: AppColors.primaryBlue,
+                  textColor2: AppColors.skyBlue,
                 )
               : chooseGender == 'Female'
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
-                      header1: ColorUtils.terracottaPressed,
-                      header2: ColorUtils.terracotta,
-                      borderColor: ColorUtils.terracotta,
-                      Bgcolor: ColorUtils.terracotta,
+                      header1: AppColors.terracottaPressed,
+                      header2: AppColors.terracotta,
+                      borderColor: AppColors.terracotta,
+                      Bgcolor: AppColors.terracotta,
                       image: AssetsUtils.female_instrucion3,
-                      textColor1: ColorUtils.terracotta,
-                      textColor2: ColorUtils.coral,
+                      textColor1: AppColors.terracotta,
+                      textColor2: AppColors.coral,
                     )
                   : chooseGender == 'Non'
                       ? commonInstructionView(
                           context: context,
                           textTheme: textTheme,
-                          header1: ColorUtils.greenPressed,
-                          header2: ColorUtils.green,
-                          borderColor: ColorUtils.green,
-                          Bgcolor: ColorUtils.green,
+                          header1: AppColors.greenPressed,
+                          header2: AppColors.green,
+                          borderColor: AppColors.green,
+                          Bgcolor: AppColors.green,
                           image: AssetsUtils.non_instrucion3,
-                          textColor1: ColorUtils.green,
-                          textColor2: ColorUtils.mint,
+                          textColor1: AppColors.green,
+                          textColor2: AppColors.mint,
                         )
                       : const SizedBox()),
     );
