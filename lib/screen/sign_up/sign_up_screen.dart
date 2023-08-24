@@ -58,29 +58,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   commonTextField(
                           context: context,
                           controller: homeController.fNameController,
-                          hintText: AppStrings.fName)
+                          hintText: StringUtils.fName)
                       .paddingOnly(top: 8),
                   commonTextField(
                           context: context,
                           controller: homeController.lastNameController,
-                          hintText: AppStrings.lName)
+                          hintText: StringUtils.lName)
                       .paddingOnly(top: 16),
                   commonTextField(
                           context: context,
                           controller: homeController.emailController,
-                          hintText: AppStrings.email)
+                          hintText: StringUtils.email)
                       .paddingOnly(top: 16),
                   commonTextField(
                           isPassword: true,
                           context: context,
                           controller: homeController.passwordController,
-                          hintText: AppStrings.password)
+                          hintText: StringUtils.password)
                       .paddingOnly(top: 16),
                   commonTextField(
                           isPassword: true,
                           context: context,
                           controller: homeController.confirmPasswordController,
-                          hintText: AppStrings.confirmPassword)
+                          hintText: StringUtils.confirmPassword)
                       .paddingOnly(top: 16),
                   buildButton(
                           context: context,
@@ -89,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                           textColor: const Color(0xFFD9E9EE),
                           bgColor: const Color(0xFF004C63),
-                          title: AppStrings.joinGymEats)
+                          title: StringUtils.joinGymEats)
                       .paddingOnly(top: 25.h),
                   Text(
                     StringUtils.or,

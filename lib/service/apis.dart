@@ -2,17 +2,31 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import '../app/sharedPrefrence.dart';
 import 'api_exception.dart';
 import 'api_urls.dart';
 
 class ApiServices {
 
+  String token = 'Bearer ${PreferenceUtils.getString(prefToken)}';
+
   Future<dynamic> get(String url) async {
     try {
-      final response = await http.get(Uri.parse(url),headers: {
-        'accept': '*/*',
-        'Api_Key': ApiUrls.apiKey,
-      });
+      Map<String, String>? headers;
+      if(token.isEmpty){
+        headers = {
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }else{
+        headers = {
+          'Authorization' : token,
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+
+      final response = await http.get(Uri.parse(url),headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -28,14 +42,25 @@ class ApiServices {
 
   Future<http.Response> post(String url, dynamic body) async {
     try {
+      Map<String, String>? headers;
+      if(token.isEmpty){
+        headers = {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }else{
+        headers = {
+          'Content-Type': 'application/json',
+          'Authorization' : token,
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
       final jsonBody = jsonEncode(body);
       final response = await http.post(Uri.parse(url),
           body: jsonBody,
-          headers: {
-            'Content-Type': 'application/json',
-            'accept': '*/*',
-            'Api_Key': ApiUrls.apiKey,
-          },);
+          headers: headers,);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -50,11 +75,23 @@ class ApiServices {
   }
 
   Future<dynamic> put(String url, dynamic body) async {
-    try {
-      final response = await http.put(Uri.parse(url), body: body,headers: {
+    Map<String, String>? headers;
+    if(token.isEmpty){
+      headers = {
+        'Content-Type': 'application/json',
         'accept': '*/*',
         'Api_Key': ApiUrls.apiKey,
-      });
+      };
+    }else{
+      headers = {
+        'Content-Type': 'application/json',
+        'Authorization' : token,
+        'accept': '*/*',
+        'Api_Key': ApiUrls.apiKey,
+      };
+    }
+    try {
+      final response = await http.put(Uri.parse(url), body: body,headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -70,10 +107,22 @@ class ApiServices {
 
   Future<dynamic> delete(String url) async {
     try {
-      final response = await http.delete(Uri.parse(url),headers: {
-      'accept': '*/*',
-      'Api_Key': ApiUrls.apiKey,
-      });
+      Map<String, String>? headers;
+      if(token.isEmpty){
+        headers = {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }else{
+        headers = {
+          'Content-Type': 'application/json',
+          'Authorization' : token,
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+      final response = await http.delete(Uri.parse(url),headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -116,16 +165,26 @@ class ApiServices {
   Future<http.Response> postMultipart(
       {required String url, required Map<String, String> body, required List<http.MultipartFile> files}) async {
     try {
-      Map<String, String> header = {
-        'content-type': 'multipart/form-data',
-        'accept': '*/*',
-        'Api_Key': ApiUrls.apiKey,
-      };
+      Map<String, String>? headers;
+      if(token.isEmpty){
+        headers = {
+          'Content-Type': 'multipart/form-data',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }else{
+        headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization' : token,
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
       final request = http.MultipartRequest(
         'POST',
         Uri.parse(url),
       );
-      request.headers.addAll(header);
+      request.headers.addAll(headers);
       if(files.isNotEmpty){
         request.files.addAll(files);
       }

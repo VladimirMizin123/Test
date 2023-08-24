@@ -111,7 +111,7 @@ class SignUpRepository {
     };*/
     final response = await apiServices.postMultipart(url: ApiUrls.register, body: data,files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      await PreferenceUtils.setBool(isLogin, true);
+      await PreferenceUtils.setBool(prefIsLogin, true);
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

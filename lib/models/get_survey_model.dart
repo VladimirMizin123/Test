@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
+
+import '../constant/color_utils.dart';
 
 class GetSurveyModel {
   bool? success;

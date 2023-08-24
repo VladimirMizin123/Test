@@ -65,11 +65,11 @@ class FiveGymInstructionScreen extends StatelessWidget {
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
-        Text(StringUtils.gendersubInstruction8,
+        Text(StringUtils.genderSubInstruction8,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(StringUtils.gendersubInstruction9,
+        Text(StringUtils.genderSubInstruction9,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w),

@@ -11,8 +11,8 @@ import '../../bloc/user_photo_selection/user_photo_selection_bloc.dart';
 import '../../bloc/user_photo_selection/user_photo_selection_event.dart';
 import '../../bloc/user_photo_selection/user_photo_selection_state.dart';
 import '../../constant/app_TextStyle.dart';
-import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
+import '../../constant/color_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 

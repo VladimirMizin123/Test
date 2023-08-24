@@ -64,15 +64,15 @@ class SecondGymInstructionScreen extends StatelessWidget {
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h),
-        Text(StringUtils.gendersubInstruction1,
+        Text(StringUtils.genderSubInstruction1,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(StringUtils.gendersubInstruction2,
+        Text(StringUtils.genderSubInstruction2,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(StringUtils.gendersubInstruction3,
+        Text(StringUtils.genderSubInstruction3,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w),

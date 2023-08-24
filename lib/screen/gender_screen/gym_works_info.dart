@@ -8,7 +8,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import '../../widget/app_widget.dart';
 
 class GymWorkInfoScreen extends StatefulWidget {
-  const GymWorkInfoScreen({super.key,});
+  const GymWorkInfoScreen({super.key});
 
 
   @override
@@ -16,7 +16,7 @@ class GymWorkInfoScreen extends StatefulWidget {
 }
 
 class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
-  final routeName = '/GymWorkInfo';
+  final routeName = '/GymWorkInfoScreen';
   String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {

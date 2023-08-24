@@ -49,13 +49,6 @@ class GymInstructionScreen extends StatelessWidget {
                         textColor2: const Color(0xFFC1EACE),
                         textTheme: textTheme)
                     ,
-        child: chooseGender == 'Male'
-            ? commonInstructionView(context: context, image: AssetsUtils.male_instrucion1, Bgcolor: const Color(0xFF004C63), borderColor: const Color(0xFF004C63), header1: const Color(0xFF002E3B), header2: const Color(0xFF004C63), textColor1: const Color(0xFF004C63), textColor2: const Color(0xFFD9E9EE), textTheme: textTheme)
-            : chooseGender == 'Female'
-                ? commonInstructionView(context: context, image: AssetsUtils.female_instrucion1, Bgcolor: const Color(0xFFCE6B53), borderColor: const Color(0xFFCE6B53), header1: const Color(0xFFA55642), header2: const Color(0xFFCE6B53), textColor1: const Color(0xFFCE6B53), textColor2: const Color(0xFFF9D5C5), textTheme: textTheme)
-                : chooseGender == 'Non'
-                    ? commonInstructionView(context: context, image: AssetsUtils.non_instrucion1, Bgcolor: const Color(0xFF336633), borderColor: const Color(0xFF336633), header1: const Color(0xFF1F3D1F), header2: const Color(0xFF336633), textColor1: const Color(0xFF336633), textColor2: const Color(0xFFC1EACE), textTheme: textTheme)
-                    : const SizedBox(),
       ),
     );
   }
@@ -65,12 +58,12 @@ class GymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          StringUtils.gender_Instruction1,
+          StringUtils.genderInstruction1,
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1),
         ).paddingOnly(top: 35.h, bottom: 16.h),
         Text(
-          StringUtils.gender_subInstruction,
+          StringUtils.genderSubInstruction,
           textAlign: TextAlign.start,
           style: textTheme?.bodyLarge?.copyWith(
             color: header2,

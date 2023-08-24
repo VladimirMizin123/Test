@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.dart';
-import 'package:gymeats_mobile/screen/gender_screen/gym_works_info.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
@@ -37,6 +36,7 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
+import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
@@ -56,13 +56,13 @@ Future<void> main() async {
         projectId: projectId),
   );
   await initDynamicLinks();
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-   MyApp({super.key});
+  MyApp({super.key});
 
- final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
+  final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -132,43 +132,39 @@ class MyApp extends StatelessWidget {
               page: () => const GenderScreen(),
             ),
             GetPage(
-              name: '/GymWorkInfoScreen',
-              page: () => const GymWorkInfoScreen(),
-            ),
-            GetPage(
               name: '/GymInstructionScreen',
               page: () => GymInstructionScreen(),
             ),
             GetPage(
               name: '/SecondGymInstructionScreen',
-              page: () =>  SecondGymInstructionScreen(),
+              page: () => SecondGymInstructionScreen(),
             ),
             GetPage(
               name: '/ThirdGymInstructionScreen',
-              page: () =>  ThirdGymInstructionScreen(),
+              page: () => ThirdGymInstructionScreen(),
             ),
             GetPage(
               name: '/FourthGymInstructionScreen',
-              page: () =>  FourthGymInstructionScreen(),
+              page: () => FourthGymInstructionScreen(),
             ),
             GetPage(
               name: '/FiveGymInstructionScreen',
-              page: () =>  FiveGymInstructionScreen(),
+              page: () => FiveGymInstructionScreen(),
             ),
             GetPage(
               name: '/ShowMealPlanBtnScreen',
-              page: () =>  ShowMealPlanBtnScreen(),
+              page: () => ShowMealPlanBtnScreen(),
             ),
             GetPage(
-              name: '/first-dashboard',
+              name: '/FirstDashBoardView',
               page: () => const FirstDashBoardView(),
             ),
             GetPage(
-              name: '/second-dashboard',
+              name: '/SecondDashBoardView',
               page: () => const SecondDashBoardView(),
             ),
             GetPage(
-              name: '/third-dashboard',
+              name: '/ThirdDashBoardView',
               page: () => const ThirdDashBoardView(),
             ),
             GetPage(
@@ -176,23 +172,25 @@ class MyApp extends StatelessWidget {
               page: () => const DashBoardScreen(),
             ),
             GetPage(
-              name: '/add-water-screen',
+              name: '/AddWaterScreen',
               page: () => const AddWaterScreen(),
             ),
             GetPage(
-              name: '/add-Entry-screen',
+              name: '/AddEntryScreen',
               page: () => const AddEntryScreen(),
             ),
             GetPage(
-              name: '/order-history',
+              name: '/OrderHistoryScreen',
               page: () => const OrderHistoryScreen(),
             ),
             GetPage(
-                name: '/UserPhotoSelectionScreen',
-                page: () => const UserPhotoSelectionScreen(),),
-          GetPage(
-                name: '/UserSignUpInfoScreen',
-                page: () => const UserSignUpInfoScreen(),),
+              name: '/UserPhotoSelectionScreen',
+              page: () => const UserPhotoSelectionScreen(),
+            ),
+            GetPage(
+              name: '/UserSignUpInfoScreen',
+              page: () => const UserSignUpInfoScreen(),
+            ),
             GetPage(
               name: '/FirstPersonalizedWelcomeScreen',
               page: () => const FirstPersonalizedWelcomeScreen(),
@@ -212,6 +210,10 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/BuildMyProfileScreen',
               page: () => const BuildMyProfileScreen(),
+            ),
+            GetPage(
+              name: '/GymWorkInfoScreen',
+              page: () => const GymWorkInfoScreen(),
             ),
           ],
         );

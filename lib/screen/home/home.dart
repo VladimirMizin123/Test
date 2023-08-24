@@ -5,7 +5,6 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 
 import '../../constant/string_utils.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
@@ -56,7 +55,7 @@ class _HomeState extends State<Home> {
                   context: context,
                   title: StringUtils.letsEat,
                   onPressed: () {
-                    if(PreferenceUtils.getBool(isLogin)){
+                    if(PreferenceUtils.getBool(prefIsLogin)){
                       Get.toNamed('/GymEatsMenuScreen');
                     }else{
                       Get.toNamed('/GymEatsMenuScreen');

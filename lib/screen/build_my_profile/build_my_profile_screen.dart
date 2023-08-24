@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
+import '../../models/sign_up_data_navigate_model.dart';
 
 class BuildMyProfileScreen extends StatefulWidget {
   const BuildMyProfileScreen({super.key});

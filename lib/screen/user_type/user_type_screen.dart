@@ -4,19 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
-
 import '../../bloc/user_type/user_type_bloc.dart';
 import '../../bloc/user_type/user_type_event.dart';
 import '../../bloc/user_type/user_type_state.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../constant/string_utils.dart';
 import '../../constant/color_utils.dart';
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
-import '../user_survey/user_survey_screen.dart';
+
 
 class UserTypeScreen extends StatefulWidget {
   const UserTypeScreen({super.key});

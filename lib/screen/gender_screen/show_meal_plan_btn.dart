@@ -20,13 +20,13 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
     return Scaffold(
       body: bodyView(
         context: context,
-        bgColor: gender == AppStrings.male
+        bgColor: gender == StringUtils.male
             ? AppColors.primaryBlue
-            : gender == AppStrings.female
+            : gender == StringUtils.female
                 ? AppColors.terracotta
                 :AppColors.green
                    ,
-        textColor: gender == AppStrings.male
+        textColor: gender == StringUtils.male
             ? AppColors.skyBlue
             : gender ==StringUtils.female
                 ? AppColors.coral
