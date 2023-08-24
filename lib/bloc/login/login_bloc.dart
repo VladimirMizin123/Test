@@ -5,10 +5,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/login/login_event.dart';
 import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
-
 import '../../app/functions.dart';
 import '../../repository/login.dart';
-import '../../screen/meal_plan_home/meal_plan_home_screen.dart';
 import '../../widget/app_widget.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
@@ -34,7 +32,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           emit(LoginSuccessfulState());
-          Get.toNamed('/MealPlanHomeScreen');
+          Get.toNamed('/DashBoardScreen');
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());

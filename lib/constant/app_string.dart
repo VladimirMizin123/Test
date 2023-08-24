@@ -1,6 +1,6 @@
 class AppStrings {
   /// Images
-  static const String defaultImage = "assets/image/defaultImage.png";
+
   static const String welcomeBg = "assets/image/welcome_bg.png";
   static const String emailApp = "assets/image/emailapp.png";
   static const String welcomeLogo = "assets/image/Logo.png";
@@ -17,6 +17,7 @@ class AppStrings {
   static const String maleBG2 = "assets/image/maleBg2.png";
   static const String femaleBG2 = "assets/image/femaleBg2.png";
   static const String buildProfileBG = "assets/image/buildProfileBG.png";
+  static const String storeImage = "assets/image/storeImage.png";
   static const String non_meal_Bg = "assets/image/non_meal_Bg.png";
   static const String male_meal_Bg = "assets/image/male_meal_Bg.png";
   static const String female_meal_Bg = "assets/image/female_meal_Bg.png";
@@ -38,6 +39,9 @@ class AppStrings {
   static const String malePersonalized2 = "assets/image/male_personalized2.png";
   static const String malePersonalized3 = "assets/image/male_personalized3.png";
   static const String malePersonalized4 = "assets/image/male_personalized4.png";
+  static const String dashBoardBG = "assets/image/dashboardBg.png";
+  static const String dashBoardBG2 = "assets/image/dashboardBg2.png";
+  static const String dashBoardBG3 = "assets/image/dashboardBg3.png";
   static const String female_instrucion1 =
       "assets/image/female_instruction1.png";
   static const String female_instrucion2 =
@@ -69,11 +73,25 @@ class AppStrings {
   /// Icons
 
   static const user = 'assets/icon/User.png';
-  static const filter = 'assets/icon/filters.png';
+  static const notification = 'assets/icon/notifications.png';
   static const gymEatsLogo = "assets/icon/GymEatsLogo.png";
   static const arrowBack = "assets/icon/arrow_back.png";
   static const arrowForward = "assets/icon/arrow_forward.png";
   static const disableArrowBack = "assets/icon/disable_arrow_back.png";
+  static const breakFastIcon = "assets/icon/foodIcon.png";
+  static const lunchIcon = "assets/icon/lunchIcon.png";
+  static const dinnerIcon = "assets/icon/dinnerIcon.png";
+  static const snackIcon = "assets/icon/snackIcon.png";
+  static const dumBBell = "assets/icon/dumbbell.png";
+  static const water = "assets/icon/water.png";
+  static const fire = "assets/icon/Fire.png";
+  static const breakFastImage = "assets/icon/breakfast.png";
+  static const lunchImage = "assets/icon/lunch.png";
+  static const snackImage = "assets/icon/snack.png";
+  static const dinnerImage = "assets/icon/dinner.png";
+  static const waterIcon1 = "assets/icon/waterIcon1.png";
+  static const waterIcon2 = "assets/icon/waterIcon2.png";
+  static const waterIcon3 = "assets/icon/waterIcon3.png";
 
   /// Text
   static const fName = 'First Name';
@@ -101,6 +119,8 @@ class AppStrings {
   static const welcome = 'Welcome Back';
   static const welcomeBack = 'Welcome Back!';
   static const resetPassword = 'Reset Password';
+  static const storeText = 'Order from multiple stores';
+  static const storeAddress = 'Wallmart & Tesco';
   static const subResetPassword =
       'We will send a confirmation email to it. Follow the link and reset your password!';
   static const sendInstructions = 'Send Instructions';
@@ -180,7 +200,7 @@ class AppStrings {
   static const pleaseEnterConfirmPassword = 'Please enter confirm password';
   static const passwordNotMatch = 'Password does\'t match';
   static const userSurveySelectionError = 'Please select at list one option';
-  static const mealPlan = 'Meal Plan';
+  static const dashBoard = 'Dashboard';
   static const showGroceryList = 'Show Grocery List';
   static const readyToStep = 'Ready to take step\ntowards your goals!';
   static const livingPresent =
@@ -191,4 +211,23 @@ class AppStrings {
       'Each meal is a new opportunity to ove in the right direction.';
   static const iAmReady = 'I’m Ready';
   static const buildMyProfile = 'Build My Profile';
+  static const dashBoardText =
+      'GYM EATS has given me the life I never knew I could have–I feel and look amazing! I’ve lost 27 lbs and am changing my goal to maintain.';
+  static const dashBoardText2 =
+      'My weight has been an issue my entire life, until now. I’ve lost 46 lbs so far and my GYM EATS meal plans are the reason!';
+  static const dashBoardText3 =
+      'I love exercise but I haven’t enjoyed eating because what I ate made me bloated and tired. Not anymore! GYM EATS changed my life!';
+  static const breakfast = 'Breakfast ';
+  static const subBreakfast = 'Smoked Mackerel Salad With Appe';
+  static const lunch = 'Lunch ';
+  static const subLunch = 'Chicken Pizza With Mozzarella';
+  static const snack = 'Snack ';
+  static const subSnack = 'Cheesecake';
+  static const dinner = 'Dinner ';
+  static const subDinner = 'Eggs With Tomato';
+  static const addWater = 'Add Water';
+  static const addEntry = 'Add Entry';
+  static const orderHistory = 'Order History';
+  static const orderProgressText = 'Order in progress';
+  static const save = 'Save';
 }
