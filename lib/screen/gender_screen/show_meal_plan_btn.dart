@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 
 class ShowMealPlanBtnScreen extends StatelessWidget {
   const ShowMealPlanBtnScreen({super.key, this.chooseGender = 'Non'});
@@ -21,25 +22,25 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
       body: bodyView(
         context: context,
         bgColor: chooseGender == 'Male'
-            ? AppColors.primaryBlue
+            ? ColorUtils.primaryBlue
             : chooseGender == 'Female'
-                ? AppColors.terracotta
+                ? ColorUtils.terracotta
                 : chooseGender == 'Non'
-                    ? AppColors.green
+                    ? ColorUtils.green
                     : Colors.black,
         textColor: chooseGender == 'Male'
-            ? AppColors.skyBlue
+            ? ColorUtils.skyBlue
             : chooseGender == 'Female'
-                ? AppColors.coral
+                ? ColorUtils.coral
                 : chooseGender == 'Non'
-                    ? AppColors.mint
+                    ? ColorUtils.mint
                     : Colors.black,
         image: chooseGender == 'Male'
-            ? AppStrings.male_meal_Bg
+            ? AssetsUtils.male_meal_Bg
             : chooseGender == 'Female'
-                ? AppStrings.female_meal_Bg
+                ? AssetsUtils.female_meal_Bg
                 : chooseGender == 'Non'
-                    ? AppStrings.non_meal_Bg
+                    ? AssetsUtils.non_meal_Bg
                     : '',
         textTheme: textTheme,
       ),
@@ -68,29 +69,22 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         children: [
           Text(
-            AppStrings.allSet,
+            StringUtils.allSet,
             textAlign: TextAlign.center,
             style: textTheme?.displayMedium?.copyWith(color: Colors.white),
           ).paddingOnly(top: 50.h),
           Text(
-            AppStrings.checkMealPlan,
+            StringUtils.checkMealPlan,
             textAlign: TextAlign.center,
             style: textTheme?.displayMedium?.copyWith(color: Colors.white),
           ).paddingOnly(top: 15.h),
           SvgPicture.asset(
-            AppStrings.roundBlueLogo,
+            AssetsUtils.roundBlueLogo,
             color: Colors.white,
             height: 100.h,
             width: 100.w,
           ).paddingOnly(top: 250.h),
-          buildButton(
-                  context: context,
-                  textColor: textColor,
-                  title: AppStrings.showMealBtnText,
-                  onPressed: () {},
-                  bgColor: bgColor,
-                  hasImage: false)
-              .paddingOnly(top: 24.h, bottom: 20.h),
+          buildButton(context: context, textColor: textColor, title: StringUtils.showMealBtnText, onPressed: () {}, bgColor: bgColor, hasImage: false).paddingOnly(top: 24.h, bottom: 20.h),
         ],
       ).paddingSymmetric(horizontal: 20.w),
     );

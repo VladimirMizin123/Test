@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 
 class AppCenterLoader extends StatefulWidget {
   const AppCenterLoader({super.key});
@@ -12,7 +12,7 @@ class _AppCenterLoaderState extends State<AppCenterLoader> {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: CircularProgressIndicator(color: AppColors.primaryBlue),
+      child: CircularProgressIndicator(color: ColorUtils.primaryBlue),
     );
   }
 }

@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_TextStyle.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 
-import '../constant/app_string.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../constant/string_utils.dart';
 
-Widget buildButton(
-    {required BuildContext context,
-    String? title,
-    void Function()? onPressed,
-    Color? bgColor,
-    Color? textColor,
-    bool? hasImage = false,
-    String? imagePath}) {
+Widget buildButton({required BuildContext context, String? title, void Function()? onPressed, Color? bgColor, Color? textColor, bool? hasImage = false, String? imagePath}) {
   return SizedBox(
     width: double.infinity.w,
     height: 48.h,
@@ -42,11 +36,7 @@ Widget buildButton(
                   ),
                 )
               : const SizedBox(),
-          Text(title!,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .copyWith(color: textColor)),
+          Text(title!, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: textColor)),
         ],
       ),
     ),
@@ -68,15 +58,9 @@ Widget buildBorderButton({
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(color: borderColor)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: borderColor)),
       ),
-      child: Text(title!,
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall!
-              .copyWith(color: textColor)),
+      child: Text(title!, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: textColor)),
     ),
   );
 }
@@ -95,10 +79,7 @@ Widget commonTextField({
           ),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF5F5F5F)),
+        hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: const Color(0xFF5F5F5F)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -120,6 +101,7 @@ Widget commonTextField({
   );
 }
 
+<<<<<<< Updated upstream
 Widget commonUserTypeTextField(
     {required String hintText,
     required TextEditingController controller,
@@ -134,6 +116,9 @@ Widget commonUserTypeTextField(
     required TextInputType textInputType,
     required Function(String value) onChange,
     bool isSuffix = false}) {
+=======
+Widget commonUserTypeTextField({required String hintText, required TextEditingController controller, required BuildContext context, required double width, required double fontSize, required Color fontColor, required TextInputType textInputType, required Function(String value) onChange, bool isSuffix = false}) {
+>>>>>>> Stashed changes
   return Container(
     height: 48.h,
     width: width.w,
@@ -149,18 +134,20 @@ Widget commonUserTypeTextField(
           child: TextFormField(
             controller: controller,
             keyboardType: textInputType,
+<<<<<<< Updated upstream
             cursorColor: cursorColor,
             style: TextStyle(fontWeight: fontWeight, color: valueColor),
+=======
+            cursorColor: Colors.white,
+            style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white),
+>>>>>>> Stashed changes
             onChanged: (value) {
               onChange(value);
             },
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,
-              hintStyle: TextStyle(
-                  fontSize: fontSize.sp,
-                  fontWeight: FontWeight.w400,
-                  color: fontColor),
+              hintStyle: TextStyle(fontSize: fontSize.sp, fontWeight: FontWeight.w400, color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide:
@@ -187,11 +174,8 @@ Widget commonUserTypeTextField(
         Visibility(
             visible: isSuffix,
             child: const Text(
-              AppStrings.lbs,
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white),
+              StringUtils.lbs,
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: Colors.white),
             ).marginOnly(right: 5))
       ],
     ),
@@ -216,7 +200,7 @@ Widget commonSearchTextField({
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       boxShadow: [
         BoxShadow(
-          color: AppColors.primaryBlue.withOpacity(0.10),
+          color: ColorUtils.primaryBlue.withOpacity(0.10),
           spreadRadius: 0,
           blurRadius: 10,
           offset: const Offset(0, 0), // changes position of shadow
@@ -226,7 +210,7 @@ Widget commonSearchTextField({
     child: Row(
       children: [
         const SvgImage(
-          image: AppStrings.icSearch,
+          image: AssetsUtils.icSearch,
         ).marginOnly(left: 15),
         Expanded(
           child: TextFormField(
@@ -242,10 +226,7 @@ Widget commonSearchTextField({
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,
-              hintStyle: TextStyle(
-                  fontSize: fontSize.sp,
-                  fontWeight: FontWeight.w400,
-                  color: fontColor),
+              hintStyle: TextStyle(fontSize: fontSize.sp, fontWeight: FontWeight.w400, color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Colors.transparent),
@@ -272,7 +253,7 @@ Widget commonSearchTextField({
               onClear();
             },
             child: const SvgImage(
-              image: AppStrings.icClose,
+              image: AssetsUtils.icClose,
             ).marginOnly(right: 15),
           ),
         ),
@@ -283,41 +264,26 @@ Widget commonSearchTextField({
 
 showToast({required String message, required bool isSuccess}) {
   if (isSuccess) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0);
+    Fluttertoast.showToast(msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Colors.green, textColor: Colors.white, fontSize: 16.0);
   } else {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-        fontSize: 16.0);
+    Fluttertoast.showToast(msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, textColor: Colors.white, backgroundColor: Colors.red, fontSize: 16.0);
   }
 }
 
 Widget arrowButton({String? icon}) {
   return Container(
-    height: 36.h,
-    width: 36.w,
+    height: 30.h,
+    width: 30.w,
     decoration: BoxDecoration(
       color: Colors.white60,
       shape: BoxShape.circle,
-      border: Border.all(
-          style: BorderStyle.solid,
-          color: AppColors.disable,
-          width: 1.0), // Set border width
+      border: Border.all(style: BorderStyle.solid, color: ColorUtils.disable, width: 1.0), // Set border width
     ),
     child: Center(
       child: Image.asset(
         icon.toString(),
-        height: 16.h,
-        width: 16.w,
+        height: 13.h,
+        width: 13.w,
       ),
     ),
   );
@@ -335,6 +301,7 @@ Widget buildGymEatsHeader({Widget? child, Color? bgColor}) {
   );
 }
 
+<<<<<<< Updated upstream
 Widget dashBoardCardView(
     {Widget? child,
     double? height,
@@ -393,12 +360,67 @@ Widget commonSliderView({
                 textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
           ),
           addIcon(),
+=======
+Widget mealPlanCard({
+  String? mealTitle,
+  String? mealDescription,
+  String? mealCal,
+  required BuildContext context,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+    child: Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                AssetsUtils.defaultImage,
+                height: 80.h,
+                width: 90.w,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: SizedBox(
+                  height: 80.h,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(mealTitle ?? '', style: FontUtils.h14(fontColor: ColorUtils.darkGray, fontWeight: FWT.lightMedium)),
+                      Text(mealDescription ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: ColorUtils.darkGray, fontWeight: FWT.regular)),
+                      Text(mealCal ?? '', style: FontUtils.h14(fontColor: ColorUtils.letsEatButton, fontWeight: FWT.lightMedium)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: ColorUtils.middleGray)
+            ],
+          ),
+          SizedBox(height: 10.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              simpleTextBorderButton(context, 'Skip Meal'),
+              simpleTextBorderButton(context, 'Swap Meal'),
+            ],
+          ),
+>>>>>>> Stashed changes
         ],
       ),
     ),
   );
 }
 
+<<<<<<< Updated upstream
 Widget addIcon() {
   return Container(
     height: 40.h,
@@ -413,5 +435,14 @@ Widget addIcon() {
         color: AppColors.primaryBlue,
       ),
     ),
+=======
+Widget simpleTextBorderButton(BuildContext context, String buttonLable) {
+  final screenSize = MediaQuery.of(context).size;
+  return Container(
+    height: screenSize.height * 0.04,
+    width: screenSize.width * 0.41,
+    decoration: BoxDecoration(border: Border.all(color: ColorUtils.primaryBlue), borderRadius: BorderRadius.circular(10)),
+    child: Center(child: Text(buttonLable, style: FontUtils.h16(fontColor: ColorUtils.primaryBlue, fontWeight: FWT.regular))),
+>>>>>>> Stashed changes
   );
 }

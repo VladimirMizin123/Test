@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+
+import '../../constant/string_utils.dart';
 import '../../widget/app_widget.dart';
 
 class Home extends StatefulWidget {
@@ -18,8 +20,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    AppStrings.welcomeBg;
-    AppStrings.welcomeLogo;
+    AssetsUtils.welcomeBg;
+    AssetsUtils.welcomeLogo;
   }
 
   @override
@@ -32,7 +34,7 @@ class _HomeState extends State<Home> {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AppStrings.welcomeBg),
+            image: AssetImage(AssetsUtils.welcomeBg),
             fit: BoxFit.cover,
           ),
         ),
@@ -42,22 +44,21 @@ class _HomeState extends State<Home> {
             Column(
               children: [
                 Image.asset(
-                  AppStrings.welcomeLogo,
+                  AssetsUtils.welcomeLogo,
                   height: 160.h,
                   width: 160.w,
                 ),
                 SizedBox(height: 50.h),
                 buildButton(
                   context: context,
-                  title: AppStrings.letsEat,
+                  title: StringUtils.letsEat,
                   onPressed: () {
                     Get.toNamed('/GymEatsMenu');
                   },
-                  bgColor: AppColors.letsEatButton,
-                  textColor: AppColors.letsEat,
+                  bgColor: ColorUtils.letsEatButton,
+                  textColor: ColorUtils.letsEat,
                 ),
                 SizedBox(height: 40.h),
-
               ],
             )
           ],

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../bloc/reset_password/reset_password_bloc.dart';
 import '../../bloc/reset_password/reset_password_event.dart';
 import '../../bloc/reset_password/reset_password_state.dart';
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import '../../constant/string_utils.dart';
+import '../../constant/color_utils.dart';
 import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
@@ -47,11 +48,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       onTap: () => Get.back(),
                       child: const Icon(
                         Icons.arrow_back_ios,
-                        color: AppColors.darkGray,
+                        color: ColorUtils.darkGray,
                       ),
                     ),
                     Image.asset(
-                      AppStrings.gymEatsLogo,
+                      AssetsUtils.gymEatsLogo,
                       fit: BoxFit.cover,
                       height: 60.h,
                     ),
@@ -59,30 +60,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ],
                 ).paddingOnly(top: 15.h),
                 Text(
-                  AppStrings.createPassword,
-                  style: textTheme.displayLarge?.copyWith(
-                      letterSpacing: -0.8,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF010101)),
+                  StringUtils.createPassword,
+                  style: textTheme.displayLarge?.copyWith(letterSpacing: -0.8, fontWeight: FontWeight.bold, color: const Color(0xFF010101)),
                 ).paddingOnly(top: 16.h),
                 Text(
-                  AppStrings.enterPassword,
-                  style: textTheme.bodyLarge
-                      ?.copyWith(color: AppColors.middleGray),
+                  StringUtils.enterPassword,
+                  style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.newPassword,
-                      style: textTheme.bodyMedium
-                          ?.copyWith(color: AppColors.darkGray),
+                      StringUtils.newPassword,
+                      style: textTheme.bodyMedium?.copyWith(color: ColorUtils.darkGray),
                     ).paddingOnly(bottom: 5.h, top: 24.h),
-                    commonTextField(
-                            context: context,
-                            controller: newPassController,
-                            hintText: AppStrings.writePassword)
-                        .paddingOnly(left: 2.w, right: 2.w),
+                    commonTextField(context: context, controller: newPassController, hintText: StringUtils.writePassword).paddingOnly(left: 2.w, right: 2.w),
                     Row(
                       children: [
                         Container(
@@ -94,10 +86,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         Text(
-                          AppStrings.validatePassLength,
-                          style: textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.darkGray),
+                          StringUtils.validatePassLength,
+                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: ColorUtils.darkGray),
                         )
                       ],
                     ).paddingOnly(top: 5.h),
@@ -107,15 +97,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.confirmPassword,
-                      style: textTheme.bodyMedium
-                          ?.copyWith(color: AppColors.darkGray),
+                      StringUtils.confirmPassword,
+                      style: textTheme.bodyMedium?.copyWith(color: ColorUtils.darkGray),
                     ).paddingOnly(bottom: 5.h, top: 24.h),
-                    commonTextField(
-                            context: context,
-                            controller: confirmPassController,
-                            hintText: AppStrings.writeConfirmPassword)
-                        .paddingOnly(left: 2.w, right: 2.w),
+                    commonTextField(context: context, controller: confirmPassController, hintText: StringUtils.writeConfirmPassword).paddingOnly(left: 2.w, right: 2.w),
                     Row(
                       children: [
                         Container(
@@ -127,39 +112,37 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         Text(
-                          AppStrings.matchPassword,
-                          style: textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.darkGray),
+                          StringUtils.matchPassword,
+                          style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400, color: ColorUtils.darkGray),
                         )
                       ],
                     ).paddingOnly(top: 5.h),
                   ],
                 ),
                 BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
-                        bloc: bloc,
-                        builder: (context, state) {
-                          if (state is ResetLoadingState) {
-                            return const AppCenterLoader();
-                          }
-                          return buildButton(
-                              context: context,
-                              onPressed: () {
-                                bloc.add(ButtonClickEvent(
-                                    password: newPassController.text,
-                                    confirmPassword: confirmPassController.text,));
-                              },
-                              textColor: AppColors.skyBlue,
-                              bgColor: const Color(0xFF004C63),
-                              title: AppStrings.resetPassword);
-                        },
-                        listener: (context, state) {
-                          if(state is ResetSuccessState){
-                            newPassController.clear();
-                            confirmPassController.clear();
-                          }
-                        })
-                    .paddingOnly(top: 25.h, bottom: 10.h),
+                    bloc: bloc,
+                    builder: (context, state) {
+                      if (state is ResetLoadingState) {
+                        return const AppCenterLoader();
+                      }
+                      return buildButton(
+                          context: context,
+                          onPressed: () {
+                            bloc.add(ButtonClickEvent(
+                              password: newPassController.text,
+                              confirmPassword: confirmPassController.text,
+                            ));
+                          },
+                          textColor: ColorUtils.skyBlue,
+                          bgColor: const Color(0xFF004C63),
+                          title: StringUtils.resetPassword);
+                    },
+                    listener: (context, state) {
+                      if (state is ResetSuccessState) {
+                        newPassController.clear();
+                        confirmPassController.clear();
+                      }
+                    }).paddingOnly(top: 25.h, bottom: 10.h),
               ],
             ),
           ),

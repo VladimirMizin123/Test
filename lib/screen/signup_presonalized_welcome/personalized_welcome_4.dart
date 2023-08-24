@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FourthPersonalizedWelcomeScreen extends StatelessWidget {
-  const FourthPersonalizedWelcomeScreen(
-      {super.key, this.chooseGender = 'Female'});
+  const FourthPersonalizedWelcomeScreen({super.key, this.chooseGender = 'Female'});
 
   final String chooseGender;
   final routeName = '/FourthPersonalizedWelcome';
@@ -24,11 +24,11 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: chooseGender == 'Male'
-                ? const AssetImage(AppStrings.malePersonalized4)
+                ? const AssetImage(AssetsUtils.malePersonalized4)
                 : chooseGender == 'Female'
-                    ? const AssetImage(AppStrings.feMalePersonalized4)
+                    ? const AssetImage(AssetsUtils.feMalePersonalized4)
                     : chooseGender == 'Non'
-                        ? const AssetImage(AppStrings.nonPersonalized4)
+                        ? const AssetImage(AssetsUtils.nonPersonalized4)
                         : const AssetImage('AppStrings.mindyBG'),
             fit: BoxFit.cover,
           ),
@@ -40,7 +40,7 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.topLeft,
                       child: SvgPicture.asset(
-                        AppStrings.roundBlueLogo,
+                        AssetsUtils.roundBlueLogo,
                         height: 95.h,
                         width: 95.w,
                         color: Colors.white,
@@ -51,27 +51,24 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              AppStrings.welcomeBack,
-                              style: textTheme.displayMedium
-                                  ?.copyWith(color: Colors.white),
+                              StringUtils.welcomeBack,
+                              style: textTheme.displayMedium?.copyWith(color: Colors.white),
                             ).paddingOnly(bottom: 10.h),
                             Text(
-                              AppStrings.livingPresent,
+                              StringUtils.livingPresent,
                               textAlign: TextAlign.center,
-                              style: textTheme.displayMedium
-                                  ?.copyWith(color: Colors.white, height: 1.1),
+                              style: textTheme.displayMedium?.copyWith(color: Colors.white, height: 1.1),
                             ),
                           ],
                         )).paddingOnly(left: 20.w, right: 20.w, top: 120.h),
                     buildButton(
                       context: context,
-                      bgColor: AppColors.primaryBlue,
+                      bgColor: ColorUtils.primaryBlue,
                       onPressed: () {},
-                      textColor: AppColors.skyBlue,
-                      title: AppStrings.iAmReady,
+                      textColor: ColorUtils.skyBlue,
+                      title: StringUtils.iAmReady,
                       hasImage: false,
-                    ).paddingOnly(
-                        bottom: 10.h, right: 20.w, left: 20.w, top: 220.h),
+                    ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w, top: 220.h),
                   ],
                 ),
               )
@@ -83,22 +80,20 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                AppStrings.welcomeBack,
-                                style: textTheme.displayMedium
-                                    ?.copyWith(color: Colors.white),
+                                StringUtils.welcomeBack,
+                                style: textTheme.displayMedium?.copyWith(color: Colors.white),
                               ).paddingOnly(bottom: 10.h),
                               Text(
-                                AppStrings.livingPresent,
+                                StringUtils.livingPresent,
                                 textAlign: TextAlign.center,
-                                style: textTheme.displayMedium?.copyWith(
-                                    color: Colors.white, height: 1.1),
+                                style: textTheme.displayMedium?.copyWith(color: Colors.white, height: 1.1),
                               ),
                             ],
                           )).paddingOnly(left: 20.w, right: 20.w, top: 35.h),
                       Align(
                         alignment: Alignment.topLeft,
                         child: SvgPicture.asset(
-                          AppStrings.roundBlueLogo,
+                          AssetsUtils.roundBlueLogo,
                           height: 90.h,
                           width: 90.w,
                           color: Colors.white,
@@ -107,10 +102,10 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                       const Spacer(),
                       buildButton(
                         context: context,
-                        bgColor: AppColors.terracotta,
+                        bgColor: ColorUtils.terracotta,
                         onPressed: () {},
-                        textColor: AppColors.coral,
-                        title: AppStrings.iAmReady,
+                        textColor: ColorUtils.coral,
+                        title: StringUtils.iAmReady,
                         hasImage: false,
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
@@ -119,10 +114,10 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                     ? Column(
                         children: [
                           Image.asset(
-                            AppStrings.gymEatsLogo,
+                            AssetsUtils.gymEatsLogo,
                             height: 60.h,
                             width: 168.w,
-                            color: AppColors.green,
+                            color: ColorUtils.green,
                           ).paddingOnly(top: 35.h),
                           const Spacer(),
                           buildGymEatsHeader(
@@ -130,27 +125,24 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Text(
-                                    AppStrings.welcomeBack,
-                                    style: textTheme.displayMedium
-                                        ?.copyWith(color: Colors.white),
+                                    StringUtils.welcomeBack,
+                                    style: textTheme.displayMedium?.copyWith(color: Colors.white),
                                   ).paddingOnly(bottom: 10.h),
                                   Text(
-                                    AppStrings.livingPresent,
+                                    StringUtils.livingPresent,
                                     textAlign: TextAlign.center,
-                                    style: textTheme.displayMedium?.copyWith(
-                                        color: Colors.white, height: 1.1),
+                                    style: textTheme.displayMedium?.copyWith(color: Colors.white, height: 1.1),
                                   ),
                                 ],
                               )).paddingOnly(right: 20.w, left: 20.w),
                           buildButton(
                             context: context,
-                            bgColor: AppColors.green,
+                            bgColor: ColorUtils.green,
                             onPressed: () {},
-                            textColor: AppColors.mint,
-                            title: AppStrings.iAmReady,
+                            textColor: ColorUtils.mint,
+                            title: StringUtils.iAmReady,
                             hasImage: false,
-                          ).paddingOnly(
-                              bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
+                          ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
                         ],
                       )
                     : Container(),

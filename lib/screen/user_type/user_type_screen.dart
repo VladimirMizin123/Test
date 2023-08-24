@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../bloc/user_type/user_type_bloc.dart';
 import '../../bloc/user_type/user_type_event.dart';
 import '../../bloc/user_type/user_type_state.dart';
 import '../../constant/app_TextStyle.dart';
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import '../../constant/string_utils.dart';
+import '../../constant/color_utils.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 import '../user_survey/user_survey_screen.dart';
@@ -24,18 +25,18 @@ class _UserTypePageState extends State<UserTypeScreen> {
   final ageController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();
-  String genderName = AppStrings.male;
+  String genderName = StringUtils.male;
   bool isMale = true;
   bool isFemale = false;
   bool isNon = false;
 
   bool isVisible = false;
 
-  Color color = AppColors.primaryBlue;
+  Color color = ColorUtils.primaryBlue;
 
   UserTypeBloc bloc = UserTypeBloc();
 
-  String userInfoImage = AppStrings.icMaleChart;
+  String userInfoImage = AssetsUtils.icMaleChart;
 
   @override
   void initState() {
@@ -63,7 +64,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                       ),
                       Center(
                         child: Image.asset(
-                          AppStrings.gymEatsLogo,
+                          AssetsUtils.gymEatsLogo,
                           fit: BoxFit.cover,
                           color: color,
                           height: 60.h,
@@ -73,11 +74,8 @@ class _UserTypePageState extends State<UserTypeScreen> {
                         height: 10.h,
                       ),
                       Text(
-                        AppStrings.myGenderAgeHeightWeight,
-                        style: AppTextStyle.gymEatsStyle.copyWith(
-                            color: color,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w500),
+                        StringUtils.myGenderAgeHeightWeight,
+                        style: AppTextStyle.gymEatsStyle.copyWith(color: color, fontSize: 18.sp, fontWeight: FontWeight.w500),
                       ).paddingOnly(top: 10),
                       SizedBox(
                         height: 10.h,
@@ -89,7 +87,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                             height: 38.h,
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
-                              color: AppColors.lightGrey,
+                              color: ColorUtils.lightGrey,
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -99,44 +97,31 @@ class _UserTypePageState extends State<UserTypeScreen> {
                             children: [
                               Expanded(
                                 child: gender(
-                                  text: AppStrings.male,
-                                  textColor:
-                                      isMale ? Colors.white : Colors.black,
+                                  text: StringUtils.male,
+                                  textColor: isMale ? Colors.white : Colors.black,
                                   bgColor: isMale ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(
-                                        isFemale: false,
-                                        isMale: true,
-                                        isNon: false));
+                                    bloc.add(UserTypeClickEvent(isFemale: false, isMale: true, isNon: false));
                                   },
                                 ),
                               ),
                               Expanded(
                                 child: gender(
-                                  text: AppStrings.female,
-                                  textColor:
-                                      isFemale ? Colors.white : Colors.black,
-                                  bgColor:
-                                      isFemale ? color : Colors.transparent,
+                                  text: StringUtils.female,
+                                  textColor: isFemale ? Colors.white : Colors.black,
+                                  bgColor: isFemale ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(
-                                        isFemale: true,
-                                        isMale: false,
-                                        isNon: false));
+                                    bloc.add(UserTypeClickEvent(isFemale: true, isMale: false, isNon: false));
                                   },
                                 ),
                               ),
                               Expanded(
                                 child: gender(
-                                  text: AppStrings.nonBinary,
-                                  textColor:
-                                      isNon ? Colors.white : Colors.black,
+                                  text: StringUtils.nonBinary,
+                                  textColor: isNon ? Colors.white : Colors.black,
                                   bgColor: isNon ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(
-                                        isFemale: false,
-                                        isMale: false,
-                                        isNon: true));
+                                    bloc.add(UserTypeClickEvent(isFemale: false, isMale: false, isNon: true));
                                   },
                                 ),
                               ),
@@ -165,6 +150,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Row(
+<<<<<<< Updated upstream
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
@@ -208,6 +194,32 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             })
                                         .paddingOnly(top: 15)
                                         .marginOnly(right: 80),
+=======
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    commonUserTypeTextField(
+                                        width: 70.w,
+                                        fontColor: Colors.white,
+                                        controller: ageController,
+                                        fontSize: 13,
+                                        hintText: StringUtils.required,
+                                        textInputType: TextInputType.number,
+                                        context: context,
+                                        onChange: (String value) {
+                                          bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
+                                        }).paddingOnly(top: 15).marginOnly(left: 70),
+                                    commonUserTypeTextField(
+                                        width: 70.w,
+                                        fontColor: Colors.white,
+                                        controller: heightController,
+                                        fontSize: 13,
+                                        hintText: StringUtils.required,
+                                        textInputType: TextInputType.number,
+                                        context: context,
+                                        onChange: (String value) {
+                                          bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
+                                        }).paddingOnly(top: 15).marginOnly(right: 80),
+>>>>>>> Stashed changes
                                   ],
                                 ),
                                 commonUserTypeTextField(
@@ -217,16 +229,17 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                     cursorColor: Colors.white,
                                     controller: weightController,
                                     fontSize: 13,
+<<<<<<< Updated upstream
                                     fontWeight: FontWeight.w900,
                                     hintText: AppStrings.required,
+=======
+                                    hintText: StringUtils.required,
+>>>>>>> Stashed changes
                                     textInputType: TextInputType.number,
                                     isSuffix: true,
                                     context: context,
                                     onChange: (String value) {
-                                      bloc.add(TextChangeEvent(
-                                          age: ageController.text,
-                                          height: heightController.text,
-                                          weight: weightController.text));
+                                      bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
                                     }).marginOnly(top: 70, right: 10),
                               ],
                             )
@@ -244,8 +257,8 @@ class _UserTypePageState extends State<UserTypeScreen> {
                             }
                           },
                           textColor: Colors.white,
-                          bgColor: isVisible ? color : AppColors.disable,
-                          title: AppStrings.next,
+                          bgColor: isVisible ? color : ColorUtils.disable,
+                          title: StringUtils.next,
                           context: context)
                       .paddingOnly(top: 10.h),
                 ],
@@ -263,19 +276,19 @@ class _UserTypePageState extends State<UserTypeScreen> {
                 heightController.clear();
 
                 if (isMale) {
-                  userInfoImage = AppStrings.icMaleChart;
-                  genderName = AppStrings.male;
-                  color = AppColors.primaryBlue;
+                  userInfoImage = AssetsUtils.icMaleChart;
+                  genderName = StringUtils.male;
+                  color = ColorUtils.primaryBlue;
                   isVisible = false;
                 } else if (isFemale) {
-                  userInfoImage = AppStrings.icFemaleChart;
-                  genderName = AppStrings.female;
-                  color = AppColors.terracotta;
+                  userInfoImage = AssetsUtils.icFemaleChart;
+                  genderName = StringUtils.female;
+                  color = ColorUtils.terracotta;
                   isVisible = false;
                 } else {
-                  userInfoImage = AppStrings.icNonChart;
-                  genderName = AppStrings.nonBinary;
-                  color = AppColors.green;
+                  userInfoImage = AssetsUtils.icNonChart;
+                  genderName = StringUtils.nonBinary;
+                  color = ColorUtils.green;
                   isVisible = false;
                 }
               }
@@ -309,8 +322,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
           height: 46.h,
           child: Text(
             text,
-            style: AppTextStyle.butttonTextStyle.copyWith(
-                color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
+            style: AppTextStyle.butttonTextStyle.copyWith(color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
           ),
         ),
       );

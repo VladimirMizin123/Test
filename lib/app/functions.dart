@@ -3,16 +3,16 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/models/get_survey_model.dart';
 
-import '../constant/app_colors.dart';
-import '../constant/app_string.dart';
+import '../constant/string_utils.dart';
+import '../constant/color_utils.dart';
 
 Color setColor({required String gender}) {
-  if (gender == AppStrings.male) {
-    return AppColors.primaryBlue;
-  } else if (gender == AppStrings.female) {
-    return AppColors.terracotta;
+  if (gender == StringUtils.male) {
+    return ColorUtils.primaryBlue;
+  } else if (gender == StringUtils.female) {
+    return ColorUtils.terracotta;
   } else {
-    return AppColors.green;
+    return ColorUtils.green;
   }
 }
 
@@ -27,8 +27,7 @@ int countOptions(SurveyDataQuestion surveyData) {
 }
 
 bool validateEmail(String value) {
-  String pattern =
-      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  String pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
   RegExp regex = RegExp(pattern);
   if (!regex.hasMatch(value)) {
     return false;
@@ -37,7 +36,7 @@ bool validateEmail(String value) {
   }
 }
 
-bool validateConfirmPassword(password,confirmPassword) {
+bool validateConfirmPassword(password, confirmPassword) {
   if (password != confirmPassword) {
     return false;
   }
@@ -50,11 +49,3 @@ bool validatePassword(String password) {
   }
   return true;
 }
-
-
-
-
-
-
-
-

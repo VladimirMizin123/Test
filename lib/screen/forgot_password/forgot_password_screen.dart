@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../bloc/forgot_password/forgot_password_bloc.dart';
 import '../../bloc/forgot_password/forgot_password_event.dart';
 import '../../bloc/forgot_password/forgot_password_state.dart';
-import '../../constant/app_colors.dart';
-import '../../constant/app_string.dart';
+import '../../constant/string_utils.dart';
+import '../../constant/color_utils.dart';
 import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 
@@ -47,12 +48,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onTap: () => Get.back(),
                       child: const Icon(
                         Icons.arrow_back_ios,
-                        color: AppColors.darkGray,
+                        color: ColorUtils.darkGray,
                       ),
                     ),
                   ),
                   Image.asset(
-                    AppStrings.gymEatsLogo,
+                    AssetsUtils.gymEatsLogo,
                     fit: BoxFit.cover,
                     height: 60.h,
                   ),
@@ -60,26 +61,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ],
               ).paddingOnly(top: 15.h),
               Text(
-                AppStrings.resetPassword,
-                style: textTheme.displayLarge?.copyWith(
-                    letterSpacing: -0.8,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black),
+                StringUtils.resetPassword,
+                style: textTheme.displayLarge?.copyWith(letterSpacing: -0.8, fontWeight: FontWeight.w800, color: Colors.black),
               ).paddingOnly(top: 16.h, bottom: 0),
               Text(
-                AppStrings.subResetPassword,
-                style:
-                    textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
+                StringUtils.subResetPassword,
+                style: textTheme.bodyLarge?.copyWith(color: ColorUtils.middleGray),
               ),
-              commonTextField(
-                      context: context,
-                      controller: emailController,
-                      hintText: AppStrings.email)
-                  .paddingOnly(top: 20.h),
+              commonTextField(context: context, controller: emailController, hintText: StringUtils.email).paddingOnly(top: 20.h),
               BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
                   bloc: bloc,
-                  listener: (context, state){
-                    if(state is ForgotSuccessState){
+                  listener: (context, state) {
+                    if (state is ForgotSuccessState) {
                       emailController.clear();
                     }
                   },
@@ -88,13 +81,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       return const AppCenterLoader();
                     }
                     return buildButton(
-                            context: context,
-                            onPressed: () {
-                              bloc.add(ButtonClickEvent(email: emailController.text));
-                            },
-                            textColor: Colors.white,
-                            bgColor: AppColors.primaryBlue,
-                            title: AppStrings.sendInstructions);
+                        context: context,
+                        onPressed: () {
+                          bloc.add(ButtonClickEvent(email: emailController.text));
+                        },
+                        textColor: Colors.white,
+                        bgColor: ColorUtils.primaryBlue,
+                        title: StringUtils.sendInstructions);
                   }).paddingOnly(top: 25.h)
             ],
           ),

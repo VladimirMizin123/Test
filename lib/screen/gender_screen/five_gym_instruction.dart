@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_colors.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../widget/app_widget.dart';
 
@@ -21,69 +22,53 @@ class FiveGymInstructionScreen extends StatelessWidget {
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
-                  header1: AppColors.bluePressed,
-                  header2: AppColors.primaryBlue,
-                  borderColor: AppColors.primaryBlue,
-                  Bgcolor: AppColors.primaryBlue,
-                  image: AppStrings.male_instrucion5,
-                  textColor1: AppColors.primaryBlue,
-                  textColor2: AppColors.skyBlue,
+                  header1: ColorUtils.bluePressed,
+                  header2: ColorUtils.primaryBlue,
+                  borderColor: ColorUtils.primaryBlue,
+                  Bgcolor: ColorUtils.primaryBlue,
+                  image: AssetsUtils.male_instrucion5,
+                  textColor1: ColorUtils.primaryBlue,
+                  textColor2: ColorUtils.skyBlue,
                 )
               : chooseGender == 'Female'
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
-                      header1: AppColors.terracottaPressed,
-                      header2: AppColors.terracotta,
-                      borderColor: AppColors.terracotta,
-                      Bgcolor: AppColors.terracotta,
-                      image: AppStrings.female_instrucion5,
-                      textColor1: AppColors.terracotta,
-                      textColor2: AppColors.coral,
+                      header1: ColorUtils.terracottaPressed,
+                      header2: ColorUtils.terracotta,
+                      borderColor: ColorUtils.terracotta,
+                      Bgcolor: ColorUtils.terracotta,
+                      image: AssetsUtils.female_instrucion5,
+                      textColor1: ColorUtils.terracotta,
+                      textColor2: ColorUtils.coral,
                     )
                   : chooseGender == 'Non'
                       ? commonInstructionView(
                           context: context,
                           textTheme: textTheme,
-                          header1: AppColors.greenPressed,
-                          header2: AppColors.green,
-                          borderColor: AppColors.green,
-                          Bgcolor: AppColors.green,
-                          image: AppStrings.non_instrucion5,
-                          textColor1: AppColors.green,
-                          textColor2: AppColors.mint,
+                          header1: ColorUtils.greenPressed,
+                          header2: ColorUtils.green,
+                          borderColor: ColorUtils.green,
+                          Bgcolor: ColorUtils.green,
+                          image: AssetsUtils.non_instrucion5,
+                          textColor1: ColorUtils.green,
+                          textColor2: ColorUtils.mint,
                         )
                       : const SizedBox()),
     );
   }
 
-  Widget commonInstructionView(
-      {TextTheme? textTheme,
-      BuildContext? context,
-      String? image,
-      Color? header1,
-      Color? header2,
-      Color? borderColor,
-      Color? Bgcolor,
-      Color? textColor1,
-      Color? textColor2}) {
+  Widget commonInstructionView({TextTheme? textTheme, BuildContext? context, String? image, Color? header1, Color? header2, Color? borderColor, Color? Bgcolor, Color? textColor1, Color? textColor2}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.gender_Instruction5,
+          StringUtils.gender_Instruction5,
           textAlign: TextAlign.center,
-          style:
-              textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
+          style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
-        Text(AppStrings.gender_subInstruction8,
-                style: textTheme?.bodyLarge
-                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
-            .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(AppStrings.gender_subInstruction9,
-                style: textTheme?.bodyLarge
-                    ?.copyWith(color: header2, fontWeight: FontWeight.w400))
-            .paddingOnly(left: 10.w, right: 10.w),
+        Text(StringUtils.gender_subInstruction8, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
+        Text(StringUtils.gender_subInstruction9, style: textTheme?.bodyLarge?.copyWith(color: header2, fontWeight: FontWeight.w400)).paddingOnly(left: 10.w, right: 10.w),
         Center(
           child: Image.asset(
             image!,
@@ -100,7 +85,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 borderColor: borderColor!,
                 bgColor: Colors.white,
                 onPressed: () {},
-                title: AppStrings.previous,
+                title: StringUtils.previous,
                 textColor: textColor1,
               ),
             ).paddingOnly(right: 10.w),
@@ -110,7 +95,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 context: context,
                 hasImage: false,
                 textColor: textColor2,
-                title: AppStrings.next,
+                title: StringUtils.next,
                 onPressed: () {},
                 bgColor: Bgcolor,
               ),
