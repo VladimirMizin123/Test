@@ -19,7 +19,7 @@ class MealPlanRepository {
     } else {
       apiURL = '${ApiUrls.getMealPlan}/$userID?calorie=$calories';
     }
-    final response = await apiServices.getWithHeader(apiURL);
+    final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
