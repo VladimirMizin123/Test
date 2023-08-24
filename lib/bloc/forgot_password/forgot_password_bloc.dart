@@ -34,10 +34,6 @@ class ForgotPasswordBloc extends Bloc<ButtonClickEvent, ForgotPasswordState> {
         }, (right) async {
           showToast(isSuccess: true, message: right.message!);
           emit(ForgotSuccessState());
-          if(right.data != null){
-            await PreferenceUtils.setString(
-                passwordResetToken, right.data);
-          }
           Get.toNamed('/OpenEmailAppScreen');
         });
       } catch (e) {

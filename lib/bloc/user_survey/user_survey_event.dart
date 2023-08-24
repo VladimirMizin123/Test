@@ -1,3 +1,5 @@
+import '../../models/get_survey_model.dart';
+
 abstract class UserSurveyEvent{}
 
 class GetSurveyData extends UserSurveyEvent{}

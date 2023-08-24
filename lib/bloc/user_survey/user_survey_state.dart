@@ -6,7 +6,8 @@ class InitialState extends UserSurveyState{}
 
 class LoadSurveyData extends UserSurveyState{
   SurveyDataQuestion surveyData;
-  LoadSurveyData({required this.surveyData});
+  bool isAPIData;
+  LoadSurveyData({required this.surveyData, this.isAPIData = false});
 }
 class ErrorStateData extends UserSurveyState{
   String errMessage;
@@ -14,3 +15,7 @@ class ErrorStateData extends UserSurveyState{
 }
 
 class LoadingSurveyData extends UserSurveyState{}
+class NextScreenState extends UserSurveyState{
+  String dietId;
+  NextScreenState({required this.dietId});
+}

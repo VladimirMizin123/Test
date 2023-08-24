@@ -9,11 +9,14 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/screen/premiums/puchase_options_widget.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+import '../../models/sign_up_data_navigate_model.dart';
+
 class PremiumScreen extends StatelessWidget {
   const PremiumScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    UserSignUpDataModel userSignUpDataModel = Get.arguments as UserSignUpDataModel;
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
@@ -21,7 +24,7 @@ class PremiumScreen extends StatelessWidget {
         height: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0XFFECECED).withOpacity(0.5),
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage(AppStrings.premiumScreenBG),
             fit: BoxFit.cover,
           ),
@@ -81,24 +84,24 @@ class PremiumScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child:
                     Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  PurchaseOptions(
+                  const PurchaseOptions(
                     //isSelected: true,
                     month: '1 Month',
                     price: '9.99',
                     //savePercentage: '',
                   ).paddingSymmetric(horizontal: 4.w),
-                  PurchaseOptions(
+                  const PurchaseOptions(
                     month: '6 Month',
                     price: '49.99',
                     savePercentage: '10',
                     //isSelected: true,
                   ).paddingSymmetric(horizontal: 4.w),
-                  PurchaseOptions(
+                  const PurchaseOptions(
                     // isSelected: true,
                     month: '12 Month',
                     price: '99.99',
@@ -110,8 +113,10 @@ class PremiumScreen extends StatelessWidget {
                 context: context,
                 title: 'Start 14 days free trial',
                 bgColor: AppColors.appColor,
-                textColor: Color(0xFFC1EACE),
-                onPressed: () {},
+                textColor: const Color(0xFFC1EACE),
+                onPressed: () {
+                  Get.toNamed('/BuildMyProfileScreen',arguments: userSignUpDataModel);
+                },
               ).paddingOnly(bottom: 8.h, top: 23.h, right: 20.w, left: 20.w),
               Text('No commitment. Cancel any time.',
                   style: textTheme.bodyLarge!.copyWith(

@@ -7,6 +7,9 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
+import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -22,6 +25,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
     final themeData = Theme.of(context);
+
+
+
     return GetBuilder<HomeScreenController>(builder: (homeController) {
       homeController = homeScreenController;
       return Scaffold(
@@ -71,13 +77,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: AppStrings.email)
                       .paddingOnly(top: 16),
                   commonTextField(
+                          isPassword: true,
                           context: context,
                           controller: homeController.passwordController,
                           hintText: AppStrings.password)
                       .paddingOnly(top: 16),
+                  commonTextField(
+                          isPassword: true,
+                          context: context,
+                          controller: homeController.confirmPasswordController,
+                          hintText: AppStrings.confirmPassword)
+                      .paddingOnly(top: 16),
                   buildButton(
                           context: context,
-                          onPressed: () {},
+                          onPressed: () {
+                            homeController.joinGymEatButton();
+                          },
                           textColor: const Color(0xFFD9E9EE),
                           bgColor: const Color(0xFF004C63),
                           title: AppStrings.joinGymEats)

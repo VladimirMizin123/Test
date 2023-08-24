@@ -7,17 +7,16 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
 class FiveGymInstructionScreen extends StatelessWidget {
-  const FiveGymInstructionScreen({super.key, this.chooseGender = 'Non'});
+  FiveGymInstructionScreen({super.key,});
 
-  final String chooseGender;
   final routeName = '/FiveGymInstruction';
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
-          child: chooseGender == 'Male'
+          child: gender == AppStrings.male
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
@@ -29,7 +28,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
-              : chooseGender == 'Female'
+              : gender == AppStrings.female
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
@@ -41,8 +40,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
-                  : chooseGender == 'Non'
-                      ? commonInstructionView(
+                  : commonInstructionView(
                           context: context,
                           textTheme: textTheme,
                           header1: AppColors.greenPressed,
@@ -53,7 +51,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                           textColor1: AppColors.green,
                           textColor2: AppColors.mint,
                         )
-                      : const SizedBox()),
+                      ),
     );
   }
 
@@ -71,16 +69,16 @@ class FiveGymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.gender_Instruction5,
+          AppStrings.genderInstruction5,
           textAlign: TextAlign.center,
           style:
               textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
-        Text(AppStrings.gender_subInstruction8,
+        Text(AppStrings.gendersubInstruction8,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(AppStrings.gender_subInstruction9,
+        Text(AppStrings.gendersubInstruction9,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w),
@@ -99,7 +97,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {Get.back();},
                 title: AppStrings.previous,
                 textColor: textColor1,
               ),
@@ -111,7 +109,9 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 hasImage: false,
                 textColor: textColor2,
                 title: AppStrings.next,
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed('/ShowMealPlanBtnScreen',arguments: gender );
+                },
                 bgColor: Bgcolor,
               ),
             )

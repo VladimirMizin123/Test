@@ -114,26 +114,28 @@ class ApiServices {
   }
 
   Future<http.Response> postMultipart(
-      String url, Map<String, String> body, String file,
-      {String? keyName}) async {
+      {required String url, required Map<String, String> body, required List<http.MultipartFile> files}) async {
     try {
-      final response =
-          http.MultipartRequest("POST", Uri.parse(url))
-            ..files.add(await http.MultipartFile.fromPath(
-              keyName ?? 'file',
-              file,
-            ))
-            ..fields.addAll(body)
-            ..headers.addAll({
-              'content-type': 'application/json',
-              'accept': '*/*',
-              'Api_Key': ApiUrls.apiKey,
-            });
-      final res = await response.send().then((value) async {
+      Map<String, String> header = {
+        'content-type': 'multipart/form-data',
+        'accept': '*/*',
+        'Api_Key': ApiUrls.apiKey,
+      };
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse(url),
+      );
+      request.headers.addAll(header);
+      if(files.isNotEmpty){
+        request.files.addAll(files);
+      }
+
+      request.fields.addAll(body);
+      var response = await request.send().then((value) async {
         return await http.Response.fromStream(value);
       });
 
-      return _returnResponse(res);
+      return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
     } on HttpException {

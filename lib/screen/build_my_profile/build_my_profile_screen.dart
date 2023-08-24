@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
+import '../../models/sign_up_data_navigate_model.dart';
 
 class BuildMyProfileScreen extends StatefulWidget {
   const BuildMyProfileScreen({super.key});
@@ -16,7 +17,7 @@ class BuildMyProfileScreen extends StatefulWidget {
 
 class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
   final routeName = '/build_my_profile_screen';
-
+  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -68,7 +69,9 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
                     buildButton(
                       context: context,
                       bgColor: AppColors.primaryBlue,
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed('/UserTypeScreen',arguments: model);
+                      },
                       textColor: AppColors.skyBlue,
                       title: AppStrings.buildMyProfile,
                       hasImage: false,

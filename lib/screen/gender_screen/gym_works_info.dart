@@ -7,9 +7,8 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
 class GymWorkInfoScreen extends StatefulWidget {
-  const GymWorkInfoScreen({super.key, this.chooseGender = 'Non'});
+  const GymWorkInfoScreen({super.key,});
 
-  final String? chooseGender;
 
   @override
   State<GymWorkInfoScreen> createState() => _GymWorkInfoScreenState();
@@ -17,7 +16,7 @@ class GymWorkInfoScreen extends StatefulWidget {
 
 class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
   final routeName = '/GymWorkInfo';
-
+  String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -28,17 +27,15 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
         width: size.width.w,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: widget.chooseGender == 'Male'
+            image: gender == AppStrings.male
                 ? const AssetImage(AppStrings.maleBG2)
-                : widget.chooseGender == 'Female'
+                : gender == AppStrings.female
                     ? const AssetImage(AppStrings.femaleBG2)
-                    : widget.chooseGender == 'Non'
-                        ? const AssetImage(AppStrings.nonGenderBG2)
-                        : const AssetImage('AppStrings.mindyBG2'),
+                    : const AssetImage(AppStrings.nonGenderBG2),
             fit: BoxFit.cover,
           ),
         ),
-        child: widget.chooseGender == 'Male'
+        child: gender == AppStrings.male
             ? ListView(
                 shrinkWrap: true,
                 children: [
@@ -89,7 +86,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                     context: context,
                     bgColor: const Color(0xFF004C63),
                     onPressed: () {
-                      Get.toNamed('/GymWorkInfo');
+                      Get.toNamed('/GymInstructionScreen',arguments: gender );
                     },
                     textColor: const Color(0xFFD9E9EE),
                     title: AppStrings.gymWorkText,
@@ -97,7 +94,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                   ).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w),
                 ],
               )
-            : widget.chooseGender == 'Female'
+            : gender == AppStrings.female
                 ? ListView(
                     physics: const BouncingScrollPhysics(),
                     children: [
@@ -148,7 +145,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                         context: context,
                         bgColor: const Color(0xFFCE6B53),
                         onPressed: () {
-                          Get.toNamed('/GymWorkInfo');
+                          Get.toNamed('/GymInstructionScreen',arguments: gender );
                         },
                         textColor: const Color(0xFFF9D5C5),
                         title: AppStrings.gymWorkText,
@@ -156,8 +153,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                       ).paddingOnly(bottom: 50.h, right: 20.w, left: 20.w),
                     ],
                   )
-                : widget.chooseGender == 'Non'
-                    ? ListView(
+                :  ListView(
                         children: [
                           SvgPicture.asset(
                             AppStrings.roundBlueLogo,
@@ -208,7 +204,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                             context: context,
                             bgColor: const Color(0xFF336633),
                             onPressed: () {
-                              Get.toNamed('/GymWorkInfo');
+                              Get.toNamed('/GymInstructionScreen',arguments: gender );
                             },
                             textColor: const Color(0xFFD9E9EE),
                             title: AppStrings.gymWorkText,
@@ -216,7 +212,7 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                           ).paddingOnly(bottom: 50.h, right: 20.w, left: 20.w),
                         ],
                       ).paddingOnly(left: 20.w, right: 20.w)
-                    : const SizedBox(),
+        ,
       ),
     );
   }

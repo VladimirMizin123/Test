@@ -7,17 +7,16 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
 class SecondGymInstructionScreen extends StatelessWidget {
-  const SecondGymInstructionScreen({super.key, this.chooseGender = 'Female'});
+  SecondGymInstructionScreen({super.key,});
 
-  final String chooseGender;
   final routeName = '/SecondGymInstruction';
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
-          child: chooseGender == 'Male'
+          child: gender == AppStrings.male
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
@@ -29,7 +28,7 @@ class SecondGymInstructionScreen extends StatelessWidget {
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
-              : chooseGender == 'Female'
+              : gender == AppStrings.female
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
@@ -41,8 +40,7 @@ class SecondGymInstructionScreen extends StatelessWidget {
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
-                  : chooseGender == 'Non'
-                      ? commonInstructionView(
+                  : commonInstructionView(
                           context: context,
                           textTheme: textTheme,
                           header1: AppColors.greenPressed,
@@ -52,8 +50,7 @@ class SecondGymInstructionScreen extends StatelessWidget {
                           image: AppStrings.non_instrucion2,
                           textColor1: AppColors.green,
                           textColor2: AppColors.mint,
-                        )
-                      : const SizedBox()),
+                        )),
     );
   }
 
@@ -71,20 +68,20 @@ class SecondGymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.gender_Instruction2,
+          AppStrings.genderInstruction2,
           textAlign: TextAlign.center,
           style:
               textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h),
-        Text(AppStrings.gender_subInstruction1,
+        Text(AppStrings.gendersubInstruction1,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(AppStrings.gender_subInstruction2,
+        Text(AppStrings.gendersubInstruction2,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(bottom: 12.h, left: 10.w, right: 10.w),
-        Text(AppStrings.gender_subInstruction3,
+        Text(AppStrings.gendersubInstruction3,
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w),
@@ -103,7 +100,7 @@ class SecondGymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {Get.back();},
                 title: AppStrings.previous,
                 textColor: textColor1,
               ),
@@ -115,7 +112,9 @@ class SecondGymInstructionScreen extends StatelessWidget {
                 hasImage: false,
                 textColor: textColor2,
                 title: AppStrings.next,
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed('/ThirdGymInstructionScreen',arguments: gender );
+                },
                 bgColor: Bgcolor,
               ),
             )

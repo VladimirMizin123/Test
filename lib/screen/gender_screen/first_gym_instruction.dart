@@ -5,18 +5,17 @@ import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GymInstructionScreen extends StatelessWidget {
-  const GymInstructionScreen({super.key, this.chooseGender = 'Female'});
+   GymInstructionScreen({super.key,});
 
-  final String chooseGender;
   final routeName = '/GymInstruction';
-
+  final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
-        child: chooseGender == 'Male'
+        child: gender ==AppStrings.male
             ? commonInstructionView(
                 context: context,
                 image: AppStrings.male_instrucion1,
@@ -27,7 +26,7 @@ class GymInstructionScreen extends StatelessWidget {
                 textColor1: const Color(0xFF004C63),
                 textColor2: const Color(0xFFD9E9EE),
                 textTheme: textTheme)
-            : chooseGender == 'Female'
+            : gender ==AppStrings.female
                 ? commonInstructionView(
                     context: context,
                     image: AppStrings.female_instrucion1,
@@ -38,8 +37,7 @@ class GymInstructionScreen extends StatelessWidget {
                     textColor1: const Color(0xFFCE6B53),
                     textColor2: const Color(0xFFF9D5C5),
                     textTheme: textTheme)
-                : chooseGender == 'Non'
-                    ? commonInstructionView(
+                :commonInstructionView(
                         context: context,
                         image: AppStrings.non_instrucion1,
                         Bgcolor: const Color(0xFF336633),
@@ -49,7 +47,7 @@ class GymInstructionScreen extends StatelessWidget {
                         textColor1: const Color(0xFF336633),
                         textColor2: const Color(0xFFC1EACE),
                         textTheme: textTheme)
-                    : const SizedBox(),
+                    ,
       ),
     );
   }
@@ -68,12 +66,12 @@ class GymInstructionScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.gender_Instruction1,
+          AppStrings.genderInstruction1,
           textAlign: TextAlign.center,
           style: textTheme?.headlineSmall?.copyWith(color: header1),
         ).paddingOnly(top: 35.h, bottom: 16.h),
         Text(
-          AppStrings.gender_subInstruction,
+          AppStrings.gendersubInstruction,
           textAlign: TextAlign.start,
           style: textTheme?.bodyLarge?.copyWith(
             color: header2,
@@ -93,7 +91,9 @@ class GymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  Get.back();
+                },
                 title: AppStrings.previous,
                 textColor: textColor1,
               ),
@@ -105,7 +105,9 @@ class GymInstructionScreen extends StatelessWidget {
                 hasImage: false,
                 textColor: textColor2,
                 title: AppStrings.next,
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed('/SecondGymInstructionScreen',arguments: gender );
+                },
                 bgColor: Bgcolor,
               ),
             )

@@ -34,7 +34,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
         getSurvey = right.data;
         getNewSurvey = getSurvey;
         listSurveyData.add(getNewSurvey!);
-        emit(LoadSurveyData(surveyData: getNewSurvey!));
+        emit(LoadSurveyData(surveyData: getNewSurvey!,isAPIData: true));
       });
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
@@ -48,8 +48,6 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSearchData(SearchData event, Emitter<UserSurveyState> emit) {
-    debugPrint("getSurvey 1-->${getSurvey!.options!.length}");
-
     getNewSurvey = SurveyDataQuestion(
         options: getSurvey!.options!
             .where((item) =>
@@ -66,7 +64,6 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
 
   _onNextPrevSurveyClick(
       NextPrevSurveyClick event, Emitter<UserSurveyState> emit) {
-    debugPrint("listSurveyData--> ${listSurveyData.length}");
     if (event.isNext) {
       bool isTrueInList =
           getNewSurvey!.options!.any((element) => element.isSelect == true);
@@ -76,7 +73,8 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
           listSurveyData.add(getNewSurvey!);
           emit(LoadSurveyData(surveyData: getNewSurvey!));
         } else {
-          Get.to(const UserPhotoSelectionScreen());
+          emit(NextScreenState(dietId: getNewSurvey!.options![event.index].diet!.id!));
+
         }
       } else {
         showToast(
@@ -84,10 +82,14 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
       }
     } else {
       if (listSurveyData.isNotEmpty) {
-        listSurveyData.removeLast();
-        getNewSurvey = listSurveyData[event.index];
+        if (listSurveyData.length > 1) {
+          listSurveyData.removeLast();
+          getNewSurvey = listSurveyData[listSurveyData.length - 1];
 
-        emit(LoadSurveyData(surveyData: getNewSurvey!));
+          emit(LoadSurveyData(surveyData: getNewSurvey!));
+        } else {
+          Get.back();
+        }
       } else {
         Get.back();
       }

@@ -31,6 +31,7 @@ class GetSurveyModel {
 
 class SurveyDataQuestion {
   String? id;
+  String? surveyId;
   String? label;
   bool? isPrimary;
   int? answerType;
@@ -44,10 +45,12 @@ class SurveyDataQuestion {
     this.answerType,
     this.options,
     this.createdBy,
+    this.surveyId,
   });
 
   factory SurveyDataQuestion.fromJson(Map<String, dynamic> json) => SurveyDataQuestion(
     id: json["id"],
+    surveyId: json["surveyId"],
     label: json["label"],
     isPrimary: json["isPrimary"],
     answerType: json["answerType"],
@@ -57,6 +60,7 @@ class SurveyDataQuestion {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "surveyId": surveyId,
     "label": label,
     "isPrimary": isPrimary,
     "answerType": answerType,

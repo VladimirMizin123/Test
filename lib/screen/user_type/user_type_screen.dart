@@ -9,6 +9,7 @@ import '../../bloc/user_type/user_type_state.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../constant/app_colors.dart';
 import '../../constant/app_string.dart';
+import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 import '../user_survey/user_survey_screen.dart';
@@ -21,6 +22,7 @@ class UserTypeScreen extends StatefulWidget {
 }
 
 class _UserTypePageState extends State<UserTypeScreen> {
+  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
   final ageController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();
@@ -58,7 +60,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                 children: [
                   Column(
                     children: [
-                      const SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Center(
                         child: Image.asset(
                           AppStrings.gymEatsLogo,
@@ -164,44 +168,40 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               children: [
                                 Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     commonUserTypeTextField(
-                                        width: 70.w,
-                                        fontColor: Colors.white,
-                                        controller: ageController,
-                                        fontSize: 13,
-                                        hintText: AppStrings.required,
-                                        textInputType:
-                                        TextInputType.number,
-                                        context: context,
-                                        onChange: (String value) {
-                                          bloc.add(TextChangeEvent(
-                                              age: ageController.text,
-                                              height: heightController
-                                                  .text,
-                                              weight: weightController
-                                                  .text));
-                                        })
+                                            width: 70.w,
+                                            fontColor: Colors.white,
+                                            controller: ageController,
+                                            fontSize: 13,
+                                            hintText: AppStrings.required,
+                                            textInputType: TextInputType.number,
+                                            context: context,
+                                            onChange: (String value) {
+                                              bloc.add(TextChangeEvent(
+                                                  age: ageController.text,
+                                                  height: heightController.text,
+                                                  weight:
+                                                      weightController.text));
+                                            })
                                         .paddingOnly(top: 15)
                                         .marginOnly(left: 70),
                                     commonUserTypeTextField(
-                                        width: 70.w,
-                                        fontColor: Colors.white,
-                                        controller: heightController,
-                                        fontSize: 13,
-                                        hintText: AppStrings.required,
-                                        textInputType:
-                                        TextInputType.number,
-                                        context: context,
-                                        onChange: (String value) {
-                                          bloc.add(TextChangeEvent(
-                                              age: ageController.text,
-                                              height: heightController
-                                                  .text,
-                                              weight: weightController
-                                                  .text));
-                                        })
+                                            width: 70.w,
+                                            fontColor: Colors.white,
+                                            controller: heightController,
+                                            fontSize: 13,
+                                            hintText: AppStrings.required,
+                                            textInputType: TextInputType.number,
+                                            context: context,
+                                            onChange: (String value) {
+                                              bloc.add(TextChangeEvent(
+                                                  age: ageController.text,
+                                                  height: heightController.text,
+                                                  weight:
+                                                      weightController.text));
+                                            })
                                         .paddingOnly(top: 15)
                                         .marginOnly(right: 80),
                                   ],
@@ -230,8 +230,23 @@ class _UserTypePageState extends State<UserTypeScreen> {
                   ),
                   buildButton(
                           onPressed: () {
-                            if(!isVisible){
-                              Get.to(UserSurveyScreen(gender: genderName,));
+                            if (isVisible) {
+                              FocusScope.of(context).unfocus();
+
+                              UserSignUpDataModel userSignUpDataModel =
+                                  UserSignUpDataModel(
+                                      firstName: model.firstName,
+                                      lastName: model.lastName,
+                                      email: model.email,
+                                      password: model.password,
+                                      userName: model.userName,
+                                      confirmPassword: model.confirmPassword,
+                                      gender: genderName,
+                                      age: ageController.text,
+                                      height: heightController.text,
+                                      weight: weightController.text);
+                              Get.toNamed('/UserSurveyScreen',
+                                  arguments: userSignUpDataModel);
                             }
                           },
                           textColor: Colors.white,
@@ -271,7 +286,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                 }
               }
 
-              if(state is ChangeButtonState){
+              if (state is ChangeButtonState) {
                 isVisible = state.isVisible;
               }
             },

@@ -22,6 +22,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final routeName = '/ForgotPasswordScreen';
   final newPassController = TextEditingController();
   final confirmPassController = TextEditingController();
+  String resetToken = Get.arguments as String;
 
   ResetPasswordBloc bloc = ResetPasswordBloc();
 
@@ -147,7 +148,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               onPressed: () {
                                 bloc.add(ButtonClickEvent(
                                     password: newPassController.text,
-                                    confirmPassword: confirmPassController.text,));
+                                    confirmPassword: confirmPassController.text,
+                                passwordResetToken: resetToken));
                               },
                               textColor: AppColors.skyBlue,
                               bgColor: const Color(0xFF004C63),

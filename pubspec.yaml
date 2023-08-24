@@ -42,15 +42,17 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   percent_indicator: ^4.2.3
   http:
-  dio:
   either_dart: ^1.0.0
   fluttertoast: ^8.2.2
   url_launcher:
   shared_preferences:
   android_intent_plus:
-  search_page:
-#  firebase_dynamic_links: ^5.3.5
-#  firebase_core: ^2.15.1
+  image_picker:
+  geolocator:
+  permission_handler:
+  firebase_dynamic_links:
+  firebase_core:
+
 
 dev_dependencies:
   flutter_test:
