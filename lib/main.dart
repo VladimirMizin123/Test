@@ -5,6 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/gym_works_info.dart';
+import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/gender_screen/Gym_works_info.dart';
 import 'package:gymeats_mobile/screen/gender_screen/five_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/forth_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
@@ -14,7 +22,6 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
 import 'package:gymeats_mobile/screen/login/login_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
@@ -30,7 +37,6 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
-import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
@@ -145,8 +151,32 @@ class MyApp extends StatelessWidget {
               page: () =>  ShowMealPlanBtnScreen(),
             ),
             GetPage(
-              name: '/MealPlanHomeScreen',
-              page: () => const MealPlanHomeScreen(),
+              name: '/first-dashboard',
+              page: () => const FirstDashBoardView(),
+            ),
+            GetPage(
+              name: '/second-dashboard',
+              page: () => const SecondDashBoardView(),
+            ),
+            GetPage(
+              name: '/third-dashboard',
+              page: () => const ThirdDashBoardView(),
+            ),
+            GetPage(
+              name: '/DashBoardScreen',
+              page: () => const DashBoardScreen(),
+            ),
+            GetPage(
+              name: '/add-water-screen',
+              page: () => const AddWaterScreen(),
+            ),
+            GetPage(
+              name: '/add-Entry-screen',
+              page: () => const AddEntryScreen(),
+            ),
+            GetPage(
+              name: '/order-history',
+              page: () => const OrderHistoryScreen(),
             ),
             GetPage(
                 name: '/UserPhotoSelectionScreen',

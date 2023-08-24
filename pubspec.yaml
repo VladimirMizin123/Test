@@ -52,7 +52,10 @@ dependencies:
   permission_handler:
   firebase_dynamic_links:
   firebase_core:
+  carousel_slider: ^4.2.1
 
+#  firebase_dynamic_links: ^5.3.5
+#  firebase_core: ^2.15.1
 
 dev_dependencies:
   flutter_test:
