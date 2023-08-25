@@ -6,6 +6,8 @@ class AppColors {
   static const letsEat = Color(0xFFF9D5C5);
   static const appColor = Color(0xFF336633);
   static const disabledColor = Color(0xFFC7C8CA);
+  static const grayColor = Color(0xFFA2A4A7);
+  static const switchColor = Color(0xFF34C759);
 
   static ThemeData lightTheme() {
     return ThemeData(

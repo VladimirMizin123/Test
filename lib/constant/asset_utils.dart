@@ -63,6 +63,9 @@ class AssetsUtils {
   static const icJournal = '${svgPath}ic_journal.svg';
   static const icQuestionMarkIcon = '${svgPath}ic_questionmark_icon.svg';
   static const icSkippedIcon = '${svgPath}ic_skipped_icon.svg';
+  static const icIngredientsIcon = '${svgPath}ingredients_icon.svg';
+  static const icServingIcon = '${svgPath}servings_icon.svg';
+  static const icTimelineIcon = '${svgPath}timeline_icon.svg';
 
   /// Icons
 

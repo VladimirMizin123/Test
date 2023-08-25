@@ -26,6 +26,8 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
@@ -85,7 +87,7 @@ class MyApp extends StatelessWidget {
           home: child,
           initialRoute: PreferenceUtils.getBool(prefIsLogin)
               ? '/AppManagerScreen'
-              : '/LoginScreen',
+              : '/FoodPreferencesScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -110,6 +112,14 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/AppManagerScreen',
               page: () => const AppManagerScreen(),
+            ),
+            GetPage(
+              name: '/MealDetailsScreen',
+              page: () => const MealDetailsScreen(),
+            ),
+            GetPage(
+              name: '/FoodPreferencesScreen',
+              page: () => const FoodPreferencesScreen(),
             ),
             GetPage(
               name: '/DashboardScreen',

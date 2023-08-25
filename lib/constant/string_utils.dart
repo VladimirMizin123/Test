@@ -82,6 +82,8 @@ class StringUtils {
   static const passwordNotMatch = 'Password does\'t match';
   static const userSurveySelectionError = 'Please select at list one option';
   static const mealPlan = 'Meal Plan';
+  static const planMealDetails = 'Plan / Meal Details';
+  static const foodPreferences = 'Food Preferences';
   static const grocery = 'Grocery';
   static const dashboard = 'Dashboard';
   static const restaurants = 'Restaurants';
@@ -102,4 +104,5 @@ class StringUtils {
   static const cancel = 'Cancel';
   static const skip = 'Skip';
   static const back = 'Back';
+  static const addToGroceryList = 'Add to Grocery List';
 }

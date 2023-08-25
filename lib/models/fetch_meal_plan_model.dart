@@ -70,7 +70,7 @@ class MealData {
   final String? meal;
   final int? numOfServings;
   final Recipe? recipe;
-  final bool? isSkipped;
+  bool? isSkipped;
 
   MealData({
     this.id,

@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
-import '../app/sharedPrefrence.dart';
 import 'api_exception.dart';
 import 'api_urls.dart';
 
 class ApiServices {
-  String token = PreferenceUtils.getString(prefToken);
+
+  String token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnYXUwM3Rlc3R1c2VyQG1haWxpbmF0b3IuY29tIiwianRpIjoiOWIyZmQzZGEtYjE0Yy00M2UyLWJlYmItYTcxMjMzZGNjY2YzIiwidW5pcXVlX25hbWUiOiJnYXUwM3Rlc3R1c2VyQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVzZXIiLCJleHAiOjE2OTI5NzUxMzksImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.yECJ4357-kqArShVo7b-yhhlVnddf6l_l3GbqFTDqHo';
+  // String token = 'Bearer ${PreferenceUtils.getString(prefToken)}';
 
   Future<dynamic> get(String url) async {
     try {
@@ -26,8 +28,12 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      debugPrint('get url--> $url');
-      final response = await http.get(Uri.parse(url), headers: headers);
+      log(url, name: 'URL - - - - - ');
+
+      final response = await http.get(Uri.parse(url),headers: headers);
+      
+      log('${response.statusCode}', name: 'STATUS CODE - - - - - ');
+      log(response.body, name: 'RESPONSE - - - - - ');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
