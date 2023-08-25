@@ -189,7 +189,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                   debugPrint("");
                                   // Get.back();
                                   Get.toNamed('/UserSurveyScreen',
-                                      arguments: model.gender);
+                                      arguments: model);
                                 },
                                 textColor: setColor(gender: model.gender!),
                                 borderColor: setColor(gender: model.gender!),

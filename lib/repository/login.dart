@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:either_dart/either.dart';
-
 import '../models/error_model.dart';
 import '../models/login_model.dart';
 import '../service/api_urls.dart';

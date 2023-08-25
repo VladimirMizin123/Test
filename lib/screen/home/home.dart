@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/models/sign_up_model.dart';
 
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
@@ -54,8 +57,10 @@ class _HomeState extends State<Home> {
                 buildButton(
                   context: context,
                   title: StringUtils.letsEat,
-                  onPressed: () {
+                  onPressed: ()  {
                     if(PreferenceUtils.getBool(prefIsLogin)){
+                     String data = PreferenceUtils.getString(prefUserData);
+                     userData = UserData.fromJson(jsonDecode(data));
                       Get.toNamed('/GymEatsMenuScreen');
                     }else{
                       Get.toNamed('/GymEatsMenuScreen');
