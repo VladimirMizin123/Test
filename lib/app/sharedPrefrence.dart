@@ -1,11 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/sign_up_model.dart';
+
+
+UserData userData = UserData();
 
 const String prefIsLogin = 'isLogin';
+const String prefUserData = 'userData';
 const String prefToken = 'token';
 const String passwordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';
-const String userLoginState = 'userLoginState';
 
 
 class PreferenceUtils {

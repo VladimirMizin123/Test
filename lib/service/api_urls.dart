@@ -9,4 +9,5 @@ class ApiUrls{
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
+  static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';
 }

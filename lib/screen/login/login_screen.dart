@@ -23,8 +23,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
-  final emailController = TextEditingController(text: 'gau03testuser@mailinator.com');
-  final passwordController = TextEditingController(text: 'User@123');
+  final emailController = TextEditingController(text: 'admin@gmail.com');
+  final passwordController = TextEditingController(text: 'Admin@123');
 
   LoginBloc bloc = LoginBloc();
 
@@ -120,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InkWell(
                       onTap: () {
                         // Login Screen
+                        Get.toNamed('/SignUpScreen');
                       },
                       child: Text(StringUtils.signUp, style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400)),
                     ),

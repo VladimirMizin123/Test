@@ -13,6 +13,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/skip_meal_bottomsheet.dart'
 import 'package:gymeats_mobile/screen/meal_plan_home/swap_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+import '../../app/sharedPrefrence.dart';
 import '../../widget/app_center_loader.dart';
 
 class MealPlanHomeScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      bloc.add(MealPlanFetchEvent(userID: '0dd72f89-0044-4d72-b9e5-ae7e33b3a38d', calorie: 1000));
+      bloc.add(MealPlanFetchEvent(userID: userData.userId!, calorie: 1000));
     });
   }
 
@@ -44,8 +45,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
           bloc: bloc,
           listener: (context, state) {
-            if (state is FetchMealPlanSuccessState) {
-            }
+            if (state is FetchMealPlanSuccessState) {}
           },
           builder: (context, state) {
             return SafeArea(
@@ -69,7 +69,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           width: 25.w,
                           color: AppColors.darkGray,
                         ),
-                        Text(StringUtils.mealPlan, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                        Text(StringUtils.mealPlan,
+                            style:
+                                FontUtils.h20(fontColor: AppColors.oxFF010101)),
                         Image.asset(
                           AssetsUtils.filter,
                           height: 20.h,
@@ -79,19 +81,30 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    Text( state is FetchMealPlanSuccessState ?  StringUtils.regenerateGroceryList : StringUtils.showGroceryList , style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    Text(
+                            state is FetchMealPlanSuccessState
+                                ? StringUtils.regenerateGroceryList
+                                : StringUtils.showGroceryList,
+                            style: FontUtils.h18(
+                                fontColor: AppColors.primaryBlue,
+                                fontWeight: FWT.medium))
+                        .paddingSymmetric(vertical: 10.h),
                     state is FetchMealPlanLoadingState
                         ? const SizedBox()
                         : state is FetchMealPlanSuccessState
                             ? Container(
                                 color: Colors.grey.withOpacity(0.05),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 8.h),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       '${StringUtils.day} ${state.mealPlanList[selectedDayIndex].day}',
-                                      style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                      style: FontUtils.h20(
+                                          fontColor: AppColors.middleGray,
+                                          fontWeight: FWT.medium),
                                     ),
                                     Wrap(
                                       children: [
@@ -100,17 +113,29 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                               if (selectedDayIndex == 0) {
                                                 return;
                                               }
-                                              _pageController.jumpToPage(selectedDayIndex - 1);
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex - 1);
                                             },
-                                            child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
+                                            child: arrowButton(
+                                                    icon: AssetsUtils.arrowBack,
+                                                    isDisable:
+                                                        selectedDayIndex == 0)
+                                                .paddingOnly(right: 8.w)),
                                         GestureDetector(
                                             onTap: () {
-                                            if (selectedDayIndex == state.mealPlanList.length-1) {
+                                              if (selectedDayIndex ==
+                                                  state.mealPlanList.length -
+                                                      1) {
                                                 return;
                                               }
-                                              _pageController.jumpToPage(selectedDayIndex + 1);
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex + 1);
                                             },
-                                            child: arrowButton(icon: AssetsUtils.arrowForward,isDisable: selectedDayIndex == state.mealPlanList.length-1)),
+                                            child: arrowButton(
+                                                icon: AssetsUtils.arrowForward,
+                                                isDisable: selectedDayIndex ==
+                                                    state.mealPlanList.length -
+                                                        1)),
                                       ],
                                     )
                                   ],
@@ -136,10 +161,12 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                         itemCount: e.meals!.length,
                                         shrinkWrap: true,
                                         scrollDirection: Axis.vertical,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (BuildContext context, int index) {
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           return mealPlanCard(
-                                          mealData: e.meals![index],
+                                            mealData: e.meals![index],
                                             // image: e.meals![index].recipe!.mainImage,
                                             // mealTitle: e.meals![index].meal,
                                             // mealDescription: e.meals![index].recipe!.name,
@@ -167,7 +194,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                 ),
                               )
                             : const SizedBox(),
-                    state is FetchMealPlanLoadingState ? const Expanded(child: AppCenterLoader()) : const SizedBox(),
+                    state is FetchMealPlanLoadingState
+                        ? const Expanded(child: AppCenterLoader())
+                        : const SizedBox(),
                   ],
                 ),
               ),

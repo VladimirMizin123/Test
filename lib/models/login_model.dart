@@ -28,17 +28,20 @@ class LoginModel {
 
 class LoginData {
   Token? token;
-
+  String? userId;
   LoginData({
     this.token,
+    this.userId,
   });
 
   factory LoginData.fromJson(Map<String, dynamic> json) => LoginData(
     token: json["token"] == null ? null : Token.fromJson(json["token"]),
+    userId: json["userId"],
   );
 
   Map<String, dynamic> toJson() => {
     "token": token?.toJson(),
+    "userId": userId,
   };
 }
 

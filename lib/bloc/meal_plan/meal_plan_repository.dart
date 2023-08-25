@@ -15,9 +15,9 @@ class MealPlanRepository {
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan({required String userID, required int calories}) async {
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
-      apiURL = '${ApiUrls.genMealPlan}/$userID?calorie=$calories';
+      apiURL = '${ApiUrls.genMealPlan}/$userID';
     } else {
-      apiURL = '${ApiUrls.getMealPlan}/$userID?calorie=$calories';
+      apiURL = '${ApiUrls.getMealPlan}/$userID';
     }
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
