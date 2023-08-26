@@ -26,7 +26,9 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
@@ -53,11 +55,7 @@ Future<void> main() async {
   await PreferenceUtils.init();
   await Firebase.initializeApp(
     name: 'GymEats',
-    options: FirebaseOptions(
-        apiKey: apiKey,
-        appId: appId,
-        messagingSenderId: messagingSenderId,
-        projectId: projectId),
+    options: FirebaseOptions(apiKey: apiKey, appId: appId, messagingSenderId: messagingSenderId, projectId: projectId),
   );
   await initDynamicLinks();
   if (PreferenceUtils.getBool(prefIsLogin)) {
@@ -85,9 +83,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin)
-              ? '/AppManagerScreen'
-              : '/FoodPreferencesScreen',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) ? '/AppManagerScreen' : '/InviteFriendScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -122,12 +118,20 @@ class MyApp extends StatelessWidget {
               page: () => const FoodPreferencesScreen(),
             ),
             GetPage(
+              name: '/BestMatchRestaurantsScreen',
+              page: () => const BestMatchRestaurantsScreen(),
+            ),
+            GetPage(
               name: '/DashboardScreen',
               page: () => const DashBoardScreen(),
             ),
             GetPage(
               name: '/GymEatsMenuScreen',
               page: () => const GymEatsMenuScreen(),
+            ),
+            GetPage(
+              name: '/InviteFriendScreen',
+              page: () => const InviteFriendScreen(),
             ),
             GetPage(
               name: '/SignUpScreen',

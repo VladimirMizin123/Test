@@ -47,6 +47,7 @@ class AssetsUtils {
   static const String feMalePersonalized2 = "assets/image/female_personalized2.png";
   static const String feMalePersonalized3 = "assets/image/female_personalized3.png";
   static const String feMalePersonalized4 = "assets/image/female_personalized4.png";
+  static const String inviteFriendBg = "assets/image/invite_friend_bg.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
@@ -66,6 +67,8 @@ class AssetsUtils {
   static const icIngredientsIcon = '${svgPath}ingredients_icon.svg';
   static const icServingIcon = '${svgPath}servings_icon.svg';
   static const icTimelineIcon = '${svgPath}timeline_icon.svg';
+  static const icThumbUpLine = '${svgPath}thumb-up-line.svg';
+  static const icScooter = '${svgPath}scooter.svg';
 
   /// Icons
 

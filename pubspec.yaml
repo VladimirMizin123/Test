@@ -54,6 +54,8 @@ dependencies:
   firebase_core:
   carousel_slider: ^4.2.1
   cached_network_image: ^3.2.3
+  google_maps_flutter: ^2.4.0
+  modal_bottom_sheet: ^2.1.2
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 
