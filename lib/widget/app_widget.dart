@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
+
 import '../constant/string_utils.dart';
 
 Widget buildButton({required BuildContext context, String? title, void Function()? onPressed, Color? bgColor, Color? textColor, bool? hasImage = false, String? imagePath}) {
@@ -365,42 +366,42 @@ Widget mealPlanCard({
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
     child: Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: mealData!.isSkipped == true
-          ? Column(
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: mealData!.isSkipped == true
+            ? Column(
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          height: 80.h,
+                          width: 90.w,
+                          color: AppColors.lightGrey,
+                          child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
                         height: 80.h,
-                        width: 90.w,
-                        color: AppColors.lightGrey,
-                        child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(StringUtils.skipped, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      height: 80.h,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(StringUtils.skipped,style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          : Column(
+                    ],
+                  ),
+                ],
+              )
+            : Column(
                 children: [
                   Row(
                     children: [
@@ -413,7 +414,10 @@ Widget mealPlanCard({
                           child: CachedNetworkImage(
                             imageUrl: mealData.recipe!.mainImage ?? '',
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: AppColors.lightGrey,)),
+                            placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(
+                              color: AppColors.lightGrey,
+                            )),
                             errorWidget: (context, url, error) => const Icon(Icons.error),
                           ),
                         ),
@@ -447,8 +451,7 @@ Widget mealPlanCard({
                     ],
                   ),
                 ],
-              )
-    ),
+              )),
   );
 }
 
@@ -461,7 +464,7 @@ Widget simpleTextBorderButton({BuildContext? context, double? height, double? wi
       child: Container(
         height: height ?? screenSize.height * 0.04,
         width: width ?? screenSize.width * 0.41,
-        decoration: isFillColor ? BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(8)),
+        decoration: isFillColor ? BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(10)),
         child: Center(child: Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
       ),
     ),

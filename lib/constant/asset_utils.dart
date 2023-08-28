@@ -69,6 +69,7 @@ class AssetsUtils {
   static const icTimelineIcon = '${svgPath}timeline_icon.svg';
   static const icThumbUpLine = '${svgPath}thumb-up-line.svg';
   static const icScooter = '${svgPath}scooter.svg';
+  static const icDelete = '${svgPath}ic_delete.svg';
 
   /// Icons
 

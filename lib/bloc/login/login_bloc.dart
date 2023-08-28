@@ -8,7 +8,6 @@ import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 
 import '../../app/functions.dart';
-import '../../app/sharedPrefrence.dart';
 import '../../models/sign_up_model.dart';
 import '../../repository/login.dart';
 import '../../widget/app_widget.dart';
@@ -34,12 +33,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           if (right.data != null) {
-            PreferenceUtils.setString(
-                prefToken, right.data!.token!.accessToken!);
             userData = UserData(userId: right.data!.userId);
           }
 
           emit(LoginSuccessfulState());
+          PreferenceUtils.setString(prefToken, right.data!.token!.accessToken!);
+          PreferenceUtils.setString(prefsUserID, right.data!.userId!);
           PreferenceUtils.setBool(prefIsLogin, true);
           Get.toNamed('/AppManagerScreen');
         });

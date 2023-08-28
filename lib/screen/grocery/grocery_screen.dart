@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_event.dart';
@@ -15,16 +16,17 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/skip_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/swap_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../widget/app_center_loader.dart';
 
-class MealPlanHomeScreen extends StatefulWidget {
-  const MealPlanHomeScreen({super.key});
+class GroceryPlanScreen extends StatefulWidget {
+  const GroceryPlanScreen({super.key});
 
   @override
-  State<MealPlanHomeScreen> createState() => _MealPlanHomeScreenState();
+  State<GroceryPlanScreen> createState() => _GroceryPlanScreenState();
 }
 
-class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
+class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   final routeName = '/MealPlanHomeScreen';
   int selectedDayIndex = 0;
   final PageController _pageController = PageController();
@@ -100,7 +102,93 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    Text(state is FetchMealPlanSuccessState ? StringUtils.regenerateGroceryList : StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    Text(state is FetchMealPlanSuccessState ? StringUtils.regenerateGroceryList : 'Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.search),
+                          hintText: 'Search for item',
+                          hintStyle: FontUtils.h16(),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 5.h),
+                    ListView.builder(
+                      itemCount: 2,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    activeColor: AppColors.appColor,
+                                    value: true,
+                                    onChanged: (bool? value) {},
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'almond milk',
+                                    style: FontUtils.h16(fontColor: AppColors.black),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 6.h),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                        decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(6)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                          child: Center(child: Text('GYM EATS')),
+                                        ),
+                                      )),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    height: size.height * 0.065,
+                                    width: size.height * 0.065,
+                                    decoration: BoxDecoration(border: Border.all(color: AppColors.skyBlue), borderRadius: BorderRadius.circular(6)),
+                                    child: Center(child: SvgPicture.asset(AssetsUtils.icDelete)),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    height: size.height * 0.065,
+                                    width: size.height * 0.065,
+                                    decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(6)),
+                                    child: Center(
+                                        child: Text(
+                                      '1',
+                                      style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                    )),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    height: size.height * 0.065,
+                                    width: size.height * 0.065,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: AppColors.disable),
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: AppColors.skyBlue,
+                                    ),
+                                    child: const Center(child: Icon(Icons.add, size: 27)),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10.h),
+                              const Divider(color: AppColors.disable),
+                              SizedBox(height: 5.h),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                     mealPlanList.isEmpty
                         ? const SizedBox()
                         : Container(

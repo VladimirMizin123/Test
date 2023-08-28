@@ -20,7 +20,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(FetchMealPlanLoadingState());
 
     try {
-      await _repository.fetchMealPlan(userID: event.userID).fold((left) {
+      await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(FetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
@@ -37,7 +37,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(SkipMealPlanLoadingState());
 
     try {
-      await _repository.skipMealPlan(userID: event.userID, mealID: event.mealID).fold((left) {
+      await _repository.skipMealPlan(mealID: event.mealID).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');

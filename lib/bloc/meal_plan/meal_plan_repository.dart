@@ -13,8 +13,9 @@ class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
   int mealPlanScreenCountState = 1; // PreferenceUtils.getInt(userMealPlanCountState);
+    String userID = PreferenceUtils.getString(prefsUserID);
 
-  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan({required String userID}) async {
+  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';
@@ -30,7 +31,7 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan({required String userID, required String mealID}) async {
+  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan({required String mealID}) async {
     final response = await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
     log('eitherv response --> $response');
     if (response.statusCode == 200 || response.statusCode == 201) {
