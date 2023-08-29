@@ -259,7 +259,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     borderColor:
                                         setColor(gender: model.gender!),
                                     bgColor: Colors.white,
-                                    title: AppStrings.previous)
+                                    title: StringUtils.previous)
                                 .paddingOnly(top: 25.h),
                           ),
                           SizedBox(width: 10.w),
@@ -295,7 +295,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     },
                                     textColor: Colors.white,
                                     bgColor: setColor(gender: model.gender!),
-                                    title: AppStrings.next)
+                                    title: StringUtils.next)
                                 .paddingOnly(top: 25.h),
                           ),
                         ],

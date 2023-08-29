@@ -60,25 +60,6 @@ class AssetsUtils {
   static const String journalBG4 = "assets/image/journalBg4.png";
   static const String journalBG5 = "assets/image/journalBg5.png";
   static const String journalBG6 = "assets/image/journalBg6.png";
-  static const String female_instrucion1 =
-      "assets/image/female_instruction1.png";
-  static const String female_instrucion2 =
-      "assets/image/female_instruction2.png";
-  static const String female_instrucion3 =
-      "assets/image/female_instruction3.png";
-  static const String female_instrucion4 =
-      "assets/image/female_instruction4.png";
-  static const String female_instrucion5 =
-      "assets/image/female_instruction5.png";
-  static const String feMalePersonalized1 =
-      "assets/image/female_personalized1.png";
-  static const String feMalePersonalized2 =
-      "assets/image/female_personalized2.png";
-  static const String feMalePersonalized3 =
-      "assets/image/female_personalized3.png";
-  static const String feMalePersonalized4 =
-      "assets/image/female_personalized4.png";
-
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
   static const icFemaleChart = '${svgPath}ic_female_chart.svg';

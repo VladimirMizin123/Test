@@ -580,6 +580,7 @@ Widget swapMealCard({
   );
 }
 
+/*
 Widget simpleTextBorderButton(BuildContext context, String buttonLable) {
   final screenSize = MediaQuery.of(context).size;
   return Container(
@@ -593,4 +594,4 @@ Widget simpleTextBorderButton(BuildContext context, String buttonLable) {
             style: FontUtils.h16(
                 fontColor: AppColors.primaryBlue, fontWeight: FWT.regular))),
   );
-}
+}*/

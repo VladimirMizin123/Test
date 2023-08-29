@@ -209,7 +209,5 @@ class StringUtils {
   static const swapMeal = 'Swap Meal';
   static const doYouWantToSkipMeal = 'Do you want to Skip Meal?';
   static const cancel = 'Cancel';
-  static const skip = 'Skip';
-  static const back = 'Back';
   static const addToGroceryList = 'Add to Grocery List';
 }

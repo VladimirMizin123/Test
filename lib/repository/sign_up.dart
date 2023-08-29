@@ -44,9 +44,9 @@ class SignUpRepository {
       "UserDetail.Age": model.age!,
       "UserDetail.Height": model.height!,
       "UserDetail.Weight": model.weight!,
-      "UserDetail.Gender": model.gender! == AppStrings.male
+      "UserDetail.Gender": model.gender! == StringUtils.male
           ? 'Male'
-          : model.gender! == AppStrings.female
+          : model.gender! == StringUtils.female
               ? 'Female'
               : 'Non-binary',
       "UserDetail.SurveyId": model.surveyId!,
