@@ -71,6 +71,7 @@ class MealData {
   final int? numOfServings;
   final Recipe? recipe;
   final bool? isSkipped;
+  bool isDone;
 
   MealData({
     this.id,
@@ -79,6 +80,7 @@ class MealData {
     this.numOfServings,
     this.recipe,
     this.isSkipped,
+    this.isDone = false,
   });
 
   factory MealData.fromJson(Map<String, dynamic> json) => MealData(
@@ -160,7 +162,7 @@ class Recipe {
         courses: json["courses"],
         cuisines: json["cuisines"],
         source: json["source"],
-        mainImage: json["mainImage"],
+        mainImage: json["mainImage"] ?? '',
         ingredientsCount: json["ingredientsCount"],
         weightInGrams: json["weightInGrams"],
         servingWeight: json["servingWeight"],

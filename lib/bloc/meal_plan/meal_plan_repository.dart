@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:either_dart/either.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
@@ -10,10 +11,14 @@ import 'package:gymeats_mobile/service/apis.dart';
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
-  int mealPlanScreenCountState = 1;// PreferenceUtils.getInt(userMealPlanCountState);
+  // int mealPlanScreenCountState = 1;// PreferenceUtils.getInt(userMealPlanCountState);
+  int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
 
-  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan({required String userID, required int calories}) async {
+
+  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan({required String userID, int? calories}) async {
     String apiURL = '';
+
+    debugPrint("mealPlanScreenCountState--> $mealPlanScreenCountState");
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';
     } else {

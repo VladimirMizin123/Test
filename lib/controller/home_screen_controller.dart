@@ -82,6 +82,11 @@ class HomeScreenController extends GetxController {
           confirmPassword: confirmPasswordController.text);
 
       Get.toNamed('/PremiumScreen',arguments: userData);
+      fNameController.clear();
+      lastNameController.clear();
+      emailController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
     }
   }
 }

@@ -64,7 +64,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: Text(
                   state.errMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                      color: AppColors.primaryBlue,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700),
                 ));
               }
               return Container();
@@ -77,11 +80,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 }
                 for (var e in getSurveyData!.options!) {
                   if (e.isSelect) {
-                    listOptions
-                        .add(e.label!);
+                    listOptions.add(e.label!);
                   }
                 }
-debugPrint("listOptions--> ${listOptions.length}");
+                debugPrint("listOptions--> ${listOptions.length}");
               }
               if (state is NextScreenState) {
                 UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
@@ -101,6 +103,11 @@ debugPrint("listOptions--> ${listOptions.length}");
 
                 Get.toNamed('/UserPhotoSelectionScreen',
                     arguments: userSignUpDataModel);
+              }
+
+              if(state is PreviousScreenState){
+                Get.toNamed('/UserTypeScreen',
+                    arguments: model);
               }
             }),
       ),

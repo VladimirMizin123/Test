@@ -58,13 +58,7 @@ class _HomeState extends State<Home> {
                   context: context,
                   title: StringUtils.letsEat,
                   onPressed: ()  {
-                    if(PreferenceUtils.getBool(prefIsLogin)){
-                     String data = PreferenceUtils.getString(prefUserData);
-                     userData = UserData.fromJson(jsonDecode(data));
                       Get.toNamed('/GymEatsMenuScreen');
-                    }else{
-                      Get.toNamed('/GymEatsMenuScreen');
-                    }
 
                   },
                   bgColor: AppColors.letsEatButton,

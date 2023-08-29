@@ -1,13 +1,27 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/app_string.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+
+import '../../app/functions.dart';
+import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
+import '../../bloc/dashboard/get_dashboard/get_dashboard_event.dart';
+import '../../bloc/dashboard/get_dashboard/get_dashboard_state.dart';
+import '../../constant/string_utils.dart';
+import '../../models/fetch_meal_plan_model.dart';
+import '../../models/get_dashboard_model.dart';
+import '../../models/get_meal_tracker_data_model.dart';
+import '../../widget/app_center_loader.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -20,24 +34,42 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   final routeName = '/DashBoardScreen';
   int currentIndex = 0;
 
+  GetDashboardBloc bloc = GetDashboardBloc();
+  GetDashboardModel? model;
+  double outOfTotalCalories = 0.0;
+  List<MealData>? trackerDataList = [];
+
+  int waterML = PreferenceUtils.getInt(prefWaterML);
+  int exerciseCal = PreferenceUtils.getInt(prefExerciseCAl);
+
+  List<Widget> carouselList = [];
+  bool isDoneLoader = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    PreferenceUtils.removePref(userMealPlanCountState);
+    bloc.add(GenMealTrackerData());
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final textTheme = Theme.of(context).textTheme;
 
-    List<Widget> carouselList = [
+    carouselList = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           commonSliderView(
             icon: AppStrings.breakFastIcon,
             title: AppStrings.breakfast,
-            textTheme: textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
           commonSliderView(
             icon: AppStrings.lunchIcon,
             title: AppStrings.lunch,
-            textTheme: textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -47,12 +79,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           commonSliderView(
             icon: AppStrings.snackIcon,
             title: AppStrings.snack,
-            textTheme: textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
           commonSliderView(
             icon: AppStrings.dinnerIcon,
             title: AppStrings.dinner,
-            textTheme: textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -102,281 +134,69 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   ),
                   Text(
                     AppStrings.dashBoard,
-                    style: textTheme.displayMedium
+                    style: Theme.of(context)
+                        .textTheme
+                        .displayMedium
                         ?.copyWith(color: const Color(0xFF010101)),
                   ),
-                  Image.asset(
-                    AppStrings.notification,
-                    height: 25.h,
-                    width: 25.w,
-                    color: AppColors.darkGray,
+                  InkWell(
+                    onTap: (){
+                      Get.toNamed('/OrderHistoryScreen');
+                    },
+                    child: Image.asset(
+                      AppStrings.notification,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
+                    ),
                   )
                 ],
               ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
               Expanded(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    dashBoardCardView(
-                      height: 230.h,
-                      width: 315.w,
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 140.h,
-                                width: 140.w,
-                                child: CircularPercentIndicator(
-                                  radius: 70.0,
-                                  animation: true,
-                                  animationDuration: 1200,
-                                  lineWidth: 8.0,
-                                  percent: 0.8,
-                                  center: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: '300cal left\n',
-                                          style: textTheme.headlineSmall!
-                                              .copyWith(
-                                                  color: AppColors.darkGray),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () {
-                                              // Single tapped.
-                                            },
-                                        ),
-                                        TextSpan(
-                                          text: 'out of 2000cal',
-                                          style: textTheme.bodyMedium!.copyWith(
-                                              color: AppColors.middleGray,
-                                              fontWeight: FontWeight.w500),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () {
-                                              // Single tapped.
-                                            },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  circularStrokeCap: CircularStrokeCap.round,
-                                  backgroundColor: AppColors.lightGrey,
-                                  progressColor: AppColors.primaryBlue,
-                                ),
-                              ).paddingOnly(left: 5.w),
-                              SizedBox(
-                                height: 140.h,
-                                width: 140.w,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    calDataView(
-                                      imgIcon: AppStrings.breakFastIcon,
-                                      title: 'Eaten',
-                                      calCount: '1700',
-                                      textTheme: textTheme,
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    calDataView(
-                                      imgIcon: AppStrings.dumBBell,
-                                      title: 'Burned',
-                                      calCount: '320',
-                                      textTheme: textTheme,
-                                    ),
-                                  ],
-                                ).paddingOnly(left: 30.w),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              calciumDataView(
-                                  title: 'Carbs',
-                                  textTheme: textTheme,
-                                  gramCount: '100',
-                                  totalGram: '177',
-                                  progressColor: AppColors.mint),
-                              calciumDataView(
-                                  title: 'Protein',
-                                  textTheme: textTheme,
-                                  gramCount: '32',
-                                  totalGram: '48',
-                                  progressColor: AppColors.skyBlue),
-                              calciumDataView(
-                                title: 'Fat',
-                                textTheme: textTheme,
-                                gramCount: '100',
-                                totalGram: '177',
-                                progressColor: AppColors.coral,
-                              ),
-                            ],
-                          )
-                        ],
-                      ).paddingAll(10),
-                    ),
-                    SizedBox(
-                      height: 150.h,
-                      width: double.infinity.w,
-                      child: ListView.builder(
-                        itemCount: 2,
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (BuildContext context, int index) {
-                          return dashBoardCardView(
-                            height: 150.h,
-                            width: 163.w,
-                            margin: EdgeInsets.only(
-                                left: 20.w, top: 15.h, bottom: 5.h),
-                            child: waterExerciseDataView(
-                              title: 'Water',
-                              textTheme: textTheme,
-                              progressColor: AppColors.primaryBlue,
-                              image: AppStrings.water,
-                              type: 'Rate',
-                              countValue: '2000',
-                              ml_cal_Count: '750',
-                              tag: 'ml',
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        commonEatTypeData(
-                          image: AppStrings.breakFastImage,
-                          eatTitle: AppStrings.breakfast,
-                          eatSubTitle: AppStrings.subBreakfast,
-                          textTheme: textTheme,
-                          trailing: Container(
-                            height: 25.h,
-                            width: 25.w,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.skyBlue,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: AppColors.primaryBlue,
-                              ),
-                            ),
-                          ),
+                child: BlocConsumer(
+                  bloc: bloc,
+                  builder: (context, state) {
+                    if (state is LoadDashboardData) {
+                      return initView();
+                    }
+                    if (state is LoadMealData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is LoadingDoneState) {
+                      return initView();
+                    }
+                    if (state is LoadingData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is ErrorStateData) {
+                      return Center(
+                        child: Text(
+                          state.errMessage,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: AppColors.primaryBlue,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
                         ),
-                        commonEatTypeData(
-                          image: AppStrings.lunchImage,
-                          eatTitle: AppStrings.lunch,
-                          eatSubTitle: AppStrings.subLunch,
-                          textTheme: textTheme,
-                          trailing: Container(
-                            height: 25.h,
-                            width: 25.w,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.skyBlue,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: AppColors.primaryBlue,
-                              ),
-                            ),
-                          ),
-                        ),
-                        commonEatTypeData(
-                          image: AppStrings.snackImage,
-                          eatTitle: AppStrings.snack,
-                          eatSubTitle: AppStrings.subSnack,
-                          textTheme: textTheme,
-                          trailing: Container(
-                            height: 25.h,
-                            width: 25.w,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.skyBlue,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: AppColors.primaryBlue,
-                              ),
-                            ),
-                          ),
-                        ),
-                        commonEatTypeData(
-                          image: AppStrings.dinnerImage,
-                          eatTitle: AppStrings.dinner,
-                          eatSubTitle: AppStrings.subDinner,
-                          textTheme: textTheme,
-                          trailing: Container(
-                            height: 25.h,
-                            width: 25.w,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.skyBlue,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: AppColors.primaryBlue,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 75.h,
-                      child: CarouselSlider(
-                        items: carouselList,
-                        options: CarouselOptions(
-                          autoPlay: false,
-                          height: 120.h,
-                          initialPage: currentIndex,
-                          viewportFraction: 1.05,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              currentIndex = index;
-                            });
-                          },
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      ).paddingOnly(left: 20.w, top: 10.h),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: 8.h,
-                          width: 8.w,
-                          margin: EdgeInsets.only(right: 5.w),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: currentIndex == 0
-                                ? AppColors.primaryBlue
-                                : AppColors.disable,
-                          ),
-                        ),
-                        Container(
-                          height: 8.h,
-                          width: 8.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: currentIndex == 1
-                                ? AppColors.primaryBlue
-                                : AppColors.disable,
-                          ),
-                        )
-                      ],
-                    ).paddingOnly(bottom: 20.w, top: 5.h)
-                  ],
+                      );
+                    }
+                    return Container();
+                  },
+                  listener: (context, state) {
+                    if (state is LoadDashboardData) {
+                      model = state.model;
+                      outOfTotalCalories = model!.data!.totalCalorie! - model!.data!.totalIntakeFood!;
+                    }
+                    if (state is LoadMealData) {
+                      isDoneLoader = false;
+                      trackerDataList = state.trackerDataList;
+
+                      bloc.add(GetDashboardData());
+                    }
+                    if (state is LoadingDoneState) {
+                      isDoneLoader = true;
+                    }
+                  },
                 ),
               ),
             ],
@@ -385,6 +205,389 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       ),
     );
   }
+
+  Widget initView() => SingleChildScrollView(
+    child: ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            dashBoardCardView(
+              height: 230.h,
+              width: 315.w,
+              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 140.h,
+                        width: 140.w,
+                        child: CircularPercentIndicator(
+                          radius: 70.0,
+                          animation: true,
+                          animationDuration: 1200,
+                          lineWidth: 8.0,
+                          percent:
+                              model!.data!.totalIntakeFood!.toDouble().ceil() /
+                                  model!.data!.totalCalorie!.toDouble().ceil(),
+                          center: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text:
+                                      '${int.parse(outOfTotalCalories.toString().split('.')[1]) >= 50 ? outOfTotalCalories.toDouble().ceil().toString() : outOfTotalCalories.toDouble().floor().toString()}cal left\n',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .copyWith(color: AppColors.darkGray),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Single tapped.
+                                    },
+                                ),
+                                TextSpan(
+                                  text:
+                                      'out of ${int.parse(model!.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model!.data!.totalCalorie!.toDouble().ceil().toString() : model!.data!.totalCalorie!.toDouble().floor().toString()}cal',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                          color: AppColors.middleGray,
+                                          fontWeight: FontWeight.w500),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Single tapped.
+                                    },
+                                ),
+                              ],
+                            ),
+                          ),
+                          circularStrokeCap: CircularStrokeCap.round,
+                          backgroundColor: AppColors.lightGrey,
+                          progressColor: AppColors.primaryBlue,
+                        ),
+                      ).paddingOnly(left: 5.w),
+                      SizedBox(
+                        height: 140.h,
+                        width: 140.w,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            calDataView(
+                              imgIcon: AppStrings.breakFastIcon,
+                              title: 'Eaten',
+                              calCount: int.parse(model!.data!.totalIntakeFood!
+                                          .toString()
+                                          .split('.')[1]) >=
+                                      50
+                                  ? model!.data!.totalIntakeFood!
+                                      .toDouble()
+                                      .ceil()
+                                      .toString()
+                                  : model!.data!.totalIntakeFood!
+                                      .toDouble()
+                                      .floor()
+                                      .toString(),
+                              textTheme: Theme.of(context).textTheme,
+                            ),
+                            SizedBox(height: 15.h),
+                            calDataView(
+                              imgIcon: AppStrings.dumBBell,
+                              title: 'Burned',
+                              calCount: int.parse(model!
+                                          .data!.totalBurnedByExercise!
+                                          .toString()
+                                          .split('.')[1]) >=
+                                      50
+                                  ? model!.data!.totalBurnedByExercise!
+                                      .toDouble()
+                                      .ceil()
+                                      .toString()
+                                  : model!.data!.totalBurnedByExercise!
+                                      .toDouble()
+                                      .floor()
+                                      .toString(),
+                              textTheme: Theme.of(context).textTheme,
+                            ),
+                          ],
+                        ).paddingOnly(left: 30.w),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      calciumDataView(
+                        title: 'Carbs',
+                        textTheme: Theme.of(context).textTheme,
+                        gramCount: int.parse(model!.data!.totalIntakeCarbs!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalIntakeCarbs!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalIntakeCarbs!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: int.parse(model!.data!.totalCarbs!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalCarbs!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalCarbs!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.mint,
+                        percentage:
+                            model!.data!.totalIntakeCarbs!.toDouble().ceil() /
+                                model!.data!.totalCarbs!.toDouble().ceil(),
+                      ),
+                      calciumDataView(
+                          percentage:
+                              model!.data!.totalIntakeProtein!.toDouble().ceil() /
+                                  model!.data!.totalProtein!.toDouble().ceil(),
+                          title: 'Protein',
+                          textTheme: Theme.of(context).textTheme,
+                          gramCount: int.parse(model!.data!.totalIntakeProtein!
+                                      .toString()
+                                      .split('.')[1]) >=
+                                  50
+                              ? model!.data!.totalIntakeProtein!
+                                  .toDouble()
+                                  .ceil()
+                                  .toString()
+                              : model!.data!.totalIntakeProtein!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          totalGram: int.parse(model!.data!.totalProtein!
+                                      .toString()
+                                      .split('.')[1]) >=
+                                  50
+                              ? model!.data!.totalProtein!
+                                  .toDouble()
+                                  .ceil()
+                                  .toString()
+                              : model!.data!.totalProtein!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          progressColor: AppColors.skyBlue),
+                      calciumDataView(
+                        percentage:
+                            model!.data!.totalIntakeFat!.toDouble().ceil() /
+                                model!.data!.totalFat!.toDouble().ceil(),
+                        title: 'Fat',
+                        textTheme: Theme.of(context).textTheme,
+                        gramCount: int.parse(model!.data!.totalIntakeFat!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalIntakeFat!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalIntakeFat!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: int.parse(model!.data!.totalFat!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalFat!.toDouble().ceil().toString()
+                            : model!.data!.totalFat!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.coral,
+                      ),
+                    ],
+                  )
+                ],
+              ).paddingAll(10),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () async {
+                      Get.toNamed('/AddWaterScreen',
+                              arguments:
+                                  model!.data!.dailyWaterGoals!.toString())!
+                          .then((value) {
+                        setState(() {
+                          waterML = waterML + int.parse(value);
+                        });
+                      });
+                    },
+                    child: dashBoardCardView(
+                      margin: EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
+                      child: waterExerciseDataView(
+                        percentage: waterML / model!.data!.dailyWaterGoals!,
+                        title: StringUtils.water,
+                        textTheme: Theme.of(context).textTheme,
+                        progressColor: AppColors.primaryBlue,
+                        image: AppStrings.water,
+                        type: StringUtils.rate,
+                        countValue: model!.data!.dailyWaterGoals!.toString(),
+                        mlCalCount: waterML.toString(),
+                        tag: StringUtils.ml,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 8.w,
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Get.toNamed('/SecondDashBoardView')!.then((value) {
+                        setState(() {
+                          exerciseCal = exerciseCal + int.parse(value);
+                        });
+                      });
+
+                    },
+                    child: dashBoardCardView(
+                      margin:
+                          EdgeInsets.only(right: 15.w, top: 15.h, bottom: 5.h),
+                      child: waterExerciseDataView(
+                        percentage:
+                            exerciseCal / model!.data!.dailyExerciseGoals!,
+                        title: StringUtils.exercise,
+                        textTheme: Theme.of(context).textTheme,
+                        progressColor: AppColors.letsEatButton,
+                        image: AssetsUtils.icExercise,
+                        type: StringUtils.goal,
+                        countValue: model!.data!.dailyExerciseGoals!.toString(),
+                        mlCalCount: exerciseCal.toString(),
+                        tag: StringUtils.cal,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: trackerDataList!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return commonEatTypeData(
+                    image: trackerDataList![index].recipe!.mainImage,
+                    eatTitle: trackerDataList![index].meal,
+                    eatSubTitle: trackerDataList![index].recipe!.name ?? '',
+                    textTheme: Theme.of(context).textTheme,
+                    trailing: InkWell(
+                      onTap: () {
+                        if (!trackerDataList![index].isDone!) {
+                          bloc.add(AddEatenMealData(
+                              mealId: trackerDataList![index].id!));
+                        }
+                      },
+                      child: isDoneLoader
+                          ? SizedBox(
+                              height: 25.h,
+                              width: 25.w,
+                              child: const AppCenterLoader())
+                          : Container(
+                              height: 25.h,
+                              width: 25.w,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: trackerDataList![index].isDone!
+                                    ? AppColors.primaryBlue
+                                    : AppColors.skyBlue,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  trackerDataList![index].isDone!
+                                      ? Icons.check
+                                      : Icons.add,
+                                  color: trackerDataList![index].isDone!
+                                      ? Colors.white
+                                      : AppColors.primaryBlue,
+                                ),
+                              ),
+                            ),
+                    ),
+                    calText: int.parse(trackerDataList![index]
+                                .calories
+                                .toString()
+                                .split('.')[1]) >=
+                            50
+                        ? trackerDataList![index]
+                            .calories!
+                            .toDouble()
+                            .ceil()
+                            .toString()
+                        : trackerDataList![index]
+                            .calories!
+                            .toDouble()
+                            .floor()
+                            .toString(),
+                  );
+                }),
+            SizedBox(
+              height: 75.h,
+              child: CarouselSlider(
+                items: carouselList,
+                options: CarouselOptions(
+                  autoPlay: false,
+                  height: 120.h,
+                  initialPage: currentIndex,
+                  viewportFraction: 1.05,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      currentIndex = index;
+                    });
+                  },
+                  scrollDirection: Axis.horizontal,
+                ),
+              ).paddingOnly(left: 20.w, top: 10.h),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 8.h,
+                  width: 8.w,
+                  margin: EdgeInsets.only(right: 5.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: currentIndex == 0
+                        ? AppColors.primaryBlue
+                        : AppColors.disable,
+                  ),
+                ),
+                Container(
+                  height: 8.h,
+                  width: 8.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: currentIndex == 1
+                        ? AppColors.primaryBlue
+                        : AppColors.disable,
+                  ),
+                )
+              ],
+            ).paddingOnly(bottom: 20.w, top: 5.h)
+          ],
+        ),
+  );
 
   Widget calDataView(
       {String? imgIcon,
@@ -445,6 +648,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     TextTheme? textTheme,
     String? totalGram,
     Color? progressColor,
+    required double percentage,
   }) {
     return Column(
       children: [
@@ -452,8 +656,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           title.toString(),
           style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
         ),
+        SizedBox(
+          height: 5.h,
+        ),
         commonProgressbar(
-            progressColor: progressColor, width: 76.w, lineHeight: 10.0),
+            progressColor: progressColor,
+            width: 76.w,
+            lineHeight: 10.0,
+            percentage: percentage),
+        SizedBox(
+          height: 5.h,
+        ),
         Text(
           '$gramCount / $totalGram g',
           style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
@@ -462,67 +675,80 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
   }
 
-  Widget commonProgressbar(
-      {Color? progressColor, double? width, double? lineHeight}) {
+  Widget commonProgressbar({
+    Color? progressColor,
+    double? width,
+    double? lineHeight,
+    required double percentage,
+  }) {
     return LinearPercentIndicator(
       width: width,
       barRadius: const Radius.circular(10),
       animation: true,
+      padding: EdgeInsets.zero,
       lineHeight: lineHeight!,
       animationDuration: 2000,
-      percent: 0.7,
+      percent: percentage,
       center: const Text(""),
-      linearStrokeCap: LinearStrokeCap.round,
       progressColor: progressColor,
-    ).paddingAll(5);
+    );
   }
 
   Widget waterExerciseDataView(
       {String? title,
-      String? ml_cal_Count,
+      String? mlCalCount,
       Color? progressColor,
       String? tag,
       String? image,
       String? type,
       TextTheme? textTheme,
+      required double percentage,
       String? countValue}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              title.toString(),
-              style:
-                  textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
-            ),
-            addIcon(),
-          ],
-        ),
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Image.asset(
-              image.toString(),
-              height: 30.h,
-              width: 30.w,
-            ),
-            Text(
-              ' $ml_cal_Count $tag',
-              style:
-                  textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
-            )
-          ],
-        ).paddingOnly(left: 12.w),
-        Text(
-          'Daily $type: $countValue $tag',
-          style: textTheme?.bodySmall?.copyWith(color: AppColors.darkGray),
-        ).paddingOnly(left: 15.w),
-        commonProgressbar(
-            progressColor: progressColor, width: 139.w, lineHeight: 8.0),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                title.toString(),
+                style: textTheme?.headlineSmall
+                    ?.copyWith(color: AppColors.darkGray),
+              ),
+              addIcon(),
+            ],
+          ),
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Image.asset(
+                image.toString(),
+                height: 30.h,
+                width: 30.w,
+              ),
+              Text(
+                ' $mlCalCount $tag',
+                style: textTheme?.headlineSmall
+                    ?.copyWith(color: AppColors.darkGray),
+              )
+            ],
+          ),
+          Text(
+            '${StringUtils.daily} $type: $countValue $tag',
+            style: textTheme?.bodySmall?.copyWith(color: AppColors.darkGray),
+          ),
+          SizedBox(
+            height: 12.h,
+          ),
+          commonProgressbar(
+              progressColor: progressColor,
+              lineHeight: 8.0,
+              percentage: percentage),
+        ],
+      ),
     );
   }
 
@@ -530,6 +756,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     String? image,
     String? eatTitle,
     String? eatSubTitle,
+    required String calText,
     TextTheme? textTheme,
     Widget? trailing,
   }) {
@@ -548,10 +775,19 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 16.h),
       child: Center(
         child: ListTile(
-          leading: Image.asset(
-            image.toString(),
-            height: 45.h,
-            width: 45.w,
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: CachedNetworkImage(
+              height: 40,
+              width: 40,
+              imageUrl: image ?? '',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(
+                color: AppColors.lightGrey,
+              )),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            ),
           ),
           title: Row(
             children: [
@@ -569,7 +805,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     width: 18.w,
                   ),
                   Text(
-                    '421cal',
+                    calText,
                     style: textTheme?.bodySmall?.copyWith(
                         color: AppColors.darkGray, fontWeight: FontWeight.w400),
                   )

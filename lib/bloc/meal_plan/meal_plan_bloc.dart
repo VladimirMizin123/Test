@@ -33,19 +33,4 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(FetchMealPlanErrorState());
   }
 
-  bool emailValid(String email) {
-    if (email.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  bool passwordValid(String password) {
-    if (password.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
-  }
 }

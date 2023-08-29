@@ -34,7 +34,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      bloc.add(MealPlanFetchEvent(userID: userData.userId!, calorie: 1000));
+      bloc.add(MealPlanFetchEvent(userID: userId!, calorie: 1000));
     });
   }
 

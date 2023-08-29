@@ -59,8 +59,9 @@ Future<void> main() async {
   );
   await initDynamicLinks();
   if (PreferenceUtils.getBool(prefIsLogin)) {
-    String data = PreferenceUtils.getString(prefUserData);
-    userData = UserData.fromJson(jsonDecode(data));
+    if(PreferenceUtils.getBool(prefIsConfirmEmail)){
+      userId = PreferenceUtils.getString(prefUserData);
+    }
   }
   runApp(MyApp());
 }
@@ -83,7 +84,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin)
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
               : '/LoginScreen',
           getPages: [

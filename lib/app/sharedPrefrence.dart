@@ -2,14 +2,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/sign_up_model.dart';
 
-
-UserData userData = UserData();
+ String userId = '';
 
 const String prefIsLogin = 'isLogin';
+const String prefIsConfirmEmail = 'isConfirmEmail';
 const String prefUserData = 'userData';
 const String prefToken = 'token';
-const String passwordResetToken = 'passwordResetToken';
+const String prefPasswordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';
+const String prefWaterML = 'waterML';
+const String prefExerciseCAl = 'exerciseCAl';
 
 
 class PreferenceUtils {
@@ -48,6 +50,11 @@ class PreferenceUtils {
   static Future<bool> setBool(String key, bool value) async {
     var prefs = await _instance;
     return _prefsInstance != null ? prefs.setBool(key, value) : Future.value(false);
+  }
+
+  static removePref(String key) async {
+    var prefs = await _instance;
+    prefs.remove(key);
   }
 
 }

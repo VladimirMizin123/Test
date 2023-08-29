@@ -239,4 +239,7 @@ class AppStrings {
   static const orderHistory = 'Order History';
   static const orderProgressText = 'Order in progress';
   static const save = 'Save';
+  static const orderType = 'Order type: ';
+  static const deliveryTime = 'Delivery time: ';
+  static const details = 'Details';
 }

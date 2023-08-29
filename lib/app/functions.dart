@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/models/get_survey_model.dart';
-
+import 'package:intl/intl.dart';
 import '../constant/string_utils.dart';
 import '../constant/color_utils.dart';
 
@@ -48,4 +48,16 @@ bool validatePassword(String password) {
     return false;
   }
   return true;
+}
+
+String dateTimeNow(){
+  DateTime now = DateTime.now();
+  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+  return formattedDate;
+}
+
+String dateTimeYYYYMMDD({required String dateTimeVal}){
+  DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(dateTimeVal);
+  String formattedDate = DateFormat("yyyy-MM-dd").format(dateTime);
+  return formattedDate;
 }

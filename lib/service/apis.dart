@@ -28,6 +28,7 @@ class ApiServices {
       }
       debugPrint('get url--> $url');
       final response = await http.get(Uri.parse(url), headers: headers);
+      debugPrint("get response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -57,12 +58,14 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
+      debugPrint("post url--> $url");
       final jsonBody = jsonEncode(body);
       final response = await http.post(
         Uri.parse(url),
         body: jsonBody,
         headers: headers,
       );
+      debugPrint("post response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -197,7 +200,7 @@ class ApiServices {
       var response = await request.send().then((value) async {
         return await http.Response.fromStream(value);
       });
-
+      debugPrint("postMultipart response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

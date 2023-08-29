@@ -23,6 +23,8 @@ void handleDeepLink(PendingDynamicLinkData? initialLink) {
   if (initialLink != null) {
     final Uri deepLink = initialLink.link;
 
+    debugPrint('initialLink deepLink: $deepLink');
+
     // Handle the deep link here, e.g., parse the resetToken
     String? resetToken = deepLink.queryParameters['resetToken'];
     if (resetToken != null) {

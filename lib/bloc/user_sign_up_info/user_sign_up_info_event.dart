@@ -10,10 +10,3 @@ class SignUpApiEvent extends UserSignUpInfoEvent {
   SignUpApiEvent({required this.model});
 }
 
-class LoginApiEvent extends UserSignUpInfoEvent {
-  String email;
-  String password;
-  String gender;
-
-  LoginApiEvent({required this.email, required this.password, required this.gender});
-}

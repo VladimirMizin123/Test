@@ -102,4 +102,14 @@ class StringUtils {
   static const cancel = 'Cancel';
   static const skip = 'Skip';
   static const back = 'Back';
+  static const water = 'Water';
+  static const exercise = 'Exercise';
+  static const rate = 'Rate';
+  static const goal = 'Goal';
+  static const ml = 'ml';
+  static const cal = 'cal';
+  static const daily = 'Daily';
+  static const pleaseEnterExerciseName  = 'Please enter exercise name';
+  static const pleaseEnterMinutes = 'Please enter minutes';
+  static const pleaseEnterCaloriesBurned = 'Please enter calories burned';
 }

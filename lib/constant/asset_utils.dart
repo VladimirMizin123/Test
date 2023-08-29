@@ -47,6 +47,7 @@ class AssetsUtils {
   static const String feMalePersonalized2 = "assets/image/female_personalized2.png";
   static const String feMalePersonalized3 = "assets/image/female_personalized3.png";
   static const String feMalePersonalized4 = "assets/image/female_personalized4.png";
+  static const icExercise = "assets/icon/ic_exercise.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';

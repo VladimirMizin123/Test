@@ -36,12 +36,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           if (right.data != null) {
             PreferenceUtils.setString(
                 prefToken, right.data!.token!.accessToken!);
-            userData = UserData(userId: right.data!.userId);
+            userId = right.data!.userId!;
+            PreferenceUtils.setString(
+                prefUserData, right.data!.userId!);
           }
 
           emit(LoginSuccessfulState());
           PreferenceUtils.setBool(prefIsLogin, true);
-          Get.toNamed('/AppManagerScreen');
+          PreferenceUtils.setBool(prefIsConfirmEmail, true);
+          Get.toNamed('/AppManagerScreen',preventDuplicates: false);
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());

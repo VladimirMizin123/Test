@@ -9,6 +9,8 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
 
+import '../../app/sharedPrefrence.dart';
+
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
   const AppManagerScreen({super.key, this.routeName = ''});

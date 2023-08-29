@@ -21,7 +21,6 @@ class UserSignUpInfoBloc
   UserSignUpInfoBloc() : super(InitialState()) {
     on<LatLogEvent>(_onLatLog);
     on<SignUpApiEvent>(_onSignUpApi);
-    on<LoginApiEvent>(_onLoginApi);
   }
 
   _onLatLog(LatLogEvent event, Emitter<UserSignUpInfoState> emit) {
@@ -84,14 +83,9 @@ class UserSignUpInfoBloc
         showToast(isSuccess: false, message: left.message!);
         emit(SignUpErrorState());
       }, (right) async {
-        if (right.data != null) {
-          userData = right.data!;
-          await PreferenceUtils.setBool(prefIsLogin, true);
-          await PreferenceUtils.setString(prefUserData, jsonEncode(right.data!));
-        }
         showToast(isSuccess: true, message: right.message!);
-        emit(LoginApiState());
-
+        emit(SignUpSuccessState());
+        Get.toNamed('/LoginScreen',);
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -99,15 +93,4 @@ class UserSignUpInfoBloc
     }
   }
 
-  _onLoginApi(LoginApiEvent event, Emitter<UserSignUpInfoState> emit) {
-    _loginRepository.login(email: event.email, password: event.password).fold((left) {},
-            (right) async {
-          if (right.data != null) {
-            PreferenceUtils.setString(prefToken, right.data!.token!.accessToken!);
-            userData = UserData(userId: right.data!.userId);
-          }
-          emit(SignUpSuccessState());
-          Get.toNamed('/GenderScreen', arguments: event.gender);
-        });
-  }
 }
