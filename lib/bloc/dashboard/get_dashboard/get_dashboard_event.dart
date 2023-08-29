@@ -1,20 +1,12 @@
 
 abstract class GetDashboardEvent{}
 
-class GetSurveyData extends GetDashboardEvent{}
+class GetDashboardData extends GetDashboardEvent{}
 
-class CheckSurveyData extends GetDashboardEvent{
-  int index;
-  CheckSurveyData({required this.index});
+class GenMealTrackerData extends GetDashboardEvent{}
+
+class AddEatenMealData extends GetDashboardEvent{
+  String mealId;
+  AddEatenMealData({required this.mealId});
 }
 
-class NextPrevSurveyClick extends GetDashboardEvent{
-  int index;
-  bool isNext;
-  NextPrevSurveyClick({required this.index, required this.isNext});
-}
-
-class SearchData extends GetDashboardEvent{
-  String text;
-  SearchData({required this.text});
-}

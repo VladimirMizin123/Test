@@ -9,6 +9,9 @@ import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/grocery_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
 
+import '../../app/sharedPrefrence.dart';
+import '../journal/journal_screen.dart';
+
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
   const AppManagerScreen({super.key, this.routeName = ''});
@@ -77,7 +80,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with WidgetsBinding
       case 3:
         return Container();
       case 4:
-        return Container();
+        return const JournalScreen();
       default:
     }
   }

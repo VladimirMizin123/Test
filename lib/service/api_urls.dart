@@ -14,5 +14,19 @@ class ApiUrls{
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
+
+  //For dashboard use apis
   static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';
+  static const String getTotalIntakeWater = '${baseUrl}api/Dashboard/GetTotalIntakeWater';
+  static const String getTotalCaloriesBurnedByExercise = '${baseUrl}api/Dashboard/GetTotalCaloriesBurnedByExercise';
+  static const String addExercise = '${baseUrl}api/Dashboard/AddExercise';
+  static const String addWater = '${baseUrl}api/Dashboard/AddWater';
+  static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
+  static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
+
+  //For journal use apis
+  static const String getUserJournalData = '${baseUrl}api/Dashboard/GetUserJournalData';
+  static const String getWaterLogDetails = '${baseUrl}api/Dashboard/GetWaterLogDetails';
+  static const String getExerciseLogDetails = '${baseUrl}api/Dashboard/GetExerciseLogDetails';
+
 }

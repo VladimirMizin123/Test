@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 
 import '../app/functions.dart';
 import '../models/error_model.dart';
@@ -16,7 +17,7 @@ class GetDashboardDataRepository {
 
   Future<Either<ErrorModel , GetDashboardModel>> getDashboardData() async {
     final response = await apiServices.get(
-      ApiUrls.getSurvey,
+      '${ApiUrls.getDashboardData}/$userId',
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetDashboardModel.fromJson(jsonDecode(response.body)) );

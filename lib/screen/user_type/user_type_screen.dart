@@ -240,7 +240,6 @@ class _UserTypePageState extends State<UserTypeScreen> {
                           onPressed: () {
                             if (isVisible) {
                               FocusScope.of(context).unfocus();
-
                               UserSignUpDataModel userSignUpDataModel =
                                   UserSignUpDataModel(
                                       firstName: model.firstName,
@@ -255,6 +254,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       weight: weightController.text);
                               Get.toNamed('/UserSurveyScreen',
                                   arguments: userSignUpDataModel);
+                              ageController.clear();
+                              weightController.clear();
+                              heightController.clear();
                             }
                           },
                           textColor: Colors.white,

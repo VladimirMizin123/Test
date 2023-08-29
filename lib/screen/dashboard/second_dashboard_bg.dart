@@ -58,20 +58,27 @@ class SecondDashBoardView extends StatelessWidget {
             const Spacer(),
             Align(
               alignment: Alignment.topRight,
-              child: Container(
-                height: 40.h,
-                width: 75.w,
-                margin: EdgeInsets.only(right: 20.w),
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.40),
-                  border: Border.all(color: Colors.white, width: 1),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Center(
-                  child: Text(
-                    'Skip',
-                    style:
-                        textTheme.headlineSmall?.copyWith(color: Colors.white),
+              child: InkWell(
+                onTap: (){
+                  Get.toNamed('/AddEntryScreen')!.then((value) {
+                    Get.back(result: value);
+                  });
+                },
+                child: Container(
+                  height: 40.h,
+                  width: 75.w,
+                  margin: EdgeInsets.only(right: 20.w),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(255, 255, 255, 0.40),
+                    border: Border.all(color: Colors.white, width: 1),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Skip',
+                      style:
+                          textTheme.headlineSmall?.copyWith(color: Colors.white),
+                    ),
                   ),
                 ),
               ),

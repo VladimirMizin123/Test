@@ -244,8 +244,6 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                   if (_currentPosition != null) ...{
                     if (state is SignUpLoadingState) ...{
                       const AppCenterLoader(),
-                    } else if (state is LoginApiState) ...{
-                      const AppCenterLoader(),
                     } else ...{
                       Row(
                         children: [
@@ -309,10 +307,6 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
             listener: (context, state) {
               if (state is LatLogState) {
                 _currentPosition = state.currentPosition;
-              }
-              if (state is LoginApiState) {
-                bloc.add(LoginApiEvent(
-                    email: model.email!, password: model.password!, gender : model.gender!));
               }
             },
           ),

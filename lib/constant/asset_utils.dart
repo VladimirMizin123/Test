@@ -60,6 +60,8 @@ class AssetsUtils {
   static const String journalBG4 = "assets/image/journalBg4.png";
   static const String journalBG5 = "assets/image/journalBg5.png";
   static const String journalBG6 = "assets/image/journalBg6.png";
+  static const icExercise = "assets/icon/ic_exercise.png";
+
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
   static const icFemaleChart = '${svgPath}ic_female_chart.svg';

@@ -1,0 +1,57 @@
+
+import '../../../models/exercise_log_details_model.dart';
+import '../../../models/fetch_meal_plan_model.dart';
+import '../../../models/get_dashboard_model.dart';
+import '../../../models/get_meal_tracker_data_model.dart';
+import '../../../models/water_log_details_model.dart';
+
+abstract class GetUserJournalState{}
+
+class InitialState extends GetUserJournalState{}
+
+class LoadUserJournalData extends GetUserJournalState{
+  GetDashboardModel model;
+  LoadUserJournalData({ required this.model});
+}
+
+class LoadGenMealData extends GetUserJournalState{
+  List<MealData> genMealDataList;
+  LoadGenMealData({ required this.genMealDataList});
+}
+
+class LoadExerciseData extends GetUserJournalState{
+  ExerciseData? data;
+  LoadExerciseData({ required this.data});
+}
+
+
+class LoadWaterData extends GetUserJournalState{
+  WaterData data;
+  LoadWaterData({ required this.data });
+}
+
+class ErrorJournalState extends GetUserJournalState{
+  // String errMessage;
+  // ErrorJournalState({required this.errMessage});
+}
+
+class ErrorGenTrackState extends GetUserJournalState{
+  // String errMessage;
+  // ErrorGenTrackState({required this.errMessage});
+}
+
+class ErrorWaterDataState extends GetUserJournalState{
+  // String errMessage;
+  // ErrorJournalState({required this.errMessage});
+}
+
+
+class ErrorExerciseState extends GetUserJournalState{
+  // String errMessage;
+  // ErrorJournalState({required this.errMessage});
+}
+
+class LoadingData extends GetUserJournalState{}
+
+class LoadingDoneState extends GetUserJournalState{
+}

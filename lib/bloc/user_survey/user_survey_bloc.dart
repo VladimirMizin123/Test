@@ -84,11 +84,16 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
           getNewSurvey = listSurveyData[listSurveyData.length - 1];
 
           emit(LoadSurveyData(surveyData: getNewSurvey!));
+
         } else {
-          Get.back();
+          emit(PreviousScreenState());
+
+          // Get.back();
         }
       } else {
-        Get.back();
+        emit(PreviousScreenState());
+
+        // Get.back();
       }
     }
   }

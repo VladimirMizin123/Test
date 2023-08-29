@@ -19,3 +19,8 @@ class NextScreenState extends UserSurveyState{
   String dietId;
   NextScreenState({required this.dietId});
 }
+
+
+class PreviousScreenState extends UserSurveyState{
+
+}

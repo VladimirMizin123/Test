@@ -5,13 +5,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:http/http.dart' as http;
-
+import '../app/sharedPrefrence.dart';
 import 'api_exception.dart';
 import 'api_urls.dart';
 
 class ApiServices {
-
-  String token = 'Bearer ${PreferenceUtils.getString(prefToken)}';
+  String token = PreferenceUtils.getString(prefToken);
 
   Future<dynamic> get(String url) async {
     try {
@@ -23,17 +22,14 @@ class ApiServices {
         };
       } else {
         headers = {
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'URL - - - - - ');
-
-      final response = await http.get(Uri.parse(url),headers: headers);
-      
-      log('${response.statusCode}', name: 'STATUS CODE - - - - - ');
-      log(response.body, name: 'RESPONSE - - - - - ');
+      debugPrint('get url--> $url');
+      final response = await http.get(Uri.parse(url), headers: headers);
+      debugPrint("get response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -58,17 +54,19 @@ class ApiServices {
       } else {
         headers = {
           'Content-Type': 'application/json',
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
+      debugPrint("post url--> $url");
       final jsonBody = jsonEncode(body);
       final response = await http.post(
         Uri.parse(url),
         body: jsonBody,
         headers: headers,
       );
+      debugPrint("post response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -203,7 +201,7 @@ class ApiServices {
       var response = await request.send().then((value) async {
         return await http.Response.fromStream(value);
       });
-
+      debugPrint("postMultipart response--> $response");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

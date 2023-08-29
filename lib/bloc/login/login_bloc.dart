@@ -35,14 +35,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           if (right.data != null) {
-            userData = UserData(userId: right.data!.userId);
+            PreferenceUtils.setString(
+                prefToken, right.data!.token!.accessToken!);
+            userId = right.data!.userId!;
+            PreferenceUtils.setString(
+                prefUserData, right.data!.userId!);
+            PreferenceUtils.setBool(prefIsLogin, true);
+            PreferenceUtils.setBool(prefIsConfirmEmail, true);
+
           }
 
           emit(LoginSuccessfulState());
-          PreferenceUtils.setString(prefToken, right.data!.token!.accessToken!);
-          PreferenceUtils.setString(prefsUserID, right.data!.userId!);
-          PreferenceUtils.setBool(prefIsLogin, true);
-          Get.toNamed('/AppManagerScreen');
+         Get.toNamed('/AppManagerScreen',preventDuplicates: false);
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());

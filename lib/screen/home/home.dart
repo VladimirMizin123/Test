@@ -56,9 +56,9 @@ class _HomeState extends State<Home> {
                 buildButton(
                   context: context,
                   title: StringUtils.letsEat,
-                  onPressed: () {
-
+                  onPressed: ()  {
                       Get.toNamed('/GymEatsMenuScreen');
+
                   },
                   bgColor: AppColors.letsEatButton,
                   textColor: AppColors.letsEat,

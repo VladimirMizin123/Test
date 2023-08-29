@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import '../../constant/string_utils.dart';
+
+import '../../app/sharedPrefrence.dart';
+import '../../bloc/dashboard/add_exercise/add_exercise_bloc.dart';
+import '../../bloc/dashboard/add_exercise/add_exercise_event.dart';
+import '../../bloc/dashboard/add_exercise/add_exercise_state.dart';
+import '../../widget/app_center_loader.dart';
 
 class AddEntryScreen extends StatefulWidget {
   const AddEntryScreen({super.key});
@@ -17,6 +24,8 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   final entryController = TextEditingController();
   final minutesController = TextEditingController();
   final caloriesBurnedController = TextEditingController();
+
+  AddExerciseBloc bloc = AddExerciseBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +58,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
               child: Column(
                 children: [
                   commonUserTypeTextField(
-                    hintText: StringUtils.running,
+                    hintText: 'Exercise name',
                     controller: entryController,
                     context: context,
                     width: double.infinity.w,
@@ -72,7 +81,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
-                          hintText: '25',
+                          hintText: '00',
                           controller: minutesController,
                           context: context,
                           width: 80.w,
@@ -96,7 +105,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
-                          hintText: '200cal',
+                          hintText: '00cal',
                           controller: caloriesBurnedController,
                           context: context,
                           width: 80.w,
@@ -107,7 +116,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                           valueColor: AppColors.darkGray,
                           fontColor: AppColors.darkGray,
                           cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.text,
+                          textInputType: TextInputType.number,
                           onChange: (value) {}),
                     ],
                   ).paddingOnly(top: 8.h),
@@ -115,14 +124,30 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
               ).paddingAll(16),
             ),
             const Spacer(),
-            buildButton(
-                    context: context,
-                    title: StringUtils.save,
-                    hasImage: false,
-                    textColor: AppColors.skyBlue,
-                    onPressed: () {},
-                    bgColor: AppColors.primaryBlue)
-                .paddingOnly(bottom: 20.h),
+            BlocBuilder(
+                bloc: bloc,
+                builder: (context, state) {
+                  debugPrint('water state--> $state');
+                  if (state is LoadingState) {
+                    return const AppCenterLoader();
+                  } else {
+                    return buildButton(
+                            context: context,
+                            title: StringUtils.save,
+                            hasImage: false,
+                            textColor: AppColors.skyBlue,
+                            onPressed: () {
+                              bloc.add(SaveClickEvent(
+                                  userId: userId,
+                                  workoutTime: minutesController.text,
+                                  exerciseName: entryController.text,
+                                  caloriesBurned: caloriesBurnedController.text,
+                                  createdBy: ''));
+                            },
+                            bgColor: AppColors.primaryBlue)
+                        .paddingOnly(bottom: 20.h);
+                  }
+                }).paddingOnly(bottom: 20.h),
           ],
         ).paddingSymmetric(horizontal: 20.w),
       ),

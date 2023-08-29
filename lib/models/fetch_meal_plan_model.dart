@@ -65,11 +65,12 @@ class FetchMealPlanData {
 }
 
 class MealData {
-  String? id;
-  double? calories;
-  String? meal;
-  int? numOfServings;
-  Recipe? recipe;
+  late final String? id;
+  late final double? calories;
+  late final String? meal;
+  late final int? numOfServings;
+  final Recipe? recipe;
+  bool isDone;
   bool? isSkipped;
 
   MealData({
@@ -79,6 +80,7 @@ class MealData {
     this.numOfServings,
     this.recipe,
     this.isSkipped,
+    this.isDone = false,
   });
 
   factory MealData.fromJson(Map<String, dynamic> json) => MealData(
@@ -160,7 +162,7 @@ class Recipe {
         courses: json["courses"],
         cuisines: json["cuisines"],
         source: json["source"],
-        mainImage: json["mainImage"],
+        mainImage: json["mainImage"] ?? '',
         ingredientsCount: json["ingredientsCount"],
         weightInGrams: json["weightInGrams"],
         servingWeight: json["servingWeight"],

@@ -1,14 +1,26 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../app/functions.dart';
+import '../../app/sharedPrefrence.dart';
+import '../../bloc/journal/get_journal_data/get_user_journal_bloc.dart';
+import '../../bloc/journal/get_journal_data/get_user_journal_event.dart';
+import '../../bloc/journal/get_journal_data/get_user_journal_state.dart';
 import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
+import '../../models/exercise_log_details_model.dart';
+import '../../models/fetch_meal_plan_model.dart';
+import '../../models/get_dashboard_model.dart';
+import '../../models/water_log_details_model.dart';
+import '../../widget/app_center_loader.dart';
 
 class JournalScreen extends StatefulWidget {
   const JournalScreen({super.key});
@@ -25,6 +37,18 @@ class _JournalScreenState extends State<JournalScreen> {
   bool noTap = false;
   bool defaultImage = true;
 
+  var listOfDates = [];
+  List<Widget> carouselList = [];
+  final scrollController = AutoScrollController();
+
+  GetDashboardModel? model;
+  double outOfTotalCalories = 0.0;
+  List<MealData>? mealTrackerDataList = [];
+  WaterData? waterData;
+  ExerciseData? exerciseData;
+
+  GetUserJournalBloc bloc = GetUserJournalBloc();
+
   int daysInMonth(DateTime date) {
     var firstDayThisMonth = DateTime(date.year, date.month, date.day);
     var firstDayNextMonth = DateTime(firstDayThisMonth.year,
@@ -33,12 +57,31 @@ class _JournalScreenState extends State<JournalScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    PreferenceUtils.removePref(userMealPlanCountState);
+    bloc.add(GetUserJournalData(date: dateTimeNow()));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollToToday();
+    });
+  }
+
+  void scrollToToday() {
+    final todayIndex = DateTime.now().day - 1; // Adjust for zero-based index
+    scrollController.scrollToIndex(
+      todayIndex,
+      preferPosition: AutoScrollPosition.begin,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     var totalDays = daysInMonth(datetime);
-    var listOfDates = List<int>.generate(totalDays, (i) => i + 1);
-    List<Widget> carouselList = [
+    listOfDates = List<int>.generate(totalDays, (i) => i + 1);
+    carouselList = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -81,66 +124,83 @@ class _JournalScreenState extends State<JournalScreen> {
         child: SizedBox(
           height: size.height.h,
           width: size.width.w,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.asset(
+                    AssetsUtils.user,
+                    height: 25.h,
+                    width: 25.w,
+                    color: AppColors.darkGray,
+                  ),
+                  Text(
+                    StringUtils.journal,
+                    style: textTheme.displayMedium
+                        ?.copyWith(color: const Color(0xFF010101)),
+                  ),
+                  Image.asset(
+                    AssetsUtils.notification,
+                    height: 25.h,
+                    width: 25.w,
+                    color: AppColors.darkGray,
+                  )
+                ],
+              ).paddingSymmetric(vertical: 5.h),
+              Theme(
+                data: Theme.of(context)
+                    .copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                  initiallyExpanded: true,
+                  onExpansionChanged: ((newState) {
+                    debugPrint('onExpansionChanged--> $newState');
+                    if (newState) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        scrollToToday();
+                      });
+                    }
+                  }),
+                  tilePadding: EdgeInsets.zero,
+                  title: Text(
+                    dateTimeDDMMMYYYY(dateTimeVal: datetime.toString()),
+                    style: textTheme.headlineSmall
+                        ?.copyWith(color: AppColors.middleGray),
+                  ),
                   children: [
-                    Image.asset(
-                      AssetsUtils.user,
-                      height: 25.h,
-                      width: 25.w,
-                      color: AppColors.darkGray,
-                    ),
-                    Text(
-                      StringUtils.journal,
-                      style: textTheme.displayMedium
-                          ?.copyWith(color: const Color(0xFF010101)),
-                    ),
-                    Image.asset(
-                      AssetsUtils.notification,
-                      height: 25.h,
-                      width: 25.w,
-                      color: AppColors.darkGray,
-                    )
-                  ],
-                ).paddingSymmetric(vertical: 5.h),
-                Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    title: Text(
-                      DateFormat.yMMMMd().format(datetime),
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: AppColors.middleGray),
-                    ),
-                    children: [
-                      SizedBox(
-                        height: 60.h,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: listOfDates.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            final bool isSelected = index == datetime.day - 1;
-                            final currentDate = DateTime(datetime.year,
-                                datetime.month, listOfDates[index]);
-                            final dayAbbreviation =
-                                DateFormat.E().format(currentDate);
-                            return GestureDetector(
+                    SizedBox(
+                      height: 70.h,
+                      child: ListView.builder(
+                        controller: scrollController,
+                        shrinkWrap: true,
+                        itemCount: listOfDates.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          final bool isSelected = index == datetime.day - 1;
+                          final currentDate = DateTime(datetime.year,
+                              datetime.month, listOfDates[index]);
+                          final dayAbbreviation =
+                              DateFormat.E().format(currentDate);
+                          return AutoScrollTag(
+                            key: ValueKey(index),
+                            controller: scrollController,
+                            index: index,
+                            child: GestureDetector(
                               onTap: () {
                                 setState(() {
                                   datetime = DateTime(datetime.year,
                                       datetime.month, listOfDates[index]);
                                 });
+                                bloc.add(GetUserJournalData(
+                                    date: dateTimeYYYYMMDD(
+                                        dateTimeVal: datetime.toString())));
                               },
                               child: Container(
-                                height: 60.h,
-                                padding: const EdgeInsets.all(5),
-                                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                                height: 70.h,
+                                width: 50.w,
+                                // padding: const EdgeInsets.all(5),
+                                margin: EdgeInsets.symmetric(horizontal: 2.w),
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? AppColors.terracotta
@@ -156,10 +216,21 @@ class _JournalScreenState extends State<JournalScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text(dayAbbreviation),
+                                    SizedBox(
+                                      height: 5.h,
+                                    ),
+                                    Text(
+                                      dayAbbreviation,
+                                      style: TextStyle(
+                                          color: isSelected
+                                              ? Colors.white
+                                              : AppColors.middleGray,
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 14),
+                                    ),
                                     Container(
-                                      height: 25.h,
-                                      width: 25.w,
+                                      height: 42.h,
+                                      width: 42.w,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: isSelected
@@ -177,317 +248,409 @@ class _JournalScreenState extends State<JournalScreen> {
                                   ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                dashBoardCardView(
-                  height: 130.h,
-                  width: double.infinity.w,
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Daily intake',
-                            style: textTheme.headlineSmall
-                                ?.copyWith(color: AppColors.darkGray),
-                          ),
-                          Text(
-                            '1700 / 2000 cal',
-                            style: textTheme.bodyLarge
-                                ?.copyWith(color: AppColors.middleGray),
-                          ),
-                        ],
-                      ).paddingSymmetric(horizontal: 8.w),
-                      commonProgressbar(
-                        width: 300.w,
-                        lineHeight: 8.0,
-                        percent: 0.7,
-                        progressColor: AppColors.primaryBlue,
-                      ).paddingOnly(top: 5.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          calciumDataView(
-                            title: 'Carbs',
-                            textTheme: textTheme,
-                            gramCount: '100',
-                            totalGram: '177',
-                            progressColor: AppColors.mint,
-                          ),
-                          calciumDataView(
-                            title: 'Protein',
-                            textTheme: textTheme,
-                            gramCount: '32',
-                            totalGram: '48',
-                            progressColor: AppColors.skyBlue,
-                          ),
-                          calciumDataView(
-                            title: 'Fat',
-                            textTheme: textTheme,
-                            gramCount: '100',
-                            totalGram: '177',
-                            progressColor: AppColors.coral,
-                          ),
-                        ],
-                      ).paddingOnly(top: 5.h),
-                    ],
-                  ).paddingAll(5),
-                ),
-                Text(
-                  'Food',
-                  style: textTheme.headlineSmall
-                      ?.copyWith(color: AppColors.middleGray),
-                ).paddingOnly(top: 5.h),
-                dashBoardCardView(
-                  width: double.infinity.w,
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.asset(
-                          AssetsUtils.breakFastIcon,
-                          height: 25.h,
-                          width: 25.w,
-                          color: AppColors.darkGray,
-                        ),
-                        title: Row(
-                          children: [
-                            Text(
-                              'Breakfast   ',
-                              style: textTheme.headlineSmall
-                                  ?.copyWith(color: AppColors.darkGray),
                             ),
-                            Text(
-                              '200 cal',
-                              style: textTheme.bodyLarge
-                                  ?.copyWith(color: AppColors.terracotta),
-                            ),
-                          ],
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 15.h,
-                          color: const Color(0xFF010101),
-                        ),
-                        horizontalTitleGap: 0.0,
-                      ),
-                      Divider(color: AppColors.middleGray, height: 1.h)
-                          .paddingSymmetric(horizontal: 15.w),
-                      commonJournalFoodData(
-                        title: 'Chickpea Flour Omlette With Asparagus',
-                        subTitle: '1 serving',
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 13.h,
-                          color: AppColors.darkGray,
-                        ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 10.h),
-                      commonJournalFoodData(
-                        title: 'Bread',
-                        subTitle: '1 slice',
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 13.h,
-                          color: AppColors.darkGray,
-                        ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 10.h, bottom: 10.h),
-                    ],
-                  ),
-                ),
-                commonFoodItemView(
-                    textTheme: textTheme,
-                    image: AssetsUtils.lunchIcon,
-                    title: StringUtils.lunch),
-                commonFoodItemView(
-                    textTheme: textTheme,
-                    image: AssetsUtils.dinnerIcon,
-                    title: StringUtils.dinner),
-                commonFoodItemView(
-                    textTheme: textTheme,
-                    image: AssetsUtils.snackIcon,
-                    title: StringUtils.snack),
-                Text(
-                  'Routine',
-                  style: textTheme.headlineSmall
-                      ?.copyWith(color: AppColors.middleGray),
-                ).paddingOnly(top: 15.h),
-                dashBoardCardView(
-                  width: double.infinity.w,
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.asset(
-                          AssetsUtils.water,
-                          height: 25.h,
-                          width: 25.w,
-                          color: AppColors.darkGray,
-                        ),
-                        title: Text(
-                          'Water',
-                          style: textTheme.headlineSmall
-                              ?.copyWith(color: AppColors.darkGray),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios,
-                            size: 15.h, color: const Color(0xFF010101)),
-                        horizontalTitleGap: 0.0,
-                      ),
-                      Divider(color: AppColors.middleGray, height: 1.h)
-                          .paddingSymmetric(horizontal: 15.w),
-                      commonJournalFoodData(
-                        title: 'Water',
-                        subTitle: '750 ml',
-                        child: Icon(
-                          Icons.remove,
-                          size: 18.h,
-                          color: AppColors.darkGray,
-                        ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 7.h, bottom: 10.h),
-                    ],
-                  ),
-                ),
-                dashBoardCardView(
-                  width: double.infinity.w,
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.asset(
-                          AssetsUtils.dumBBell,
-                          height: 25.h,
-                          width: 25.w,
-                          color: AppColors.darkGray,
-                        ),
-                        title: Text(
-                          'Add exercise',
-                          style: textTheme.headlineSmall
-                              ?.copyWith(color: AppColors.darkGray),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 15.h,
-                          color: const Color(0xFF010101),
-                        ),
-                        horizontalTitleGap: 0.0,
-                      ),
-                      Divider(color: AppColors.middleGray, height: 1.h)
-                          .paddingSymmetric(horizontal: 15.w),
-                      commonJournalFoodData(
-                        title: StringUtils.running,
-                        subTitle: '220 cal burned',
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 13.h,
-                          color: AppColors.darkGray,
-                        ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 10.h),
-                      commonJournalFoodData(
-                        title: 'Workout',
-                        subTitle: '220 cal burned',
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 13.h,
-                          color: AppColors.darkGray,
-                        ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 10.h, bottom: 10.h),
-                    ],
-                  ),
-                ),
-                Text(
-                  'Daily Recap',
-                  style: textTheme.headlineSmall
-                      ?.copyWith(color: AppColors.middleGray),
-                ).paddingOnly(top: 7.h),
-                SizedBox(
-                  height: 200.h,
-                  child: CarouselSlider(
-                    items: carouselList,
-                    options: CarouselOptions(
-                      autoPlay: false,
-                      height: 200.h,
-                      initialPage: currentIndex,
-                      viewportFraction: 1.05,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          currentIndex = index;
-                        });
-                      },
-                      scrollDirection: Axis.horizontal,
-                    ),
-                  ).paddingOnly(top: 10.h),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 8.h,
-                      width: 8.w,
-                      margin: EdgeInsets.only(right: 5.w),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: currentIndex == 0
-                            ? AppColors.primaryBlue
-                            : AppColors.disable,
+                          );
+                        },
                       ),
                     ),
-                    Container(
-                      height: 8.h,
-                      width: 8.w,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: currentIndex == 1
-                            ? AppColors.primaryBlue
-                            : AppColors.disable,
-                      ),
-                    )
                   ],
-                ).paddingOnly(bottom: 20.w, top: 15.h)
-              ],
-            ).paddingSymmetric(horizontal: 20.w),
-          ),
+                ),
+              ),
+              Expanded(
+                child: BlocConsumer(
+                  bloc: bloc,
+                  builder: (context, state) {
+                    if (state is LoadingData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is LoadGenMealData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is LoadUserJournalData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is LoadWaterData) {
+                      return const AppCenterLoader();
+                    }
+                    if (state is LoadExerciseData) {
+                      return initView(textTheme);
+                    }
+                    if (state is LoadingDoneState) {
+                      return initView(textTheme);
+                    }
+                    /* if (state is ErrorStateData) {
+                      return Center(
+                        child: Text(
+                          state.errMessage,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: AppColors.primaryBlue,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      );
+                    }*/
+
+                    return Container();
+                  },
+                  listener: (context, state) {
+                    if (state is LoadUserJournalData) {
+                      model = state.model;
+                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) ==
+                          dateTimeNow()) {
+                        bloc.add(GenMealData());
+                      } else {
+                        bloc.add(MealTrackerData(
+                            date: dateTimeYYYYMMDD(
+                                dateTimeVal: datetime.toString())));
+                      }
+                    }
+                    if (state is ErrorJournalState) {
+                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) ==
+                          dateTimeNow()) {
+                        bloc.add(GenMealData());
+                      } else {
+                        bloc.add(MealTrackerData(
+                            date: dateTimeYYYYMMDD(
+                                dateTimeVal: datetime.toString())));
+                      }
+                    }
+
+                    if (state is LoadGenMealData) {
+                      mealTrackerDataList = state.genMealDataList;
+                      bloc.add(GetWaterDetails(
+                          date: dateTimeYYYYMMDD(
+                              dateTimeVal: datetime.toString())));
+                    }
+                    if (state is ErrorGenTrackState) {
+                      bloc.add(GetWaterDetails(
+                          date: dateTimeYYYYMMDD(
+                              dateTimeVal: datetime.toString())));
+                    }
+                    if (state is LoadWaterData) {
+                      waterData = state.data;
+                      bloc.add(GetExerciseDetails(
+                          date: dateTimeYYYYMMDD(
+                              dateTimeVal: datetime.toString())));
+                    }
+                    if (state is ErrorWaterDataState) {
+                      bloc.add(GetExerciseDetails(
+                          date: dateTimeYYYYMMDD(
+                              dateTimeVal: datetime.toString())));
+                    }
+                    if (state is LoadExerciseData) {
+                      exerciseData = state.data;
+                    }
+                  },
+                ),
+                // child: initView(textTheme),
+              ),
+            ],
+          ).paddingSymmetric(horizontal: 20.w),
         ),
       ),
     );
   }
+
+  Widget initView(textTheme) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+         if(model != null)...{
+           dashBoardCardView(
+             height: 130.h,
+             width: double.infinity.w,
+             margin: EdgeInsets.symmetric(vertical: 10.h),
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+               children: [
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     Text(
+                       'Daily intake',
+                       style: textTheme.headlineSmall
+                           ?.copyWith(color: AppColors.darkGray),
+                     ),
+                     Text(
+                       '1700 / 2000 cal',
+                       style: textTheme.bodyLarge
+                           ?.copyWith(color: AppColors.middleGray),
+                     ),
+                   ],
+                 ).paddingSymmetric(horizontal: 8.w),
+                 commonProgressbar(
+                   width: 300.w,
+                   lineHeight: 8.0,
+                   percent: 0.7,
+                   progressColor: AppColors.primaryBlue,
+                 ).paddingOnly(top: 5.h),
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                   children: [
+                     calciumDataView(
+                       title: 'Carbs',
+                       textTheme: textTheme,
+                       gramCount: '100',
+                       totalGram: '177',
+                       progressColor: AppColors.mint,
+                     ),
+                     calciumDataView(
+                       title: 'Protein',
+                       textTheme: textTheme,
+                       gramCount: '32',
+                       totalGram: '48',
+                       progressColor: AppColors.skyBlue,
+                     ),
+                     calciumDataView(
+                       title: 'Fat',
+                       textTheme: textTheme,
+                       gramCount: '100',
+                       totalGram: '177',
+                       progressColor: AppColors.coral,
+                     ),
+                   ],
+                 ).paddingOnly(top: 5.h),
+               ],
+             ).paddingAll(5),
+           ),
+         },
+
+          if(mealTrackerDataList!.isNotEmpty)...{
+
+          },
+          Text(
+            'Food',
+            style:
+                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+          ).paddingOnly(top: 5.h),
+          dashBoardCardView(
+            width: double.infinity.w,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Image.asset(
+                    AssetsUtils.breakFastIcon,
+                    height: 25.h,
+                    width: 25.w,
+                    color: AppColors.darkGray,
+                  ),
+                  title: Row(
+                    children: [
+                      Text(
+                        'Breakfast   ',
+                        style: textTheme.headlineSmall
+                            ?.copyWith(color: AppColors.darkGray),
+                      ),
+                      Text(
+                        '200 cal',
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: AppColors.terracotta),
+                      ),
+                    ],
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 15.h,
+                    color: const Color(0xFF010101),
+                  ),
+                  horizontalTitleGap: 0.0,
+                ),
+                Divider(color: AppColors.middleGray, height: 1.h)
+                    .paddingSymmetric(horizontal: 15.w),
+                commonJournalFoodData(
+                  title: 'Chickpea Flour Omlette With Asparagus',
+                  subTitle: '1 serving',
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 13.h,
+                    color: AppColors.darkGray,
+                  ),
+                  textTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                ).paddingOnly(top: 10.h),
+                commonJournalFoodData(
+                  title: 'Bread',
+                  subTitle: '1 slice',
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 13.h,
+                    color: AppColors.darkGray,
+                  ),
+                  textTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                ).paddingOnly(top: 10.h, bottom: 10.h),
+              ],
+            ),
+          ),
+          commonFoodItemView(
+              textTheme: textTheme,
+              image: AssetsUtils.lunchIcon,
+              title: StringUtils.lunch),
+          commonFoodItemView(
+              textTheme: textTheme,
+              image: AssetsUtils.dinnerIcon,
+              title: StringUtils.dinner),
+          commonFoodItemView(
+              textTheme: textTheme,
+              image: AssetsUtils.snackIcon,
+              title: StringUtils.snack),
+          Text(
+            'Routine',
+            style:
+                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+          ).paddingOnly(top: 15.h),
+          dashBoardCardView(
+            width: double.infinity.w,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Image.asset(
+                    AssetsUtils.water,
+                    height: 25.h,
+                    width: 25.w,
+                    color: AppColors.darkGray,
+                  ),
+                  title: Text(
+                    'Water',
+                    style: textTheme.headlineSmall
+                        ?.copyWith(color: AppColors.darkGray),
+                  ),
+                  trailing: Icon(Icons.arrow_forward_ios,
+                      size: 15.h, color: const Color(0xFF010101)),
+                  horizontalTitleGap: 0.0,
+                ),
+                Divider(color: AppColors.middleGray, height: 1.h)
+                    .paddingSymmetric(horizontal: 15.w),
+                commonJournalFoodData(
+                  title: 'Water',
+                  subTitle: '750 ml',
+                  child: Icon(
+                    Icons.remove,
+                    size: 18.h,
+                    color: AppColors.darkGray,
+                  ),
+                  textTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                ).paddingOnly(top: 7.h, bottom: 10.h),
+              ],
+            ),
+          ),
+          dashBoardCardView(
+            width: double.infinity.w,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Image.asset(
+                    AssetsUtils.dumBBell,
+                    height: 25.h,
+                    width: 25.w,
+                    color: AppColors.darkGray,
+                  ),
+                  title: Text(
+                    'Add exercise',
+                    style: textTheme.headlineSmall
+                        ?.copyWith(color: AppColors.darkGray),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 15.h,
+                    color: const Color(0xFF010101),
+                  ),
+                  horizontalTitleGap: 0.0,
+                ),
+                Divider(color: AppColors.middleGray, height: 1.h)
+                    .paddingSymmetric(horizontal: 15.w),
+                commonJournalFoodData(
+                  title: StringUtils.running,
+                  subTitle: '220 cal burned',
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 13.h,
+                    color: AppColors.darkGray,
+                  ),
+                  textTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                ).paddingOnly(top: 10.h),
+                commonJournalFoodData(
+                  title: 'Workout',
+                  subTitle: '220 cal burned',
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 13.h,
+                    color: AppColors.darkGray,
+                  ),
+                  textTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                ).paddingOnly(top: 10.h, bottom: 10.h),
+              ],
+            ),
+          ),
+          Text(
+            'Daily Recap',
+            style:
+                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+          ).paddingOnly(top: 7.h),
+          SizedBox(
+            height: 200.h,
+            child: CarouselSlider(
+              items: carouselList,
+              options: CarouselOptions(
+                autoPlay: false,
+                height: 200.h,
+                initialPage: currentIndex,
+                viewportFraction: 1.05,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                scrollDirection: Axis.horizontal,
+              ),
+            ).paddingOnly(top: 10.h),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 8.h,
+                width: 8.w,
+                margin: EdgeInsets.only(right: 5.w),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == 0
+                      ? AppColors.primaryBlue
+                      : AppColors.disable,
+                ),
+              ),
+              Container(
+                height: 8.h,
+                width: 8.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == 1
+                      ? AppColors.primaryBlue
+                      : AppColors.disable,
+                ),
+              )
+            ],
+          ).paddingOnly(bottom: 20.w, top: 15.h)
+        ],
+      ));
 
   Widget commonYesNoButton({
     void Function()? onTap,

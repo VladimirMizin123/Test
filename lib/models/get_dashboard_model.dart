@@ -30,12 +30,15 @@ class Data {
   double? totalCalorie;
   double? totalProtein;
   double? totalFat;
-  int? totalCarbs;
+  double? totalCarbs;
   int? dailyWaterGoals;
   int? dailyExerciseGoals;
-  int? totalIntakeWater;
-  int? totalIntakeFood;
-  int? totalBurnedByExercise;
+  double? totalIntakeWater;
+  double? totalIntakeFood;
+  double? totalBurnedByExercise;
+  double? totalIntakeFat;
+  double? totalIntakeProtein;
+  double? totalIntakeCarbs;
 
   Data({
     this.totalCalorie,
@@ -47,18 +50,24 @@ class Data {
     this.totalIntakeWater,
     this.totalIntakeFood,
     this.totalBurnedByExercise,
+    this.totalIntakeFat,
+    this.totalIntakeProtein,
+    this.totalIntakeCarbs,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     totalCalorie: json["toatalCalorie"]?.toDouble(),
     totalProtein: json["totalProtein"]?.toDouble(),
     totalFat: json["totalFat"]?.toDouble(),
-    totalCarbs: json["totalCarbs"],
-    dailyWaterGoals: json["dailyWaterGoals"],
-    dailyExerciseGoals: json["dailyExerciseGoals"],
-    totalIntakeWater: json["totalIntakeWater"],
-    totalIntakeFood: json["totalIntakeFood"],
-    totalBurnedByExercise: json["totalBurnedByExercise"],
+    totalCarbs: json["totalCarbs"]?.toDouble(),
+    dailyWaterGoals: json["dailyWaterGoals"]??0,
+    dailyExerciseGoals: json["dailyExerciseGoals"]??0,
+    totalIntakeWater: json["totalIntakeWater"]?.toDouble(),
+    totalIntakeFood: json["totalIntakeFood"]?.toDouble(),
+    totalBurnedByExercise: json["totalBurnedByExercise"]?.toDouble(),
+    totalIntakeFat: json["totalIntakeFat"]?.toDouble(),
+    totalIntakeProtein: json["totalIntakeProtein"]?.toDouble(),
+    totalIntakeCarbs: json["totalIntakeCarbs"]?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -71,5 +80,8 @@ class Data {
     "totalIntakeWater": totalIntakeWater,
     "totalIntakeFood": totalIntakeFood,
     "totalBurnedByExercise": totalBurnedByExercise,
+    "totalIntakeFat": totalIntakeFat,
+    "totalIntakeProtein": totalIntakeProtein,
+    "totalIntakeCarbs": totalIntakeCarbs,
   };
 }
