@@ -24,7 +24,7 @@ class SwapMealBottomSheet extends StatefulWidget {
 }
 
 class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
-  bool selectedIndex = false;
+  bool isSelectAnyOneMeal = false;
   List<SimilarMealData> similarMealDataList = [];
 
   @override
@@ -89,19 +89,25 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                                             context: context,
                                             similarMealData: similarMealDataList[index],
                                             onTap: () {
-                                              setState(() {
-                                                selectedIndex = true;
-                                                for (var i = 0; i < similarMealDataList.length; i++) {
-                                                  print('$i');
-                                                  print('${i == index}');
-                                                  print('- - - - - - - - - - - - - - - ');
-                                                  if (i == index) {
+                                              isSelectAnyOneMeal = true;
+                                              for (var i = 0; i < similarMealDataList.length; i++) {
+                                                // print('$i');
+                                                // print('${i == index}');
+                                                // print('- - - - - - - - - - - - - - - ');
+                                                if (i == index) {
+                                                  setState(() {
                                                     similarMealDataList[index].isSelectedForSwap = true;
-                                                  } else {
+                                                  });
+                                                  print('IF CALL');
+                                                  print(similarMealDataList[index].isSelectedForSwap);
+                                                } else {
+                                                  setState(() {
                                                     similarMealDataList[index].isSelectedForSwap = false;
-                                                  }
+                                                  });
+                                                  print('ELSE CALL');
+                                                  print(similarMealDataList[index].isSelectedForSwap);
                                                 }
-                                              });
+                                              }
                                             },
                                           ),
                                         );
@@ -114,19 +120,21 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                       alignment: Alignment.center,
                       child: simpleTextBorderButton(
                           context: context,
-                          buttonLable: selectedIndex ? 'Confirm New Meal' : StringUtils.back,
+                          buttonLable: isSelectAnyOneMeal ? 'Confirm New Meal' : StringUtils.back,
                           height: screenSize.height * 0.055,
                           width: screenSize.width * 0.85,
-                          isFillColor: selectedIndex,
+                          isFillColor: isSelectAnyOneMeal,
                           onTap: () {
-                            if (!selectedIndex) {
+                            if (!isSelectAnyOneMeal) {
                               Get.back();
                             } else {
+                              print('object');
                               for (var i = 0; i < similarMealDataList.length; i++) {
+                                print('$i - ${similarMealDataList[i].isSelectedForSwap}');
                                 if (similarMealDataList[i].isSelectedForSwap) {
                                   print('SHARE....');
                                   widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day, mealId: widget.mealData!.id!));
-                                  break;
+                                  // break;
                                 }
                               }
                             }

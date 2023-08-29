@@ -113,7 +113,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                         child: Image(
                                           image: NetworkImage(fetchModelData!.recipe!.mainImage!),
                                           // image: const AssetImage('assets/image/defaultImage.png'),
-                                          height: screenSize.height * 0.20,
+                                          height: screenSize.height * 0.25,
                                           width: screenSize.width,
                                           fit: BoxFit.cover,
                                         ),
@@ -190,10 +190,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 shrinkWrap: true,
                                                 physics: const NeverScrollableScrollPhysics(),
                                                 children: [
-                                                  myProgressbarCardView('Cal', fetchModelData!.recipe!.nutrientsPerServing!.calories!, 2000,AppColors.primaryBlue),
-                                                  myProgressbarCardView('Fat', fetchModelData!.recipe!.nutrientsPerServing!.fat!, 2000, AppColors.coral),
-                                                  myProgressbarCardView('Carbs', fetchModelData!.recipe!.nutrientsPerServing!.carbs!, 2000, AppColors.mint),
-                                                  myProgressbarCardView('Protein', fetchModelData!.recipe!.nutrientsPerServing!.protein!, 2000, AppColors.skyBlue),
+                                                  myProgressBarCardView('Cal', fetchModelData!.recipe!.nutrientsPerServing!.calories!, 2000, AppColors.primaryBlue),
+                                                  myProgressBarCardView('Fat', fetchModelData!.recipe!.nutrientsPerServing!.fat!, 2000, AppColors.coral),
+                                                  myProgressBarCardView('Carbs', fetchModelData!.recipe!.nutrientsPerServing!.carbs!, 2000, AppColors.mint),
+                                                  myProgressBarCardView('Protein', fetchModelData!.recipe!.nutrientsPerServing!.protein!, 2000, AppColors.skyBlue),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -202,24 +202,28 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text('Calories', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.calories.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
+                                              const SizedBox(height: 10),
+                                              Divider(color: AppColors.disabledColor, height: 2.h),
                                               const SizedBox(height: 10),
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                                  Text('Protein', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.protein.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
+                                              const SizedBox(height: 10),
+                                              Divider(color: AppColors.disabledColor, height: 2.h),
                                               const SizedBox(height: 10),
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                                  Text('Carbs', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.carbs.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -229,51 +233,79 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.fat.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
                                               Divider(color: AppColors.disabledColor, height: 2.h),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                  Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                ],
-                                              ),
+
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Divider(color: AppColors.disabledColor, height: 2.h),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                              //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Divider(color: AppColors.disabledColor, height: 2.h),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                              //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
+                                              // const SizedBox(height: 10),
+                                              // Row(
+                                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              //   children: [
+                                              //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                              //   ],
+                                              // ),
                                             ]),
                                       const SizedBox(height: 15),
                                       simpleTextBorderButton(
@@ -448,7 +480,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     );
   }
 
-  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight}) {
+  Widget commonProgressBar({Color? progressColor, double? width, double? lineHeight}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: const Radius.circular(10),
@@ -475,7 +507,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
           title.toString(),
           style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
         ),
-        commonProgressbar(progressColor: progressColor, width: 76.w, lineHeight: 10.0),
+        commonProgressBar(progressColor: progressColor, width: 76.w, lineHeight: 10.0),
         Text(
           '$gramCount / $totalGram g',
           style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
@@ -484,7 +516,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     );
   }
 
-  Widget myProgressbarCardView(String title, double value, double totalValue, Color progressBarColor) {
+  Widget myProgressBarCardView(String title, double value, double totalValue, Color progressBarColor) {
     final screenSize = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -503,7 +535,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                commonProgressbar(progressColor: progressBarColor, width: screenSize.width * 0.27, lineHeight: 12),
+                commonProgressBar(progressColor: progressBarColor, width: screenSize.width * 0.27, lineHeight: 12),
               ],
             ),
             Text('$value / $totalValue cal', style: FontUtils.h15(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),

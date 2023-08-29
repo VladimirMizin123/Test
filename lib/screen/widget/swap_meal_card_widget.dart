@@ -22,10 +22,10 @@ class SwapMealCardWidget extends StatelessWidget {
           color: Colors.white,
           border: Border.all(color: similarMealData!.isSelectedForSwap ? AppColors.middleGray : Colors.transparent),
           boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           child: Row(
             children: [
               // ClipRRect(borderRadius: BorderRadius.circular(12),
@@ -69,11 +69,11 @@ class SwapMealCardWidget extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Container(
-                height: 20.h,
-                width: 20.w,
+                height: 24.h,
+                width: 24.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primaryBlue, width: 1.5),
+                  border: Border.all(color: AppColors.primaryBlue, width: 2),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,8 +83,8 @@ class SwapMealCardWidget extends StatelessWidget {
                       visible: similarMealData!.isSelectedForSwap,
                       child: Container(
                         decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
-                        height: 14.h,
-                        width: 14.w,
+                        height: 16.h,
+                        width: 16.w,
                       ),
                     ),
                   ],

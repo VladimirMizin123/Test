@@ -72,7 +72,7 @@ class Recipe {
   final double? weightInGrams;
   final double? servingWeight;
   final List<String>? instructions;
-  final dynamic nutritionalInfo;
+   final Nutri? nutritionalInfo;
 
   Recipe({
     this.id,
@@ -95,6 +95,7 @@ class Recipe {
     this.servingWeight,
     this.instructions,
     this.nutritionalInfo,
+    
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
@@ -117,7 +118,7 @@ class Recipe {
         weightInGrams: json["weightInGrams"]?.toDouble(),
         servingWeight: json["servingWeight"]?.toDouble(),
         instructions: json["instructions"] == null ? [] : List<String>.from(json["instructions"]!.map((x) => x)),
-        nutritionalInfo: json["nutritionalInfo"],
+        nutritionalInfo: json["nutritionalInfo"] == null ? null : Nutri.fromJson(json["nutritionalInfo"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -140,7 +141,35 @@ class Recipe {
         "weightInGrams": weightInGrams,
         "servingWeight": servingWeight,
         "instructions": instructions == null ? [] : List<dynamic>.from(instructions!.map((x) => x)),
-        "nutritionalInfo": nutritionalInfo,
+        "nutritionalInfo": nutritionalInfo?.toJson(),
+      };
+}
+
+class Nutri {
+  final double? calories;
+  final double? fat;
+  final double? protein;
+  final double? carbs;
+
+  Nutri({
+    this.calories,
+    this.fat,
+    this.protein,
+    this.carbs,
+  });
+
+  factory Nutri.fromJson(Map<String, dynamic> json) => Nutri(
+        calories: json["calories"]?.toDouble(),
+        fat: json["fat"]?.toDouble(),
+        protein: json["protein"]?.toDouble(),
+        carbs: json["carbs"]?.toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "calories": calories,
+        "fat": fat,
+        "protein": protein,
+        "carbs": carbs,
       };
 }
 
