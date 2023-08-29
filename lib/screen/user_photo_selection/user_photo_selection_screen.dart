@@ -1,18 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-
 import '../../app/functions.dart';
 import '../../bloc/user_photo_selection/user_photo_selection_bloc.dart';
 import '../../bloc/user_photo_selection/user_photo_selection_event.dart';
 import '../../bloc/user_photo_selection/user_photo_selection_state.dart';
 import '../../constant/app_TextStyle.dart';
-import '../../constant/app_string.dart';
+import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 
@@ -36,11 +34,11 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (model.gender == AppStrings.male) {
+    if (model.gender == StringUtils.male) {
       color = AppColors.primaryBlue;
       colorProfileImage = AppColors.bluePressed;
       colorTakePhoto = AppColors.newDarkBlue;
-    } else if (model.gender == AppStrings.female) {
+    } else if (model.gender == StringUtils.female) {
       color = AppColors.terracotta;
       colorProfileImage = AppColors.terracotta;
       colorTakePhoto = AppColors.terracotta;
@@ -70,7 +68,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                       ),
                       Center(
                         child: Image.asset(
-                          AppStrings.gymEatsLogo,
+                          AssetsUtils.gymEatsLogo,
                           fit: BoxFit.cover,
                           color: color,
                           height: 60.h,
@@ -80,7 +78,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                         height: 10.h,
                       ),
                       Text(
-                        AppStrings.letsUploadYourProfilePicture,
+                        StringUtils.letsUploadYourProfilePicture,
                         style: AppTextStyle.gymEatsStyle.copyWith(
                             color: color,
                             fontSize: 18.sp,
@@ -115,7 +113,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                               width: 200.w,
                               height: 200.h,
                               child: Text(
-                                AppStrings.profileImage,
+                                StringUtils.profileImage,
                                 style: AppTextStyle.gymEatsStyle.copyWith(
                                     color: Colors.white,
                                     fontSize: 18.sp,
@@ -130,7 +128,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                               InkWell(
                                 onTap: () {
                                   bloc.add(ImageSelectionEvent(
-                                      imageFrom: AppStrings.takePhoto));
+                                      imageFrom: StringUtils.takePhoto));
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
@@ -139,7 +137,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                       color: colorTakePhoto),
                                   width: 110.w,
                                   height: 110.h,
-                                  child: Text(AppStrings.takePhoto,
+                                  child: Text(StringUtils.takePhoto,
                                       style: AppTextStyle.gymEatsStyle.copyWith(
                                           color: Colors.white,
                                           fontSize: 16.sp,
@@ -150,7 +148,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                               InkWell(
                                 onTap: () {
                                   bloc.add(ImageSelectionEvent(
-                                      imageFrom: AppStrings.uploadPhoto));
+                                      imageFrom: StringUtils.uploadPhoto));
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
@@ -159,7 +157,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                       color: AppColors.middleGray),
                                   width: 110.w,
                                   height: 110.h,
-                                  child: Text(AppStrings.uploadPhoto,
+                                  child: Text(StringUtils.uploadPhoto,
                                       style: AppTextStyle.gymEatsStyle.copyWith(
                                           color: Colors.white,
                                           fontSize: 16.sp,
@@ -174,7 +172,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: Text(AppStrings.skip,
+                    child: Text(StringUtils.skip,
                         style: AppTextStyle.gymEatsStyle.copyWith(
                             color: AppColors.disable,
                             fontSize: 16.sp,
@@ -194,7 +192,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                 textColor: setColor(gender: model.gender!),
                                 borderColor: setColor(gender: model.gender!),
                                 bgColor: Colors.white,
-                                title: AppStrings.previous)
+                                title: StringUtils.previous)
                             .paddingOnly(top: 25.h),
                       ),
                       SizedBox(width: 10.w),
@@ -219,11 +217,12 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                           surveyId: model.surveyId,
                                           userProfileImage: imageFile,
                                           options: model.options);
-                                  Get.toNamed('/UserSignUpInfoScreen',arguments: userSignUpDataModel);
+                                  Get.toNamed('/UserSignUpInfoScreen',
+                                      arguments: userSignUpDataModel);
                                 },
                                 textColor: Colors.white,
                                 bgColor: setColor(gender: model.gender!),
-                                title: AppStrings.next)
+                                title: StringUtils.next)
                             .paddingOnly(top: 25.h),
                       ),
                     ],

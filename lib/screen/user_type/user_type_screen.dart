@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import '../../bloc/user_type/user_type_bloc.dart';
 import '../../bloc/user_type/user_type_event.dart';
@@ -13,7 +12,6 @@ import '../../constant/color_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
-
 
 class UserTypeScreen extends StatefulWidget {
   const UserTypeScreen({super.key});
@@ -77,7 +75,10 @@ class _UserTypePageState extends State<UserTypeScreen> {
                       ),
                       Text(
                         StringUtils.myGenderAgeHeightWeight,
-                        style: AppTextStyle.gymEatsStyle.copyWith(color: color, fontSize: 18.sp, fontWeight: FontWeight.w500),
+                        style: AppTextStyle.gymEatsStyle.copyWith(
+                            color: color,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500),
                       ).paddingOnly(top: 10),
                       SizedBox(
                         height: 10.h,
@@ -100,30 +101,43 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               Expanded(
                                 child: gender(
                                   text: StringUtils.male,
-                                  textColor: isMale ? Colors.white : Colors.black,
+                                  textColor:
+                                      isMale ? Colors.white : Colors.black,
                                   bgColor: isMale ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(isFemale: false, isMale: true, isNon: false));
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: false,
+                                        isMale: true,
+                                        isNon: false));
                                   },
                                 ),
                               ),
                               Expanded(
                                 child: gender(
                                   text: StringUtils.female,
-                                  textColor: isFemale ? Colors.white : Colors.black,
-                                  bgColor: isFemale ? color : Colors.transparent,
+                                  textColor:
+                                      isFemale ? Colors.white : Colors.black,
+                                  bgColor:
+                                      isFemale ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(isFemale: true, isMale: false, isNon: false));
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: true,
+                                        isMale: false,
+                                        isNon: false));
                                   },
                                 ),
                               ),
                               Expanded(
                                 child: gender(
                                   text: StringUtils.nonBinary,
-                                  textColor: isNon ? Colors.white : Colors.black,
+                                  textColor:
+                                      isNon ? Colors.white : Colors.black,
                                   bgColor: isNon ? color : Colors.transparent,
                                   onClick: () {
-                                    bloc.add(UserTypeClickEvent(isFemale: false, isMale: false, isNon: true));
+                                    bloc.add(UserTypeClickEvent(
+                                        isFemale: false,
+                                        isMale: false,
+                                        isNon: true));
                                   },
                                 ),
                               ),
@@ -163,7 +177,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             controller: ageController,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w900,
-                                            hintText: AppStrings.required,
+                                            hintText: StringUtils.required,
                                             textInputType: TextInputType.number,
                                             context: context,
                                             onChange: (String value) {
@@ -183,7 +197,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             controller: heightController,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w900,
-                                            hintText: AppStrings.required,
+                                            hintText: StringUtils.required,
                                             textInputType: TextInputType.number,
                                             context: context,
                                             onChange: (String value) {
@@ -205,12 +219,15 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                     controller: weightController,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w900,
-                                    hintText: AppStrings.required,
+                                    hintText: StringUtils.required,
                                     textInputType: TextInputType.number,
                                     isSuffix: true,
                                     context: context,
                                     onChange: (String value) {
-                                      bloc.add(TextChangeEvent(age: ageController.text, height: heightController.text, weight: weightController.text));
+                                      bloc.add(TextChangeEvent(
+                                          age: ageController.text,
+                                          height: heightController.text,
+                                          weight: weightController.text));
                                     }).marginOnly(top: 70, right: 10),
                               ],
                             )
@@ -306,7 +323,8 @@ class _UserTypePageState extends State<UserTypeScreen> {
           height: 46.h,
           child: Text(
             text,
-            style: AppTextStyle.butttonTextStyle.copyWith(color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
+            style: AppTextStyle.butttonTextStyle.copyWith(
+                color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
           ),
         ),
       );

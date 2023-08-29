@@ -38,13 +38,10 @@ class AuthRepository {
   }
 }
 */
-
 import 'dart:convert';
-
 import 'package:either_dart/either.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
-
 import '../app/sharedPrefrence.dart';
+import '../constant/string_utils.dart';
 import '../models/error_model.dart';
 import '../models/sign_up_data_navigate_model.dart';
 import '../models/sign_up_model.dart';
@@ -60,12 +57,19 @@ class SignUpRepository {
     required UserSignUpDataModel model,
   }) async {
     List<http.MultipartFile> profileImage = [];
-    if(model.userProfileImage!=null){
+    if (model.userProfileImage != null) {
       var stream = http.ByteStream(model.userProfileImage!.openRead());
       stream.cast();
       var length = await model.userProfileImage!.length();
-      var multipartFileImage = http.MultipartFile('profileImage', stream, length,
-          filename: model.userProfileImage!.path,contentType: MediaType('image', model.userProfileImage!.path.split('/').last.split('.').last == 'png' ? 'png' :'jpeg'));
+      var multipartFileImage = http.MultipartFile(
+          'profileImage', stream, length,
+          filename: model.userProfileImage!.path,
+          contentType: MediaType(
+              'image',
+              model.userProfileImage!.path.split('/').last.split('.').last ==
+                      'png'
+                  ? 'png'
+                  : 'jpeg'));
 
       profileImage.add(multipartFileImage);
     }
@@ -76,18 +80,19 @@ class SignUpRepository {
       "Email": model.email!,
       "Password": model.password!,
       "ConfirmPassword": model.confirmPassword!,
-
-        "UserDetail.Age": model.age!,
-        "UserDetail.Calories": '0',
-        "UserDetail.Height": model.height!,
-        "UserDetail.Weight": model.weight!,
-        "UserDetail.Gender": model.gender! == AppStrings.male ? 'Male' : model.gender! == AppStrings.female ? 'Female' : 'Non-binary',
-        "UserDetail.SurveyId": model.surveyId!,
-        "UserDetail.DietId": model.dietId!,
-
-        "UserAddress.Latitude": model.latitude!,
-        "UserAddress.Longitude": model.longitude!,
-
+      "UserDetail.Age": model.age!,
+      "UserDetail.Calories": '0',
+      "UserDetail.Height": model.height!,
+      "UserDetail.Weight": model.weight!,
+      "UserDetail.Gender": model.gender! == StringUtils.male
+          ? 'Male'
+          : model.gender! == StringUtils.female
+              ? 'Female'
+              : 'Non-binary',
+      "UserDetail.SurveyId": model.surveyId!,
+      "UserDetail.DietId": model.dietId!,
+      "UserAddress.Latitude": model.latitude!,
+      "UserAddress.Longitude": model.longitude!,
     };
     /*    Map<String, String> data = {
       "firstName": model.firstName!,
@@ -100,7 +105,7 @@ class SignUpRepository {
         "age": model.age!,
         "height": model.height!,
         "weight": model.weight!,
-        "gender": model.gender! == AppStrings.male ? 'Male' : model.gender! == AppStrings.female ? 'Female' : 'Non-binary',
+        "gender": model.gender! == StringUtils.male ? 'Male' : model.gender! == StringUtils.female ? 'Female' : 'Non-binary',
         "surveyId": model.surveyId!,
         "dietId": model.dietId!,
       }),
@@ -109,7 +114,8 @@ class SignUpRepository {
         "longitude": model.longitude!,
       })
     };*/
-    final response = await apiServices.postMultipart(url: ApiUrls.register, body: data,files: profileImage);
+    final response = await apiServices.postMultipart(
+        url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setBool(prefIsLogin, true);
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));

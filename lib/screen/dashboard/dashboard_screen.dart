@@ -1,13 +1,17 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+
+import '../../constant/asset_utils.dart';
+import '../../constant/string_utils.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -30,13 +34,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           commonSliderView(
-            icon: AppStrings.breakFastIcon,
-            title: AppStrings.breakfast,
+            icon: AssetsUtils.breakFastIcon,
+            title: StringUtils.breakfast,
             textTheme: textTheme,
           ),
           commonSliderView(
-            icon: AppStrings.lunchIcon,
-            title: AppStrings.lunch,
+            icon: AssetsUtils.lunchIcon,
+            title: StringUtils.lunch,
             textTheme: textTheme,
           ),
         ],
@@ -45,13 +49,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           commonSliderView(
-            icon: AppStrings.snackIcon,
-            title: AppStrings.snack,
+            icon: AssetsUtils.snackIcon,
+            title: StringUtils.snack,
             textTheme: textTheme,
           ),
           commonSliderView(
-            icon: AppStrings.dinnerIcon,
-            title: AppStrings.dinner,
+            icon: AssetsUtils.dinnerIcon,
+            title: StringUtils.dinner,
             textTheme: textTheme,
           ),
         ],
@@ -95,18 +99,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset(
-                    AppStrings.user,
+                    AssetsUtils.user,
                     height: 25.h,
                     width: 25.w,
                     color: AppColors.darkGray,
                   ),
                   Text(
-                    AppStrings.dashBoard,
+                    StringUtils.dashboard,
                     style: textTheme.displayMedium
                         ?.copyWith(color: const Color(0xFF010101)),
                   ),
                   Image.asset(
-                    AppStrings.notification,
+                    AssetsUtils.notification,
                     height: 25.h,
                     width: 25.w,
                     color: AppColors.darkGray,
@@ -176,14 +180,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     calDataView(
-                                      imgIcon: AppStrings.breakFastIcon,
+                                      imgIcon: AssetsUtils.breakFastIcon,
                                       title: 'Eaten',
                                       calCount: '1700',
                                       textTheme: textTheme,
                                     ),
                                     SizedBox(height: 15.h),
                                     calDataView(
-                                      imgIcon: AppStrings.dumBBell,
+                                      imgIcon: AssetsUtils.dumBBell,
                                       title: 'Burned',
                                       calCount: '320',
                                       textTheme: textTheme,
@@ -238,7 +242,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               title: 'Water',
                               textTheme: textTheme,
                               progressColor: AppColors.primaryBlue,
-                              image: AppStrings.water,
+                              image: AssetsUtils.water,
                               type: 'Rate',
                               countValue: '2000',
                               ml_cal_Count: '750',
@@ -251,9 +255,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     Column(
                       children: [
                         commonEatTypeData(
-                          image: AppStrings.breakFastImage,
-                          eatTitle: AppStrings.breakfast,
-                          eatSubTitle: AppStrings.subBreakfast,
+                          image: AssetsUtils.breakFastImage,
+                          eatTitle: StringUtils.breakfast,
+                          eatSubTitle: StringUtils.subBreakfast,
                           textTheme: textTheme,
                           trailing: Container(
                             height: 25.h,
@@ -271,9 +275,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           ),
                         ),
                         commonEatTypeData(
-                          image: AppStrings.lunchImage,
-                          eatTitle: AppStrings.lunch,
-                          eatSubTitle: AppStrings.subLunch,
+                          image: AssetsUtils.lunchImage,
+                          eatTitle: StringUtils.lunch,
+                          eatSubTitle: StringUtils.subLunch,
                           textTheme: textTheme,
                           trailing: Container(
                             height: 25.h,
@@ -291,9 +295,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           ),
                         ),
                         commonEatTypeData(
-                          image: AppStrings.snackImage,
-                          eatTitle: AppStrings.snack,
-                          eatSubTitle: AppStrings.subSnack,
+                          image: AssetsUtils.snackImage,
+                          eatTitle: StringUtils.snack,
+                          eatSubTitle: StringUtils.subSnack,
                           textTheme: textTheme,
                           trailing: Container(
                             height: 25.h,
@@ -311,9 +315,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           ),
                         ),
                         commonEatTypeData(
-                          image: AppStrings.dinnerImage,
-                          eatTitle: AppStrings.dinner,
-                          eatSubTitle: AppStrings.subDinner,
+                          image: AssetsUtils.dinnerImage,
+                          eatTitle: StringUtils.dinner,
+                          eatSubTitle: StringUtils.subDinner,
                           textTheme: textTheme,
                           trailing: Container(
                             height: 25.h,
@@ -564,7 +568,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Image.asset(
-                    AppStrings.fire,
+                    AssetsUtils.fire,
                     height: 18.h,
                     width: 18.w,
                   ),

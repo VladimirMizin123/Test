@@ -3,13 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../constant/asset_utils.dart';
 import '../../constant/string_utils.dart';
 
-class SecondDashBoardView extends StatelessWidget {
-  const SecondDashBoardView({super.key});
+class FifthJournalBGView extends StatelessWidget {
+  const FifthJournalBGView({super.key});
 
-  final routeName = '/second-dashboard';
+  final routeName = '/FifthJournalBGView';
 
   @override
   Widget build(BuildContext context) {
@@ -21,40 +22,31 @@ class SecondDashBoardView extends StatelessWidget {
         width: size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AssetsUtils.dashBoardBG2),
+            image: AssetImage(AssetsUtils.journalBG5),
             fit: BoxFit.fill,
           ),
         ),
         child: Column(
           children: [
             buildGymEatsHeader(
-              bgColor: Colors.white.withOpacity(0.8),
-              child: Column(
-                children: [
-                  Text(
-                    StringUtils.dashBoardText2,
-                    style: textTheme.bodyLarge
-                        ?.copyWith(color: AppColors.terracotta),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset(
-                        AssetsUtils.gymEatsSpoon,
-                        height: 23.h,
-                        width: 65.w,
-                        color: AppColors.terracotta,
-                      ),
-                      Text(
-                        'Rebekah - 37 years old',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.terracotta),
-                      )
-                    ],
-                  ).paddingOnly(top: 10.h)
-                ],
-              ).paddingOnly(left: 5.w, right: 5.w),
-            ).paddingOnly(left: 20.w, right: 20.w, top: 48.h),
+                    bgColor: Colors.white.withOpacity(0.8),
+                    child: Column(
+                      children: [
+                        Text(
+                          StringUtils.journalText6,
+                          textAlign: TextAlign.center,
+                          style: textTheme.displayMedium
+                              ?.copyWith(color: AppColors.green, height: 1.2),
+                        ).paddingSymmetric(horizontal: 5.w),
+                        Image.asset(
+                          AssetsUtils.gymEatsSpoon,
+                          height: 36.h,
+                          width: 103.w,
+                          color: AppColors.green,
+                        ).paddingOnly(top: 10.h),
+                      ],
+                    ).paddingSymmetric(vertical: 5.h))
+                .paddingOnly(top: 48.h, left: 20.w, right: 20.w),
             const Spacer(),
             Align(
               alignment: Alignment.topRight,
@@ -69,7 +61,7 @@ class SecondDashBoardView extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Skip',
+                    StringUtils.skip,
                     style:
                         textTheme.headlineSmall?.copyWith(color: Colors.white),
                   ),

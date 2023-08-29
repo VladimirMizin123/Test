@@ -1,4 +1,5 @@
 // import 'package:firebase_core/firebase_core.dart';
+// import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,7 @@ import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.d
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
@@ -24,6 +26,17 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
+import 'package:gymeats_mobile/screen/journal/fifth_journal_bg.dart';
+import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
+import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
+import 'package:gymeats_mobile/screen/journal/item_details_screen.dart';
+import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
+import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
+import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
+import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
+import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
+import 'package:gymeats_mobile/screen/journal/third_journal_bg.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
@@ -40,12 +53,13 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
-import 'constant/app_string.dart';
-import 'models/get_survey_model.dart';
 import 'screen/login/login_screen.dart';
+
+// List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // cameras = await availableCameras();
   await PreferenceUtils.init();
   await Firebase.initializeApp(
     name: 'GymEats',
@@ -77,7 +91,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: '/',
+          initialRoute: '/AddNewItemScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -99,7 +113,7 @@ class MyApp extends StatelessWidget {
               name: '/',
               page: () => const Home(),
             ),
-             GetPage(
+            GetPage(
               name: '/AppManagerScreen',
               page: () => const AppManagerScreen(),
             ),
@@ -212,13 +226,61 @@ class MyApp extends StatelessWidget {
               page: () => const BuildMyProfileScreen(),
             ),
             GetPage(
+              name: '/orderDetailsScreen',
+              page: () => const OrderDetailsScreen(),
+            ),
+            GetPage(
               name: '/GymWorkInfoScreen',
               page: () => const GymWorkInfoScreen(),
+            ),
+            GetPage(
+              name: '/FirstJournalBGView',
+              page: () => const FirstJournalBGView(),
+            ),
+            GetPage(
+              name: '/SecondJournalBGView',
+              page: () => const SecondJournalBGView(),
+            ),
+            GetPage(
+              name: '/ThirdJournalBGView',
+              page: () => const ThirdJournalBGView(),
+            ),
+            GetPage(
+              name: '/ForthJournalBGView',
+              page: () => const ForthJournalBGView(),
+            ),
+            GetPage(
+              name: '/FifthJournalBGView',
+              page: () => const FifthJournalBGView(),
+            ),
+            GetPage(
+              name: '/SixJournalBGView',
+              page: () => const SixJournalBGView(),
+            ),
+            GetPage(
+              name: '/JournalScreen',
+              page: () => const JournalScreen(),
+            ),
+            GetPage(
+              name: '/AddExerciseScreen',
+              page: () => const AddExerciseScreen(),
+            ),
+            GetPage(
+              name: '/ScanBarcodeScreen',
+              page: () => const ScanBarcodeScreen(/*cameras: cameras*/),
+            ),
+            GetPage(
+              name: '/ItemDetailsScreen',
+              page: () => const ItemDetailsScreen(),
+            ),
+            GetPage(
+              name: '/AddNewItemScreen',
+              page: () => const AddNewItemScreen(),
             ),
           ],
         );
       },
-      child: const Home(),
+      child: const AddNewItemScreen(),
     );
   }
 }

@@ -7,10 +7,10 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../constant/asset_utils.dart';
 import '../../constant/string_utils.dart';
 
-class FirstDashBoardView extends StatelessWidget {
-  const FirstDashBoardView({super.key});
+class ThirdJournalBGView extends StatelessWidget {
+  const ThirdJournalBGView({super.key});
 
-  final routeName = '/first-dashboard';
+  final routeName = '/ThirdJournalBGView';
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class FirstDashBoardView extends StatelessWidget {
         width: size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AssetsUtils.dashBoardBG),
+            image: AssetImage(AssetsUtils.journalBG3),
             fit: BoxFit.fill,
           ),
         ),
@@ -41,7 +41,7 @@ class FirstDashBoardView extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Skip',
+                    StringUtils.skip,
                     style:
                         textTheme.headlineSmall?.copyWith(color: Colors.white),
                   ),
@@ -54,10 +54,10 @@ class FirstDashBoardView extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      StringUtils.dashBoardText,
+                      StringUtils.journalText4,
                       style: textTheme.bodyLarge
                           ?.copyWith(color: AppColors.terracotta),
-                    ),
+                    ).paddingSymmetric(horizontal: 5.w),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -68,14 +68,14 @@ class FirstDashBoardView extends StatelessWidget {
                           color: AppColors.terracotta,
                         ),
                         Text(
-                          'Jill - 38 years old',
+                          'Sheanne - 31 years old',
                           style: textTheme.bodyLarge
                               ?.copyWith(color: AppColors.terracotta),
                         )
                       ],
-                    ).paddingOnly(top: 10.h)
+                    ).paddingOnly(top: 10.h, left: 5.w, right: 5.w)
                   ],
-                )).paddingOnly(bottom: 30.h, left: 20.w, right: 20.w),
+                )).paddingOnly(bottom: 35.h, left: 20.w, right: 20.w),
           ],
         ),
       ),
