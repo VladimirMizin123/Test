@@ -24,7 +24,7 @@ class FontUtils {
       case FWT.semiBold:
         return FontWeight.w600;
       case FWT.bold:
-        return FontWeight.w700;
+        return FontWeight.w900;
     }
   }
 

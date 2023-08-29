@@ -103,26 +103,26 @@ class MealData {
 }
 
 class Recipe {
-  final String? id;
-  final NutrientsPerServing? nutrientsPerServing;
-  final dynamic parsedIngredientLines;
-  final String? databaseId;
-  final dynamic totalTime;
-  final int? totalTimeInSeconds;
-  final String? name;
-  final int? serving;
-  final dynamic ingredientLines;
-  final dynamic ingredients;
-  final dynamic language;
-  final dynamic courses;
-  final dynamic cuisines;
-  final dynamic source;
-  final String? mainImage;
-  final int? ingredientsCount;
-  final int? weightInGrams;
-  final int? servingWeight;
-  final dynamic instructions;
-  final dynamic nutritionalInfo;
+  String? id;
+  NutrientsPerServing? nutrientsPerServing;
+  dynamic parsedIngredientLines;
+  String? databaseId;
+  dynamic totalTime;
+  int? totalTimeInSeconds;
+  String? name;
+  int? serving;
+  dynamic ingredientLines;
+  dynamic ingredients;
+  dynamic language;
+  dynamic courses;
+  dynamic cuisines;
+  dynamic source;
+  String? mainImage;
+  int? ingredientsCount;
+  int? weightInGrams;
+  int? servingWeight;
+  dynamic instructions;
+  dynamic nutritionalInfo;
 
   Recipe({
     this.id,
