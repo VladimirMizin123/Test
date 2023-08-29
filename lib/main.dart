@@ -1,4 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
+import 'dart:convert';
+
 // import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,10 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/fifth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
@@ -49,10 +55,12 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
+
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'models/sign_up_model.dart';
 import 'screen/login/login_screen.dart';
 
 // List<CameraDescription> cameras = [];
@@ -63,13 +71,15 @@ Future<void> main() async {
   await PreferenceUtils.init();
   await Firebase.initializeApp(
     name: 'GymEats',
-    options: FirebaseOptions(
-        apiKey: apiKey,
-        appId: appId,
-        messagingSenderId: messagingSenderId,
-        projectId: projectId),
+    options: FirebaseOptions(apiKey: apiKey, appId: appId, messagingSenderId: messagingSenderId, projectId: projectId),
   );
   await initDynamicLinks();
+  if (PreferenceUtils.getBool(prefIsLogin)) {
+    String data = PreferenceUtils.getString(prefUserData);
+    if (data != '') {
+      userData = UserData.fromJson(jsonDecode(data));
+    }
+  }
   runApp(MyApp());
 }
 
@@ -91,7 +101,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: '/AddNewItemScreen',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) ? '/AppManagerScreen' : '/LoginScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -118,12 +128,28 @@ class MyApp extends StatelessWidget {
               page: () => const AppManagerScreen(),
             ),
             GetPage(
+              name: '/MealDetailsScreen',
+              page: () => const MealDetailsScreen(),
+            ),
+            GetPage(
+              name: '/FoodPreferencesScreen',
+              page: () => const FoodPreferencesScreen(),
+            ),
+            GetPage(
+              name: '/BestMatchRestaurantsScreen',
+              page: () => const BestMatchRestaurantsScreen(),
+            ),
+            GetPage(
               name: '/DashboardScreen',
               page: () => const DashBoardScreen(),
             ),
             GetPage(
               name: '/GymEatsMenuScreen',
               page: () => const GymEatsMenuScreen(),
+            ),
+            GetPage(
+              name: '/InviteFriendScreen',
+              page: () => const InviteFriendScreen(),
             ),
             GetPage(
               name: '/SignUpScreen',
@@ -280,7 +306,7 @@ class MyApp extends StatelessWidget {
           ],
         );
       },
-      child: const AddNewItemScreen(),
+      child: const Home(),
     );
   }
 }

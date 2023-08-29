@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,10 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
+import 'package:gymeats_mobile/models/sign_up_model.dart';
 
+import '../../app/sharedPrefrence.dart';
+import '../../repository/login.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
 
@@ -17,6 +21,7 @@ class UserSignUpInfoBloc
   UserSignUpInfoBloc() : super(InitialState()) {
     on<LatLogEvent>(_onLatLog);
     on<SignUpApiEvent>(_onSignUpApi);
+    on<LoginApiEvent>(_onLoginApi);
   }
 
   _onLatLog(LatLogEvent event, Emitter<UserSignUpInfoState> emit) {
@@ -70,6 +75,7 @@ class UserSignUpInfoBloc
   }
 
   final SignUpRepository _repository = SignUpRepository();
+  final LoginRepository _loginRepository = LoginRepository();
 
   _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
     try {
@@ -77,13 +83,31 @@ class UserSignUpInfoBloc
       await _repository.signUp(model: event.model).fold((left) {
         showToast(isSuccess: false, message: left.message!);
         emit(SignUpErrorState());
-      }, (right) {
-        emit(SignUpSuccessState());
-        Get.toNamed('/GenderScreen',arguments: event.model.gender);
+      }, (right) async {
+        if (right.data != null) {
+          userData = right.data!;
+          await PreferenceUtils.setBool(prefIsLogin, true);
+          await PreferenceUtils.setString(prefUserData, jsonEncode(right.data!));
+        }
+        showToast(isSuccess: true, message: right.message!);
+        emit(LoginApiState());
+
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(SignUpErrorState());
     }
+  }
+
+  _onLoginApi(LoginApiEvent event, Emitter<UserSignUpInfoState> emit) {
+    _loginRepository.login(email: event.email, password: event.password).fold((left) {},
+            (right) async {
+          if (right.data != null) {
+            PreferenceUtils.setString(prefToken, right.data!.token!.accessToken!);
+            userData = UserData(userId: right.data!.userId);
+          }
+          emit(SignUpSuccessState());
+          Get.toNamed('/GenderScreen', arguments: event.gender);
+        });
   }
 }

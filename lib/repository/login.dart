@@ -1,12 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:either_dart/either.dart';
-import 'package:flutter/cupertino.dart';
-
-import '../app/functions.dart';
 import '../models/error_model.dart';
-import '../models/get_survey_model.dart';
 import '../models/login_model.dart';
 import '../service/api_urls.dart';
 import '../service/apis.dart';

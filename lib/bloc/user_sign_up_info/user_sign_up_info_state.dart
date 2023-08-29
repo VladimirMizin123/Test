@@ -9,6 +9,8 @@ class LatLogState extends UserSignUpInfoState{
   LatLogState({required this.currentPosition});
 }
 
+class LoginApiState extends UserSignUpInfoState {}
+
 class SignUpSuccessState extends UserSignUpInfoState {}
 
 class SignUpLoadingState extends UserSignUpInfoState {}

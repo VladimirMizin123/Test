@@ -39,6 +39,16 @@ class AssetsUtils {
   static const String malePersonalized2 = "assets/image/male_personalized2.png";
   static const String malePersonalized3 = "assets/image/male_personalized3.png";
   static const String malePersonalized4 = "assets/image/male_personalized4.png";
+  static const String female_instrucion1 = "assets/image/female_instruction1.png";
+  static const String female_instrucion2 = "assets/image/female_instruction2.png";
+  static const String female_instrucion3 = "assets/image/female_instruction3.png";
+  static const String female_instrucion4 = "assets/image/female_instruction4.png";
+  static const String female_instrucion5 = "assets/image/female_instruction5.png";
+  static const String feMalePersonalized1 = "assets/image/female_personalized1.png";
+  static const String feMalePersonalized2 = "assets/image/female_personalized2.png";
+  static const String feMalePersonalized3 = "assets/image/female_personalized3.png";
+  static const String feMalePersonalized4 = "assets/image/female_personalized4.png";
+  static const String inviteFriendBg = "assets/image/invite_friend_bg.png";
   static const String dashBoardBG = "assets/image/dashboardBg.png";
   static const String dashBoardBG2 = "assets/image/dashboardBg2.png";
   static const String dashBoardBG3 = "assets/image/dashboardBg3.png";
@@ -84,6 +94,14 @@ class AssetsUtils {
   static const icDashboard = '${svgPath}ic_dashboard.svg';
   static const icRestaurants = '${svgPath}ic_restaurants.svg';
   static const icJournal = '${svgPath}ic_journal.svg';
+  static const icQuestionMarkIcon = '${svgPath}ic_questionmark_icon.svg';
+  static const icSkippedIcon = '${svgPath}ic_skipped_icon.svg';
+  static const icIngredientsIcon = '${svgPath}ingredients_icon.svg';
+  static const icServingIcon = '${svgPath}servings_icon.svg';
+  static const icTimelineIcon = '${svgPath}timeline_icon.svg';
+  static const icThumbUpLine = '${svgPath}thumb-up-line.svg';
+  static const icScooter = '${svgPath}scooter.svg';
+  static const icDelete = '${svgPath}ic_delete.svg';
 
   /// Icons
 

@@ -79,7 +79,9 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
             height: 100.h,
             width: 100.w,
           ).paddingOnly(top: 250.h),
-          buildButton(context: context, textColor: textColor, title: StringUtils.showMealBtnText, onPressed: () {}, bgColor: bgColor, hasImage: false).paddingOnly(top: 24.h, bottom: 20.h),
+          buildButton(context: context, textColor: textColor, title: StringUtils.showMealBtnText, onPressed: () {
+            Get.toNamed('/AppManagerScreen');
+          }, bgColor: bgColor, hasImage: false).paddingOnly(top: 24.h, bottom: 20.h),
         ],
       ).paddingSymmetric(horizontal: 20.w),
     );

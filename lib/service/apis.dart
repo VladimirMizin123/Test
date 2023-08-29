@@ -1,32 +1,39 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
-import '../app/sharedPrefrence.dart';
 import 'api_exception.dart';
 import 'api_urls.dart';
 
 class ApiServices {
 
-  String token = 'Bearer ${PreferenceUtils.getString(prefToken)}';
+  String token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnYXUwM3Rlc3R1c2VyQG1haWxpbmF0b3IuY29tIiwianRpIjoiOWIyZmQzZGEtYjE0Yy00M2UyLWJlYmItYTcxMjMzZGNjY2YzIiwidW5pcXVlX25hbWUiOiJnYXUwM3Rlc3R1c2VyQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVzZXIiLCJleHAiOjE2OTI5NzUxMzksImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.yECJ4357-kqArShVo7b-yhhlVnddf6l_l3GbqFTDqHo';
+  // String token = 'Bearer ${PreferenceUtils.getString(prefToken)}';
 
   Future<dynamic> get(String url) async {
     try {
       Map<String, String>? headers;
-      if(token.isEmpty){
+      if (token.isEmpty) {
         headers = {
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
-      }else{
+      } else {
         headers = {
-          'Authorization' : token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
+      log(url, name: 'URL - - - - - ');
 
       final response = await http.get(Uri.parse(url),headers: headers);
+      
+      log('${response.statusCode}', name: 'STATUS CODE - - - - - ');
+      log(response.body, name: 'RESPONSE - - - - - ');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -35,32 +42,33 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
   Future<http.Response> post(String url, dynamic body) async {
     try {
       Map<String, String>? headers;
-      if(token.isEmpty){
+      if (token.isEmpty) {
         headers = {
           'Content-Type': 'application/json',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
-      }else{
+      } else {
         headers = {
           'Content-Type': 'application/json',
-          'Authorization' : token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
       final jsonBody = jsonEncode(body);
-      final response = await http.post(Uri.parse(url),
-          body: jsonBody,
-          headers: headers,);
+      final response = await http.post(
+        Uri.parse(url),
+        body: jsonBody,
+        headers: headers,
+      );
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -69,29 +77,31 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
   Future<dynamic> put(String url, dynamic body) async {
     Map<String, String>? headers;
-    if(token.isEmpty){
-      headers = {
-        'Content-Type': 'application/json',
-        'accept': '*/*',
-        'Api_Key': ApiUrls.apiKey,
-      };
-    }else{
-      headers = {
-        'Content-Type': 'application/json',
-        'Authorization' : token,
-        'accept': '*/*',
-        'Api_Key': ApiUrls.apiKey,
-      };
-    }
+
     try {
-      final response = await http.put(Uri.parse(url), body: body,headers: headers);
+      if (token.isEmpty) {
+        headers = {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      } else {
+        headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+      debugPrint('post url--> $url');
+      final response =
+          await http.put(Uri.parse(url), body: body, headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -100,29 +110,29 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
   Future<dynamic> delete(String url) async {
     try {
       Map<String, String>? headers;
-      if(token.isEmpty){
+      if (token.isEmpty) {
         headers = {
           'Content-Type': 'application/json',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
-      }else{
+      } else {
         headers = {
           'Content-Type': 'application/json',
-          'Authorization' : token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      final response = await http.delete(Uri.parse(url),headers: headers);
+      debugPrint('post url--> $url');
+      final response = await http.delete(Uri.parse(url), headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -131,8 +141,7 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
@@ -140,11 +149,10 @@ class ApiServices {
     String url,
     dynamic body,
   ) async {
-
     try {
       body ??= {};
-      final response = await http
-          .post(Uri.parse(url), body: jsonEncode(body), headers: {
+      final response =
+          await http.post(Uri.parse(url), body: jsonEncode(body), headers: {
         'content-type': 'application/json',
         'accept': '*/*',
         'Api_Key': ApiUrls.apiKey,
@@ -157,35 +165,37 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
   Future<http.Response> postMultipart(
-      {required String url, required Map<String, String> body, required List<http.MultipartFile> files}) async {
+      {required String url,
+      required Map<String, String> body,
+      required List<http.MultipartFile> files}) async {
     try {
       Map<String, String>? headers;
-      if(token.isEmpty){
+      if (token.isEmpty) {
         headers = {
           'Content-Type': 'multipart/form-data',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
-      }else{
+      } else {
         headers = {
           'Content-Type': 'multipart/form-data',
-          'Authorization' : token,
+          'Authorization': 'Bearer $token',
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
       }
+      debugPrint('post url--> $url');
       final request = http.MultipartRequest(
         'POST',
         Uri.parse(url),
       );
       request.headers.addAll(headers);
-      if(files.isNotEmpty){
+      if (files.isNotEmpty) {
         request.files.addAll(files);
       }
 
@@ -202,8 +212,7 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 
@@ -213,6 +222,9 @@ class ApiServices {
         'accept': '*/*',
         'Api_Key': ApiUrls.apiKey,
       });
+      log(url, name: 'URL - - - - - ');
+      log('${response.statusCode}', name: 'STATUS CODE - - - - - ');
+      log(response.body, name: 'RESPONSE - - - - - ');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -221,8 +233,7 @@ class ApiServices {
     } on FormatException {
       throw InvalidInputException('Bad response format');
     } catch (e) {
-      throw FetchDataException(
-          e.toString());
+      throw FetchDataException(e.toString());
     }
   }
 

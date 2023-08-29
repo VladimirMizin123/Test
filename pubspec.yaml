@@ -57,6 +57,9 @@ dependencies:
 #  qr_code_scanner: ^1.0.1
 #  camera:
   torch_light: ^1.0.0
+  cached_network_image: ^3.2.3
+  google_maps_flutter: ^2.4.0
+  modal_bottom_sheet: ^2.1.2
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 

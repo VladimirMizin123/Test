@@ -241,13 +241,13 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                       ),
                     ),
                   ),
-                  BlocBuilder<UserSignUpInfoBloc, UserSignUpInfoState>(
-                    bloc: bloc,
-                    builder: (context, state) {
-                      if (state is SignUpSuccessState) {
-                        return const AppCenterLoader();
-                      }
-                      return Row(
+                  if (_currentPosition != null) ...{
+                    if (state is SignUpLoadingState) ...{
+                      const AppCenterLoader(),
+                    } else if (state is LoginApiState) ...{
+                      const AppCenterLoader(),
+                    } else ...{
+                      Row(
                         children: [
                           Expanded(
                             child: buildBorderButton(
@@ -259,7 +259,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     borderColor:
                                         setColor(gender: model.gender!),
                                     bgColor: Colors.white,
-                                    title: StringUtils.previous)
+                                    title: AppStrings.previous)
                                 .paddingOnly(top: 25.h),
                           ),
                           SizedBox(width: 10.w),
@@ -295,13 +295,13 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     },
                                     textColor: Colors.white,
                                     bgColor: setColor(gender: model.gender!),
-                                    title: StringUtils.next)
+                                    title: AppStrings.next)
                                 .paddingOnly(top: 25.h),
                           ),
                         ],
-                      );
+                      )
                     },
-                  ),
+                  }
                 ],
               );
             },
@@ -309,6 +309,10 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
             listener: (context, state) {
               if (state is LatLogState) {
                 _currentPosition = state.currentPosition;
+              }
+              if (state is LoginApiState) {
+                bloc.add(LoginApiEvent(
+                    email: model.email!, password: model.password!, gender : model.gender!));
               }
             },
           ),

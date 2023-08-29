@@ -117,11 +117,14 @@ class StringUtils {
   static const skip = 'Skip';
   static const howDoesThisProfileLook = 'How does this Profile look?';
   static const mealPlan = 'Meal Plan';
+  static const planMealDetails = 'Plan / Meal Details';
+  static const foodPreferences = 'Food Preferences';
   static const grocery = 'Grocery';
   static const dashboard = 'Dashboard';
   static const restaurants = 'Restaurants';
   static const journal = 'Journal';
   static const showGroceryList = 'Show Grocery List';
+  static const regenerateGroceryList = 'Regenerate Grocery List';
   static const readyToStep = 'Ready to take step\ntowards your goals!';
   static const livingPresent =
       'Living in the present is like giving yourself a gift.';
@@ -200,4 +203,13 @@ class StringUtils {
   static const oz = 'oz';
   static const itemName = 'Item Name';
   static const mealDetails = '1 serving, 120g';
+  static const day = 'Day';
+  static const skipped = 'Skipped';
+  static const skipMeal = 'Skip Meal';
+  static const swapMeal = 'Swap Meal';
+  static const doYouWantToSkipMeal = 'Do you want to Skip Meal?';
+  static const cancel = 'Cancel';
+  static const skip = 'Skip';
+  static const back = 'Back';
+  static const addToGroceryList = 'Add to Grocery List';
 }
