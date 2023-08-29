@@ -9,7 +9,6 @@ import 'package:gymeats_mobile/models/sign_up_model.dart';
 
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
-import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
 class Home extends StatefulWidget {
@@ -57,15 +56,9 @@ class _HomeState extends State<Home> {
                 buildButton(
                   context: context,
                   title: StringUtils.letsEat,
-                  onPressed: ()  {
-                    if(PreferenceUtils.getBool(prefIsLogin)){
-                     String data = PreferenceUtils.getString(prefUserData);
-                     userData = UserData.fromJson(jsonDecode(data));
-                      Get.toNamed('/GymEatsMenuScreen');
-                    }else{
-                      Get.toNamed('/GymEatsMenuScreen');
-                    }
+                  onPressed: () {
 
+                      Get.toNamed('/GymEatsMenuScreen');
                   },
                   bgColor: AppColors.letsEatButton,
                   textColor: AppColors.letsEat,

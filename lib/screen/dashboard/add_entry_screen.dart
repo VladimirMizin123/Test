@@ -3,8 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-
-import '../../constant/app_string.dart';
+import '../../constant/string_utils.dart';
 
 class AddEntryScreen extends StatefulWidget {
   const AddEntryScreen({super.key});
@@ -38,7 +37,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   color: AppColors.darkGray,
                 ),
                 Text(
-                  AppStrings.addEntry,
+                  StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -50,7 +49,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
               child: Column(
                 children: [
                   commonUserTypeTextField(
-                    hintText: 'Running',
+                    hintText: StringUtils.running,
                     controller: entryController,
                     context: context,
                     width: double.infinity.w,
@@ -118,7 +117,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
             const Spacer(),
             buildButton(
                     context: context,
-                    title: AppStrings.save,
+                    title: StringUtils.save,
                     hasImage: false,
                     textColor: AppColors.skyBlue,
                     onPressed: () {},

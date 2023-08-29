@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import '../../constant/asset_utils.dart';
+import '../../constant/string_utils.dart';
 
 class ThirdDashBoardView extends StatelessWidget {
   const ThirdDashBoardView({super.key});
@@ -20,7 +21,7 @@ class ThirdDashBoardView extends StatelessWidget {
         width: size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AppStrings.dashBoardBG3),
+            image: AssetImage(AssetsUtils.dashBoardBG3),
             fit: BoxFit.fill,
           ),
         ),
@@ -52,7 +53,7 @@ class ThirdDashBoardView extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      AppStrings.dashBoardText3,
+                      StringUtils.dashBoardText3,
                       style: textTheme.bodyLarge
                           ?.copyWith(color: AppColors.terracotta),
                     ).paddingSymmetric(horizontal: 5.w),
@@ -60,7 +61,7 @@ class ThirdDashBoardView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
-                          AppStrings.gymEatsSpoon,
+                          AssetsUtils.gymEatsSpoon,
                           height: 23.h,
                           width: 65.w,
                           color: AppColors.terracotta,

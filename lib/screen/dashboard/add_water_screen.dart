@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-
-import '../../constant/app_string.dart';
+import '../../constant/asset_utils.dart';
+import '../../constant/string_utils.dart';
 
 class AddWaterScreen extends StatefulWidget {
   const AddWaterScreen({super.key});
@@ -36,7 +36,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                   color: AppColors.darkGray,
                 ),
                 Text(
-                  AppStrings.addWater,
+                  StringUtils.addWater,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -83,19 +83,19 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                     children: [
                       waterDetailsView(
                         height: 76.h,
-                        waterIcon: AppStrings.waterIcon1,
+                        waterIcon: AssetsUtils.waterIcon1,
                         waterQuantity: '250',
                         onTap: () {},
                       ),
                       waterDetailsView(
                         height: 83.h,
-                        waterIcon: AppStrings.waterIcon2,
+                        waterIcon: AssetsUtils.waterIcon2,
                         waterQuantity: '500',
                         onTap: () {},
                       ).paddingOnly(left: 30.w),
                       waterDetailsView(
                         height: 96.h,
-                        waterIcon: AppStrings.waterIcon3,
+                        waterIcon: AssetsUtils.waterIcon3,
                         waterQuantity: '1000',
                         onTap: () {},
                       ).paddingOnly(left: 30.w),
@@ -107,7 +107,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
             const Spacer(),
             buildButton(
                     context: context,
-                    title: AppStrings.save,
+                    title: StringUtils.save,
                     hasImage: false,
                     textColor: AppColors.skyBlue,
                     onPressed: () {},

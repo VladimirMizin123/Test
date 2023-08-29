@@ -29,7 +29,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isEmail && isPassword && isValidEmail) {
       emit(LoginLoadingState());
       try {
-        await _repository.login(email: event.email.trim(), password: event.password).fold((left) {
+        await _repository
+            .login(email: event.email.trim(), password: event.password)
+            .fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           if (right.data != null) {
