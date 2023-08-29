@@ -9,7 +9,6 @@ import 'package:gymeats_mobile/models/sign_up_model.dart';
 
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
-import '../../constant/app_string.dart';
 import '../../widget/app_widget.dart';
 
 class Home extends StatefulWidget {

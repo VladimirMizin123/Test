@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,9 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+
+import '../../constant/asset_utils.dart';
+import '../../constant/string_utils.dart';
 
 import '../../app/functions.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
@@ -62,14 +67,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           commonSliderView(
-            icon: AppStrings.breakFastIcon,
-            title: AppStrings.breakfast,
-            textTheme: Theme.of(context).textTheme,
+            icon: AssetsUtils.breakFastIcon,
+            title: StringUtils.breakfast,
+            textTheme:  Theme.of(context).textTheme,
           ),
           commonSliderView(
-            icon: AppStrings.lunchIcon,
-            title: AppStrings.lunch,
-            textTheme: Theme.of(context).textTheme,
+            icon: AssetsUtils.lunchIcon,
+            title: StringUtils.lunch,
+            textTheme:  Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -77,14 +82,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           commonSliderView(
-            icon: AppStrings.snackIcon,
-            title: AppStrings.snack,
-            textTheme: Theme.of(context).textTheme,
+            icon: AssetsUtils.snackIcon,
+            title: StringUtils.snack,
+            textTheme:  Theme.of(context).textTheme,
           ),
           commonSliderView(
-            icon: AppStrings.dinnerIcon,
-            title: AppStrings.dinner,
-            textTheme: Theme.of(context).textTheme,
+            icon: AssetsUtils.dinnerIcon,
+            title: StringUtils.dinner,
+            textTheme:  Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -127,16 +132,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset(
-                    AppStrings.user,
+                    AssetsUtils.user,
                     height: 25.h,
                     width: 25.w,
                     color: AppColors.darkGray,
                   ),
                   Text(
-                    AppStrings.dashBoard,
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayMedium
+                    StringUtils.dashboard,
+                    style:  Theme.of(context).textTheme.displayMedium
                         ?.copyWith(color: const Color(0xFF010101)),
                   ),
                   InkWell(
@@ -800,7 +803,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Image.asset(
-                    AppStrings.fire,
+                    AssetsUtils.fire,
                     height: 18.h,
                     width: 18.w,
                   ),

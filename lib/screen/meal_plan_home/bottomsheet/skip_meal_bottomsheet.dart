@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_bloc.dart';
+import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class SkipMealBottomSheet extends StatefulWidget {
-  const SkipMealBottomSheet({super.key});
+  final MealData? mealData;
+  final MealPlanBloc bloc;
+  const SkipMealBottomSheet({super.key, this.mealData, required this.bloc});
 
   @override
   State<SkipMealBottomSheet> createState() => _SkipMealBottomSheetState();
@@ -63,7 +68,9 @@ class _SkipMealBottomSheetState extends State<SkipMealBottomSheet> {
                     width: screenSize.width * 0.43,
                     context: context,
                     buttonLable: StringUtils.skip,
-                    onTap: () {},
+                    onTap: () {
+                      widget.bloc.add(SkipMealPlanEvent(mealID: widget.mealData!.id!));
+                    },
                     isDarkColor: true,
                     isFillColor: true,
                   ),

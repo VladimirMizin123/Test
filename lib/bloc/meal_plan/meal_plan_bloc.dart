@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_event.dart';
@@ -9,6 +11,7 @@ import '../../widget/app_widget.dart';
 class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   MealPlanBloc() : super(InitialState()) {
     on<MealPlanFetchEvent>(_onFetchMealPlan);
+    on<SkipMealPlanEvent>(_onSkipMealPlan);
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
@@ -17,7 +20,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(FetchMealPlanLoadingState());
 
     try {
-      await _repository.fetchMealPlan(userID: event.userID, calories: event.calorie).fold((left) {
+      await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(FetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
@@ -25,6 +28,25 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(FetchMealPlanErrorState());
+    }
+  }
+
+
+
+  _onSkipMealPlan(SkipMealPlanEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(SkipMealPlanLoadingState());
+
+    try {
+      await _repository.skipMealPlan(mealID: event.mealID).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        log('RIGHT PART CALL - - - - - - - - - - - - ');
+
+        emit(SkipMealPlanSuccessState(skipMealPlanData: right.data!, mealID: event.mealID));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(SkipMealPlanErrorState());
     }
   }
 

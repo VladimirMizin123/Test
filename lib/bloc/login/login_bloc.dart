@@ -8,7 +8,6 @@ import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 
 import '../../app/functions.dart';
-import '../../app/sharedPrefrence.dart';
 import '../../models/sign_up_model.dart';
 import '../../repository/login.dart';
 import '../../widget/app_widget.dart';
@@ -30,7 +29,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isEmail && isPassword && isValidEmail) {
       emit(LoginLoadingState());
       try {
-        await _repository.login(email: event.email.trim(), password: event.password).fold((left) {
+        await _repository
+            .login(email: event.email.trim(), password: event.password)
+            .fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           if (right.data != null) {
@@ -39,12 +40,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             userId = right.data!.userId!;
             PreferenceUtils.setString(
                 prefUserData, right.data!.userId!);
+            PreferenceUtils.setBool(prefIsLogin, true);
+            PreferenceUtils.setBool(prefIsConfirmEmail, true);
+
           }
 
           emit(LoginSuccessfulState());
-          PreferenceUtils.setBool(prefIsLogin, true);
-          PreferenceUtils.setBool(prefIsConfirmEmail, true);
-          Get.toNamed('/AppManagerScreen',preventDuplicates: false);
+         Get.toNamed('/AppManagerScreen',preventDuplicates: false);
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());

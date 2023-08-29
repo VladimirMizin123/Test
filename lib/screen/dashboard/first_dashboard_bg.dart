@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
+import '../../constant/asset_utils.dart';
+import '../../constant/string_utils.dart';
 
 class FirstDashBoardView extends StatelessWidget {
   const FirstDashBoardView({super.key});
@@ -20,7 +22,7 @@ class FirstDashBoardView extends StatelessWidget {
         width: size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AppStrings.dashBoardBG),
+            image: AssetImage(AssetsUtils.dashBoardBG),
             fit: BoxFit.fill,
           ),
         ),
@@ -52,7 +54,7 @@ class FirstDashBoardView extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      AppStrings.dashBoardText,
+                      StringUtils.dashBoardText,
                       style: textTheme.bodyLarge
                           ?.copyWith(color: AppColors.terracotta),
                     ),
@@ -60,7 +62,7 @@ class FirstDashBoardView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
-                          AppStrings.gymEatsSpoon,
+                          AssetsUtils.gymEatsSpoon,
                           height: 23.h,
                           width: 65.w,
                           color: AppColors.terracotta,

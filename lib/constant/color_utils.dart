@@ -6,6 +6,8 @@ class AppColors {
   static const letsEat = Color(0xFFF9D5C5);
   static const appColor = Color(0xFF336633);
   static const disabledColor = Color(0xFFC7C8CA);
+  static const grayColor = Color(0xFFA2A4A7);
+  static const switchColor = Color(0xFF34C759);
 
   static ThemeData lightTheme() {
     return ThemeData(
@@ -31,8 +33,16 @@ class AppColors {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.5, color: const Color(0xFF5F5F5F)),
-        hintStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.5, color: const Color(0xFF5F5F5F)),
+        labelStyle: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w300,
+            height: 1.5,
+            color: const Color(0xFF5F5F5F)),
+        hintStyle: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w300,
+            height: 1.5,
+            color: const Color(0xFF5F5F5F)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -108,4 +118,5 @@ class AppColors {
   static const oxFF010101 = Color(0xFF010101);
   static const newDarkBlue = Color(0xFF6A909D);
   static const inactive = Color(0xFFD9D9D9);
+  static const gray = Color(0xFFA2A4A7);
 }

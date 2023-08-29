@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-
 import '../../app/functions.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_state.dart';
 import '../../constant/app_TextStyle.dart';
-import '../../constant/app_string.dart';
+import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
@@ -26,7 +26,7 @@ class UserSignUpInfoScreen extends StatefulWidget {
 class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
   Color color = AppColors.primaryBlue;
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
-  String userInfoImage = AppStrings.icMaleChart;
+  String userInfoImage = AssetsUtils.icMaleChart;
   UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
 
   PageController pageController = PageController();
@@ -41,14 +41,14 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
     super.initState();
     bloc.add(LatLogEvent());
     pageController = PageController(initialPage: 0);
-    if (model.gender == AppStrings.male) {
-      userInfoImage = AppStrings.icMaleChart;
+    if (model.gender == StringUtils.male) {
+      userInfoImage = AssetsUtils.icMaleChart;
       color = AppColors.primaryBlue;
-    } else if (model.gender == AppStrings.female) {
-      userInfoImage = AppStrings.icFemaleChart;
+    } else if (model.gender == StringUtils.female) {
+      userInfoImage = AssetsUtils.icFemaleChart;
       color = AppColors.terracotta;
     } else {
-      userInfoImage = AppStrings.icNonChart;
+      userInfoImage = AssetsUtils.icNonChart;
       color = AppColors.green;
     }
   }
@@ -81,7 +81,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                           Expanded(
                             child: Center(
                               child: Image.asset(
-                                AppStrings.gymEatsLogo,
+                                AssetsUtils.gymEatsLogo,
                                 fit: BoxFit.cover,
                                 color: color,
                                 height: 60.h,
@@ -105,7 +105,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                         height: 10.h,
                       ),
                       Text(
-                        AppStrings.howDoesThisProfileLook,
+                        StringUtils.howDoesThisProfileLook,
                         style: AppTextStyle.gymEatsStyle.copyWith(
                             color: color,
                             fontSize: 18.sp,
@@ -257,7 +257,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     borderColor:
                                         setColor(gender: model.gender!),
                                     bgColor: Colors.white,
-                                    title: AppStrings.previous)
+                                    title: StringUtils.previous)
                                 .paddingOnly(top: 25.h),
                           ),
                           SizedBox(width: 10.w),
@@ -293,7 +293,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     },
                                     textColor: Colors.white,
                                     bgColor: setColor(gender: model.gender!),
-                                    title: AppStrings.next)
+                                    title: StringUtils.next)
                                 .paddingOnly(top: 25.h),
                           ),
                         ],

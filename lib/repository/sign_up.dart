@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:either_dart/either.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
-
 import '../app/sharedPrefrence.dart';
+import '../constant/string_utils.dart';
 import '../models/error_model.dart';
 import '../models/sign_up_data_navigate_model.dart';
 import '../models/sign_up_model.dart';
@@ -46,9 +44,9 @@ class SignUpRepository {
       "UserDetail.Age": model.age!,
       "UserDetail.Height": model.height!,
       "UserDetail.Weight": model.weight!,
-      "UserDetail.Gender": model.gender! == AppStrings.male
+      "UserDetail.Gender": model.gender! == StringUtils.male
           ? 'Male'
-          : model.gender! == AppStrings.female
+          : model.gender! == StringUtils.female
               ? 'Female'
               : 'Non-binary',
       "UserDetail.SurveyId": model.surveyId!,
