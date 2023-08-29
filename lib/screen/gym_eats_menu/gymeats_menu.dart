@@ -46,7 +46,7 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
                       textColor: homeController.selectedItems[index] ? const Color(0xFFC1EACE) : AppColors.appColor,
                       onPressed: () {
                         homeController.selectEats(index);
-                        Get.toNamed('/SignUpScreen');
+                        Get.toNamed('/LoginScreen');
                       },
                       title: text,
                     ),

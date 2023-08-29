@@ -1,18 +1,15 @@
-import 'dart:async';
-
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
 import '../../../models/fetch_meal_plan_model.dart';
 import '../../../repository/add_eaten_meal.dart';
-import '../../../repository/get_dashboard.dart';
 import '../../../repository/get_exercise_details.dart';
 import '../../../repository/get_meal_tracker_data.dart';
 import '../../../repository/get_user_journal.dart';
 import '../../../repository/get_water_details.dart';
+import '../../../screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import '../../../widget/app_widget.dart';
-import '../../meal_plan/meal_plan_repository.dart';
 import 'get_user_journal_event.dart';
 import 'get_user_journal_state.dart';
 

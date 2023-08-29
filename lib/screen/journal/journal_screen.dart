@@ -417,6 +417,9 @@ class _JournalScreenState extends State<JournalScreen> {
            ),
          },
 
+          if(mealTrackerDataList!.isNotEmpty)...{
+
+          },
           Text(
             'Food',
             style:

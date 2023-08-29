@@ -65,10 +65,10 @@ class FetchMealPlanData {
 }
 
 class MealData {
-  final String? id;
-  final double? calories;
-  final String? meal;
-  final int? numOfServings;
+  late final String? id;
+  late final double? calories;
+  late final String? meal;
+  late final int? numOfServings;
   final Recipe? recipe;
   bool isDone;
   bool? isSkipped;

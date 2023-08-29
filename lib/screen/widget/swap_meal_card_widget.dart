@@ -56,7 +56,7 @@ class SwapMealCardWidget extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: SizedBox(
-                  height: 60.h,
+                  height: 70.h,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,

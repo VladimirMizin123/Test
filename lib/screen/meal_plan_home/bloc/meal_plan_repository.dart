@@ -16,7 +16,7 @@ class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
   int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
-  String userID = PreferenceUtils.getString(prefsUserID);
+  String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
     String apiURL = '';

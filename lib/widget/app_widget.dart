@@ -472,7 +472,7 @@ Widget mealPlanCard({
                         const SizedBox(width: 10),
                         Expanded(
                           child: SizedBox(
-                            height: 80.h,
+                            height: 90.h,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

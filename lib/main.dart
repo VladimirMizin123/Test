@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
           home: child,
           initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
-              : '/LoginScreen',
+              : '/Home',
           getPages: [
             GetPage(
               name: '/LoginScreen',

@@ -21,7 +21,7 @@ class AppManagerScreen extends StatefulWidget {
 }
 
 class _AppManagerScreenState extends State<AppManagerScreen> with WidgetsBindingObserver {
-  int selectedIndex =4;
+  int selectedIndex = 2;
 
   DateTime? currentBackPressTime;
 
