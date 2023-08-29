@@ -406,100 +406,113 @@ Widget mealPlanCard({
   required BuildContext context,
   VoidCallback? onSkipMealTap,
   VoidCallback? onSwapMealTap,
+  VoidCallback? onTap,
 }) {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-    child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: mealData!.isSkipped == true
-            ? Column(
-                children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          height: 80.h,
-                          width: 90.w,
-                          color: AppColors.lightGrey,
-                          child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        height: 80.h,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(StringUtils.skipped, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : Column(
-                children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          height: 80.h,
-                          width: 90.w,
-                          color: AppColors.lightGrey,
-                          child: CachedNetworkImage(
-                            imageUrl: mealData.recipe!.mainImage ?? '',
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(
-                              color: AppColors.lightGrey,
-                            )),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+  return GestureDetector(
+    onTap: onTap,
+    child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+      child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: mealData!.isSkipped == true
+              ? Column(
+                  children: [
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            height: 80.h,
+                            width: 90.w,
+                            color: AppColors.lightGrey,
+                            child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: SizedBox(
+                        const SizedBox(width: 10),
+                        SizedBox(
                           height: 80.h,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(mealData.meal ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                              Text(mealData.recipe!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                              Text(mealData.calories!.toStringAsFixed(2), style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
+                              Text(StringUtils.skipped, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
                             ],
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: AppColors.middleGray)
-                    ],
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      simpleTextBorderButton(context: context, buttonLable: StringUtils.skipMeal, onTap: onSkipMealTap),
-                      simpleTextBorderButton(context: context, buttonLable: StringUtils.swapMeal, onTap: onSwapMealTap),
-                    ],
-                  ),
-                ],
-              )),
+                      ],
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            height: 80.h,
+                            width: 90.w,
+                            color: AppColors.lightGrey,
+                            child: CachedNetworkImage(
+                              imageUrl: mealData.recipe!.mainImage ?? '',
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator(
+                                color: AppColors.lightGrey,
+                              )),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: SizedBox(
+                            height: 80.h,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(mealData.meal ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                Text(mealData.recipe!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                                Text(mealData.calories!.toStringAsFixed(2), style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: AppColors.middleGray)
+                      ],
+                    ),
+                    SizedBox(height: 10.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        simpleTextBorderButton(context: context, buttonLable: StringUtils.skipMeal, onTap: onSkipMealTap),
+                        simpleTextBorderButton(context: context, buttonLable: StringUtils.swapMeal, onTap: onSwapMealTap),
+                      ],
+                    ),
+                  ],
+                )),
+    ),
   );
 }
 
-Widget simpleTextBorderButton({BuildContext? context, double? height, double? width, bool isFillColor = false, bool isDarkColor = false, String? buttonLable, VoidCallback? onTap}) {
+Widget simpleTextBorderButton({
+  BuildContext? context,
+  double? height,
+  double? width,
+  bool isFillColor = false,
+  bool isDarkColor = false,
+  String? buttonLable,
+  VoidCallback? onTap,
+  bool isLoadingWidget = false,
+}) {
   final screenSize = MediaQuery.of(context!).size;
   return GestureDetector(
     onTap: onTap,
@@ -509,72 +522,7 @@ Widget simpleTextBorderButton({BuildContext? context, double? height, double? wi
         height: height ?? screenSize.height * 0.04,
         width: width ?? screenSize.width * 0.41,
         decoration: isFillColor ? BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(10)),
-        child: Center(child: Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
-      ),
-    ),
-  );
-}
-
-Widget swapMealCard({
-  String? mealTitle,
-  String? mealDescription,
-  String? mealCal,
-  required BuildContext context,
-  bool isSelected = false,
-  VoidCallback? onSkipMealTap,
-  VoidCallback? onSwapMealTap,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: isSelected ? Border.all(color: AppColors.primaryBlue) : null,
-      boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
-      borderRadius: BorderRadius.circular(8.r),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Image.asset(
-            AssetsUtils.defaultImage,
-            height: 60.h,
-            width: 70.w,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: SizedBox(
-              height: 60.h,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(mealDescription ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                  Text(mealCal ?? '', style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            height: 20.h,
-            width: 20.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primaryBlue, width: 1.5),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
-                  height: 14.h,
-                  width: 14.w,
-                ),
-              ],
-            ),
-          )
-        ],
+        child: Center(child: isLoadingWidget ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
       ),
     ),
   );

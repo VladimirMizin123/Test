@@ -28,6 +28,7 @@ import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
@@ -129,7 +130,10 @@ class MyApp extends StatelessWidget {
             ),
             GetPage(
               name: '/MealDetailsScreen',
-              page: () => const MealDetailsScreen(),
+              page: () {
+                MealPlanArguments? argument = (Get.arguments is MealPlanArguments) ? Get.arguments : null;
+                return MealDetailsScreen(mealDataArguments: argument);
+              },
             ),
             GetPage(
               name: '/FoodPreferencesScreen',

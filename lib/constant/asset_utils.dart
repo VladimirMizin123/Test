@@ -83,6 +83,7 @@ class AssetsUtils {
   static const icThumbUpLine = '${svgPath}thumb-up-line.svg';
   static const icScooter = '${svgPath}scooter.svg';
   static const icDelete = '${svgPath}ic_delete.svg';
+  static const icShoppingIcon = '${svgPath}ic_shopping_icon.svg';
 
   /// Icons
 
