@@ -69,7 +69,7 @@ class _SkipMealBottomSheetState extends State<SkipMealBottomSheet> {
                     context: context,
                     buttonLable: StringUtils.skip,
                     onTap: () {
-                      widget.bloc.add(SkipMealPlanEvent(mealID: widget.mealData!.id!, userID: '1c708d04-b409-455e-b10a-b0f5a909529f'));
+                      widget.bloc.add(SkipMealPlanEvent(mealID: widget.mealData!.id!));
                     },
                     isDarkColor: true,
                     isFillColor: true,

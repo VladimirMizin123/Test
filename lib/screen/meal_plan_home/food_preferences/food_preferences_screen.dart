@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+// meal_plan branch code
 class FoodPreferencesScreen extends StatefulWidget {
   const FoodPreferencesScreen({super.key});
 
@@ -40,7 +42,11 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(Icons.arrow_back_ios_new_rounded),
+                          GestureDetector(
+                              onTap: () {
+                                Get.back();
+                              },
+                              child: const Icon(Icons.arrow_back_ios_new_rounded)),
                           Text(StringUtils.foodPreferences, style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.bold)),
                           Opacity(
                             opacity: 0,
@@ -61,12 +67,12 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                         style: FontUtils.h14(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
                       ),
                     ),
-                    myWidget('Avoid eggs',true),
-                    myWidget('Avoid fish',false),
-                    myWidget('Add more sweets',true),
-                    myWidget('Add more seafood',true),
-                    myWidget('Avoid pork',false),
-                    myWidget('Avoid nuts',false),
+                    myWidget('Avoid eggs', true),
+                    myWidget('Avoid fish', false),
+                    myWidget('Add more sweets', true),
+                    myWidget('Add more seafood', true),
+                    myWidget('Avoid pork', false),
+                    myWidget('Avoid nuts', false),
                     const SizedBox(height: 15),
                   ],
                 ),

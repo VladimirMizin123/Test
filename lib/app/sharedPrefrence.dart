@@ -8,6 +8,7 @@ UserData userData = UserData();
 const String prefIsLogin = 'isLogin';
 const String prefUserData = 'userData';
 const String prefToken = 'token';
+const String prefsUserID = 'prefsUserID';
 const String passwordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';
 

@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/grocery_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
 
 class AppManagerScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with WidgetsBinding
       case 0:
         return const MealPlanHomeScreen();
       case 1:
-        return Container();
+        return const GroceryPlanScreen();
       case 2:
         return const DashBoardScreen();
       case 3:
