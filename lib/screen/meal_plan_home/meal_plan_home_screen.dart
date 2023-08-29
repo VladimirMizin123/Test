@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_bloc.dart';
-import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_event.dart';
-import 'package:gymeats_mobile/bloc/meal_plan/meal_plan_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/skip_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/swap_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../widget/app_center_loader.dart';
 
 class MealPlanHomeScreen extends StatefulWidget {
@@ -30,13 +32,13 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   final PageController _pageController = PageController();
   List<FetchMealPlanData> mealPlanList = [];
 
-  MealPlanBloc bloc = MealPlanBloc();
+  MealPlanBloc mealPlanBloc = MealPlanBloc();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      bloc.add(MealPlanFetchEvent());
+      mealPlanBloc.add(MealPlanFetchEvent());
     });
   }
 
@@ -45,13 +47,32 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
-          bloc: bloc,
+          bloc: mealPlanBloc,
           listener: (context, state) {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
             }
 
             if (state is SkipMealPlanLoadingState) {}
+            if (state is SwapMealDetailsState) {
+              Get.back();
+              for (var i = 0; i < mealPlanList.length; i++) {
+                if (mealPlanList[i].day == state.day) {
+                  for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
+                    if (mealPlanList[i].meals![j].id == state.mealId) {
+                      mealPlanList[i].meals![j].id = state.similarMealData!.id;
+                      mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories;
+                      mealPlanList[i].meals![j].isSkipped = mealPlanList[i].meals![j].isSkipped;
+                      mealPlanList[i].meals![j].meal = '';
+                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;
+                      break;
+                    }
+                  }
+                  break;
+                }
+              }
+            }
             if (state is SkipMealPlanSuccessState) {
               log('SKIP MEAL PLAN');
               for (var i = 0; i < mealPlanList.length; i++) {
@@ -159,24 +180,30 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (BuildContext context, int index) {
                                       return mealPlanCard(
+                                        onTap: () {
+                                          Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                                        },
                                         mealData: e.meals![index],
                                         context: context,
                                         onSkipMealTap: () {
                                           showModalBottomSheet(
-                                              context: context,
-                                              builder: (context) {
-                                                return SkipMealBottomSheet(
-                                                  bloc: bloc,
-                                                  mealData: e.meals![index],
-                                                );
-                                              });
+                                            context: context,
+                                            builder: (context) {
+                                              return SkipMealBottomSheet(
+                                                bloc: mealPlanBloc,
+                                                mealData: e.meals![index],
+                                              );
+                                            },
+                                            isDismissible: false,
+                                          );
                                         },
                                         onSwapMealTap: () {
                                           showModalBottomSheet(
-                                              context: context,
-                                              builder: (context) {
-                                                return const SwapMealBottomSheet();
-                                              });
+                                            context: context,
+                                            builder: (context) {
+                                              return SwapMealBottomSheet(mealPlanBloc: mealPlanBloc, mealData: e.meals![index], day: e.day);
+                                            },
+                                          );
                                         },
                                       );
                                     },

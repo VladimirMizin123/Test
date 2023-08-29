@@ -8,6 +8,7 @@ class AppColors {
   static const disabledColor = Color(0xFFC7C8CA);
   static const grayColor = Color(0xFFA2A4A7);
   static const switchColor = Color(0xFF34C759);
+  static const blueFocusedColor = Color(0xFF003D4F);
 
   static ThemeData lightTheme() {
     return ThemeData(
