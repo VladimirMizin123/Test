@@ -220,4 +220,7 @@ class StringUtils {
   static const pleaseEnterMinutes = 'Please enter minutes';
   static const pleaseEnterCaloriesBurned = 'Please enter calories burned';
   static const addToGroceryList = 'Add to Grocery List';
+  static const details = 'Details';
+  static const deliveryTime = 'Delivery time: ';
+  static const orderType = 'Order type: ';
 }

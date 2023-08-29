@@ -253,7 +253,7 @@ class MyApp extends StatelessWidget {
               page: () => const BuildMyProfileScreen(),
             ),
             GetPage(
-              name: '/orderDetailsScreen',
+              name: '/OrderDetailsScreen',
               page: () => const OrderDetailsScreen(),
             ),
             GetPage(

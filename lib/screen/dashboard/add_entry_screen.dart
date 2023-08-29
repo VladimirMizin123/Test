@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../app/sharedPrefrence.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_bloc.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_event.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_state.dart';
-import '../../constant/app_string.dart';
 import '../../widget/app_center_loader.dart';
 
 class AddEntryScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   color: AppColors.darkGray,
                 ),
                 Text(
-                  AppStrings.addEntry,
+                  StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -133,7 +133,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   } else {
                     return buildButton(
                             context: context,
-                            title: AppStrings.save,
+                            title: StringUtils.save,
                             hasImage: false,
                             textColor: AppColors.skyBlue,
                             onPressed: () {

@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-// ignore_for_file: deprecated_member_use
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,24 +6,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
-import 'package:gymeats_mobile/constant/app_string.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-import '../../constant/asset_utils.dart';
 import '../../constant/string_utils.dart';
 
-import '../../app/functions.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_event.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_state.dart';
-import '../../constant/string_utils.dart';
 import '../../models/fetch_meal_plan_model.dart';
 import '../../models/get_dashboard_model.dart';
-import '../../models/get_meal_tracker_data_model.dart';
 import '../../widget/app_center_loader.dart';
 
 class DashBoardScreen extends StatefulWidget {
@@ -69,12 +62,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           commonSliderView(
             icon: AssetsUtils.breakFastIcon,
             title: StringUtils.breakfast,
-            textTheme:  Theme.of(context).textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
           commonSliderView(
             icon: AssetsUtils.lunchIcon,
             title: StringUtils.lunch,
-            textTheme:  Theme.of(context).textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -84,12 +77,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           commonSliderView(
             icon: AssetsUtils.snackIcon,
             title: StringUtils.snack,
-            textTheme:  Theme.of(context).textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
           commonSliderView(
             icon: AssetsUtils.dinnerIcon,
             title: StringUtils.dinner,
-            textTheme:  Theme.of(context).textTheme,
+            textTheme: Theme.of(context).textTheme,
           ),
         ],
       ),
@@ -139,15 +132,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   ),
                   Text(
                     StringUtils.dashboard,
-                    style:  Theme.of(context).textTheme.displayMedium
+                    style: Theme.of(context)
+                        .textTheme
+                        .displayMedium
                         ?.copyWith(color: const Color(0xFF010101)),
                   ),
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       Get.toNamed('/OrderHistoryScreen');
                     },
                     child: Image.asset(
-                      AppStrings.notification,
+                      AssetsUtils.notification,
                       height: 25.h,
                       width: 25.w,
                       color: AppColors.darkGray,
@@ -188,7 +183,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   listener: (context, state) {
                     if (state is LoadDashboardData) {
                       model = state.model;
-                      outOfTotalCalories = model!.data!.totalCalorie! - model!.data!.totalIntakeFood!;
+                      outOfTotalCalories = model!.data!.totalCalorie! -
+                          model!.data!.totalIntakeFood!;
                     }
                     if (state is LoadMealData) {
                       isDoneLoader = false;
@@ -210,7 +206,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Widget initView() => SingleChildScrollView(
-    child: ListView(
+        child: ListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: [
@@ -280,7 +276,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             calDataView(
-                              imgIcon: AppStrings.breakFastIcon,
+                              imgIcon: AssetsUtils.breakFastIcon,
                               title: 'Eaten',
                               calCount: int.parse(model!.data!.totalIntakeFood!
                                           .toString()
@@ -298,7 +294,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             ),
                             SizedBox(height: 15.h),
                             calDataView(
-                              imgIcon: AppStrings.dumBBell,
+                              imgIcon: AssetsUtils.dumBBell,
                               title: 'Burned',
                               calCount: int.parse(model!
                                           .data!.totalBurnedByExercise!
@@ -356,9 +352,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 model!.data!.totalCarbs!.toDouble().ceil(),
                       ),
                       calciumDataView(
-                          percentage:
-                              model!.data!.totalIntakeProtein!.toDouble().ceil() /
-                                  model!.data!.totalProtein!.toDouble().ceil(),
+                          percentage: model!.data!.totalIntakeProtein!
+                                  .toDouble()
+                                  .ceil() /
+                              model!.data!.totalProtein!.toDouble().ceil(),
                           title: 'Protein',
                           textTheme: Theme.of(context).textTheme,
                           gramCount: int.parse(model!.data!.totalIntakeProtein!
@@ -408,7 +405,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                     .toString()
                                     .split('.')[1]) >=
                                 50
-                            ? model!.data!.totalFat!.toDouble().ceil().toString()
+                            ? model!.data!.totalFat!
+                                .toDouble()
+                                .ceil()
+                                .toString()
                             : model!.data!.totalFat!
                                 .toDouble()
                                 .floor()
@@ -436,13 +436,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       });
                     },
                     child: dashBoardCardView(
-                      margin: EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
+                      margin:
+                          EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
                       child: waterExerciseDataView(
                         percentage: waterML / model!.data!.dailyWaterGoals!,
                         title: StringUtils.water,
                         textTheme: Theme.of(context).textTheme,
                         progressColor: AppColors.primaryBlue,
-                        image: AppStrings.water,
+                        image: AssetsUtils.water,
                         type: StringUtils.rate,
                         countValue: model!.data!.dailyWaterGoals!.toString(),
                         mlCalCount: waterML.toString(),
@@ -462,7 +463,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           exerciseCal = exerciseCal + int.parse(value);
                         });
                       });
-
                     },
                     child: dashBoardCardView(
                       margin:
@@ -496,7 +496,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     textTheme: Theme.of(context).textTheme,
                     trailing: InkWell(
                       onTap: () {
-                        if (!trackerDataList![index].isDone!) {
+                        if (!trackerDataList![index].isDone) {
                           bloc.add(AddEatenMealData(
                               mealId: trackerDataList![index].id!));
                         }
@@ -511,16 +511,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               width: 25.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: trackerDataList![index].isDone!
+                                color: trackerDataList![index].isDone
                                     ? AppColors.primaryBlue
                                     : AppColors.skyBlue,
                               ),
                               child: Center(
                                 child: Icon(
-                                  trackerDataList![index].isDone!
+                                  trackerDataList![index].isDone
                                       ? Icons.check
                                       : Icons.add,
-                                  color: trackerDataList![index].isDone!
+                                  color: trackerDataList![index].isDone
                                       ? Colors.white
                                       : AppColors.primaryBlue,
                                 ),
@@ -590,7 +590,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             ).paddingOnly(bottom: 20.w, top: 5.h)
           ],
         ),
-  );
+      );
 
   Widget calDataView(
       {String? imgIcon,

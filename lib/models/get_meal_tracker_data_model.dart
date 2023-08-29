@@ -33,14 +33,12 @@ class TrackerData {
   MealData? meal;
   String? value;
   DateTime? date;
-  bool isDone;
 
   TrackerData({
     this.mealId,
     this.meal,
     this.value,
     this.date,
-    this.isDone = false,
   });
 
   factory TrackerData.fromJson(Map<String, dynamic> json) => TrackerData(

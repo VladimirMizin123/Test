@@ -15,7 +15,7 @@ class OrderDetailsScreen extends StatefulWidget {
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
-  final routeName = '/orderDetailsScreen';
+  final routeName = '/OrderDetailsScreen';
   bool isTap = false;
 
   @override

@@ -61,3 +61,9 @@ String dateTimeYYYYMMDD({required String dateTimeVal}){
   String formattedDate = DateFormat("yyyy-MM-dd").format(dateTime);
   return formattedDate;
 }
+
+String dateTimeDDMMMYYYY({required String dateTimeVal}){
+  DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(dateTimeVal);
+  String formattedDate = DateFormat("dd MMM yyyy").format(dateTime);
+  return formattedDate;
+}

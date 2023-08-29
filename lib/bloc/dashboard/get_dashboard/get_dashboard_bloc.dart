@@ -45,7 +45,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       GenMealTrackerData event, Emitter<GetDashboardState> emit) async {
     try {
       emit(LoadingData());
-      await _planRepository.fetchMealPlan(userID: userId).fold((left) {
+      await _planRepository.fetchMealPlan().fold((left) {
         emit(ErrorStateData(errMessage: left.errorMessage!));
       }, (right) {
         right.data!.map((e) {

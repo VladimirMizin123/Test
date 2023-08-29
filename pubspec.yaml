@@ -59,6 +59,7 @@ dependencies:
   cached_network_image: ^3.2.3
   intl:
   google_maps_flutter: ^2.4.0
+  scroll_to_index:
   modal_bottom_sheet: ^2.1.2
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1

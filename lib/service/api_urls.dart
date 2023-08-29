@@ -19,4 +19,10 @@ class ApiUrls{
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
   static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
   static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
+
+  //For journal use apis
+  static const String getUserJournalData = '${baseUrl}api/Dashboard/GetUserJournalData';
+  static const String getWaterLogDetails = '${baseUrl}api/Dashboard/GetWaterLogDetails';
+  static const String getExerciseLogDetails = '${baseUrl}api/Dashboard/GetExerciseLogDetails';
+
 }

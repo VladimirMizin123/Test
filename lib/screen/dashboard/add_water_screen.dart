@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
@@ -10,7 +11,6 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../bloc/dashboard/add_water/add_water_bloc.dart';
 import '../../bloc/dashboard/add_water/add_water_event.dart';
 import '../../bloc/dashboard/add_water/add_water_state.dart';
-import '../../constant/app_string.dart';
 
 class AddWaterScreen extends StatefulWidget {
   const AddWaterScreen({super.key});
@@ -51,7 +51,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                   ),
                 ),
                 Text(
-                  AppStrings.addWater,
+                  StringUtils.addWater,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -98,7 +98,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                     children: [
                       waterDetailsView(
                         height: 76.h,
-                        waterIcon: AppStrings.waterIcon1,
+                        waterIcon: AssetsUtils.waterIcon1,
                         waterQuantity: '250',
                         onTap: () {
                           waterController.text = '250';
@@ -106,7 +106,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                       ),
                       waterDetailsView(
                         height: 83.h,
-                        waterIcon: AppStrings.waterIcon2,
+                        waterIcon: AssetsUtils.waterIcon2,
                         waterQuantity: '500',
                         onTap: () {
                           waterController.text = '500';
@@ -114,7 +114,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                       ).paddingOnly(left: 30.w),
                       waterDetailsView(
                         height: 96.h,
-                        waterIcon: AppStrings.waterIcon3,
+                        waterIcon: AssetsUtils.waterIcon3,
                         waterQuantity: '1000',
                         onTap: () {
                           waterController.text = '1000';
@@ -135,7 +135,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                   } else {
                     return buildButton(
                         context: context,
-                        title: AppStrings.save,
+                        title: StringUtils.save,
                         hasImage: false,
                         textColor: AppColors.skyBlue,
                         onPressed: () {

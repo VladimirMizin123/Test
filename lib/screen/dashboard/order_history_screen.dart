@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/color_utils.dart';
-import '../../constant/app_string.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'oder_history_item.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -29,7 +26,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
         ),
         title: Text(
-          AppStrings.orderHistory,
+          StringUtils.orderHistory,
           style: Theme
               .of(context)
               .textTheme.displayMedium?.copyWith(

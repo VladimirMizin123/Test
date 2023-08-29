@@ -12,7 +12,7 @@ import 'package:gymeats_mobile/service/apis.dart';
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
-    String userID = PreferenceUtils.getString(prefsUserID);
+    String userID = PreferenceUtils.getString(prefUserData);
   int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
