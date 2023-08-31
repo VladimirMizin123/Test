@@ -168,7 +168,7 @@ class StringUtils {
   static const recentOrders = 'Recent orders';
   static const restaurantName = 'Gaga Restaurant';
   static const save = 'Save';
-  static const calCount = '421 cal';
+  static const calCount = 'cal';
   static const smokedMackerel = 'Smoked Mackerel Salad With Fennel And Apple';
   static const sliderText1 = 'I followed my meal\nplan';
   static const sliderText2 = 'I drank enough of\nwater';
