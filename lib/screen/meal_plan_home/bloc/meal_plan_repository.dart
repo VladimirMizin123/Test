@@ -15,10 +15,11 @@ import 'package:gymeats_mobile/service/apis.dart';
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
-  int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
+    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';

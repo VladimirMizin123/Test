@@ -54,7 +54,7 @@ class PreferenceUtils {
 
   static removePref(String key) async {
     var prefs = await _instance;
-    prefs.remove(key);
+    await prefs.remove(key);
   }
 
 }

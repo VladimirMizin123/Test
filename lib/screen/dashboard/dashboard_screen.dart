@@ -47,7 +47,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    PreferenceUtils.removePref(userMealPlanCountState);
+    PreferenceUtils.setInt(userMealPlanCountState, 0);
     bloc.add(GenMealTrackerData());
   }
 

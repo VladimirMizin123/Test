@@ -55,6 +55,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       await _planRepository.fetchMealPlan().fold((left) {
         emit(ErrorGenTrackState());
       }, (right) {
+        dataList.clear();
         right.data!.map((e) {
           if(dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == dateTimeNow()){
             dataList.addAll(e.meals!);
@@ -72,6 +73,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       await _trackerDataRepository.getMealTrackerData(date: event.date).fold((left) {
         emit(ErrorGenTrackState());
       }, (right) {
+        dataList.clear();
         right.data!.map((e) {
           if(dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == event.date){
             dataList.add(e.meal!);

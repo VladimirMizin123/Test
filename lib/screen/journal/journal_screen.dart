@@ -42,8 +42,11 @@ class _JournalScreenState extends State<JournalScreen> {
   final scrollController = AutoScrollController();
 
   GetDashboardModel? model;
-  double outOfTotalCalories = 0.0;
   List<MealData>? mealTrackerDataList = [];
+  List<MealData>? breakFastList = [];
+  List<MealData>? lunchDataList = [];
+  List<MealData>? dinnerDataList = [];
+  List<MealData>? snackDataList = [];
   WaterData? waterData;
   ExerciseData? exerciseData;
 
@@ -60,7 +63,7 @@ class _JournalScreenState extends State<JournalScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    PreferenceUtils.removePref(userMealPlanCountState);
+
     bloc.add(GetUserJournalData(date: dateTimeNow()));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToToday();
@@ -293,11 +296,12 @@ class _JournalScreenState extends State<JournalScreen> {
 
                     return Container();
                   },
-                  listener: (context, state) {
+                  listener: (context, state) async {
                     if (state is LoadUserJournalData) {
                       model = state.model;
                       if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) ==
                           dateTimeNow()) {
+                        PreferenceUtils.setInt(userMealPlanCountState, 0);
                         bloc.add(GenMealData());
                       } else {
                         bloc.add(MealTrackerData(
@@ -321,6 +325,18 @@ class _JournalScreenState extends State<JournalScreen> {
                       bloc.add(GetWaterDetails(
                           date: dateTimeYYYYMMDD(
                               dateTimeVal: datetime.toString())));
+
+                      mealTrackerDataList!.map((e) {
+                        if (e.meal == 'breakfast') {
+                          breakFastList!.add(e);
+                        } else if (e.meal == 'lunch') {
+                          lunchDataList!.add(e);
+                        } else if (e.meal == 'dinner') {
+                          dinnerDataList!.add(e);
+                        } else {
+                          snackDataList!.add(e);
+                        }
+                      }).toList();
                     }
                     if (state is ErrorGenTrackState) {
                       bloc.add(GetWaterDetails(
@@ -354,153 +370,250 @@ class _JournalScreenState extends State<JournalScreen> {
 
   Widget initView(textTheme) => SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         if(model != null)...{
-           dashBoardCardView(
-             height: 130.h,
-             width: double.infinity.w,
-             margin: EdgeInsets.symmetric(vertical: 10.h),
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-               children: [
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Text(
-                       'Daily intake',
-                       style: textTheme.headlineSmall
-                           ?.copyWith(color: AppColors.darkGray),
-                     ),
-                     Text(
-                       '1700 / 2000 cal',
-                       style: textTheme.bodyLarge
-                           ?.copyWith(color: AppColors.middleGray),
-                     ),
-                   ],
-                 ).paddingSymmetric(horizontal: 8.w),
-                 commonProgressbar(
-                   width: 300.w,
-                   lineHeight: 8.0,
-                   percent: 0.7,
-                   progressColor: AppColors.primaryBlue,
-                 ).paddingOnly(top: 5.h),
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                   children: [
-                     calciumDataView(
-                       title: 'Carbs',
-                       textTheme: textTheme,
-                       gramCount: '100',
-                       totalGram: '177',
-                       progressColor: AppColors.mint,
-                     ),
-                     calciumDataView(
-                       title: 'Protein',
-                       textTheme: textTheme,
-                       gramCount: '32',
-                       totalGram: '48',
-                       progressColor: AppColors.skyBlue,
-                     ),
-                     calciumDataView(
-                       title: 'Fat',
-                       textTheme: textTheme,
-                       gramCount: '100',
-                       totalGram: '177',
-                       progressColor: AppColors.coral,
-                     ),
-                   ],
-                 ).paddingOnly(top: 5.h),
-               ],
-             ).paddingAll(5),
-           ),
-         },
-
-          if(mealTrackerDataList!.isNotEmpty)...{
-
-          },
-          Text(
-            'Food',
-            style:
-                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
-          ).paddingOnly(top: 5.h),
-          dashBoardCardView(
-            width: double.infinity.w,
-            margin: EdgeInsets.symmetric(vertical: 10.h),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: Image.asset(
-                    AssetsUtils.breakFastIcon,
-                    height: 25.h,
-                    width: 25.w,
-                    color: AppColors.darkGray,
-                  ),
-                  title: Row(
+          if (model != null) ...{
+            dashBoardCardView(
+              height: 130.h,
+              width: double.infinity.w,
+              margin: EdgeInsets.symmetric(vertical: 10.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Breakfast   ',
+                        'Daily intake',
                         style: textTheme.headlineSmall
                             ?.copyWith(color: AppColors.darkGray),
                       ),
                       Text(
-                        '200 cal',
+                        '${int.parse(model!.data!.totalIntakeFood!.toString().split('.')[1]) >= 50 ? model!.data!.totalIntakeFood!.toDouble().ceil().toString() : model!.data!.totalIntakeFood!.toDouble().floor().toString()} / ${int.parse(model!.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model!.data!.totalCalorie!.toDouble().ceil().toString() : model!.data!.totalCalorie!.toDouble().floor().toString()} cal',
                         style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.terracotta),
+                            ?.copyWith(color: AppColors.middleGray),
                       ),
                     ],
+                  ).paddingSymmetric(horizontal: 8.w),
+                  commonProgressbar(
+                    width: 300.w,
+                    lineHeight: 8.0,
+                    percent: model!.data!.totalIntakeFood!.toDouble().ceil() /
+                        model!.data!.totalCalorie!.toDouble().ceil(),
+                    progressColor: AppColors.primaryBlue,
+                  ).paddingOnly(top: 5.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      calciumDataView(
+                        title: 'Carbs',
+                        textTheme: textTheme,
+                        gramCount: int.parse(model!.data!.totalIntakeCarbs!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalIntakeCarbs!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalIntakeCarbs!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: int.parse(model!.data!.totalCarbs!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalCarbs!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalCarbs!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.mint,
+                        percentage:
+                            model!.data!.totalIntakeCarbs!.toDouble().ceil() /
+                                model!.data!.totalCarbs!.toDouble().ceil(),
+                      ),
+                      calciumDataView(
+                        title: 'Protein',
+                        textTheme: textTheme,
+                        gramCount: int.parse(model!.data!.totalIntakeProtein!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalIntakeProtein!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalIntakeProtein!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: int.parse(model!.data!.totalProtein!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalProtein!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalProtein!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.skyBlue,
+                        percentage:
+                            model!.data!.totalIntakeProtein!.toDouble().ceil() /
+                                model!.data!.totalProtein!.toDouble().ceil(),
+                      ),
+                      calciumDataView(
+                        title: 'Fat',
+                        textTheme: textTheme,
+                        gramCount: int.parse(model!.data!.totalIntakeFat!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalIntakeFat!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalIntakeFat!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: int.parse(model!.data!.totalFat!
+                                    .toString()
+                                    .split('.')[1]) >=
+                                50
+                            ? model!.data!.totalFat!
+                                .toDouble()
+                                .ceil()
+                                .toString()
+                            : model!.data!.totalFat!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.coral,
+                        percentage:
+                            model!.data!.totalIntakeFat!.toDouble().ceil() /
+                                model!.data!.totalFat!.toDouble().ceil(),
+                      ),
+                    ],
+                  ).paddingOnly(top: 5.h),
+                ],
+              ).paddingAll(5),
+            ),
+          },
+          if (mealTrackerDataList!.isNotEmpty) ...{
+            Column(
+              children: [
+                Text(
+                  'Food',
+                  style: textTheme.headlineSmall
+                      ?.copyWith(color: AppColors.middleGray),
+                ).paddingOnly(top: 5.h),
+
+                dashBoardCardView(
+                  width: double.infinity.w,
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Image.asset(
+                          AssetsUtils.breakFastIcon,
+                          height: 25.h,
+                          width: 25.w,
+                          color: AppColors.darkGray,
+                        ),
+                        title: Row(
+                          children: [
+                            Text(
+                              breakFastList![0].meal!,
+                              style: textTheme.headlineSmall
+                                  ?.copyWith(color: AppColors.darkGray),
+                            ),
+                            Text(
+                              '${int.parse(breakFastList![0].calories!.toString().split('.')[1]) >= 50 ? breakFastList![0].calories!.toDouble().ceil().toString() : breakFastList![0].calories!.toDouble().floor().toString()} cal',
+                              style: textTheme.bodyLarge
+                                  ?.copyWith(color: AppColors.terracotta),
+                            ),
+                          ],
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 15.h,
+                          color: const Color(0xFF010101),
+                        ),
+                        horizontalTitleGap: 0.0,
+                      ),
+                      Divider(color: AppColors.middleGray, height: 1.h)
+                          .paddingSymmetric(horizontal: 15.w),
+                      commonJournalFoodData(
+                        title: breakFastList![0].recipe!.name!,
+                        subTitle: '${breakFastList![0].recipe!.serving} serving',
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 13.h,
+                          color: AppColors.darkGray,
+                        ),
+                        textTheme: textTheme.bodySmall?.copyWith(
+                            color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                        subTextTheme: textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
+                            fontWeight: FontWeight.w400),
+                      ).paddingOnly(top: 10.h,bottom: 10.h),
+                    ],
                   ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 15.h,
-                    color: const Color(0xFF010101),
-                  ),
-                  horizontalTitleGap: 0.0,
                 ),
-                Divider(color: AppColors.middleGray, height: 1.h)
-                    .paddingSymmetric(horizontal: 15.w),
-                commonJournalFoodData(
-                  title: 'Chickpea Flour Omlette With Asparagus',
-                  subTitle: '1 serving',
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 13.h,
-                    color: AppColors.darkGray,
-                  ),
-                  textTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                  subTextTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
-                ).paddingOnly(top: 10.h),
-                commonJournalFoodData(
-                  title: 'Bread',
-                  subTitle: '1 slice',
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 13.h,
-                    color: AppColors.darkGray,
-                  ),
-                  textTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                  subTextTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
-                ).paddingOnly(top: 10.h, bottom: 10.h),
+
+                commonFoodItemView(
+                  textTheme: textTheme,
+                  image: AssetsUtils.lunchIcon,
+                  title: StringUtils.lunch,
+                  cal: int.parse(lunchDataList![0]
+                      .calories!
+                      .toString()
+                      .split('.')[1]) >=
+                      50
+                      ? lunchDataList![0]
+                      .calories!.toDouble().ceil().toString()
+                      : lunchDataList![0]
+                      .calories!.toDouble().floor().toString(),
+                ),
+                commonFoodItemView(
+                  textTheme: textTheme,
+                  image: AssetsUtils.dinnerIcon,
+                  title: StringUtils.dinner,
+                  cal:
+                  int.parse(dinnerDataList![0]
+                      .calories!.toString().split('.')[1]) >= 50
+                      ? dinnerDataList![0]
+                      .calories!.toDouble().ceil().toString()
+                      : dinnerDataList![0]
+                      .calories!.toDouble().floor().toString(),
+                ),
+                commonFoodItemView(
+                  textTheme: textTheme,
+                  image: AssetsUtils.snackIcon,
+                  title: StringUtils.snack,
+                  cal:
+                  int.parse(snackDataList![0]
+                      .calories!.toString().split('.')[1]) >= 50
+                      ? snackDataList![0]
+                      .calories!.toDouble().ceil().toString()
+                      : snackDataList![0]
+                      .calories!.toDouble().floor().toString(),
+                ),
               ],
             ),
-          ),
-          commonFoodItemView(
-              textTheme: textTheme,
-              image: AssetsUtils.lunchIcon,
-              title: StringUtils.lunch),
-          commonFoodItemView(
-              textTheme: textTheme,
-              image: AssetsUtils.dinnerIcon,
-              title: StringUtils.dinner),
-          commonFoodItemView(
-              textTheme: textTheme,
-              image: AssetsUtils.snackIcon,
-              title: StringUtils.snack),
+
+
+          },
+
           Text(
             'Routine',
             style:
@@ -780,6 +893,7 @@ class _JournalScreenState extends State<JournalScreen> {
     TextTheme? textTheme,
     String? totalGram,
     Color? progressColor,
+    required double percentage,
   }) {
     return Column(
       children: [
@@ -790,7 +904,7 @@ class _JournalScreenState extends State<JournalScreen> {
         commonProgressbar(
           progressColor: progressColor,
           width: 80.w,
-          percent: 0.7,
+          percent: percentage,
           lineHeight: 8.0,
         ),
         Text(
@@ -850,6 +964,7 @@ class _JournalScreenState extends State<JournalScreen> {
   Widget commonFoodItemView({
     String image = '',
     String title = '',
+    String cal = '',
     TextTheme? textTheme,
   }) {
     return Column(
@@ -879,7 +994,7 @@ class _JournalScreenState extends State<JournalScreen> {
         commonBorderView(
           child: commonJournalFoodData(
             title: StringUtils.smokedMackerel,
-            subTitle: StringUtils.calCount,
+            subTitle: '$cal ${StringUtils.calCount}',
             child: Container(
               height: 25.h,
               width: 25.w,
