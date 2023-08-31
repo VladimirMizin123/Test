@@ -90,24 +90,15 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                                             similarMealData: similarMealDataList[index],
                                             onTap: () {
                                               isSelectAnyOneMeal = true;
-                                              for (var i = 0; i < similarMealDataList.length; i++) {
-                                                // print('$i');
-                                                // print('${i == index}');
-                                                // print('- - - - - - - - - - - - - - - ');
-                                                if (i == index) {
-                                                  setState(() {
-                                                    similarMealDataList[index].isSelectedForSwap = true;
-                                                  });
-                                                  print('IF CALL');
-                                                  print(similarMealDataList[index].isSelectedForSwap);
-                                                } else {
-                                                  setState(() {
-                                                    similarMealDataList[index].isSelectedForSwap = false;
-                                                  });
-                                                  print('ELSE CALL');
-                                                  print(similarMealDataList[index].isSelectedForSwap);
+                                              setState(() {
+                                                for (var i = 0; i < similarMealDataList.length; i++) {
+                                                  if (i == index) {
+                                                    similarMealDataList[i].isSelectedForSwap = true;
+                                                  } else {
+                                                    similarMealDataList[i].isSelectedForSwap = false;
+                                                  }
                                                 }
-                                              }
+                                              });
                                             },
                                           ),
                                         );
@@ -128,13 +119,10 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                             if (!isSelectAnyOneMeal) {
                               Get.back();
                             } else {
-                              print('object');
                               for (var i = 0; i < similarMealDataList.length; i++) {
-                                print('$i - ${similarMealDataList[i].isSelectedForSwap}');
                                 if (similarMealDataList[i].isSelectedForSwap) {
-                                  print('SHARE....');
                                   widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day, mealId: widget.mealData!.id!));
-                                  // break;
+                                  break;
                                 }
                               }
                             }

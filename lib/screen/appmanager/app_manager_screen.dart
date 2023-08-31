@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -8,6 +10,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/grocery_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
@@ -77,7 +80,19 @@ class _AppManagerScreenState extends State<AppManagerScreen> with WidgetsBinding
       case 3:
         return Container();
       case 4:
-        return Container();
+        return Container(
+          child: SafeArea(
+            child: Column(children: [
+              MaterialButton(
+                onPressed: () {
+                  PreferenceUtils.clearPrefs();
+                  Get.toNamed('/LoginScreen');
+                },
+                child: Text('LOGOUT'),
+              )
+            ]),
+          ),
+        );
       default:
     }
   }

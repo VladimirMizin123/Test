@@ -1,0 +1,135 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
+
+class ReceiveOrderAskBottomSheet extends StatefulWidget {
+  const ReceiveOrderAskBottomSheet({super.key});
+
+  @override
+  State<ReceiveOrderAskBottomSheet> createState() => _ReceiveOrderAskBottomSheetState();
+}
+
+class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet> {
+  int selectedIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    return Material(
+      color: AppColors.whiteColor,
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: 3.h,
+                    width: 80.w,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                  )),
+              const SizedBox(height: 10),
+              SvgPicture.asset(AssetsUtils.icQuestionMarkGreenIcon),
+              const SizedBox(height: 15),
+              Text(
+                'How would you like to receive your order?',
+                style: FontUtils.h20(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+              ),
+              const SizedBox(height: 15),
+              myWidget(
+                  isSelected: selectedIndex == 0 ? true : false,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 0;
+                    });
+                  }),
+              const SizedBox(height: 10),
+              myWidget(
+                  isSelected: selectedIndex == 1 ? true : false,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 1;
+                    });
+                  }),
+              const SizedBox(height: 15),
+              simpleTextBorderButton(
+                context: context,
+                color: AppColors.green,
+                buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
+                height: screenSize.height * 0.065,
+                width: screenSize.width,
+                isLoadingWidget: false,
+                onTap: () {},
+                isDarkColor: true,
+                isFillColor: selectedIndex == -1 ? false : true,
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget myWidget({bool isSelected = false, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isSelected ? AppColors.primaryBlue : Colors.transparent),
+          color: AppColors.whiteColor,
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 16,
+              spreadRadius: -15,
+              color: AppColors.black,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Bring me the order',
+                style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium),
+              ),
+              Container(
+                height: 22.h,
+                width: 22.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primaryBlue, width: 2),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: isSelected,
+                      child: Container(
+                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                        height: 14.h,
+                        width: 14.w,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

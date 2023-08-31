@@ -51,4 +51,9 @@ class PreferenceUtils {
     return _prefsInstance != null ? prefs.setBool(key, value) : Future.value(false);
   }
 
+    static Future<bool> clearPrefs() async {
+    var prefs = await _instance;
+    return _prefsInstance != null ? prefs.clear() : Future.value(false);
+  }
+
 }

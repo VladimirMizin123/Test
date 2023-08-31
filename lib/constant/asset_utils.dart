@@ -63,6 +63,8 @@ class AssetsUtils {
   static const icRestaurants = '${svgPath}ic_restaurants.svg';
   static const icJournal = '${svgPath}ic_journal.svg';
   static const icQuestionMarkIcon = '${svgPath}ic_questionmark_icon.svg';
+  static const icQuestionMarkGreenIcon = '${svgPath}ic_questionmark_green_icon.svg';
+  static const icLocation = '${svgPath}ic_location.svg';
   static const icSkippedIcon = '${svgPath}ic_skipped_icon.svg';
   static const icIngredientsIcon = '${svgPath}ingredients_icon.svg';
   static const icServingIcon = '${svgPath}servings_icon.svg';
@@ -71,6 +73,9 @@ class AssetsUtils {
   static const icScooter = '${svgPath}scooter.svg';
   static const icDelete = '${svgPath}ic_delete.svg';
   static const icShoppingIcon = '${svgPath}ic_shopping_icon.svg';
+  static const icAddCircle = '${svgPath}ic_add_circle.svg';
+  static const icAddIcon = '${svgPath}ic_add_icon.svg';
+  static const emptyShoppingListIcon = '${svgPath}empty_shopping_list_icon.svg';
 
   /// Icons
 
@@ -80,4 +85,5 @@ class AssetsUtils {
   static const arrowBack = "assets/icon/arrow_back.png";
   static const arrowForward = "assets/icon/arrow_forward.png";
   static const disableArrowBack = "assets/icon/disable_arrow_back.png";
+  static const demoIcon = "assets/image/demo_icon.png";
 }

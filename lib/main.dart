@@ -24,6 +24,8 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
+import 'package:gymeats_mobile/screen/grocery/choose_store_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/grocery_search_screen.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
@@ -49,6 +51,8 @@ import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'models/sign_up_model.dart';
+import 'screen/grocery/grocery_cart_screen.dart';
+import 'screen/grocery/grocery_item_details.dart';
 import 'screen/login/login_screen.dart';
 
 Future<void> main() async {
@@ -113,11 +117,27 @@ class MyApp extends StatelessWidget {
               page: () => const AppManagerScreen(),
             ),
             GetPage(
+              name: '/ChooseStoreScreen',
+              page: () => const ChooseStoreScreen(),
+            ),
+            GetPage(
               name: '/MealDetailsScreen',
               page: () {
                 MealPlanArguments? argument = (Get.arguments is MealPlanArguments) ? Get.arguments : null;
                 return MealDetailsScreen(mealDataArguments: argument);
               },
+            ),
+            GetPage(
+              name: '/GrocerySearchScreen',
+              page: () => const GrocerySearchScreen(),
+            ),
+            GetPage(
+              name: '/GroceryCartScreen',
+              page: () => const GroceryCartScreen(),
+            ),
+            GetPage(
+              name: '/GroceryItemDetails',
+              page: () => const GroceryItemDetails(),
             ),
             GetPage(
               name: '/FoodPreferencesScreen',
