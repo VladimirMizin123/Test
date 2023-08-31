@@ -6,8 +6,8 @@ enum FWT {
   semiBold,
   medium,
   regular,
-  light,
   lightMedium,
+  light,
 }
 
 class FontUtils {
@@ -108,6 +108,17 @@ class FontUtils {
       color: fontColor ?? AppColors.green,
       fontWeight: getFontWeight(fontWeight),
       fontSize: 16,
+      fontFamily: 'Avenir',
+    );
+  }
+   static TextStyle h17({
+    Color? fontColor,
+    FWT fontWeight = FWT.regular,
+  }) {
+    return TextStyle(
+      color: fontColor ?? AppColors.green,
+      fontWeight: getFontWeight(fontWeight),
+      fontSize: 17,
       fontFamily: 'Avenir',
     );
   }

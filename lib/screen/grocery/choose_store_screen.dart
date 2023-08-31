@@ -15,6 +15,7 @@ class ChooseStoreScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+<<<<<<< Updated upstream
             Image.asset(
               AssetsUtils.gymEatsLogo,
               height: 20.h,
@@ -29,6 +30,21 @@ class ChooseStoreScreen extends StatelessWidget {
                 Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
               ],
             ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+=======
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const BackButtonWidget(),
+                Image.asset(
+                  AssetsUtils.gymEatsLogo,
+                  height: 35.h,
+                  color: AppColors.green,
+                ),
+                Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
+              ],
+            ).paddingSymmetric(horizontal: 6, vertical: 5.h),
+            const SizedBox(height: 10),
+>>>>>>> Stashed changes
             Text(
               'Choose a Store',
               style: FontUtils.h24(fontColor: AppColors.green, fontWeight: FWT.semiBold),

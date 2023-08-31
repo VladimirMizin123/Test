@@ -7,15 +7,15 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../constant/color_utils.dart';
 
-class ItemDetailsScreen extends StatefulWidget {
-  const ItemDetailsScreen({super.key});
+class GroceryItemDetailsScreen extends StatefulWidget {
+  const GroceryItemDetailsScreen({super.key});
 
   @override
-  State<ItemDetailsScreen> createState() => _ItemDetailsScreenState();
+  State<GroceryItemDetailsScreen> createState() => _GroceryItemDetailsScreenState();
 }
 
-class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
-  final routeName = '/ItemDetailsScreen';
+class _GroceryItemDetailsScreenState extends State<GroceryItemDetailsScreen> {
+  final routeName = '/GroceryItemDetailsScreen';
   int itemCount = 1;
   String menuItem = 'cup';
   var items = ['cup', 'jar', 'spoon'];
@@ -48,8 +48,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           style: textTheme.displayMedium?.copyWith(color: Colors.black),
         ),
         leading: IconButton(
-          icon:
-              Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
           onPressed: () => Navigator.pop(context),
         ).paddingOnly(left: 10.w),
       ),
@@ -63,8 +62,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               children: [
                 Text(
                   StringUtils.whiteBread,
-                  style: textTheme.headlineSmall!
-                      .copyWith(color: AppColors.darkGray),
+                  style: textTheme.headlineSmall!.copyWith(color: AppColors.darkGray),
                 ),
                 IconButton(
                   onPressed: () {},
@@ -134,8 +132,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                         value: items,
                         child: Text(
                           items,
-                          style: textTheme.bodyLarge
-                              ?.copyWith(color: AppColors.darkGray),
+                          style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                         ),
                       );
                     }).toList(),
@@ -154,22 +151,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 dashBoardCardView(
-                  child: calciumDataView(
-                      title: 'Cal',
-                      textTheme: textTheme,
-                      percent: 0.16,
-                      gramCount: '320',
-                      totalGram: '2000 cal',
-                      progressColor: AppColors.primaryBlue),
+                  child: calciumDataView(title: 'Cal', textTheme: textTheme, percent: 0.16, gramCount: '320', totalGram: '2000 cal', progressColor: AppColors.primaryBlue),
                 ),
                 dashBoardCardView(
-                  child: calciumDataView(
-                      title: 'Fat',
-                      textTheme: textTheme,
-                      gramCount: '100',
-                      percent: 0.77,
-                      totalGram: '177 g',
-                      progressColor: AppColors.coral),
+                  child: calciumDataView(title: 'Fat', textTheme: textTheme, gramCount: '100', percent: 0.77, totalGram: '177 g', progressColor: AppColors.coral),
                 ),
               ],
             ).paddingOnly(top: 13.h, bottom: 8.h, left: 20.w, right: 20.w),
@@ -177,29 +162,17 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 dashBoardCardView(
-                  child: calciumDataView(
-                      title: 'Carbs',
-                      textTheme: textTheme,
-                      gramCount: '100',
-                      percent: 0.77,
-                      totalGram: '177 g',
-                      progressColor: AppColors.mint),
+                  child: calciumDataView(title: 'Carbs', textTheme: textTheme, gramCount: '100', percent: 0.77, totalGram: '177 g', progressColor: AppColors.mint),
                 ),
                 dashBoardCardView(
-                  child: calciumDataView(
-                      title: 'Protein',
-                      textTheme: textTheme,
-                      gramCount: '32',
-                      percent: 0.66,
-                      totalGram: '48 g',
-                      progressColor: AppColors.skyBlue),
+                  child: calciumDataView(title: 'Protein', textTheme: textTheme, gramCount: '32', percent: 0.66, totalGram: '48 g', progressColor: AppColors.skyBlue),
                 ),
               ],
             ).paddingOnly(top: 5.h, bottom: 8.h, left: 20.w, right: 20.w),
             Text(
               StringUtils.nutritional,
               style: textTheme.displayMedium?.copyWith(color: Colors.black),
-            ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+            ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             SizedBox(
               height: 240.h,
               width: size.width.w,
@@ -276,25 +249,16 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           title.toString(),
           style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
         ),
-        commonProgressbar(
-            progressColor: progressColor,
-            width: 76.w,
-            lineHeight: 8.0,
-            percent: percent ?? 0.5),
+        commonProgressbar(progressColor: progressColor, width: 76.w, lineHeight: 8.0, percent: percent ?? 0.5),
         Text(
           '$gramCount / $totalGram',
-          style: textTheme?.bodyMedium
-              ?.copyWith(color: AppColors.darkGray, height: 1.7),
+          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray, height: 1.7),
         )
       ],
     ).paddingSymmetric(horizontal: 33.w, vertical: 6.h);
   }
 
-  Widget commonProgressbar(
-      {Color? progressColor,
-      double? width,
-      double? lineHeight,
-      double? percent}) {
+  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: Radius.circular(10.r),
@@ -322,14 +286,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title1,
-                style:
-                    textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
-            Text(value1,
-                style:
-                    textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
+            Text(title1, style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
+            Text(value1, style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
           ],
-        ).paddingSymmetric(vertical: 5.h),
+        ).paddingSymmetric(horizontal: 6, vertical: 5.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -348,7 +308,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               ),
             ),
           ],
-        ).paddingSymmetric(vertical: 5.h),
+        ).paddingSymmetric(horizontal: 6, vertical: 5.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -367,7 +327,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               ),
             ),
           ],
-        ).paddingSymmetric(vertical: 5.h),
+        ).paddingSymmetric(horizontal: 6, vertical: 5.h),
         Divider(color: AppColors.disable, height: 1.5.h)
       ],
     ).paddingSymmetric(horizontal: 20.w);

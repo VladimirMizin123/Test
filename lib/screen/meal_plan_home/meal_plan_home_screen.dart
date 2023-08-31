@@ -118,7 +118,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           ),
                         )
                       ],
-                    ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+                    ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
                     Text(state is FetchMealPlanSuccessState ? StringUtils.regenerateGroceryList : StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
                     mealPlanList.isEmpty

@@ -101,6 +101,14 @@ class AssetsUtils {
   static const icAddCircle = '${svgPath}ic_add_circle.svg';
   static const icAddIcon = '${svgPath}ic_add_icon.svg';
   static const emptyShoppingListIcon = '${svgPath}empty_shopping_list_icon.svg';
+<<<<<<< Updated upstream
+=======
+  static const icFilterIcon = '${svgPath}ic_filter_icon.svg';
+  static const icSortIcon = '${svgPath}ic_sort_icon.svg';
+  static const icCardImg = '${svgPath}ic_card_img.svg';
+  static const icHome = '${svgPath}ic_home.svg';
+  static const icListIcon = '${svgPath}ic_list_icon.svg';
+>>>>>>> Stashed changes
 
   /// Icons
 
@@ -139,5 +147,10 @@ class AssetsUtils {
   static const searchPen = "assets/icon/searchPen.png";
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
+<<<<<<< Updated upstream
   static const demoIcon = "assets/image/demo_icon.png";
+=======
+  static const productDemoImg = "assets/image/product_demo_img.png";
+  static const productDemoImg1 = "assets/image/product_demo_img_1.png";
+>>>>>>> Stashed changes
 }

@@ -1,5 +1,4 @@
 // import 'package:firebase_core/firebase_core.dart';
-import 'dart:convert';
 
 // import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,8 +11,8 @@ import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.d
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
-import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
@@ -26,26 +25,31 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
+import 'package:gymeats_mobile/screen/grocery/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/grocery_search_screen.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:gymeats_mobile/screen/grocery/item_catalog/item_catalog_screen.dart';
+>>>>>>> Stashed changes
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
+import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
 import 'package:gymeats_mobile/screen/journal/fifth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
-import 'package:gymeats_mobile/screen/journal/item_details_screen.dart';
-import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
+import 'package:gymeats_mobile/screen/journal/grocery_item_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/third_journal_bg.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
@@ -63,9 +67,9 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
-import 'models/sign_up_model.dart';
 import 'screen/grocery/grocery_cart_screen.dart';
 import 'screen/grocery/grocery_item_details.dart';
+import 'screen/grocery/item_catalog/grocery_product_details_screen.dart';
 import 'screen/login/login_screen.dart';
 
 // List<CameraDescription> cameras = [];
@@ -80,7 +84,7 @@ Future<void> main() async {
   );
   await initDynamicLinks();
   if (PreferenceUtils.getBool(prefIsLogin)) {
-    if(PreferenceUtils.getBool(prefIsConfirmEmail)){
+    if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
       userId = PreferenceUtils.getString(prefUserData);
     }
   }
@@ -105,9 +109,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
-              ? '/AppManagerScreen'
-              : '/Home',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail) ? '/AppManagerScreen' : '/AppManagerScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -149,6 +151,10 @@ class MyApp extends StatelessWidget {
               page: () => const GrocerySearchScreen(),
             ),
             GetPage(
+              name: '/GroceryProductDetails',
+              page: () => const GroceryProductDetails(),
+            ),
+            GetPage(
               name: '/GroceryCartScreen',
               page: () => const GroceryCartScreen(),
             ),
@@ -163,6 +169,9 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/BestMatchRestaurantsScreen',
               page: () => const BestMatchRestaurantsScreen(),
+            ),GetPage(
+              name: '/CheckoutScreen',
+              page: () => const CheckoutScreen(),
             ),
             GetPage(
               name: '/DashboardScreen',
@@ -321,8 +330,8 @@ class MyApp extends StatelessWidget {
               page: () => const ScanBarcodeScreen(/*cameras: cameras*/),
             ),
             GetPage(
-              name: '/ItemDetailsScreen',
-              page: () => const ItemDetailsScreen(),
+              name: '/GroceryItemDetailsScreen',
+              page: () => const GroceryItemDetailsScreen(),
             ),
             GetPage(
               name: '/AddNewItemScreen',

@@ -7,9 +7,16 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
-class GroceryCartScreen extends StatelessWidget {
+class GroceryCartScreen extends StatefulWidget {
   const GroceryCartScreen({super.key});
 
+  @override
+  State<GroceryCartScreen> createState() => _GroceryCartScreenState();
+}
+
+class _GroceryCartScreenState extends State<GroceryCartScreen> {
+  final String _selectProduct = 'Product 1';
+  List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -30,7 +37,7 @@ class GroceryCartScreen extends StatelessWidget {
                 Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                 Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
               ],
-            ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+            ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             GestureDetector(
               onTap: () {
                 Get.toNamed('/ChooseStoreScreen');
@@ -137,6 +144,7 @@ class GroceryCartScreen extends StatelessWidget {
             SizedBox(height: 10.h),
             Expanded(
               child: SingleChildScrollView(
+<<<<<<< Updated upstream
                   child: Column(
                 children: [
                   myItemChooseWidget(screenSize, 'Almond Milk', () {}),
@@ -144,6 +152,129 @@ class GroceryCartScreen extends StatelessWidget {
                   myItemChooseWidget(screenSize, 'Potatoes', () {}),
                   myItemChooseWidget(screenSize, 'Tomatoes', () {}),
                 ],
+=======
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  children: [
+                    myItemChooseWidget(screenSize, 'Almond Milk', () {
+                      Get.toNamed('/ItemCatalogScreen');
+                    }),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Image(
+                              image: AssetImage(AssetsUtils.productDemoImg),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Milk Almond Breeze 500ml, 1.5% fat',
+                                    textAlign: TextAlign.start,
+                                    style: FontUtils.h17(fontColor: AppColors.darkGray),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        'Available in: ',
+                                        style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                      ),
+                                      Text(
+                                        'Wallmart',
+                                        style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              '\$ 5.99',
+                              style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
+                                height: screenSize.height * 0.070,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Product 1',
+                                        style: FontUtils.h18(fontColor: AppColors.black),
+                                      ),
+                                      const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Container(
+                              height: screenSize.height * 0.070,
+                              width: screenSize.height * 0.070,
+                              decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(6)),
+                              child: Center(
+                                  child: SvgPicture.asset(
+                                AssetsUtils.icDelete,
+                                color: AppColors.switchColor,
+                              )),
+                            ),
+                            SizedBox(width: 8.w),
+                            Container(
+                              height: screenSize.height * 0.070,
+                              width: screenSize.height * 0.070,
+                              decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(6)),
+                              child: Center(
+                                  child: Text(
+                                '1',
+                                style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                              )),
+                            ),
+                            SizedBox(width: 8.w),
+                            Container(
+                              height: screenSize.height * 0.070,
+                              width: screenSize.height * 0.070,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: AppColors.mint,
+                              ),
+                              child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Divider(thickness: 1.2),
+                    const SizedBox(height: 6),
+                    myItemChooseWidget(screenSize, 'Mushrooms', () {}),
+                    myItemChooseWidget(screenSize, 'Potatoes', () {}),
+                    myItemChooseWidget(screenSize, 'Tomatoes', () {}),
+                  ],
+                ),
+>>>>>>> Stashed changes
               )),
             ),
             Container(
@@ -173,7 +304,9 @@ class GroceryCartScreen extends StatelessWidget {
                       height: screenSize.height * 0.065,
                       width: screenSize.width,
                       isLoadingWidget: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.toNamed('/CheckoutScreen');
+                      },
                       isDarkColor: true,
                       isFillColor: true,
                     ),
@@ -189,45 +322,42 @@ class GroceryCartScreen extends StatelessWidget {
   }
 
   Widget myItemChooseWidget(Size screenSize, String title, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: FontUtils.h16(fontColor: AppColors.black),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: FontUtils.h16(fontColor: AppColors.black),
+          ),
+          const SizedBox(height: 5),
+          Container(
+            height: screenSize.height * 0.06,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.errorColor),
+              borderRadius: BorderRadius.circular(12),
+              color: AppColors.lightGrey,
             ),
-            const SizedBox(height: 5),
-            Container(
-              height: screenSize.height * 0.06,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.errorColor),
-                borderRadius: BorderRadius.circular(12),
-                color: AppColors.lightGrey,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Choose a Brand (required)',
-                      style: FontUtils.h16(fontColor: AppColors.black),
-                    ),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.black)
-                  ],
-                ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Choose a Brand (required)',
+                    style: FontUtils.h16(fontColor: AppColors.black),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.black)
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            const Divider(thickness: 1.2),
-            const SizedBox(height: 6),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          const Divider(thickness: 1.2),
+          const SizedBox(height: 6),
+        ],
       ),
     );
   }

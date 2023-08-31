@@ -10,6 +10,7 @@ class AppColors {
   static const switchColor = Color(0xFF34C759);
   static const blueFocusedColor = Color(0xFF003D4F);
   static const errorColor = Color(0xFFFF9500);
+  static const errorRedColor = Color(0XFFFF3B30);
 
   static ThemeData lightTheme() {
     return ThemeData(

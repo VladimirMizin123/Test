@@ -54,8 +54,7 @@ class _JournalScreenState extends State<JournalScreen> {
 
   int daysInMonth(DateTime date) {
     var firstDayThisMonth = DateTime(date.year, date.month, date.day);
-    var firstDayNextMonth = DateTime(firstDayThisMonth.year,
-        firstDayThisMonth.month + 1, firstDayThisMonth.day);
+    var firstDayNextMonth = DateTime(firstDayThisMonth.year, firstDayThisMonth.month + 1, firstDayThisMonth.day);
     return firstDayNextMonth.difference(firstDayThisMonth).inDays;
   }
 
@@ -141,8 +140,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                   Text(
                     StringUtils.journal,
-                    style: textTheme.displayMedium
-                        ?.copyWith(color: const Color(0xFF010101)),
+                    style: textTheme.displayMedium?.copyWith(color: const Color(0xFF010101)),
                   ),
                   Image.asset(
                     AssetsUtils.notification,
@@ -151,10 +149,9 @@ class _JournalScreenState extends State<JournalScreen> {
                     color: AppColors.darkGray,
                   )
                 ],
-              ).paddingSymmetric(vertical: 5.h),
+              ).paddingSymmetric(horizontal: 6, vertical: 5.h),
               Theme(
-                data: Theme.of(context)
-                    .copyWith(dividerColor: Colors.transparent),
+                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
                   initiallyExpanded: true,
                   onExpansionChanged: ((newState) {
@@ -168,8 +165,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   tilePadding: EdgeInsets.zero,
                   title: Text(
                     dateTimeDDMMMYYYY(dateTimeVal: datetime.toString()),
-                    style: textTheme.headlineSmall
-                        ?.copyWith(color: AppColors.middleGray),
+                    style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
                   ),
                   children: [
                     SizedBox(
@@ -181,10 +177,8 @@ class _JournalScreenState extends State<JournalScreen> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           final bool isSelected = index == datetime.day - 1;
-                          final currentDate = DateTime(datetime.year,
-                              datetime.month, listOfDates[index]);
-                          final dayAbbreviation =
-                              DateFormat.E().format(currentDate);
+                          final currentDate = DateTime(datetime.year, datetime.month, listOfDates[index]);
+                          final dayAbbreviation = DateFormat.E().format(currentDate);
                           return AutoScrollTag(
                             key: ValueKey(index),
                             controller: scrollController,
@@ -192,12 +186,9 @@ class _JournalScreenState extends State<JournalScreen> {
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  datetime = DateTime(datetime.year,
-                                      datetime.month, listOfDates[index]);
+                                  datetime = DateTime(datetime.year, datetime.month, listOfDates[index]);
                                 });
-                                bloc.add(GetUserJournalData(
-                                    date: dateTimeYYYYMMDD(
-                                        dateTimeVal: datetime.toString())));
+                                bloc.add(GetUserJournalData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                               },
                               child: Container(
                                 height: 70.h,
@@ -205,46 +196,31 @@ class _JournalScreenState extends State<JournalScreen> {
                                 // padding: const EdgeInsets.all(5),
                                 margin: EdgeInsets.symmetric(horizontal: 2.w),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColors.terracotta
-                                      : Colors.white,
+                                  color: isSelected ? AppColors.terracotta : Colors.white,
                                   borderRadius: BorderRadius.circular(8.r),
-                                  border: Border.all(
-                                      color: isSelected
-                                          ? Colors.transparent
-                                          : AppColors.terracotta,
-                                      width: 1.w),
+                                  border: Border.all(color: isSelected ? Colors.transparent : AppColors.terracotta, width: 1.w),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     SizedBox(
                                       height: 5.h,
                                     ),
                                     Text(
                                       dayAbbreviation,
-                                      style: TextStyle(
-                                          color: isSelected
-                                              ? Colors.white
-                                              : AppColors.middleGray,
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 14),
+                                      style: TextStyle(color: isSelected ? Colors.white : AppColors.middleGray, fontWeight: FontWeight.w300, fontSize: 14),
                                     ),
                                     Container(
                                       height: 42.h,
                                       width: 42.w,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
+                                        color: isSelected ? Colors.white : Colors.transparent,
                                       ),
                                       child: Center(
                                         child: Text(
                                           listOfDates[index].toString(),
-                                          style: textTheme.bodyLarge?.copyWith(
-                                              color: AppColors.middleGray),
+                                          style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                                         ),
                                       ),
                                     ),
@@ -299,32 +275,24 @@ class _JournalScreenState extends State<JournalScreen> {
                   listener: (context, state) async {
                     if (state is LoadUserJournalData) {
                       model = state.model;
-                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) ==
-                          dateTimeNow()) {
+                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) == dateTimeNow()) {
                         PreferenceUtils.setInt(userMealPlanCountState, 0);
                         bloc.add(GenMealData());
                       } else {
-                        bloc.add(MealTrackerData(
-                            date: dateTimeYYYYMMDD(
-                                dateTimeVal: datetime.toString())));
+                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                       }
                     }
                     if (state is ErrorJournalState) {
-                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) ==
-                          dateTimeNow()) {
+                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) == dateTimeNow()) {
                         bloc.add(GenMealData());
                       } else {
-                        bloc.add(MealTrackerData(
-                            date: dateTimeYYYYMMDD(
-                                dateTimeVal: datetime.toString())));
+                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                       }
                     }
 
                     if (state is LoadGenMealData) {
                       mealTrackerDataList = state.genMealDataList;
-                      bloc.add(GetWaterDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
 
                       mealTrackerDataList!.map((e) {
                         if (e.meal == 'breakfast') {
@@ -339,20 +307,14 @@ class _JournalScreenState extends State<JournalScreen> {
                       }).toList();
                     }
                     if (state is ErrorGenTrackState) {
-                      bloc.add(GetWaterDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                     }
                     if (state is LoadWaterData) {
                       waterData = state.data;
-                      bloc.add(GetExerciseDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                     }
                     if (state is ErrorWaterDataState) {
-                      bloc.add(GetExerciseDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                     }
                     if (state is LoadExerciseData) {
                       exerciseData = state.data;
@@ -386,21 +348,18 @@ class _JournalScreenState extends State<JournalScreen> {
                     children: [
                       Text(
                         'Daily intake',
-                        style: textTheme.headlineSmall
-                            ?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                       ),
                       Text(
                         '${int.parse(model!.data!.totalIntakeFood!.toString().split('.')[1]) >= 50 ? model!.data!.totalIntakeFood!.toDouble().ceil().toString() : model!.data!.totalIntakeFood!.toDouble().floor().toString()} / ${int.parse(model!.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model!.data!.totalCalorie!.toDouble().ceil().toString() : model!.data!.totalCalorie!.toDouble().floor().toString()} cal',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.middleGray),
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                       ),
                     ],
                   ).paddingSymmetric(horizontal: 8.w),
                   commonProgressbar(
                     width: 300.w,
                     lineHeight: 8.0,
-                    percent: model!.data!.totalIntakeFood!.toDouble().ceil() /
-                        model!.data!.totalCalorie!.toDouble().ceil(),
+                    percent: model!.data!.totalIntakeFood!.toDouble().ceil() / model!.data!.totalCalorie!.toDouble().ceil(),
                     progressColor: AppColors.primaryBlue,
                   ).paddingOnly(top: 5.h),
                   Row(
@@ -409,98 +368,26 @@ class _JournalScreenState extends State<JournalScreen> {
                       calciumDataView(
                         title: 'Carbs',
                         textTheme: textTheme,
-                        gramCount: int.parse(model!.data!.totalIntakeCarbs!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalIntakeCarbs!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalIntakeCarbs!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: int.parse(model!.data!.totalCarbs!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalCarbs!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalCarbs!
-                                .toDouble()
-                                .floor()
-                                .toString(),
+                        gramCount: int.parse(model!.data!.totalIntakeCarbs!.toString().split('.')[1]) >= 50 ? model!.data!.totalIntakeCarbs!.toDouble().ceil().toString() : model!.data!.totalIntakeCarbs!.toDouble().floor().toString(),
+                        totalGram: int.parse(model!.data!.totalCarbs!.toString().split('.')[1]) >= 50 ? model!.data!.totalCarbs!.toDouble().ceil().toString() : model!.data!.totalCarbs!.toDouble().floor().toString(),
                         progressColor: AppColors.mint,
-                        percentage:
-                            model!.data!.totalIntakeCarbs!.toDouble().ceil() /
-                                model!.data!.totalCarbs!.toDouble().ceil(),
+                        percentage: model!.data!.totalIntakeCarbs!.toDouble().ceil() / model!.data!.totalCarbs!.toDouble().ceil(),
                       ),
                       calciumDataView(
                         title: 'Protein',
                         textTheme: textTheme,
-                        gramCount: int.parse(model!.data!.totalIntakeProtein!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalIntakeProtein!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalIntakeProtein!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: int.parse(model!.data!.totalProtein!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalProtein!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalProtein!
-                                .toDouble()
-                                .floor()
-                                .toString(),
+                        gramCount: int.parse(model!.data!.totalIntakeProtein!.toString().split('.')[1]) >= 50 ? model!.data!.totalIntakeProtein!.toDouble().ceil().toString() : model!.data!.totalIntakeProtein!.toDouble().floor().toString(),
+                        totalGram: int.parse(model!.data!.totalProtein!.toString().split('.')[1]) >= 50 ? model!.data!.totalProtein!.toDouble().ceil().toString() : model!.data!.totalProtein!.toDouble().floor().toString(),
                         progressColor: AppColors.skyBlue,
-                        percentage:
-                            model!.data!.totalIntakeProtein!.toDouble().ceil() /
-                                model!.data!.totalProtein!.toDouble().ceil(),
+                        percentage: model!.data!.totalIntakeProtein!.toDouble().ceil() / model!.data!.totalProtein!.toDouble().ceil(),
                       ),
                       calciumDataView(
                         title: 'Fat',
                         textTheme: textTheme,
-                        gramCount: int.parse(model!.data!.totalIntakeFat!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalIntakeFat!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalIntakeFat!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: int.parse(model!.data!.totalFat!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model!.data!.totalFat!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model!.data!.totalFat!
-                                .toDouble()
-                                .floor()
-                                .toString(),
+                        gramCount: int.parse(model!.data!.totalIntakeFat!.toString().split('.')[1]) >= 50 ? model!.data!.totalIntakeFat!.toDouble().ceil().toString() : model!.data!.totalIntakeFat!.toDouble().floor().toString(),
+                        totalGram: int.parse(model!.data!.totalFat!.toString().split('.')[1]) >= 50 ? model!.data!.totalFat!.toDouble().ceil().toString() : model!.data!.totalFat!.toDouble().floor().toString(),
                         progressColor: AppColors.coral,
-                        percentage:
-                            model!.data!.totalIntakeFat!.toDouble().ceil() /
-                                model!.data!.totalFat!.toDouble().ceil(),
+                        percentage: model!.data!.totalIntakeFat!.toDouble().ceil() / model!.data!.totalFat!.toDouble().ceil(),
                       ),
                     ],
                   ).paddingOnly(top: 5.h),
@@ -513,10 +400,8 @@ class _JournalScreenState extends State<JournalScreen> {
               children: [
                 Text(
                   'Food',
-                  style: textTheme.headlineSmall
-                      ?.copyWith(color: AppColors.middleGray),
+                  style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
                 ).paddingOnly(top: 5.h),
-
                 dashBoardCardView(
                   width: double.infinity.w,
                   margin: EdgeInsets.symmetric(vertical: 10.h),
@@ -533,13 +418,11 @@ class _JournalScreenState extends State<JournalScreen> {
                           children: [
                             Text(
                               breakFastList![0].meal!,
-                              style: textTheme.headlineSmall
-                                  ?.copyWith(color: AppColors.darkGray),
+                              style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                             ),
                             Text(
                               '${int.parse(breakFastList![0].calories!.toString().split('.')[1]) >= 50 ? breakFastList![0].calories!.toDouble().ceil().toString() : breakFastList![0].calories!.toDouble().floor().toString()} cal',
-                              style: textTheme.bodyLarge
-                                  ?.copyWith(color: AppColors.terracotta),
+                              style: textTheme.bodyLarge?.copyWith(color: AppColors.terracotta),
                             ),
                           ],
                         ),
@@ -550,8 +433,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         ),
                         horizontalTitleGap: 0.0,
                       ),
-                      Divider(color: AppColors.middleGray, height: 1.h)
-                          .paddingSymmetric(horizontal: 15.w),
+                      Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
                       commonJournalFoodData(
                         title: breakFastList![0].recipe!.name!,
                         subTitle: '${breakFastList![0].recipe!.serving} serving',
@@ -560,64 +442,36 @@ class _JournalScreenState extends State<JournalScreen> {
                           size: 13.h,
                           color: AppColors.darkGray,
                         ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
-                      ).paddingOnly(top: 10.h,bottom: 10.h),
+                        textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                        subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                      ).paddingOnly(top: 10.h, bottom: 10.h),
                     ],
                   ),
                 ),
-
                 commonFoodItemView(
                   textTheme: textTheme,
                   image: AssetsUtils.lunchIcon,
                   title: StringUtils.lunch,
-                  cal: int.parse(lunchDataList![0]
-                      .calories!
-                      .toString()
-                      .split('.')[1]) >=
-                      50
-                      ? lunchDataList![0]
-                      .calories!.toDouble().ceil().toString()
-                      : lunchDataList![0]
-                      .calories!.toDouble().floor().toString(),
+                  cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(),
                 ),
                 commonFoodItemView(
                   textTheme: textTheme,
                   image: AssetsUtils.dinnerIcon,
                   title: StringUtils.dinner,
-                  cal:
-                  int.parse(dinnerDataList![0]
-                      .calories!.toString().split('.')[1]) >= 50
-                      ? dinnerDataList![0]
-                      .calories!.toDouble().ceil().toString()
-                      : dinnerDataList![0]
-                      .calories!.toDouble().floor().toString(),
+                  cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(),
                 ),
                 commonFoodItemView(
                   textTheme: textTheme,
                   image: AssetsUtils.snackIcon,
                   title: StringUtils.snack,
-                  cal:
-                  int.parse(snackDataList![0]
-                      .calories!.toString().split('.')[1]) >= 50
-                      ? snackDataList![0]
-                      .calories!.toDouble().ceil().toString()
-                      : snackDataList![0]
-                      .calories!.toDouble().floor().toString(),
+                  cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(),
                 ),
               ],
             ),
-
-
           },
-
           Text(
             'Routine',
-            style:
-                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+            style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
           ).paddingOnly(top: 15.h),
           dashBoardCardView(
             width: double.infinity.w,
@@ -633,15 +487,12 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                   title: Text(
                     'Water',
-                    style: textTheme.headlineSmall
-                        ?.copyWith(color: AppColors.darkGray),
+                    style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                   ),
-                  trailing: Icon(Icons.arrow_forward_ios,
-                      size: 15.h, color: const Color(0xFF010101)),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 15.h, color: const Color(0xFF010101)),
                   horizontalTitleGap: 0.0,
                 ),
-                Divider(color: AppColors.middleGray, height: 1.h)
-                    .paddingSymmetric(horizontal: 15.w),
+                Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
                 commonJournalFoodData(
                   title: 'Water',
                   subTitle: '750 ml',
@@ -650,10 +501,8 @@ class _JournalScreenState extends State<JournalScreen> {
                     size: 18.h,
                     color: AppColors.darkGray,
                   ),
-                  textTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                  subTextTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                  textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                 ).paddingOnly(top: 7.h, bottom: 10.h),
               ],
             ),
@@ -672,8 +521,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                   title: Text(
                     'Add exercise',
-                    style: textTheme.headlineSmall
-                        ?.copyWith(color: AppColors.darkGray),
+                    style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                   ),
                   trailing: Icon(
                     Icons.arrow_forward_ios,
@@ -682,8 +530,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                   horizontalTitleGap: 0.0,
                 ),
-                Divider(color: AppColors.middleGray, height: 1.h)
-                    .paddingSymmetric(horizontal: 15.w),
+                Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
                 commonJournalFoodData(
                   title: StringUtils.running,
                   subTitle: '220 cal burned',
@@ -692,10 +539,8 @@ class _JournalScreenState extends State<JournalScreen> {
                     size: 13.h,
                     color: AppColors.darkGray,
                   ),
-                  textTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                  subTextTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                  textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                 ).paddingOnly(top: 10.h),
                 commonJournalFoodData(
                   title: 'Workout',
@@ -705,18 +550,15 @@ class _JournalScreenState extends State<JournalScreen> {
                     size: 13.h,
                     color: AppColors.darkGray,
                   ),
-                  textTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                  subTextTheme: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                  textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                 ).paddingOnly(top: 10.h, bottom: 10.h),
               ],
             ),
           ),
           Text(
             'Daily Recap',
-            style:
-                textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+            style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
           ).paddingOnly(top: 7.h),
           SizedBox(
             height: 200.h,
@@ -745,9 +587,7 @@ class _JournalScreenState extends State<JournalScreen> {
                 margin: EdgeInsets.only(right: 5.w),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: currentIndex == 0
-                      ? AppColors.primaryBlue
-                      : AppColors.disable,
+                  color: currentIndex == 0 ? AppColors.primaryBlue : AppColors.disable,
                 ),
               ),
               Container(
@@ -755,9 +595,7 @@ class _JournalScreenState extends State<JournalScreen> {
                 width: 8.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: currentIndex == 1
-                      ? AppColors.primaryBlue
-                      : AppColors.disable,
+                  color: currentIndex == 1 ? AppColors.primaryBlue : AppColors.disable,
                 ),
               )
             ],
@@ -780,10 +618,7 @@ class _JournalScreenState extends State<JournalScreen> {
       child: Container(
           width: 125.w,
           height: 35.h,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.r),
-              color: bgColor,
-              border: border),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.r), color: bgColor, border: border),
           child: Center(
             child: Row(
               mainAxisAlignment: mainAxisAlignment!,
@@ -817,21 +652,14 @@ class _JournalScreenState extends State<JournalScreen> {
               height: 35.h,
               width: 35.w,
             ),
-            Text(title,
-                textAlign: TextAlign.center,
-                style:
-                    textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
+            Text(title, textAlign: TextAlign.center, style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray)),
             commonYesNoButton(
                 textTheme: textTheme,
                 bgColor: AppColors.mint,
                 textColor: AppColors.greenPressed,
                 title: StringUtils.yes,
-                border: yesTap
-                    ? Border.all(color: AppColors.greenPressed, width: 2.w)
-                    : null,
-                mainAxisAlignment: yesTap
-                    ? MainAxisAlignment.spaceEvenly
-                    : MainAxisAlignment.center,
+                border: yesTap ? Border.all(color: AppColors.greenPressed, width: 2.w) : null,
+                mainAxisAlignment: yesTap ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.center,
                 onTap: () {
                   setState(() {
                     yesTap = true;
@@ -839,21 +667,14 @@ class _JournalScreenState extends State<JournalScreen> {
                     defaultImage = false;
                   });
                 },
-                showImage: yesTap
-                    ? Image.asset(AssetsUtils.greenRight,
-                        height: 20.h, width: 20.w)
-                    : const SizedBox()),
+                showImage: yesTap ? Image.asset(AssetsUtils.greenRight, height: 20.h, width: 20.w) : const SizedBox()),
             commonYesNoButton(
                 textTheme: textTheme,
                 title: StringUtils.no,
                 textColor: AppColors.terracottaPressed,
                 bgColor: AppColors.coral,
-                border: noTap
-                    ? Border.all(color: AppColors.terracottaPressed, width: 2.w)
-                    : null,
-                mainAxisAlignment: noTap
-                    ? MainAxisAlignment.spaceEvenly
-                    : MainAxisAlignment.center,
+                border: noTap ? Border.all(color: AppColors.terracottaPressed, width: 2.w) : null,
+                mainAxisAlignment: noTap ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.center,
                 onTap: () {
                   setState(() {
                     yesTap = false;
@@ -861,19 +682,12 @@ class _JournalScreenState extends State<JournalScreen> {
                     defaultImage = false;
                   });
                 },
-                showImage: noTap
-                    ? Image.asset(AssetsUtils.terracottaRight,
-                        height: 20.h, width: 20.w)
-                    : const SizedBox()),
+                showImage: noTap ? Image.asset(AssetsUtils.terracottaRight, height: 20.h, width: 20.w) : const SizedBox()),
           ],
         ));
   }
 
-  Widget commonProgressbar(
-      {Color? progressColor,
-      double? width,
-      double? lineHeight,
-      double? percent}) {
+  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: const Radius.circular(10),
@@ -948,10 +762,7 @@ class _JournalScreenState extends State<JournalScreen> {
       height: 48.h,
       width: double.infinity.w,
       margin: EdgeInsets.only(top: 5.h),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: AppColors.disable)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10.r), border: Border.all(color: AppColors.disable)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -980,8 +791,7 @@ class _JournalScreenState extends State<JournalScreen> {
             ),
             title: Text(
               title,
-              style:
-                  textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+              style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
             ),
             trailing: Icon(
               Icons.arrow_forward_ios,
@@ -1009,10 +819,8 @@ class _JournalScreenState extends State<JournalScreen> {
                 ),
               ),
             ),
-            textTheme: textTheme?.bodySmall?.copyWith(
-                color: AppColors.darkGray, fontWeight: FontWeight.w400),
-            subTextTheme: textTheme?.bodySmall?.copyWith(
-                color: AppColors.terracotta, fontWeight: FontWeight.w400),
+            textTheme: textTheme?.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+            subTextTheme: textTheme?.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
           ),
         ),
       ],
