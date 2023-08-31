@@ -67,6 +67,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                     hintText: StringUtils.itemName,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(StringUtils.weight,
                           style: textTheme.bodyLarge
@@ -112,7 +113,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(color: Colors.transparent),
                             ),
-                            suffixText: StringUtils.oz,
+                            suffix: const Text(StringUtils.oz),
                             suffixStyle: TextStyle(
                                 fontSize: 17.sp,
                                 fontWeight: FontWeight.w500,
