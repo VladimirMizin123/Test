@@ -11,7 +11,8 @@ class SwapMealCardWidget extends StatelessWidget {
   final VoidCallback? onSkipMealTap;
   final VoidCallback? onSwapMealTap;
   final VoidCallback? onTap;
-  const SwapMealCardWidget({super.key, this.similarMealData, required this.context, this.onSkipMealTap, this.onSwapMealTap, this.onTap});
+  final bool isCardSelected;
+  const SwapMealCardWidget({super.key, this.similarMealData, required this.context, this.onSkipMealTap, this.onSwapMealTap, this.onTap,  this.isCardSelected =false});
 
   @override
   Widget build(BuildContext context) {

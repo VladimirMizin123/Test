@@ -121,7 +121,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(RestaurantSearchSuccessState(isSuccess: true));
+        emit(RestaurantSearchSuccessState(restaurantSearchData: right.data));
       });
     } catch (e) {
       print(e);

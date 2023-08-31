@@ -1,6 +1,7 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 
 abstract class FetchMealPlanState {}
@@ -61,9 +62,9 @@ class MealDetailsLoadingState extends FetchMealPlanState {}
 class MealDetailsErrorState extends FetchMealPlanState {}
 
 class RestaurantSearchSuccessState extends FetchMealPlanState {
-  final bool? isSuccess;
+  final RestaurantSearchData? restaurantSearchData;
 
-  RestaurantSearchSuccessState({this.isSuccess});
+  RestaurantSearchSuccessState({this.restaurantSearchData});
 }
 
 class RestaurantSearchLoadingState extends FetchMealPlanState {}

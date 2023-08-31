@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -74,14 +75,14 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, ProductRestaurantSearchScreen>> restaurantSearch({
+  Future<Either<ErrorModel, RestaurantSearchModel>> restaurantSearch({
     required String name,
     required String latitude,
     required String longitude,
     required String maximumMiles,
     required bool pickup,
   }) async {
-    final response = await apiServices.post('${ApiUrls.productRestaurantSearch}?name=$name', {}
+    final response = await apiServices.post('${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude', {}
         // {
         //   "name": name,
         //   "latitude": latitude,
@@ -91,11 +92,11 @@ class MealPlanRepository {
         // },
         );
 
-    print('RES : ${ApiUrls.productRestaurantSearch}');
-    print('RES : ${response.body}');
-    print('RES : ${response.statusCode}');
+    log('RES : ${ApiUrls.productRestaurantSearch}');
+    log('RES : ${response.body}');
+    log('RES : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(ProductRestaurantSearchScreen.fromJson(jsonDecode(response.body)));
+      return Right(RestaurantSearchModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

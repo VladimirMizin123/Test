@@ -61,6 +61,7 @@ dependencies:
   google_maps_flutter: ^2.4.0
   scroll_to_index:
   modal_bottom_sheet: ^2.1.2
+  shimmer: ^3.0.0
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 

@@ -52,7 +52,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
             }
-
             if (state is SkipMealPlanLoadingState) {}
             if (state is SwapMealDetailsState) {
               Get.back();
