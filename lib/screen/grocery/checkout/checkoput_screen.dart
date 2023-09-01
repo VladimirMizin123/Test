@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:gymeats_mobile/widget/divider_widget.dart';
 
 import '../../../constant/asset_utils.dart';
@@ -35,13 +38,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.keyboard_arrow_left_outlined, size: 30),
+                const BackButtonWidget(),
                 Text('Checkout', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                 Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             Expanded(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Column(
@@ -90,14 +94,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: AppColors.whiteColor,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0xffDDDDDD),
-                              blurRadius: 4,
-                              spreadRadius: 1,
-                              offset: Offset(0.0, 0.0),
-                            )
-                          ],
+                          boxShadow: boxShadowWidget,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -129,25 +126,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           color: AppColors.lightGrey,
                         ),
                       ),
-                      Container(
-                        height: 60,
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
-                          color: AppColors.whiteColor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Row(children: [
-                            SvgPicture.asset(AssetsUtils.icHome, color: AppColors.green, height: 25),
-                            const SizedBox(width: 15),
-                            Text(
-                              'Where?',
-                              style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.light),
-                            ),
-                            const Spacer(),
-                            const Icon(Icons.chevron_right_rounded)
-                          ]),
+                      GestureDetector(
+                        onTap: () {
+                          Get.toNamed('/MapAddressScreen');
+                        },
+                        child: Container(
+                          height: 60,
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+                            color: AppColors.whiteColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Row(children: [
+                              SvgPicture.asset(AssetsUtils.icHome, color: AppColors.green, height: 25),
+                              const SizedBox(width: 15),
+                              Text(
+                                'Where?',
+                                style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.light),
+                              ),
+                              const Spacer(),
+                              const Icon(Icons.chevron_right_rounded)
+                            ]),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -372,7 +374,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       height: screenSize.height * 0.065,
                       width: screenSize.width,
                       isLoadingWidget: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.toNamed('/PaymentCardSelectionScreen');
+                      },
                       isDarkColor: true,
                       isFillColor: true,
                     ),

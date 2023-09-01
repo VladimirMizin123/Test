@@ -119,7 +119,7 @@ class _AppManagerScreenState extends State<AppManagerScreen>
               MaterialButton(
                 onPressed: () {
                   PreferenceUtils.clearPrefs();
-                  Get.toNamed('/LoginScreen');
+                  Get.offAndToNamed('/LoginScreen');
                 },
                 child: Text('LOGOUT'),
               )

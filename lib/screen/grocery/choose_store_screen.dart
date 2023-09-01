@@ -4,6 +4,9 @@ import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/widget/custom_radio_button_widget.dart';
 
 class ChooseStoreScreen extends StatelessWidget {
   const ChooseStoreScreen({super.key});
@@ -15,22 +18,6 @@ class ChooseStoreScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-<<<<<<< Updated upstream
-            Image.asset(
-              AssetsUtils.gymEatsLogo,
-              height: 20.h,
-              width: 56.w,
-              color: AppColors.primaryBlue,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(Icons.keyboard_arrow_left_outlined, size: 30),
-                Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
-              ],
-            ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
-=======
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -44,7 +31,6 @@ class ChooseStoreScreen extends StatelessWidget {
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             const SizedBox(height: 10),
->>>>>>> Stashed changes
             Text(
               'Choose a Store',
               style: FontUtils.h24(fontColor: AppColors.green, fontWeight: FWT.semiBold),
@@ -53,17 +39,10 @@ class ChooseStoreScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration:  BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xffDDDDDD),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                      offset: Offset(0.0, 0.0),
-                    )
-                  ],
+                  boxShadow: boxShadowWidget,
                 ),
                 child: TextFormField(
                   onTap: () {},
@@ -87,54 +66,64 @@ class ChooseStoreScreen extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       child: Column(
                         children: [
                           Container(
-                            decoration: const BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color(0xffDDDDDD),
-                                  blurRadius: 4,
-                                  spreadRadius: 1,
-                                  offset: Offset(0.0, 0.0),
-                                )
-                              ],
+                            decoration:  BoxDecoration(
+                              boxShadow: boxShadowWidget,
                               color: AppColors.whiteColor,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                               child: Row(
                                 children: [
-                                  const Image(image: AssetImage(AssetsUtils.demoIcon)),
-                                  const Column(
-                                    children: [
-                                      Text('The nearest time for pickup,'),
-                                      Text('tomorrow at 10am'),
-                                    ],
-                                  ),
-                                  Container(
-                                    height: 24.h,
-                                    width: 24.w,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: AppColors.primaryBlue, width: 2),
-                                    ),
+                                  const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
+                                  Expanded(
+                                    flex: 4,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Visibility(
-                                          visible: true,
-                                          child: Container(
-                                            decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
-                                            height: 16.h,
-                                            width: 16.w,
-                                          ),
+                                        Text(
+                                          'The nearest time for pickup,',
+                                          style: FontUtils.h14(fontColor: AppColors.black),
+                                        ),
+                                        Text(
+                                          'tomorrow at 10am',
+                                          style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
                                         ),
                                       ],
                                     ),
-                                  )
+                                  ),
+                                  const Expanded(
+                                      flex: 1,
+                                      child: CustomRadioButtonWidget(
+                                        value: '1',
+                                        groupValue: 'STORE',
+                                      )
+                                      // Container(
+                                      //   height: 24.h,
+                                      //   width: 24.w,
+                                      //   decoration: BoxDecoration(
+                                      //     shape: BoxShape.circle,
+                                      //     border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                      //   ),
+                                      //   child: Column(
+                                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                                      //     mainAxisAlignment: MainAxisAlignment.center,
+                                      //     children: [
+                                      //       Visibility(
+                                      //         visible: true,
+                                      //         child: Container(
+                                      //           decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                                      //           height: 16.h,
+                                      //           width: 16.w,
+                                      //         ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                      )
                                 ],
                               ),
                             ),

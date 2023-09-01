@@ -25,13 +25,15 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
+import 'package:gymeats_mobile/screen/grocery/address/add_delivery_address_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/address/map_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/grocery_search_screen.dart';
-<<<<<<< Updated upstream
-=======
 import 'package:gymeats_mobile/screen/grocery/item_catalog/item_catalog_screen.dart';
->>>>>>> Stashed changes
+import 'package:gymeats_mobile/screen/grocery/payment/add_card_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/payment/payment_card_selection_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
 import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
@@ -67,6 +69,7 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'screen/grocery/address/search_delivery_address_screen.dart';
 import 'screen/grocery/grocery_cart_screen.dart';
 import 'screen/grocery/grocery_item_details.dart';
 import 'screen/grocery/item_catalog/grocery_product_details_screen.dart';
@@ -169,9 +172,18 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/BestMatchRestaurantsScreen',
               page: () => const BestMatchRestaurantsScreen(),
-            ),GetPage(
+            ),
+            GetPage(
               name: '/CheckoutScreen',
               page: () => const CheckoutScreen(),
+            ),
+            GetPage(
+              name: '/PaymentCardSelectionScreen',
+              page: () => const PaymentCardSelectionScreen(),
+            ),
+            GetPage(
+              name: '/AddCardScreen',
+              page: () => const AddCardScreen(),
             ),
             GetPage(
               name: '/DashboardScreen',
@@ -218,8 +230,28 @@ class MyApp extends StatelessWidget {
               page: () => ThirdGymInstructionScreen(),
             ),
             GetPage(
+              name: '/MapAddressScreen',
+              page: () => const MapAddressScreen(),
+            ),
+            GetPage(
+              name: '/SearchDeliveryAddressScreen',
+              page: () => const SearchDeliveryAddressScreen(),
+            ),
+            GetPage(
+              name: '/PaymentSuccessScreen',
+              page: () => const PaymentSuccessScreen(),
+            ),
+            GetPage(
+              name: '/AddDeliveryAddressScreen',
+              page: () => const AddDeliveryAddressScreen(),
+            ),
+            GetPage(
               name: '/FourthGymInstructionScreen',
               page: () => FourthGymInstructionScreen(),
+            ),
+            GetPage(
+              name: '/ItemCatalogScreen',
+              page: () => const ItemCatalogScreen(),
             ),
             GetPage(
               name: '/FiveGymInstructionScreen',

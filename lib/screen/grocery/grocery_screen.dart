@@ -11,6 +11,8 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/clear_all_item_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GroceryPlanScreen extends StatefulWidget {
@@ -58,19 +60,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       color: AppColors.primaryBlue,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.keyboard_arrow_left_outlined, size: 30),
                         Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                        Opacity(
-                          opacity: 0,
-                          child: Image.asset(
-                            AssetsUtils.filter,
-                            height: 20.h,
-                            width: 20.w,
-                            color: AppColors.darkGray,
-                          ),
-                        )
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
@@ -78,17 +70,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Container(
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xffDDDDDD),
-                              blurRadius: 0.5,
-                              spreadRadius: 2.0,
-                              offset: Offset(0.0, 0.0),
-                            )
-                          ],
+                          borderRadius: const BorderRadius.all(Radius.circular(12)),
+                          boxShadow: boxShadowWidget,
                         ),
                         child: TextFormField(
                           onTap: () {

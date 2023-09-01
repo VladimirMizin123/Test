@@ -6,6 +6,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 class GroceryCartScreen extends StatefulWidget {
   const GroceryCartScreen({super.key});
@@ -33,7 +35,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.keyboard_arrow_left_outlined, size: 30),
+                const BackButtonWidget(),
                 Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                 Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
               ],
@@ -72,17 +74,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration:  BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xffDDDDDD),
-                      blurRadius: 0.5,
-                      spreadRadius: 2.0,
-                      offset: Offset(0.0, 0.0),
-                    )
-                  ],
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  boxShadow: boxShadowWidget,
                 ),
                 child: TextFormField(
                   onTap: () {},
@@ -144,15 +139,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             SizedBox(height: 10.h),
             Expanded(
               child: SingleChildScrollView(
-<<<<<<< Updated upstream
-                  child: Column(
-                children: [
-                  myItemChooseWidget(screenSize, 'Almond Milk', () {}),
-                  myItemChooseWidget(screenSize, 'Mushrooms', () {}),
-                  myItemChooseWidget(screenSize, 'Potatoes', () {}),
-                  myItemChooseWidget(screenSize, 'Tomatoes', () {}),
-                ],
-=======
                   child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
@@ -274,7 +260,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     myItemChooseWidget(screenSize, 'Tomatoes', () {}),
                   ],
                 ),
->>>>>>> Stashed changes
               )),
             ),
             Container(

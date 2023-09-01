@@ -513,6 +513,7 @@ Widget simpleTextBorderButton({
   VoidCallback? onTap,
   bool isLoadingWidget = false,
   Color? color,
+  Color? lableColor,
 }) {
   final screenSize = MediaQuery.of(context!).size;
   return GestureDetector(
@@ -524,7 +525,7 @@ Widget simpleTextBorderButton({
         width: width ?? screenSize.width * 0.41,
         decoration: isFillColor ? BoxDecoration(border: Border.all(color: color ?? AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: color??
          AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(10)),
-        child: Center(child: isLoadingWidget ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
+        child: Center(child: isLoadingWidget ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: lableColor??  AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: lableColor ??  AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
       ),
     ),
   );

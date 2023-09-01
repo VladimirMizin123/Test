@@ -6,6 +6,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/item_catalog/bottomsheet/item_catalog_filter_bottomsheet.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 
@@ -28,7 +30,7 @@ class ItemCatalogScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.keyboard_arrow_left_outlined, size: 30),
+                const BackButtonWidget(),
                 Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                 Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
               ],
@@ -77,17 +79,10 @@ class ItemCatalogScreen extends StatelessWidget {
                       Get.toNamed('/GroceryProductDetails');
                     },
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xffDDDDDD),
-                            blurRadius: 0.2,
-                            spreadRadius: 2.0,
-                            offset: Offset(0.0, 0.0),
-                          )
-                        ],
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        boxShadow: boxShadowWidget,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -130,8 +125,6 @@ class ItemCatalogScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                      
-
                               Container(
                                 height: size.height * 0.065,
                                 width: size.height * 0.065,
