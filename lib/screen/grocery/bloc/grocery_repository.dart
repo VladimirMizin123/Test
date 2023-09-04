@@ -29,7 +29,7 @@ class GroceryRepository {
 
   Future<Either<ErrorModel, GetGroceryShoppingListModel>> fetchGroceryShoppingList() async {
     // String apiURL = '${ApiUrls.getAllItemFromShoppingList}?userId=$userID';
-    String apiURL = '${ApiUrls.getAllItemFromShoppingList}?userId=2b85411b-3c0c-424b-98e0-6534a5216726';
+    String apiURL = '${ApiUrls.getShoppingList}/2b85411b-3c0c-424b-98e0-6534a5216726';
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);
     // log(response.body, name: 'API RESPONSE :');

@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:http/http.dart' as http;
-import '../app/sharedPrefrence.dart';
+
 import 'api_exception.dart';
 import 'api_urls.dart';
 
@@ -29,7 +29,7 @@ class ApiServices {
       }
       log(url,name: 'API URL');
       final response = await http.get(Uri.parse(url), headers: headers);
-      debugPrint("get response--> ${response.body}");
+      log("get response--> ${response.body}");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

@@ -12,7 +12,7 @@ class GetGroceryShoppingListModel {
   final bool? success;
   final dynamic message;
   final dynamic errorMessage;
-  final Data? data;
+  final List<GroceryShoppingData>? data;
 
   GetGroceryShoppingListModel({
     this.success,
@@ -25,103 +25,101 @@ class GetGroceryShoppingListModel {
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ? [] : List<GroceryShoppingData>.from(json["data"]!.map((x) => GroceryShoppingData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
         "errorMessage": errorMessage,
-        "data": data?.toJson(),
+        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 }
 
-class Data {
-  final ShoppingListAggregate? shoppingListAggregate;
-
-  Data({
-    this.shoppingListAggregate,
-  });
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        shoppingListAggregate: json["shoppingListAggregate"] == null ? null : ShoppingListAggregate.fromJson(json["shoppingListAggregate"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "shoppingListAggregate": shoppingListAggregate?.toJson(),
-      };
-}
-
-class ShoppingListAggregate {
-  final List<Edge>? edges;
-
-  ShoppingListAggregate({
-    this.edges,
-  });
-
-  factory ShoppingListAggregate.fromJson(Map<String, dynamic> json) => ShoppingListAggregate(
-        edges: json["edges"] == null ? [] : List<Edge>.from(json["edges"]!.map((x) => Edge.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "edges": edges == null ? [] : List<dynamic>.from(edges!.map((x) => x.toJson())),
-      };
-}
-
-class Edge {
-  final Node? node;
-
-  Edge({
-    this.node,
-  });
-
-  factory Edge.fromJson(Map<String, dynamic> json) => Edge(
-        node: json["node"] == null ? null : Node.fromJson(json["node"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "node": node?.toJson(),
-      };
-}
-
-class Node {
-  final String? databaseId;
-  final String? ingredient;
-  final String? aisleName;
+class GroceryShoppingData {
+  final String? userId;
+  final String? productId;
+  final String? productName;
   final int? quantity;
-  final String? unit;
-  final double? grams;
-  final bool? isDone;
-  bool isLoadingAddItem;
+  final int? price;
+  final double? unitSize;
+  final String? unitOfMeasurement;
+  final String? recipeId;
+  final String? mealmeStoreId;
+  final bool? isChecked;
+  final String? id;
+  final dynamic createdBy;
+  final DateTime? createdOn;
+  final dynamic updatedBy;
+  final dynamic updatedOn;
+  final bool? isActive;
+  final bool? isDeleted;
+  final dynamic userCreatedBy;
+  final dynamic userUpdatedBy;
 
-  Node({
-    this.databaseId,
-    this.ingredient,
-    this.aisleName,
+  GroceryShoppingData({
+    this.userId,
+    this.productId,
+    this.productName,
     this.quantity,
-    this.unit,
-    this.grams,
-    this.isDone,
-    this.isLoadingAddItem = false,
+    this.price,
+    this.unitSize,
+    this.unitOfMeasurement,
+    this.recipeId,
+    this.mealmeStoreId,
+    this.isChecked,
+    this.id,
+    this.createdBy,
+    this.createdOn,
+    this.updatedBy,
+    this.updatedOn,
+    this.isActive,
+    this.isDeleted,
+    this.userCreatedBy,
+    this.userUpdatedBy,
   });
 
-  factory Node.fromJson(Map<String, dynamic> json) => Node(
-        databaseId: json["databaseId"],
-        ingredient: json["ingredient"],
-        aisleName: json["aisleName"],
+  factory GroceryShoppingData.fromJson(Map<String, dynamic> json) => GroceryShoppingData(
+        userId: json["userId"],
+        productId: json["productId"],
+        productName: json["productName"],
         quantity: json["quantity"],
-        unit: json["unit"],
-        grams: json["grams"]?.toDouble(),
-        isDone: json["isDone"],
+        price: json["price"],
+        unitSize: json["unitSize"]?.toDouble(),
+        unitOfMeasurement: json["unitOfMeasurement"],
+        recipeId: json["recipeId"],
+        mealmeStoreId: json["mealmeStoreId"],
+        isChecked: json["isChecked"],
+        id: json["id"],
+        createdBy: json["createdBy"],
+        createdOn: json["createdOn"] == null ? null : DateTime.parse(json["createdOn"]),
+        updatedBy: json["updatedBy"],
+        updatedOn: json["updatedOn"],
+        isActive: json["isActive"],
+        isDeleted: json["isDeleted"],
+        userCreatedBy: json["userCreatedBy"],
+        userUpdatedBy: json["userUpdatedBy"],
       );
 
   Map<String, dynamic> toJson() => {
-        "databaseId": databaseId,
-        "ingredient": ingredient,
-        "aisleName": aisleName,
+        "userId": userId,
+        "productId": productId,
+        "productName": productName,
         "quantity": quantity,
-        "unit": unit,
-        "grams": grams,
-        "isDone": isDone,
+        "price": price,
+        "unitSize": unitSize,
+        "unitOfMeasurement": unitOfMeasurement,
+        "recipeId": recipeId,
+        "mealmeStoreId": mealmeStoreId,
+        "isChecked": isChecked,
+        "id": id,
+        "createdBy": createdBy,
+        "createdOn": createdOn?.toIso8601String(),
+        "updatedBy": updatedBy,
+        "updatedOn": updatedOn,
+        "isActive": isActive,
+        "isDeleted": isDeleted,
+        "userCreatedBy": userCreatedBy,
+        "userUpdatedBy": userUpdatedBy,
       };
 }

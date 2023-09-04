@@ -30,7 +30,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
   List<String> dList = [];
   GroceryBloc groceryBloc = GroceryBloc();
-  List<Edge> edgesList = [];
+  List<GroceryShoppingData> edgesList = [];
 
   bool isGroceryFetchLoadingState = true;
 
@@ -58,23 +58,23 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               isGroceryFetchLoadingState = false;
             }
 
-            if (state is GroceryAddToShoppingLoadingState) {
-              for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].node!.databaseId == state.databaseIdOfRecipes) {
-                  edgesList[i].node!.isLoadingAddItem = true;
-                  break;
-                }
-              }
-            }
+            // if (state is GroceryAddToShoppingLoadingState) {
+            //   for (var i = 0; i < edgesList.length; i++) {
+            //     if (edgesList[i].node!.databaseId == state.databaseIdOfRecipes) {
+            //       edgesList[i].node!.isLoadingAddItem = true;
+            //       break;
+            //     }
+            //   }
+            // }
 
-            if (state is GroceryAddToShoppingSuccessState) {
-              for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].node!.databaseId == state.productID) {
-                  edgesList[i].node!.isLoadingAddItem = false;
-                  break;
-                }
-              }
-            }
+            // if (state is GroceryAddToShoppingSuccessState) {
+            //   for (var i = 0; i < edgesList.length; i++) {
+            //     if (edgesList[i].node!.databaseId == state.productID) {
+            //       edgesList[i].node!.isLoadingAddItem = false;
+            //       break;
+            //     }
+            //   }
+            // }
           },
           builder: (context, state) {
             return SafeArea(
@@ -246,21 +246,27 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      showModalBottomSheet(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return ClearAllItemBottomSheet(
-                                                            bloc: groceryBloc,
+                                                  Expanded(
+                                                    child: SingleChildScrollView(
+                                                      scrollDirection: Axis.horizontal,
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          showModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) {
+                                                              return ClearAllItemBottomSheet(
+                                                                bloc: groceryBloc,
+                                                              );
+                                                            },
+                                                            isDismissible: false,
                                                           );
                                                         },
-                                                        isDismissible: false,
-                                                      );
-                                                    },
-                                                    child: Text(
-                                                      edgesList[index].node!.ingredient ?? '',
-                                                      style: FontUtils.h16(fontColor: AppColors.black),
+                                                        child: Text(
+                                                          edgesList[index].productName ?? '',
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: FontUtils.h16(fontColor: AppColors.black),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
@@ -311,16 +317,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                 SizedBox(width: 8.w),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    groceryBloc.add(GroceryAddToShoppingListEvent(
-                                                      mealmeStoreId: '',
-                                                      price: '',
-                                                      productID: '',
-                                                      productName: '',
-                                                      quantity: '',
-                                                      recipeId: '',
-                                                      unitOfMeasurement: '',
-                                                      unitSize: '',
-                                                    ));
+                                                    // groceryBloc.add(GroceryAddToShoppingListEvent(
+                                                    //   mealmeStoreId: '',
+                                                    //   price: '',
+                                                    //   productID: '',
+                                                    //   productName: '',
+                                                    //   quantity: '',
+                                                    //   recipeId: '',
+                                                    //   unitOfMeasurement: '',
+                                                    //   unitSize: '',
+                                                    // ));
                                                   },
                                                   child: Container(
                                                     height: size.height * 0.070,
@@ -329,8 +335,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                       borderRadius: BorderRadius.circular(6),
                                                       color: AppColors.skyBlue,
                                                     ),
-                                                    child: Center(
-                                                      child: edgesList[index].node!.isLoadingAddItem ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : const Icon(Icons.add, size: 27),
+                                                    child: const Center(
+                                                      child:
+                                                          // edgesList[index].node!.isLoadingAddItem ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) :
+                                                          Icon(Icons.add, size: 27),
                                                     ),
                                                   ),
                                                 ),
@@ -351,6 +359,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     GroceryAddButtonWidget(
                       onTap: () {
                         Get.toNamed('/GroceryCartScreen');
+                        // PreferenceUtils.clearPrefs();
+                        // Get.offAllNamed('/LoginScreen');
                       },
                       buttonLable: 'View Cart',
                       isFillColor: false,
@@ -363,6 +373,5 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
     );
   }
 }
-
 
 // UPDATE

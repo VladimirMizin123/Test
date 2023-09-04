@@ -9,7 +9,7 @@ class InitialState extends GroceryState {}
 class GroceryFetchLoadingState extends GroceryState {}
 
 class GroceryFetchSuccessState extends GroceryState {
-  final List<Edge>? edgesList;
+  final List<GroceryShoppingData>? edgesList;
 
   GroceryFetchSuccessState({this.edgesList});
 }

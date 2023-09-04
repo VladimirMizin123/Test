@@ -36,7 +36,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
       await _repository.fetchGroceryShoppingList().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryFetchSuccessState(edgesList: right.data == null ? [] : right.data!.shoppingListAggregate!.edges));
+        emit(GroceryFetchSuccessState(edgesList: right.data == null ? [] : right.data!));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
