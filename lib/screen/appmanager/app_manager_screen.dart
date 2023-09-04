@@ -8,12 +8,9 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/grocery_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../app/sharedPrefrence.dart';
-import '../journal/journal_screen.dart';
+import '../grocery/screen/grocery_screen.dart';
 
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
@@ -120,7 +117,7 @@ class _AppManagerScreenState extends State<AppManagerScreen>
               MaterialButton(
                 onPressed: () {
                   PreferenceUtils.clearPrefs();
-                  Get.toNamed('/LoginScreen');
+                  Get.offAndToNamed('/LoginScreen');
                 },
                 child: Text('LOGOUT'),
               )

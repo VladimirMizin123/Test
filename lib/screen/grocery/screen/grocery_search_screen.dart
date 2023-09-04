@@ -40,7 +40,7 @@ class GrocerySearchScreen extends StatelessWidget {
                   ),
                 )
               ],
-            ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+            ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             SizedBox(height: 15.h),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),

@@ -51,7 +51,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                   ),
                 )
               ],
-            ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
+            ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(

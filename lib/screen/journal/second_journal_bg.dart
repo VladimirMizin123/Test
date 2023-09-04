@@ -35,15 +35,9 @@ class SecondJournalBGView extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Sabrina',
-                        style:
-                            textTheme.bodyLarge?.copyWith(color: Colors.white)),
-                    Text('31 years old',
-                        style:
-                            textTheme.bodyLarge?.copyWith(color: Colors.white)),
-                    Text('27 lbs lost',
-                        style:
-                            textTheme.bodyLarge?.copyWith(color: Colors.white)),
+                    Text('Sabrina', style: textTheme.bodyLarge?.copyWith(color: Colors.white)),
+                    Text('31 years old', style: textTheme.bodyLarge?.copyWith(color: Colors.white)),
+                    Text('27 lbs lost', style: textTheme.bodyLarge?.copyWith(color: Colors.white)),
                   ],
                 ).paddingOnly(top: 48.h, left: 20.w),
                 Container(
@@ -58,8 +52,7 @@ class SecondJournalBGView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       StringUtils.skip,
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: Colors.white),
+                      style: textTheme.headlineSmall?.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
@@ -73,14 +66,12 @@ class SecondJournalBGView extends StatelessWidget {
                     Text(
                       StringUtils.journalText2,
                       textAlign: TextAlign.center,
-                      style: textTheme.displayMedium?.copyWith(
-                          color: AppColors.terracottaPressed, height: 1.2),
+                      style: textTheme.displayMedium?.copyWith(color: AppColors.terracottaPressed, height: 1.2),
                     ).paddingSymmetric(horizontal: 5.w),
                     Text(
                       StringUtils.journalText3,
-                      style: textTheme.displayMedium
-                          ?.copyWith(color: AppColors.terracottaPressed),
-                    ).paddingSymmetric(vertical: 5.h),
+                      style: textTheme.displayMedium?.copyWith(color: AppColors.terracottaPressed),
+                    ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Image.asset(
                       AssetsUtils.gymEatsSpoon,
                       height: 36.h,
