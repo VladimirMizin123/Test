@@ -38,6 +38,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      groceryBloc.add(AddGroceryToShoppingListFromSuggesticEvent(latitude: '44718980.05717322', longitude: '44718980.05717322'));
       groceryBloc.add(GroceryFetchEvent());
     });
   }
@@ -68,7 +69,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
             if (state is GroceryAddToShoppingSuccessState) {
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].node!.databaseId == state.databaseIdOfRecipes) {
+                if (edgesList[i].node!.databaseId == state.productID) {
                   edgesList[i].node!.isLoadingAddItem = false;
                   break;
                 }
@@ -310,7 +311,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                 SizedBox(width: 8.w),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    groceryBloc.add(GroceryAddToShoppingListEvent(databaseIdOfRecipes: edgesList[index].node!.databaseId));
+                                                    groceryBloc.add(GroceryAddToShoppingListEvent(
+                                                      mealmeStoreId: '',
+                                                      price: '',
+                                                      productID: '',
+                                                      productName: '',
+                                                      quantity: '',
+                                                      recipeId: '',
+                                                      unitOfMeasurement: '',
+                                                      unitSize: '',
+                                                    ));
                                                   },
                                                   child: Container(
                                                     height: size.height * 0.070,

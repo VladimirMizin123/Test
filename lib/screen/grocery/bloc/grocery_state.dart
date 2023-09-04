@@ -26,11 +26,23 @@ class GroceryAddToShoppingLoadingState extends GroceryState {
 
 class GroceryAddToShoppingSuccessState extends GroceryState {
   final bool isAdded;
-  final String? databaseIdOfRecipes;
+  final String? productID;
 
-
-  GroceryAddToShoppingSuccessState({this.isAdded = false,
-    this.databaseIdOfRecipes});
+  GroceryAddToShoppingSuccessState({this.isAdded = false, this.productID});
 }
 
 class GroceryAddToShoppingErrorState extends GroceryState {}
+
+/// Add Grocery To Shopping List From Suggestic
+
+class AddGroceryToShoppingListFromSuggesticLoadingState extends GroceryState {
+  AddGroceryToShoppingListFromSuggesticLoadingState();
+}
+
+class AddGroceryToShoppingListFromSuggesticSuccessState extends GroceryState {
+  final bool isAdded;
+
+  AddGroceryToShoppingListFromSuggesticSuccessState({this.isAdded = false});
+}
+
+class AddGroceryToShoppingListFromSuggesticErrorState extends GroceryState {}
