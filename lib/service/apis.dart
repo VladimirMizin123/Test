@@ -29,7 +29,7 @@ class ApiServices {
       }
       log(url,name: 'API URL');
       final response = await http.get(Uri.parse(url), headers: headers);
-      log(response.body,name: 'API RESPONSE');
+      debugPrint("get response--> ${response.body}");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

@@ -28,6 +28,13 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   AddExerciseBloc bloc = AddExerciseBloc();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    entryController.text = Get.arguments;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
@@ -40,10 +47,13 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.arrow_back_ios,
-                  size: 25.sp,
-                  color: AppColors.darkGray,
+                InkWell(
+                  onTap: ()=>Get.back(),
+                  child: Icon(
+                    Icons.arrow_back_ios,
+                    size: 25.sp,
+                    color: AppColors.darkGray,
+                  ),
                 ),
                 Text(
                   StringUtils.addEntry,
