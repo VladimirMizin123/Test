@@ -21,9 +21,9 @@ class AddWaterScreen extends StatefulWidget {
 
 class _AddWaterScreenState extends State<AddWaterScreen> {
   final routeName = '/add-water-screen';
-  final waterController = TextEditingController();
+  final waterController = TextEditingController(text: Get.arguments[1] != null ? Get.arguments[1].toString() : "");
 
-  String dailyGoal = Get.arguments as String;
+  String dailyGoal = Get.arguments[0].toString();
 
   AddWaterBloc bloc = AddWaterBloc();
 

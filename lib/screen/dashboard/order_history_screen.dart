@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'oder_history_item.dart';
 
@@ -19,7 +20,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () =>Get.back(),
           icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,

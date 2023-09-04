@@ -113,7 +113,8 @@ class _AppManagerScreenState extends State<AppManagerScreen>
       case 3:
         return Container();
       case 4:
-        return Container(
+        return const JournalScreen();
+        /*return Container(
           child: SafeArea(
             child: Column(children: [
               MaterialButton(
@@ -125,7 +126,7 @@ class _AppManagerScreenState extends State<AppManagerScreen>
               )
             ]),
           ),
-        );
+        );*/
       default:
     }
   }

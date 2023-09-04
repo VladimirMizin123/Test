@@ -53,7 +53,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
             Icons.arrow_back_ios,
             color: AppColors.darkGray,
           ),
-          onPressed: () {},
+          onPressed: () =>Get.back(),
         ),
         title: Text(
           StringUtils.addExercise,
@@ -126,12 +126,17 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
                           final String titleText = filteredExerciseList[index];
                           return Column(
                             children: [
-                              ListTile(
-                                title: Text(titleText),
-                                trailing: Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 15.h,
-                                  color: const Color(0xFF010101),
+                              InkWell(
+                                onTap: (){
+                                  Get.toNamed("/AddEntryScreen",arguments: titleText)!.then((value) => Get.back());
+                                },
+                                child: ListTile(
+                                  title: Text(titleText),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 15.h,
+                                    color: const Color(0xFF010101),
+                                  ),
                                 ),
                               ),
                               Divider(height: 2.h, color: AppColors.disable),

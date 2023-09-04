@@ -29,7 +29,9 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           showToast(isSuccess: true, message: right.message!);
-          PreferenceUtils.setInt(prefWaterML, int.parse(event.waterML));
+          int waterML = PreferenceUtils.getInt(prefWaterML);
+          waterML = waterML + int.parse(event.waterML);
+          PreferenceUtils.setInt(prefWaterML, waterML);
           emit(AddWaterSuccessfulState());
           Get.back(result: event.waterML);
         });
