@@ -19,6 +19,11 @@ class LoadGenMealData extends GetUserJournalState{
   LoadGenMealData({ required this.genMealDataList});
 }
 
+class LoadMealTrackData extends GetUserJournalState{
+  List<TrackerData> mealTrackDataList;
+  LoadMealTrackData({ required this.mealTrackDataList});
+}
+
 class LoadExerciseData extends GetUserJournalState{
   ExerciseData? data;
   LoadExerciseData({ required this.data});

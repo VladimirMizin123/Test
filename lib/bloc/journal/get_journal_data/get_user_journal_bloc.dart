@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
 import '../../../models/fetch_meal_plan_model.dart';
@@ -47,6 +48,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
   }
 
   List<MealData> dataList = [];
+  List<TrackerData> mealTrackerList = [];
 
   _onGenMealTrackerData(
       GenMealData event, Emitter<GetUserJournalState> emit) async {
@@ -73,13 +75,13 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       await _trackerDataRepository.getMealTrackerData(date: event.date).fold((left) {
         emit(ErrorGenTrackState());
       }, (right) {
-        dataList.clear();
+        mealTrackerList.clear();
         right.data!.map((e) {
           if(dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == event.date){
-            dataList.add(e.meal!);
+            mealTrackerList.add(e);
           }
         }).toList();
-        emit(LoadGenMealData(genMealDataList: dataList));
+        emit(LoadMealTrackData(mealTrackDataList: mealTrackerList));
       });
     } catch (e) {
       emit(ErrorGenTrackState());
