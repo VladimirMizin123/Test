@@ -7,11 +7,12 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/clear_all_item_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
-import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -28,14 +29,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   String _selectProduct = 'Product 1';
   List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
   List<String> dList = [];
+  GroceryBloc groceryBloc = GroceryBloc();
+  List<Edge> edgesList = [];
 
-  MealPlanBloc mealPlanBloc = MealPlanBloc();
+  bool isGroceryFetchLoadingState = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // bloc.add(MealPlanFetchEvent());
+      groceryBloc.add(GroceryFetchEvent());
     });
   }
 
@@ -43,9 +46,35 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
-          bloc: mealPlanBloc,
-          listener: (context, state) {},
+      body: BlocConsumer<GroceryBloc, GroceryState>(
+          bloc: groceryBloc,
+          listener: (context, state) {
+            if (state is GroceryFetchLoadingState) {
+              isGroceryFetchLoadingState = true;
+            }
+            if (state is GroceryFetchSuccessState) {
+              edgesList = state.edgesList ?? [];
+              isGroceryFetchLoadingState = false;
+            }
+
+            if (state is GroceryAddToShoppingLoadingState) {
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].node!.databaseId == state.databaseIdOfRecipes) {
+                  edgesList[i].node!.isLoadingAddItem = true;
+                  break;
+                }
+              }
+            }
+
+            if (state is GroceryAddToShoppingSuccessState) {
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].node!.databaseId == state.databaseIdOfRecipes) {
+                  edgesList[i].node!.isLoadingAddItem = false;
+                  break;
+                }
+              }
+            }
+          },
           builder: (context, state) {
             return SafeArea(
               child: SizedBox(
@@ -66,7 +95,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    Text(state is FetchMealPlanSuccessState ? StringUtils.regenerateGroceryList : 'Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    Text(state is GroceryFetchSuccessState ? StringUtils.regenerateGroceryList : 'Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Container(
@@ -93,95 +122,97 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     ),
                     SizedBox(height: 15.h),
                     Expanded(
-                      child: dList.isNotEmpty
-                          ? SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: ListView.builder(
-                                itemCount: 10,
-                                shrinkWrap: true,
-                                padding: EdgeInsets.zero,
-                                scrollDirection: Axis.vertical,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                                    child: Shimmer.fromColors(
-                                        baseColor: AppColors.disable.withOpacity(0.20),
-                                        highlightColor: AppColors.disable.withOpacity(0.20),
-                                        child: Column(
-                                          children: [
-                                            Row(
+                      child: edgesList.isEmpty
+                          ? isGroceryFetchLoadingState
+                              ? SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: ListView.builder(
+                                    itemCount: 10,
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.zero,
+                                    scrollDirection: Axis.vertical,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                                        child: Shimmer.fromColors(
+                                            baseColor: AppColors.disable.withOpacity(0.20),
+                                            highlightColor: AppColors.disable.withOpacity(0.20),
+                                            child: Column(
                                               children: [
-                                                Container(
-                                                  height: 40,
-                                                  width: 40,
-                                                  decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 40,
+                                                      width: 40,
+                                                      decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                    ),
+                                                    const SizedBox(width: 20),
+                                                    Container(
+                                                      height: 40,
+                                                      width: 120,
+                                                      decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                    ),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 20),
-                                                Container(
-                                                  height: 40,
-                                                  width: 120,
-                                                  decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                const SizedBox(height: 7),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 4,
+                                                      child: Container(
+                                                        height: 50,
+                                                        decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 20),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        height: 50,
+                                                        decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 20),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        height: 50,
+                                                        decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 20),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        height: 50,
+                                                        decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
+                                                const SizedBox(height: 10),
+                                                const Divider(color: AppColors.disable, thickness: 1.2),
                                               ],
-                                            ),
-                                            const SizedBox(height: 7),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Container(
-                                                    height: 50,
-                                                    decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 20),
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Container(
-                                                    height: 50,
-                                                    decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 20),
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Container(
-                                                    height: 50,
-                                                    decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 20),
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Container(
-                                                    height: 50,
-                                                    decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 10),
-                                            const Divider(color: AppColors.disable, thickness: 1.2),
-                                          ],
-                                        )),
-                                  );
-                                },
-                              ),
-                            )
-                          // Column(
-                          //     children: [
-                          //       SvgPicture.asset(AssetsUtils.emptyShoppingListIcon),
-                          //       Text(
-                          //         'Your Grocery List is empty.\nPlease, search for an Item\nor check your Meal Plan.',
-                          //         style: FontUtils.h14(fontWeight: FWT.regular),
-                          //       ),
-                          //     ],
-                          //   )
+                                            )),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    SvgPicture.asset(AssetsUtils.emptyShoppingListIcon),
+                                    Text(
+                                      'Your Grocery List is empty.\nPlease, search for an Item\nor check your Meal Plan.',
+                                      textAlign: TextAlign.center,
+                                      style: FontUtils.h14(fontWeight: FWT.regular),
+                                    ),
+                                  ],
+                                )
                           : SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
                               child: ListView.builder(
-                                itemCount: 10,
+                                itemCount: edgesList.length,
                                 shrinkWrap: true,
                                 scrollDirection: Axis.vertical,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -220,14 +251,14 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                         context: context,
                                                         builder: (context) {
                                                           return ClearAllItemBottomSheet(
-                                                            bloc: mealPlanBloc,
+                                                            bloc: groceryBloc,
                                                           );
                                                         },
                                                         isDismissible: false,
                                                       );
                                                     },
                                                     child: Text(
-                                                      'almond milk',
+                                                      edgesList[index].node!.ingredient ?? '',
                                                       style: FontUtils.h16(fontColor: AppColors.black),
                                                     ),
                                                   ),
@@ -277,14 +308,21 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                   )),
                                                 ),
                                                 SizedBox(width: 8.w),
-                                                Container(
-                                                  height: size.height * 0.070,
-                                                  width: size.height * 0.070,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(6),
-                                                    color: AppColors.skyBlue,
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    groceryBloc.add(GroceryAddToShoppingListEvent(databaseIdOfRecipes: edgesList[index].node!.databaseId));
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.070,
+                                                    width: size.height * 0.070,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(6),
+                                                      color: AppColors.skyBlue,
+                                                    ),
+                                                    child: Center(
+                                                      child: edgesList[index].node!.isLoadingAddItem ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : const Icon(Icons.add, size: 27),
+                                                    ),
                                                   ),
-                                                  child: const Center(child: Icon(Icons.add, size: 27)),
                                                 ),
                                               ],
                                             ),

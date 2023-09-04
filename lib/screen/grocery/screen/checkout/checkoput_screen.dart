@@ -10,7 +10,7 @@ import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:gymeats_mobile/widget/divider_widget.dart';
 
-import '../../../constant/asset_utils.dart';
+import '../../../../constant/asset_utils.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});

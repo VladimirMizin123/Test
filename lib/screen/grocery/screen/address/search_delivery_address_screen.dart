@@ -7,8 +7,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
-import '../../../constant/color_utils.dart';
-import '../../../constant/font_utils.dart';
+import '../../../../constant/color_utils.dart';
+import '../../../../constant/font_utils.dart';
 
 class SearchDeliveryAddressScreen extends StatefulWidget {
   const SearchDeliveryAddressScreen({super.key});

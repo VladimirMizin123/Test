@@ -6,7 +6,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 
-import '../../../constant/font_utils.dart';
+import '../../../../constant/font_utils.dart';
 
 class AddDeliveryAddressScreen extends StatefulWidget {
   const AddDeliveryAddressScreen({super.key});
