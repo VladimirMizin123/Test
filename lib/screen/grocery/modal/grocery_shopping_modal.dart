@@ -54,6 +54,9 @@ class GroceryShoppingData {
   final dynamic updatedOn;
   final bool? isActive;
   final bool? isDeleted;
+  bool? isAddItem;
+  bool? isRemoveItem;
+  bool? isDeleteLoading;
   final dynamic userCreatedBy;
   final dynamic userUpdatedBy;
 
@@ -75,6 +78,9 @@ class GroceryShoppingData {
     this.updatedOn,
     this.isActive,
     this.isDeleted,
+    this.isAddItem = false,
+    this.isRemoveItem = false,
+    this.isDeleteLoading = false,
     this.userCreatedBy,
     this.userUpdatedBy,
   });

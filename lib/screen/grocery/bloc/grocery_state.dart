@@ -19,16 +19,24 @@ class GroceryErrorState extends GroceryState {}
 /// Grocery Add To Shopping List
 
 class GroceryAddToShoppingLoadingState extends GroceryState {
-  final String? databaseIdOfRecipes;
+  final String? productId;
+  final bool isAdd;
+  final bool isRemove;
 
-  GroceryAddToShoppingLoadingState({this.databaseIdOfRecipes});
+  GroceryAddToShoppingLoadingState({
+    this.productId,
+    this.isAdd = false,
+    this.isRemove = false,
+  });
 }
 
 class GroceryAddToShoppingSuccessState extends GroceryState {
   final bool isAdded;
   final String? productID;
+  final bool? isAdd;
+  final bool? isRemove;
 
-  GroceryAddToShoppingSuccessState({this.isAdded = false, this.productID});
+  GroceryAddToShoppingSuccessState({this.isAdded = false, this.productID, this.isAdd, this.isRemove});
 }
 
 class GroceryAddToShoppingErrorState extends GroceryState {}
@@ -46,3 +54,26 @@ class AddGroceryToShoppingListFromSuggesticSuccessState extends GroceryState {
 }
 
 class AddGroceryToShoppingListFromSuggesticErrorState extends GroceryState {}
+
+/// Remove Grocery Item
+
+class RemoveGroceryLoadingState extends GroceryState {
+  final String? productId;
+
+  RemoveGroceryLoadingState({
+    this.productId,
+  });
+}
+
+class RemoveGrocerySuccessState extends GroceryState {
+  final String? productID;
+  final bool? isDelete;
+
+  RemoveGrocerySuccessState({required this.productID, required this.isDelete});
+}
+
+class RemoveGroceryErrorState extends GroceryState {
+  final String? productID;
+
+  RemoveGroceryErrorState({required this.productID});
+}

@@ -10,6 +10,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<AddGroceryToShoppingListFromSuggesticEvent>(_onAddGroceryToShoppingListFromSuggestic);
     on<GroceryFetchEvent>(_onFetchGroceryItem);
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
+    on<RemoveGroceryEvent>(_onRemoveShoppingItem);
   }
 
   final GroceryRepository _repository = GroceryRepository();
@@ -45,17 +46,33 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   }
 
   _onAddToShoppingList(GroceryAddToShoppingListEvent event, Emitter<GroceryState> emit) async {
-    emit(GroceryAddToShoppingLoadingState(databaseIdOfRecipes: event.productID));
+    emit(GroceryAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
 
     try {
       await _repository.recipeAddToGrocery(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, unitSize: event.unitSize).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, productID: event.productID));
+        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, productID: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GroceryAddToShoppingErrorState());
+    }
+  }
+
+  _onRemoveShoppingItem(RemoveGroceryEvent event, Emitter<GroceryState> emit) async {
+    emit(RemoveGroceryLoadingState(productId: event.productID));
+
+    try {
+      await _repository.removeGrocery(productID: event.productID!).fold((left) {
+      emit(RemoveGroceryErrorState(productID: event.productID));
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(RemoveGrocerySuccessState(productID: event.productID, isDelete: right.success));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(RemoveGroceryErrorState(productID: event.productID));
     }
   }
 

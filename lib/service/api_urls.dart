@@ -19,6 +19,7 @@ class ApiUrls {
   static const String addGroceryToShoppingListFromSuggestic = '${baseUrl}api/MealMe/AddGroceryToShoppingListFromSuggestic';
   static const String getShoppingList = '${baseUrl}api/ShoppingList/GetShoppingList';
   static const String addItemShoppingList = '${baseUrl}api/ShoppingList/AddItemShoppingList';
+  static const String removeProduct = '${baseUrl}api/ShoppingList/RemoveProduct';
 
   //For dashboard use apis
   static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';
