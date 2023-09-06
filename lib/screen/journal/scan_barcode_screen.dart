@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:torch_light/torch_light.dart';
@@ -23,6 +24,9 @@ class ScanBarcodeScreen extends StatefulWidget {
 class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
   final routeName = '/ScanBarcodeScreen';
   bool isFlashlightOn = false;
+
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController _qrViewController;
 
   //
   // CameraController? controller;
@@ -65,25 +69,25 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       ),
       body: Column(
         children: [
-          // Expanded(
-          //   child: Container(
-          //     height: 300.h,
-          //     width: 300.w,
-          //     child: QRView(
-          //       overlay: QrScannerOverlayShape(
-          //         borderColor: Colors.white,
-          //         borderRadius: 8.r,
-          //         borderLength: 30.w,
-          //         borderWidth: 10.w,
-          //         cutOutHeight: 300.h,
-          //         cutOutWidth: 300.w,
-          //       ),
-          //       cameraFacing: CameraFacing.front,
-          //       key: _qrKey,
-          //       onQRViewCreated: _onQRViewCreated,
-          //     ),
-          //   ),
-          // ),
+          Expanded(
+            child: Container(
+              height: 300.h,
+              width: 300.w,
+              child: QRView(
+                overlay: QrScannerOverlayShape(
+                  borderColor: Colors.white,
+                  borderRadius: 8.r,
+                  borderLength: 10.w,
+                  borderWidth: 10.w,
+                  cutOutHeight: 300.h,
+                  cutOutWidth: 300.w,
+                ),
+                cameraFacing: CameraFacing.front,
+                key: qrKey,
+                onQRViewCreated: _onQRViewCreated,
+              ),
+            ),
+          ),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,6 +123,21 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       ).paddingOnly(left: 20.w, right: 20.w, bottom: 35.h),
     );
   }
+
+  void _onQRViewCreated(QRViewController controller) {
+    print("Created -> ${controller.hasPermissions}");
+    setState(() {
+      _qrViewController = controller;
+      _qrViewController.resumeCamera();
+    });
+    _qrViewController.scannedDataStream.listen((scanData) {
+      debugPrint('scanData: ${scanData.code}');
+      // widget.onBarcodeFetched(scanData);
+      _qrViewController.dispose();
+      Navigator.of(context).pop();
+    });
+  }
+
 // void _onQRViewCreated(QRViewController controller) {
 //   qrController = controller;
 //   controller.scannedDataStream.listen((scanData) {

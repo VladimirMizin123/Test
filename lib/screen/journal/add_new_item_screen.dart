@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../constant/color_utils.dart';
 
@@ -65,7 +66,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                     context: context,
                     controller: itemNameController,
                     hintText: StringUtils.itemName,
-                  ),
+                  ).paddingOnly(top: 10.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,7 +123,61 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                         ),
                       )
                     ],
-                  )
+                  ).paddingSymmetric(vertical: 10.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      dashBoardCardView(
+                        margin: EdgeInsets.only(right: 4),
+                        child: calciumDataView(
+                          title: 'Cal',
+                          percent: 0.16,
+                          gramCount: '320',
+                          progressColor: AppColors.primaryBlue,
+                          textTheme: textTheme,
+                          totalGram: '2000 cal'
+                        )
+                      ),
+                      dashBoardCardView(
+                          margin: EdgeInsets.only(left: 4),
+                        child: calciumDataView(
+                          title: 'Fat',
+                          percent: 0.77,
+                          gramCount: '100',
+                          progressColor: AppColors.coral,
+                          textTheme: textTheme,
+                          totalGram: '177 g'
+                        )
+                      ),
+                    ],
+                  ).paddingSymmetric(vertical: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      dashBoardCardView(
+                        margin: EdgeInsets.only(right: 4),
+                        child: calciumDataView(
+                            title: 'Carbs',
+                            textTheme: textTheme,
+                            gramCount: '100',
+                            percent: 0.77,
+                            totalGram: '177 g',
+                            progressColor: AppColors.mint
+                        )
+                      ),
+                      dashBoardCardView(
+                          margin: EdgeInsets.only(left: 4),
+                        child: calciumDataView(
+                            title: 'Protein',
+                            textTheme: textTheme,
+                            gramCount: '32',
+                            percent: 0.66,
+                            totalGram: '48 g',
+                            progressColor: AppColors.skyBlue
+                        )
+                      ),
+                    ],
+                  ).paddingSymmetric(vertical: 4),
                 ],
               ).paddingAll(10),
             ),
@@ -138,5 +193,52 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
         ],
       ).paddingSymmetric(horizontal: 20.w),
     );
+  }
+
+  Widget calciumDataView({
+    String? title,
+    String? gramCount,
+    TextTheme? textTheme,
+    String? totalGram,
+    double? percent,
+    Color? progressColor,
+  }) {
+    return Column(
+      children: [
+        Text(
+          title.toString(),
+          style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
+        ),
+        commonProgressbar(
+            progressColor: progressColor,
+            width: 70.w,
+            lineHeight: 8.0,
+            percent: percent ?? 0.5),
+        Text(
+          '$gramCount / $totalGram',
+          style: textTheme?.bodyMedium
+              ?.copyWith(color: AppColors.darkGray, height: 1.7),
+        ),
+        SizedBox(width: 70,child: commonTextField(context: context,hintText: "cal",isPassword: false, controller: TextEditingController())).paddingSymmetric(vertical: 5),
+      ],
+    ).paddingSymmetric(horizontal: 33.w, vertical: 6.h);
+  }
+
+  Widget commonProgressbar(
+      {Color? progressColor,
+        double? width,
+        double? lineHeight,
+        double? percent}) {
+    return LinearPercentIndicator(
+      width: width,
+      barRadius: Radius.circular(10.r),
+      animation: true,
+      lineHeight: lineHeight!,
+      animationDuration: 2000,
+      percent: percent ?? 0.5,
+      center: const Text(""),
+      linearStrokeCap: LinearStrokeCap.round,
+      progressColor: progressColor,
+    ).paddingAll(5);
   }
 }

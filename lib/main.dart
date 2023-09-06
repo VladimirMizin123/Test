@@ -1,6 +1,7 @@
-// import 'package:firebase_core/firebase_core.dart';
 
-// import 'package:camera/camera.dart';
+
+// List<CameraDescription> cameras = [];
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -75,8 +76,8 @@ import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'screen/login/login_screen.dart';
 
-// List<CameraDescription> cameras = [];
 
+// import this all  file
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // cameras = await availableCameras();
@@ -368,6 +369,10 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/AddNewItemScreen',
               page: () => const AddNewItemScreen(),
+            ),
+            GetPage(
+              name: '/MealScreen',
+              page: () => const MealScreen(),
             ),
           ],
         );
