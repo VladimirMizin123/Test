@@ -39,9 +39,9 @@ class ChooseStoreScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Container(
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   boxShadow: boxShadowWidget,
                 ),
                 child: TextFormField(
@@ -70,7 +70,7 @@ class ChooseStoreScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Container(
-                            decoration:  BoxDecoration(
+                            decoration: BoxDecoration(
                               boxShadow: boxShadowWidget,
                               color: AppColors.whiteColor,
                             ),

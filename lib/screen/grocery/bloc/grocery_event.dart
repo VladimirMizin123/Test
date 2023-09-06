@@ -42,3 +42,15 @@ class RemoveGroceryEvent extends GroceryEvent {
 
   RemoveGroceryEvent({required this.productID});
 }
+
+class GrocerySearchEvent extends GroceryEvent {
+  final String? searchValue;
+
+  GrocerySearchEvent({required this.searchValue});
+}
+
+class GroceryDetailsMealInfoEvent extends GroceryEvent {
+  final String? groceryProductName;
+
+  GroceryDetailsMealInfoEvent({required this.groceryProductName});
+}

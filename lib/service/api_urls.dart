@@ -20,6 +20,10 @@ class ApiUrls {
   static const String getShoppingList = '${baseUrl}api/ShoppingList/GetShoppingList';
   static const String addItemShoppingList = '${baseUrl}api/ShoppingList/AddItemShoppingList';
   static const String removeProduct = '${baseUrl}api/ShoppingList/RemoveProduct';
+  static const String productGroceryMultipleSearch = '${baseUrl}api/MealMe/product-groceryMultipleSearch';
+
+  //Nutritionix
+  static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
 
   //For dashboard use apis
   static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';

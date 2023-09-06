@@ -65,6 +65,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                 if (edgesList[i].productId! == state.productId) {
                   edgesList[i].isAddItem = state.isAdd;
                   edgesList[i].isRemoveItem = state.isRemove;
+
                   break;
                 }
               }
@@ -72,9 +73,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
             if (state is GroceryAddToShoppingSuccessState) {
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].productId == state.productID) {
+                if (edgesList[i].productId == state.recipesAddToGroceryData!.productId) {
                   edgesList[i].isAddItem = false;
                   edgesList[i].isRemoveItem = false;
+                  edgesList[i].quantity = state.recipesAddToGroceryData!.quantity;
                   break;
                 }
               }
@@ -338,12 +340,12 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             mealmeStoreId: edgesList[index].mealmeStoreId!,
                                                             price: edgesList[index].price.toString(),
                                                             productName: edgesList[index].productName!,
-                                                            quantity: edgesList[index].quantity.toString(),
+                                                            quantity: (edgesList[index].quantity! - 1).toString(),
                                                             recipeId: edgesList[index].recipeId!,
                                                             unitOfMeasurement: edgesList[index].unitOfMeasurement!,
                                                             unitSize: edgesList[index].unitSize.toString(),
-                                                            isAdd: true,
-                                                            isRemove: false,
+                                                            isAdd: false,
+                                                            isRemove: true,
                                                           ));
                                                         },
                                                         child: Container(
@@ -353,7 +355,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             borderRadius: BorderRadius.circular(6),
                                                             color: AppColors.skyBlue,
                                                           ),
-                                                          child: const Center(child: Icon(Icons.remove, size: 27)),
+                                                          child: Center(
+                                                            child: edgesList[index].isRemoveItem ?? false ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : const Icon(Icons.remove, size: 27),
+                                                          ),
+                                                          // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                         ),
                                                       )
                                                     : GestureDetector(
@@ -386,7 +391,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                       mealmeStoreId: edgesList[index].mealmeStoreId!,
                                                       price: edgesList[index].price.toString(),
                                                       productName: edgesList[index].productName!,
-                                                      quantity: edgesList[index].quantity.toString(),
+                                                      quantity: (edgesList[index].quantity! + 1).toString(),
                                                       recipeId: edgesList[index].recipeId!,
                                                       unitOfMeasurement: edgesList[index].unitOfMeasurement!,
                                                       unitSize: edgesList[index].unitSize.toString(),

@@ -40,7 +40,7 @@ class GroceryShoppingData {
   final String? userId;
   final String? productId;
   final String? productName;
-  final int? quantity;
+  int? quantity;
   final int? price;
   final double? unitSize;
   final String? unitOfMeasurement;

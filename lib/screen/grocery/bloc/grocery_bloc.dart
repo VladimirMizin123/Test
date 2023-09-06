@@ -11,6 +11,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<GroceryFetchEvent>(_onFetchGroceryItem);
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
     on<RemoveGroceryEvent>(_onRemoveShoppingItem);
+    on<GrocerySearchEvent>(_onSearchItem);
+    on<GroceryDetailsMealInfoEvent>(_onGroceryDetailsMealInfo);
   }
 
   final GroceryRepository _repository = GroceryRepository();
@@ -52,7 +54,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
       await _repository.recipeAddToGrocery(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, unitSize: event.unitSize).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, productID: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
+        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData:right.data, isAdd: event.isAdd, isRemove: event.isRemove));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -73,6 +75,38 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(RemoveGroceryErrorState(productID: event.productID));
+    }
+  }
+
+  _onSearchItem(GrocerySearchEvent event, Emitter<GroceryState> emit) async {
+    emit(GrocerySearchLoadingState());
+
+    try {
+      await _repository.grocerySearch(latitude: '37.7786357', longitude: '-122.3918135',searchValue: event.searchValue!,unitMeasurement: 'cup',unitSize: '3').fold((left) {
+        emit(GrocerySearchErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GrocerySearchSuccessState(groceryMultiSearchProductList: right.data!.products));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GrocerySearchErrorState());
+    }
+  }
+
+  _onGroceryDetailsMealInfo(GroceryDetailsMealInfoEvent event, Emitter<GroceryState> emit) async {
+    emit(GroceryNutritionixGetNxMealInfoByNameLoadingState());
+
+    try {
+      await _repository.groceryDetailsMealInfo(productName: event.groceryProductName!).fold((left) {
+        emit(GrocerySearchErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GroceryNutritionixGetNxMealInfoByNameSuccessState(nutritionixGetNxMealInfoByNameModelData:  right.data!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GroceryNutritionixGetNxMealInfoByNameErrorState());
     }
   }
 

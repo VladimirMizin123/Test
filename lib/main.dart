@@ -163,9 +163,11 @@ class MyApp extends StatelessWidget {
               page: () => const GroceryCartScreen(),
             ),
             GetPage(
-              name: '/GroceryItemDetails',
-              page: () => const GroceryItemDetails(),
-            ),
+                name: '/GroceryItemDetails',
+                page: () {
+                  GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
+                  return  GroceryItemDetails(arguments : argument);
+                }),
             GetPage(
               name: '/FoodPreferencesScreen',
               page: () => const FoodPreferencesScreen(),
@@ -369,7 +371,8 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/AddNewItemScreen',
               page: () => const AddNewItemScreen(),
-            ),GetPage(
+            ),
+            GetPage(
               name: '/ProfileScreen',
               page: () => const ProfileScreen(),
             ),

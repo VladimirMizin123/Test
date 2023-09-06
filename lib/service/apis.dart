@@ -60,6 +60,7 @@ class ApiServices {
         };
       }
       log(url, name: 'POST API URL :');
+      log(body.toString(), name: 'POST BODY  :');
       final jsonBody = jsonEncode(body);
       final response = await http.post(
         Uri.parse(url),
