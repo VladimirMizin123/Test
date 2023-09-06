@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:http/http.dart' as http;
-import '../app/sharedPrefrence.dart';
+
 import 'api_exception.dart';
 import 'api_urls.dart';
 
@@ -27,9 +27,9 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url,name: 'API URL');
+      log(url, name: 'API URL');
       final response = await http.get(Uri.parse(url), headers: headers);
-      debugPrint("get response--> ${response.body}");
+      log("GET response--> ${response.body}");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -59,14 +59,15 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      debugPrint("post url--> $url");
+      log(url, name: 'POST API URL :');
+      log(body.toString(), name: 'POST BODY  :');
       final jsonBody = jsonEncode(body);
       final response = await http.post(
         Uri.parse(url),
         body: jsonBody,
         headers: headers,
       );
-      debugPrint("post response--> $response");
+      log(response.body, name: 'API RESPONSE :');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -128,8 +129,9 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      debugPrint('post url--> $url');
+      log(url, name: 'POST API URL :');
       final response = await http.delete(Uri.parse(url), headers: headers);
+      log(response.body, name: 'POST API RESPONSE :');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

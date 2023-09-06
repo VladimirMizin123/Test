@@ -1,4 +1,4 @@
-class ApiUrls{
+class ApiUrls {
   static const String baseUrl = 'https://gymeats.azurewebsites.net/';
   static const String apiKey = 'peONDsofens8dfs6sfYi4RvtTwlEXpQBwo==';
   static const String login = '${baseUrl}api/Auth/login';
@@ -17,10 +17,13 @@ class ApiUrls{
 
   //Grocery Flow
   static const String addGroceryToShoppingListFromSuggestic = '${baseUrl}api/MealMe/AddGroceryToShoppingListFromSuggestic';
-  static const String getAllItemFromShoppingList = '${baseUrl}api/ShoppingList/GetAllItemFromShoppingList';
+  static const String getShoppingList = '${baseUrl}api/ShoppingList/GetShoppingList';
   static const String addItemShoppingList = '${baseUrl}api/ShoppingList/AddItemShoppingList';
+  static const String removeProduct = '${baseUrl}api/ShoppingList/RemoveProduct';
+  static const String productGroceryMultipleSearch = '${baseUrl}api/MealMe/product-groceryMultipleSearch';
 
-
+  //Nutritionix
+  static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
 
   //For dashboard use apis
   static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';
@@ -35,5 +38,4 @@ class ApiUrls{
   static const String getUserJournalData = '${baseUrl}api/Dashboard/GetUserJournalData';
   static const String getWaterLogDetails = '${baseUrl}api/Dashboard/GetWaterLogDetails';
   static const String getExerciseLogDetails = '${baseUrl}api/Dashboard/GetExerciseLogDetails';
-
 }

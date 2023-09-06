@@ -59,6 +59,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 if (mealPlanList[i].day == state.day) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
                     if (mealPlanList[i].meals![j].id == state.mealId) {
+                      // print(state.similarMealData!.toJson().toString());
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories;
                       mealPlanList[i].meals![j].isSkipped = mealPlanList[i].meals![j].isSkipped;

@@ -48,6 +48,7 @@ import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/grocery_item_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
+import 'package:gymeats_mobile/screen/journal/meal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
@@ -59,6 +60,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
+import 'package:gymeats_mobile/screen/profile/profile_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
@@ -163,9 +165,11 @@ class MyApp extends StatelessWidget {
               page: () => const GroceryCartScreen(),
             ),
             GetPage(
-              name: '/GroceryItemDetails',
-              page: () => const GroceryItemDetails(),
-            ),
+                name: '/GroceryItemDetails',
+                page: () {
+                  GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
+                  return  GroceryItemDetails(arguments : argument);
+                }),
             GetPage(
               name: '/FoodPreferencesScreen',
               page: () => const FoodPreferencesScreen(),
@@ -371,6 +375,10 @@ class MyApp extends StatelessWidget {
               page: () => const AddNewItemScreen(),
             ),
             GetPage(
+              name: '/ProfileScreen',
+              page: () => const ProfileScreen(),
+              ),
+              GetPage(
               name: '/MealScreen',
               page: () => const MealScreen(),
             ),

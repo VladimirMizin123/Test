@@ -138,11 +138,16 @@ class _JournalScreenState extends State<JournalScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(
-                    AssetsUtils.user,
-                    height: 25.h,
-                    width: 25.w,
-                    color: AppColors.darkGray,
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('ProfileScreen');
+                    },
+                    child: Image.asset(
+                      AssetsUtils.user,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
+                    ),
                   ),
                   Text(
                     StringUtils.journal,
@@ -302,9 +307,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     if (state is LoadGenMealData) {
                       isDoneLoader = false;
                       mealTrackerDataList = state.genMealDataList;
-                      bloc.add(GetWaterDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                       mealTrackerDataList!.map((e) {
                         if (e.meal == 'breakfast') {
                           breakFastList!.add(e);
@@ -316,11 +319,9 @@ class _JournalScreenState extends State<JournalScreen> {
                           snackDataList!.add(e);
                         }
                       }).toList();
-                      bloc.add(MealTrackerData(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                     }
-                    if(state is LoadMealTrackData){
+                    if (state is LoadMealTrackData) {
                       print("Meal Id->${state.mealTrackDataList[0].value}");
                       tmpMealTrackerDataList = state.mealTrackDataList;
                     }
@@ -330,9 +331,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     if (state is LoadWaterData) {
                       waterData = state.data;
                       waterML = waterData!.totalWaterIntake!;
-                      bloc.add(GetExerciseDetails(
-                          date: dateTimeYYYYMMDD(
-                              dateTimeVal: datetime.toString())));
+                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                     }
                     if (state is ErrorWaterDataState) {
                       bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
@@ -340,7 +339,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     if (state is LoadExerciseData) {
                       exerciseData = state.data;
                     }
-                    if(state is LoadingDoneState){
+                    if (state is LoadingDoneState) {
                       isDoneLoader = true;
                     }
                   },
@@ -446,13 +445,11 @@ class _JournalScreenState extends State<JournalScreen> {
                             children: [
                               Text(
                                 breakFastList![0].meal!,
-                                style: textTheme.headlineSmall
-                                    ?.copyWith(color: AppColors.darkGray),
+                                style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                               ),
                               Text(
                                 '${int.parse(breakFastList![0].calories!.toString().split('.')[1]) >= 50 ? breakFastList![0].calories!.toDouble().ceil().toString() : breakFastList![0].calories!.toDouble().floor().toString()} cal',
-                                style: textTheme.bodyLarge
-                                    ?.copyWith(color: AppColors.terracotta),
+                                style: textTheme.bodyLarge?.copyWith(color: AppColors.terracotta),
                               ),
                             ],
                           ),
@@ -464,10 +461,9 @@ class _JournalScreenState extends State<JournalScreen> {
                           horizontalTitleGap: 0.0,
                         ),
                       ),
-                      Divider(color: AppColors.middleGray, height: 1.h)
-                          .paddingSymmetric(horizontal: 15.w),
+                      Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList![0]));
                         },
                         child: commonJournalFoodData(
@@ -478,12 +474,8 @@ class _JournalScreenState extends State<JournalScreen> {
                             size: 13.h,
                             color: AppColors.darkGray,
                           ),
-                          textTheme: textTheme.bodySmall?.copyWith(
-                              color: AppColors.darkGray,
-                              fontWeight: FontWeight.w400),
-                          subTextTheme: textTheme.bodySmall?.copyWith(
-                              color: AppColors.terracotta,
-                              fontWeight: FontWeight.w400),
+                          textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                          subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                         ).paddingOnly(top: 10.h, bottom: 10.h),
                       ),
                     ],
@@ -494,55 +486,21 @@ class _JournalScreenState extends State<JournalScreen> {
                   image: AssetsUtils.lunchIcon,
                   title: StringUtils.lunch,
                   dataList: lunchDataList,
-                  cal: int.parse(lunchDataList![0]
-                              .calories!
-                              .toString()
-                              .split('.')[1]) >=
-                          50
-                      ? lunchDataList![0].calories!.toDouble().ceil().toString()
-                      : lunchDataList![0]
-                          .calories!
-                          .toDouble()
-                          .floor()
-                          .toString(),
+                  cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(),
                 ),
                 commonFoodItemView(
                   textTheme: textTheme,
                   image: AssetsUtils.dinnerIcon,
                   title: StringUtils.dinner,
                   dataList: dinnerDataList,
-                  cal: int.parse(dinnerDataList![0]
-                              .calories!
-                              .toString()
-                              .split('.')[1]) >=
-                          50
-                      ? dinnerDataList![0]
-                          .calories!
-                          .toDouble()
-                          .ceil()
-                          .toString()
-                      : dinnerDataList![0]
-                          .calories!
-                          .toDouble()
-                          .floor()
-                          .toString(),
+                  cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(),
                 ),
                 commonFoodItemView(
                   textTheme: textTheme,
                   image: AssetsUtils.snackIcon,
                   title: StringUtils.snack,
                   dataList: snackDataList,
-                  cal: int.parse(snackDataList![0]
-                              .calories!
-                              .toString()
-                              .split('.')[1]) >=
-                          50
-                      ? snackDataList![0].calories!.toDouble().ceil().toString()
-                      : snackDataList![0]
-                          .calories!
-                          .toDouble()
-                          .floor()
-                          .toString(),
+                  cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(),
                 ),
               ],
             ),
@@ -558,9 +516,7 @@ class _JournalScreenState extends State<JournalScreen> {
               children: [
                 InkWell(
                   onTap: () {
-                    Get.toNamed('/AddWaterScreen',
-                            arguments: [model!.data!.dailyWaterGoals!])
-                        ?.then((value) {
+                    Get.toNamed('/AddWaterScreen', arguments: [model!.data!.dailyWaterGoals!])?.then((value) {
                       setState(() {
                         waterML = waterML + int.parse(value);
                       });
@@ -575,21 +531,16 @@ class _JournalScreenState extends State<JournalScreen> {
                     ),
                     title: Text(
                       'Water',
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: AppColors.darkGray),
+                      style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                     ),
-                    trailing: Icon(Icons.arrow_forward_ios,
-                        size: 15.h, color: const Color(0xFF010101)),
+                    trailing: Icon(Icons.arrow_forward_ios, size: 15.h, color: const Color(0xFF010101)),
                     horizontalTitleGap: 0.0,
                   ),
                 ),
-                Divider(color: AppColors.middleGray, height: 1.h)
-                    .paddingSymmetric(horizontal: 15.w),
+                Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
                 InkWell(
-                  onTap: (){
-                    Get.toNamed('/AddWaterScreen',
-                        arguments: [model!.data!.dailyWaterGoals!,waterML.toString()])
-                        ?.then((value) {
+                  onTap: () {
+                    Get.toNamed('/AddWaterScreen', arguments: [model!.data!.dailyWaterGoals!, waterML.toString()])?.then((value) {
                       setState(() {
                         waterML = waterML + int.parse(value);
                       });
@@ -603,10 +554,8 @@ class _JournalScreenState extends State<JournalScreen> {
                       size: 18.h,
                       color: AppColors.darkGray,
                     ),
-                    textTheme: textTheme.bodySmall?.copyWith(
-                        color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                    subTextTheme: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                    textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                    subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                   ).paddingOnly(top: 7.h, bottom: 10.h),
                 ),
               ],
@@ -635,8 +584,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     ),
                     title: Text(
                       'Add exercise',
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: AppColors.darkGray),
+                      style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                     ),
                     trailing: Icon(
                       Icons.arrow_forward_ios,
@@ -646,47 +594,32 @@ class _JournalScreenState extends State<JournalScreen> {
                     horizontalTitleGap: 0.0,
                   ),
                 ),
-                Divider(color: AppColors.middleGray, height: 1.h)
-                    .paddingSymmetric(horizontal: 15.w),
-                exerciseData!.exerciseLogList!.isNotEmpty &&
-                        exerciseData!.exerciseLogList!.length > 0
+                Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
+                exerciseData!.exerciseLogList!.isNotEmpty && exerciseData!.exerciseLogList!.length > 0
                     ? commonJournalFoodData(
                         // title: StringUtils.running,
                         title: exerciseData!.exerciseLogList![0].exerciseName!,
-                        subTitle: exerciseData!
-                            .exerciseLogList![0].caloriesBurned!
-                            .toString(),
+                        subTitle: exerciseData!.exerciseLogList![0].caloriesBurned!.toString(),
                         child: Icon(
                           Icons.arrow_forward_ios,
                           size: 13.h,
                           color: AppColors.darkGray,
                         ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
+                        textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                        subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                       ).paddingOnly(top: 10.h, bottom: 10.h)
                     : Offstage(),
-                exerciseData!.exerciseLogList!.isNotEmpty &&
-                        exerciseData!.exerciseLogList!.length > 1
+                exerciseData!.exerciseLogList!.isNotEmpty && exerciseData!.exerciseLogList!.length > 1
                     ? commonJournalFoodData(
                         title: exerciseData!.exerciseLogList![1].exerciseName!,
-                        subTitle: exerciseData!
-                            .exerciseLogList![1].caloriesBurned!
-                            .toString(),
+                        subTitle: exerciseData!.exerciseLogList![1].caloriesBurned!.toString(),
                         child: Icon(
                           Icons.arrow_forward_ios,
                           size: 13.h,
                           color: AppColors.darkGray,
                         ),
-                        textTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w400),
-                        subTextTheme: textTheme.bodySmall?.copyWith(
-                            color: AppColors.terracotta,
-                            fontWeight: FontWeight.w400),
+                        textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                        subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                       ).paddingOnly(bottom: 10.h)
                     : Offstage(),
               ],
@@ -908,15 +841,10 @@ class _JournalScreenState extends State<JournalScreen> {
     );
   }
 
-  Widget commonFoodItemView(
-      {String image = '',
-      String title = '',
-      String cal = '',
-      TextTheme? textTheme,
-      List<MealData>? dataList}) {
+  Widget commonFoodItemView({String image = '', String title = '', String cal = '', TextTheme? textTheme, List<MealData>? dataList}) {
     bool isDone = false;
     tmpMealTrackerDataList!.forEach((element) {
-      if(dataList![0].meal == element.meal!.meal){
+      if (dataList![0].meal == element.meal!.meal) {
         isDone = element.value == "ATE";
       }
     });
@@ -951,7 +879,7 @@ class _JournalScreenState extends State<JournalScreen> {
         ),
         commonBorderView(
           child: InkWell(
-            onTap: (){
+            onTap: () {
               Get.toNamed("/ForthJournalBGView");
             },
             child: commonJournalFoodData(
@@ -959,36 +887,29 @@ class _JournalScreenState extends State<JournalScreen> {
               subTitle: '$cal ${StringUtils.calCount}',
               child: InkWell(
                 onTap: () {
-                  if(!isDone){
+                  if (!isDone) {
                     bloc.add(AddEatenMealData(mealId: dataList[0].id!));
                   }
                 },
                 child: isDoneLoader
-                    ? SizedBox(
-                    height: 25.h,
-                    width: 25.w,
-                    child: const AppCenterLoader())
-                :Container(
-                  height: 25.h,
-                  width: 25.w,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.skyBlue,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      isDone ?
-                      Icons.check
-                      : Icons.add,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
-                ),
+                    ? SizedBox(height: 25.h, width: 25.w, child: const AppCenterLoader())
+                    : Container(
+                        height: 25.h,
+                        width: 25.w,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.skyBlue,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            isDone ? Icons.check : Icons.add,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+                      ),
               ),
-              textTheme: textTheme?.bodySmall?.copyWith(
-                  color: AppColors.darkGray, fontWeight: FontWeight.w400),
-              subTextTheme: textTheme?.bodySmall?.copyWith(
-                  color: AppColors.terracotta, fontWeight: FontWeight.w400),
+              textTheme: textTheme?.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+              subTextTheme: textTheme?.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
             ),
           ),
         ),

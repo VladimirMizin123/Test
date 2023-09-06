@@ -62,6 +62,16 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def project = "GymEats_"
+            def date = new Date();
+            def formattedDate = date.format('dd_MMM')
+            def newApkName = project + formattedDate + ".apk"
+            outputFileName = new File(newApkName)
+        }
+    }
 }
 
 flutter {
