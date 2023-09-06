@@ -223,4 +223,6 @@ class StringUtils {
   static const details = 'Details';
   static const deliveryTime = 'Delivery time: ';
   static const orderType = 'Order type: ';
+
+  static const basedMeal = 'Based on your Meal Plan';
 }

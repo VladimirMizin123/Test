@@ -30,6 +30,7 @@ import 'package:gymeats_mobile/screen/grocery/choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/grocery_search_screen.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
+import 'package:gymeats_mobile/screen/journal/meal_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
@@ -327,6 +328,10 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/AddNewItemScreen',
               page: () => const AddNewItemScreen(),
+            ),
+            GetPage(
+              name: '/MealScreen',
+              page: () => const MealScreen(),
             ),
           ],
         );

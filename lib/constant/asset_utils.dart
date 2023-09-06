@@ -101,6 +101,7 @@ class AssetsUtils {
   static const icAddCircle = '${svgPath}ic_add_circle.svg';
   static const icAddIcon = '${svgPath}ic_add_icon.svg';
   static const emptyShoppingListIcon = '${svgPath}empty_shopping_list_icon.svg';
+  static const icBarcode = '${svgPath}ic_barcode.svg';
 
   /// Icons
 
