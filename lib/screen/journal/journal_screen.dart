@@ -289,7 +289,9 @@ class _JournalScreenState extends State<JournalScreen> {
                       if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) == dateTimeNow()) {
                         PreferenceUtils.setInt(userMealPlanCountState, 0);
                         bloc.add(GenMealData());
-                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                        // bloc.add(MealTrackerData(
+                        //     date: dateTimeYYYYMMDD(
+                        //         dateTimeVal: datetime.toString())));
                       } else {
                         bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
                       }
@@ -429,7 +431,9 @@ class _JournalScreenState extends State<JournalScreen> {
                   child: Column(
                     children: [
                       InkWell(
-                        onTap: () {},
+                        onTap: (){
+                          Get.toNamed("/MealScreen",arguments: [breakFastList]);
+                        },
                         child: ListTile(
                           leading: Image.asset(
                             AssetsUtils.breakFastIcon,
@@ -844,27 +848,33 @@ class _JournalScreenState extends State<JournalScreen> {
         isDone = element.value == "ATE";
       }
     });
+    // CONFLICT RESOLVED
     return Column(
       children: [
-        dashBoardCardView(
-          width: double.infinity.w,
-          child: ListTile(
-            leading: Image.asset(
-              image,
-              height: 25.h,
-              width: 25.w,
-              color: AppColors.darkGray,
+        InkWell(
+          onTap: (){
+            Get.toNamed("/MealScreen",arguments: [dataList]);
+          },
+          child: dashBoardCardView(
+            width: double.infinity.w,
+            child: ListTile(
+              leading: Image.asset(
+                image,
+                height: 25.h,
+                width: 25.w,
+                color: AppColors.darkGray,
+              ),
+              title: Text(
+                title,
+                style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 15.h,
+                color: const Color(0xFF010101),
+              ),
+              horizontalTitleGap: 0.0,
             ),
-            title: Text(
-              title,
-              style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
-            ),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              size: 15.h,
-              color: const Color(0xFF010101),
-            ),
-            horizontalTitleGap: 0.0,
           ),
         ),
         commonBorderView(
