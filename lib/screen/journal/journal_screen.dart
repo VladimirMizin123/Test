@@ -920,6 +920,7 @@ class _JournalScreenState extends State<JournalScreen> {
         isDone = element.value == "ATE";
       }
     });
+    // CONFLICT RESOLVED
     return Column(
       children: [
         InkWell(
