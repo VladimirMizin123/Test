@@ -70,6 +70,7 @@ class AssetsUtils {
   static const String journalBG5 = "assets/image/journalBg5.png";
   static const String journalBG6 = "assets/image/journalBg6.png";
   static const icExercise = "assets/icon/ic_exercise.png";
+  static const icDemoIcon = "assets/image/demo_icon.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
@@ -102,6 +103,16 @@ class AssetsUtils {
   static const icAddIcon = '${svgPath}ic_add_icon.svg';
   static const emptyShoppingListIcon = '${svgPath}empty_shopping_list_icon.svg';
   static const icBarcode = '${svgPath}ic_barcode.svg';
+  static const icFilterIcon = '${svgPath}ic_filter_icon.svg';
+  static const icSortIcon = '${svgPath}ic_sort_icon.svg';
+  static const icCardImg = '${svgPath}ic_card_img.svg';
+  static const icHome = '${svgPath}ic_home.svg';
+  static const icListIcon = '${svgPath}ic_list_icon.svg';
+  static const icVisaLogo = '${svgPath}ic_visa_logo.svg';
+  static const icBackArrow = '${svgPath}ic_back_arrow.svg';
+  static const icLocationIcon = '${svgPath}ic_location_icon.svg';
+  static const icFlagIcon = '${svgPath}ic_flag_icon.svg';
+  static const gymEatsLogoRound = '${svgPath}gym_eats_logo.svg';
 
   /// Icons
 
@@ -140,5 +151,7 @@ class AssetsUtils {
   static const searchPen = "assets/icon/searchPen.png";
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
-  static const demoIcon = "assets/image/demo_icon.png";
+  static const productDemoImg = "assets/image/product_demo_img.png";
+  static const productDemoImg1 = "assets/image/product_demo_img_1.png";
+  static const paymentDoneBg = "assets/image/payment_done_bg.png";
 }

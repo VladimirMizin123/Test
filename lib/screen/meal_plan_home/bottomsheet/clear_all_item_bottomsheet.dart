@@ -7,12 +7,12 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ClearAllItemBottomSheet extends StatefulWidget {
-  final MealPlanBloc bloc;
+  final GroceryBloc bloc;
   const ClearAllItemBottomSheet({super.key, required this.bloc});
 
   @override
@@ -25,12 +25,9 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return BlocConsumer<MealPlanBloc, FetchMealPlanState>(
+    return BlocConsumer<GroceryBloc, GroceryState>(
         bloc: widget.bloc,
         listener: (context, state) {
-          if (state is SkipMealPlanSuccessState) {
-            Get.back();
-          }
         },
         builder: (context, state) {
           return Material(

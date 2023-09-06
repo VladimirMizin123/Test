@@ -1,7 +1,7 @@
-// import 'package:firebase_core/firebase_core.dart';
-import 'dart:convert';
 
-// import 'package:camera/camera.dart';
+
+// List<CameraDescription> cameras = [];
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,8 +12,8 @@ import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.d
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
-import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
@@ -26,27 +26,37 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
-import 'package:gymeats_mobile/screen/grocery/choose_store_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/grocery_search_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/address/add_delivery_address_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/address/map_address_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/address/search_delivery_address_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/choose_store_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_search_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/grocery_product_details_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/payment/add_card_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_card_selection_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
-import 'package:gymeats_mobile/screen/journal/meal_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
+import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
 import 'package:gymeats_mobile/screen/journal/fifth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
-import 'package:gymeats_mobile/screen/journal/item_details_screen.dart';
-import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
+import 'package:gymeats_mobile/screen/journal/grocery_item_details_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/third_journal_bg.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
@@ -64,13 +74,10 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
-import 'models/sign_up_model.dart';
-import 'screen/grocery/grocery_cart_screen.dart';
-import 'screen/grocery/grocery_item_details.dart';
 import 'screen/login/login_screen.dart';
 
-// List<CameraDescription> cameras = [];
 
+// import this all  file
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // cameras = await availableCameras();
@@ -81,7 +88,7 @@ Future<void> main() async {
   );
   await initDynamicLinks();
   if (PreferenceUtils.getBool(prefIsLogin)) {
-    if(PreferenceUtils.getBool(prefIsConfirmEmail)){
+    if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
       userId = PreferenceUtils.getString(prefUserData);
     }
   }
@@ -106,9 +113,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
-              ? '/AppManagerScreen'
-              : '/Home',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail) ? '/AppManagerScreen' : '/AppManagerScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -150,6 +155,10 @@ class MyApp extends StatelessWidget {
               page: () => const GrocerySearchScreen(),
             ),
             GetPage(
+              name: '/GroceryProductDetails',
+              page: () => const GroceryProductDetails(),
+            ),
+            GetPage(
               name: '/GroceryCartScreen',
               page: () => const GroceryCartScreen(),
             ),
@@ -164,6 +173,18 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/BestMatchRestaurantsScreen',
               page: () => const BestMatchRestaurantsScreen(),
+            ),
+            GetPage(
+              name: '/CheckoutScreen',
+              page: () => const CheckoutScreen(),
+            ),
+            GetPage(
+              name: '/PaymentCardSelectionScreen',
+              page: () => const PaymentCardSelectionScreen(),
+            ),
+            GetPage(
+              name: '/AddCardScreen',
+              page: () => const AddCardScreen(),
             ),
             GetPage(
               name: '/DashboardScreen',
@@ -210,8 +231,28 @@ class MyApp extends StatelessWidget {
               page: () => ThirdGymInstructionScreen(),
             ),
             GetPage(
+              name: '/MapAddressScreen',
+              page: () => const MapAddressScreen(),
+            ),
+            GetPage(
+              name: '/SearchDeliveryAddressScreen',
+              page: () => const SearchDeliveryAddressScreen(),
+            ),
+            GetPage(
+              name: '/PaymentSuccessScreen',
+              page: () => const PaymentSuccessScreen(),
+            ),
+            GetPage(
+              name: '/AddDeliveryAddressScreen',
+              page: () => const AddDeliveryAddressScreen(),
+            ),
+            GetPage(
               name: '/FourthGymInstructionScreen',
               page: () => FourthGymInstructionScreen(),
+            ),
+            GetPage(
+              name: '/ItemCatalogScreen',
+              page: () => const ItemCatalogScreen(),
             ),
             GetPage(
               name: '/FiveGymInstructionScreen',
@@ -322,8 +363,8 @@ class MyApp extends StatelessWidget {
               page: () => const ScanBarcodeScreen(/*cameras: cameras*/),
             ),
             GetPage(
-              name: '/ItemDetailsScreen',
-              page: () => const ItemDetailsScreen(),
+              name: '/GroceryItemDetailsScreen',
+              page: () => const GroceryItemDetailsScreen(),
             ),
             GetPage(
               name: '/AddNewItemScreen',

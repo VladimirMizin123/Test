@@ -15,6 +15,13 @@ class ApiUrls{
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
 
+  //Grocery Flow
+  static const String addGroceryToShoppingListFromSuggestic = '${baseUrl}api/MealMe/AddGroceryToShoppingListFromSuggestic';
+  static const String getAllItemFromShoppingList = '${baseUrl}api/ShoppingList/GetAllItemFromShoppingList';
+  static const String addItemShoppingList = '${baseUrl}api/ShoppingList/AddItemShoppingList';
+
+
+
   //For dashboard use apis
   static const String getDashboardData = '${baseUrl}api/Dashboard/GetDashboardData';
   static const String getTotalIntakeWater = '${baseUrl}api/Dashboard/GetTotalIntakeWater';
