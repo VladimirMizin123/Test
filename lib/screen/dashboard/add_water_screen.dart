@@ -21,140 +21,160 @@ class AddWaterScreen extends StatefulWidget {
 
 class _AddWaterScreenState extends State<AddWaterScreen> {
   final routeName = '/add-water-screen';
-  final waterController = TextEditingController(text: Get.arguments[1] != null ? Get.arguments[1].toString() : "");
+  TextEditingController waterController = TextEditingController();
 
-  String dailyGoal = Get.arguments[0].toString();
-
+  AddWaterArguments? addWaterArguments = Get.arguments;
   AddWaterBloc bloc = AddWaterBloc();
+
+  @override
+  void initState() {
+    super.initState();
+
+    waterController.text = addWaterArguments != null ? addWaterArguments!.dailyGoal ?? '' : '';
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SizedBox(
-        height: size.height.h,
-        width: size.width.w,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    size: 25.sp,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                Text(
-                  StringUtils.addWater,
-                  style: textTheme.displayMedium?.copyWith(color: Colors.black),
-                ).paddingOnly(right: 28.w),
-                const SizedBox(),
-              ],
-            ).paddingOnly(top: 30.h),
-            Text(
-              'Your Daily Goal: $dailyGoal ml',
-              style:
-                  textTheme.bodyMedium?.copyWith(color: AppColors.middleGray),
-            ),
-            dashBoardCardView(
-              height: 240.h,
-              width: 335.w,
-              margin: EdgeInsets.symmetric(vertical: 20.h),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      commonUserTypeTextField(
-                          hintText: '00',
-                          controller: waterController,
-                          context: context,
-                          width: 80.w,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                          isSuffix: false,
-                          valueColor: AppColors.darkGray,
-                          fontColor: AppColors.darkGray,
-                          cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.number,
-                          onChange: (value) {}),
-                      SizedBox(width: 5.w),
-                      Text(
-                        StringUtils.ml,
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
-                      )
-                    ],
+                  SizedBox(
+                    height: size.height.h,
+                    width: size.width.w,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Get.back();
+                              },
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                size: 25.sp,
+                                color: AppColors.darkGray,
+                              ),
+                            ),
+                            Text(
+                              StringUtils.addWater,
+                              style: textTheme.displayMedium?.copyWith(color: Colors.black),
+                            ).paddingOnly(right: 28.w),
+                            const SizedBox(),
+                          ],
+                        ).paddingOnly(top: 30.h),
+                        Text(
+                          'Your Daily Goal: ${addWaterArguments!.dailyGoal} ml',
+                          style: textTheme.bodyMedium?.copyWith(color: AppColors.middleGray),
+                        ),
+                        dashBoardCardView(
+                          // height: 240.h,
+                          width: 335.w,
+                          margin: EdgeInsets.symmetric(vertical: 20.h),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // commonUserTypeTextField(hintText: '00', controller: waterController, context: context, width: 80.w, fontSize: 16.sp, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
+                                    SizedBox(
+                                      width: 80.w,
+                                      child: TextFormField(
+                                        controller: waterController,
+                                        cursorColor: AppColors.darkGray,
+                                        keyboardType: TextInputType.number,
+                                        style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                                        decoration: InputDecoration(
+                                          hintText: '00',
+                                          hintStyle: const TextStyle(fontSize: 12, color: AppColors.grayColor),
+                                          isDense: true,
+                                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                          disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 5.w),
+                                    Text(
+                                      StringUtils.ml,
+                                      style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    waterDetailsView(
+                                      height: 76.h,
+                                      waterIcon: AssetsUtils.waterIcon1,
+                                      waterQuantity: '250',
+                                      onTap: () {
+                                        waterController.text = '250';
+                                      },
+                                    ),
+                                    waterDetailsView(
+                                      height: 83.h,
+                                      waterIcon: AssetsUtils.waterIcon2,
+                                      waterQuantity: '500',
+                                      onTap: () {
+                                        waterController.text = '500';
+                                      },
+                                    ).paddingOnly(left: 30.w),
+                                    waterDetailsView(
+                                      height: 96.h,
+                                      waterIcon: AssetsUtils.waterIcon3,
+                                      waterQuantity: '1000',
+                                      onTap: () {
+                                        waterController.text = '1000';
+                                      },
+                                    ).paddingOnly(left: 30.w),
+                                  ],
+                                ).paddingOnly(top: 15.h)
+                              ],
+                            ).paddingAll(16),
+                          ),
+                        ),
+                      ],
+                    ).paddingSymmetric(horizontal: 20.w),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      waterDetailsView(
-                        height: 76.h,
-                        waterIcon: AssetsUtils.waterIcon1,
-                        waterQuantity: '250',
-                        onTap: () {
-                          waterController.text = '250';
-                        },
-                      ),
-                      waterDetailsView(
-                        height: 83.h,
-                        waterIcon: AssetsUtils.waterIcon2,
-                        waterQuantity: '500',
-                        onTap: () {
-                          waterController.text = '500';
-                        },
-                      ).paddingOnly(left: 30.w),
-                      waterDetailsView(
-                        height: 96.h,
-                        waterIcon: AssetsUtils.waterIcon3,
-                        waterQuantity: '1000',
-                        onTap: () {
-                          waterController.text = '1000';
-                        },
-                      ).paddingOnly(left: 30.w),
-                    ],
-                  ).paddingOnly(top: 15.h)
                 ],
-              ).paddingAll(16),
+              ),
             ),
-            const Spacer(),
-            BlocBuilder(
-                bloc: bloc,
-                builder: (context, state) {
-                  debugPrint('water state--> $state');
-                  if (state is LoadingState) {
-                    return const AppCenterLoader();
-                  } else {
-                    return buildButton(
-                        context: context,
-                        title: StringUtils.save,
-                        hasImage: false,
-                        textColor: AppColors.skyBlue,
-                        onPressed: () {
-                          bloc.add(SaveClickEvent(waterML: waterController.text));
-                        },
-                        bgColor: AppColors.primaryBlue);
-                  }
-                }).paddingOnly(bottom: 20.h),
-          ],
-        ).paddingSymmetric(horizontal: 20.w),
+          ),
+          BlocBuilder(
+              bloc: bloc,
+              builder: (context, state) {
+                debugPrint('water state--> $state');
+                if (state is LoadingState) {
+                  return const AppCenterLoader();
+                } else {
+                  return buildButton(
+                      context: context,
+                      title: StringUtils.save,
+                      hasImage: false,
+                      textColor: AppColors.skyBlue,
+                      onPressed: () {
+                        bloc.add(SaveClickEvent(waterML: waterController.text));
+                      },
+                      bgColor: AppColors.primaryBlue);
+                }
+              }).paddingOnly(bottom: 20.h).paddingSymmetric(horizontal: 20.w),
+        ],
       ),
     );
   }
 
-  Widget waterDetailsView(
-      {String? waterIcon,
-      String? waterQuantity,
-      double? height,
-      void Function()? onTap}) {
+  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -165,10 +185,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,
@@ -191,4 +208,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       ],
     );
   }
+}
+
+class AddWaterArguments {
+  final String? dailyGoal;
+
+  AddWaterArguments({this.dailyGoal});
 }

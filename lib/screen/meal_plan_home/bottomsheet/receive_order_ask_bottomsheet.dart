@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+
+enum AskReceiveOrder { bringTheOrder, pickMySelf }
 
 class ReceiveOrderAskBottomSheet extends StatefulWidget {
-  const ReceiveOrderAskBottomSheet({super.key});
+  final GroceryBloc groceryBloc;
+  final List<GroceryShoppingData> selectedEdgesList;
+  const ReceiveOrderAskBottomSheet({super.key, required this.groceryBloc, required this.selectedEdgesList});
 
   @override
   State<ReceiveOrderAskBottomSheet> createState() => _ReceiveOrderAskBottomSheetState();
@@ -19,66 +30,89 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return Material(
-      color: AppColors.whiteColor,
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: 3.h,
-                    width: 80.w,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
-                  )),
-              const SizedBox(height: 10),
-              SvgPicture.asset(AssetsUtils.icQuestionMarkGreenIcon),
-              const SizedBox(height: 15),
-              Text(
-                'How would you like to receive your order?',
-                style: FontUtils.h20(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+    return BlocConsumer<GroceryBloc, GroceryState>(
+        bloc: widget.groceryBloc,
+        listener: (context, state) {
+          // FETCH STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        },
+        builder: (context, state) {
+          return Material(
+            color: AppColors.whiteColor,
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          height: 3.h,
+                          width: 80.w,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                        )),
+                    const SizedBox(height: 10),
+                    SvgPicture.asset(AssetsUtils.icQuestionMarkGreenIcon),
+                    const SizedBox(height: 15),
+                    Text(
+                      'How would you like to receive your order?',
+                      style: FontUtils.h20(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                    ),
+                    const SizedBox(height: 15),
+                    myWidget(
+                        title: 'Bring me the order',
+                        isSelected: selectedIndex == 0 ? true : false,
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = 0;
+                          });
+                        }),
+                    const SizedBox(height: 10),
+                    myWidget(
+                        title: 'I will pick it myself',
+                        isSelected: selectedIndex == 1 ? true : false,
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = 1;
+                          });
+                        }),
+                    const SizedBox(height: 15),
+                    simpleTextBorderButton(
+                      context: context,
+                      color: AppColors.green,
+                      buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
+                      height: screenSize.height * 0.065,
+                      width: screenSize.width,
+                      isLoadingWidget: false,
+                      onTap: () {
+                        if (selectedIndex == -1) {
+                          Get.back();
+                        } else {
+                          // List<GroceryShoppingData> edgesDummyList = [];
+                          // for (var i = 0; i < widget.edgesList.length; i++) {
+                          //   if (widget.edgesList[i].isActive == true) {
+                          //     edgesDummyList.add(widget.edgesList[i]);
+                          //   }
+                          // }
+                          // if (edgesDummyList.isNotEmpty) {
+                          Get.toNamed('/GroceryCartScreen', arguments: GroceryCartScreenArguments(edgesList: widget.selectedEdgesList, askReceiveOrder: selectedIndex == 0 ? AskReceiveOrder.bringTheOrder : AskReceiveOrder.pickMySelf));
+                          // }
+                        }
+                      },
+                      isDarkColor: true,
+                      isFillColor: selectedIndex == -1 ? false : true,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
-              const SizedBox(height: 15),
-              myWidget(
-                  isSelected: selectedIndex == 0 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  }),
-              const SizedBox(height: 10),
-              myWidget(
-                  isSelected: selectedIndex == 1 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  }),
-              const SizedBox(height: 15),
-              simpleTextBorderButton(
-                context: context,
-                color: AppColors.green,
-                buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
-                height: screenSize.height * 0.065,
-                width: screenSize.width,
-                isLoadingWidget: false,
-                onTap: () {},
-                isDarkColor: true,
-                isFillColor: selectedIndex == -1 ? false : true,
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 
-  Widget myWidget({bool isSelected = false, VoidCallback? onTap}) {
+  Widget myWidget({bool isSelected = false, VoidCallback? onTap, String? title}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -86,14 +120,7 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: isSelected ? AppColors.primaryBlue : Colors.transparent),
           color: AppColors.whiteColor,
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 16,
-              spreadRadius: -15,
-              color: AppColors.black,
-              offset: Offset(0, 5),
-            ),
-          ],
+          boxShadow: boxShadowWidget,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
@@ -101,7 +128,7 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Bring me the order',
+                title!,
                 style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium),
               ),
               Container(

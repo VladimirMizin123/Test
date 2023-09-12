@@ -62,7 +62,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       // print(state.similarMealData!.toJson().toString());
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories;
-                      mealPlanList[i].meals![j].isSkipped = mealPlanList[i].meals![j].isSkipped;
+                      // mealPlanList[i].meals![j].isSkipped = false;
                       mealPlanList[i].meals![j].meal = '';
                       mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
                       mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;

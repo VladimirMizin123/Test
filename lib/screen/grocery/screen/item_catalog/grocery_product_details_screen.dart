@@ -5,12 +5,19 @@ import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/divider_widget.dart';
 
-class GroceryProductDetails extends StatelessWidget {
-  const GroceryProductDetails({super.key});
+class GroceryProductDetails extends StatefulWidget {
+  final Product product;
+   const GroceryProductDetails({super.key, required this.product});
 
+  @override
+  State<GroceryProductDetails> createState() => _GroceryProductDetailsState();
+}
+
+class _GroceryProductDetailsState extends State<GroceryProductDetails> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -41,7 +48,8 @@ class GroceryProductDetails extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image(
-                          image: const AssetImage(AssetsUtils.productDemoImg1),
+                          // image: const AssetImage(AssetsUtils.productDemoImg1),
+                          image: NetworkImage(widget.product.image!),
                           height: screenSize.height * 0.50,
                           width: double.infinity,
                           fit: BoxFit.cover,
@@ -63,7 +71,7 @@ class GroceryProductDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Calories', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text( widget.product.calorie ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -73,7 +81,7 @@ class GroceryProductDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Protein', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text(widget.product.protein ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -83,7 +91,7 @@ class GroceryProductDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Carbs', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text( widget.product.carbs ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -93,7 +101,7 @@ class GroceryProductDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text(widget.product.fat ??  '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -186,39 +194,116 @@ class GroceryProductDetails extends StatelessWidget {
                     //   isDarkColor: true,
                     //   isFillColor: true,
                     // ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: screenSize.height * 0.065,
-                          width: screenSize.height * 0.065,
-                          decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                          child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
-                        ),
-                        SizedBox(width: 8.w),
-                        Container(
-                          height: screenSize.height * 0.065,
-                          width: screenSize.height * 0.065,
-                          decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                          child: Center(
-                              child: Text(
-                            '1',
-                            style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
-                          )),
-                        ),
-                        SizedBox(width: 8.w),
-                        Container(
-                          height: screenSize.height * 0.065,
-                          width: screenSize.height * 0.065,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.mint,
+                    // Row(
+                    //   crossAxisAlignment: CrossAxisAlignment.center,
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Container(
+                    //       height: screenSize.height * 0.065,
+                    //       width: screenSize.height * 0.065,
+                    //       decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                    //       child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                    //     Container(
+                    //       height: screenSize.height * 0.065,
+                    //       width: screenSize.height * 0.065,
+                    //       decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                    //       child: Center(
+                    //           child: Text(
+                    //         '1',
+                    //         style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                    //       )),
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                    //     Container(
+                    //       height: screenSize.height * 0.065,
+                    //       width: screenSize.height * 0.065,
+                    //       decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(10),
+                    //         color: AppColors.mint,
+                    //       ),
+                    //       child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                    //     ),
+                    //   ],
+                    // ),
+                    widget.product == true
+                        ? GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                widget.product.isAdded = true;
+                              });
+                            },
+                            child: Container(
+                              height: screenSize.height * 0.065,
+                              width: screenSize.height * 0.065,
+                              decoration: BoxDecoration(border: Border.all(color: AppColors.green), borderRadius: BorderRadius.circular(10)),
+                              child: Center(child: SvgPicture.asset(AssetsUtils.icShoppingIcon, color: AppColors.green)),
+                            ),
+                          )
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              widget.product.cartItemCount == 1
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          // groceryResult.removeWhere((element) => element.productId == groceryResult[index].productId);
+                                        });
+                                      },
+                                      child: Container(
+                                        height: screenSize.height * 0.065,
+                                        width: screenSize.height * 0.065,
+                                        decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                        child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                                      ),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          widget.product.cartItemCount = widget.product.cartItemCount - 1;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: screenSize.height * 0.065,
+                                        width: screenSize.height * 0.065,
+                                        decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                        child: const Center(
+                                          child: Icon(Icons.remove, size: 27),
+                                        ),
+                                      ),
+                                    ),
+                              SizedBox(width: 8.w),
+                              Container(
+                                height: screenSize.height * 0.065,
+                                width: screenSize.height * 0.065,
+                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                child: Center(
+                                    child: Text(
+                                  widget.product.cartItemCount.toString(),
+                                  style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                )),
+                              ),
+                              SizedBox(width: 8.w),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    widget.product.cartItemCount = widget.product.cartItemCount + 1;
+                                  });
+                                },
+                                child: Container(
+                                  height: screenSize.height * 0.065,
+                                  width: screenSize.height * 0.065,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.mint,
+                                  ),
+                                  child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 30),
                   ],
                 ),

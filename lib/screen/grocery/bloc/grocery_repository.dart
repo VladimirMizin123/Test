@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/add_grocery_to_shopping_list_from_suggestic_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/remove_grocery_modal.dart';
@@ -15,7 +16,8 @@ import 'package:gymeats_mobile/service/apis.dart';
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
 
-  String userID = PreferenceUtils.getString(prefUserData);
+  // String userID = PreferenceUtils.getString(prefUserData);
+  String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
 
   Future<Either<ErrorModel, AddGroceryToShoppingListFromSuggesticModal>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
     String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
@@ -53,10 +55,12 @@ class GroceryRepository {
     required String unitOfMeasurement,
     required String recipeId,
     required String mealmeStoreId,
+    required bool isChecked,
   }) async {
     String apiURL = ApiUrls.addItemShoppingList;
 
     // log(apiURL, name: 'API URL :');
+
     final response = await apiServices.post(apiURL, {
       "userId": userID,
       "productId": productID,
@@ -67,6 +71,7 @@ class GroceryRepository {
       "unitOfMeasurement": unitOfMeasurement,
       "recipeId": recipeId,
       "mealmeStoreId": mealmeStoreId,
+      "isChecked": isChecked,
     });
     // log(response.body, name: 'API RESPONSE :');
 
@@ -94,26 +99,21 @@ class GroceryRepository {
   }
 
   Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch({
-    required String searchValue,
     required String latitude,
     required String longitude,
-    required String unitSize,
-    required String unitMeasurement,
+    required List<GrocerySearchModel> grocerySearchModal,
   }) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
     // log(apiURL, name: 'API URL :');
-    final response = await apiServices.post(apiURL, {
-      "latitude": latitude,
-      "longitude": longitude,
-      "groceries": [
-        {
-          "groceryName": searchValue,
-          "unitSize": unitSize,
-          "unitMeasurement": unitMeasurement,
-        }
-      ]
-    });
+    final response = await apiServices.post(
+      apiURL,
+      {
+        "latitude": latitude,
+        "longitude": longitude,
+        "groceries": grocerySearchModal,
+      },
+    );
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {

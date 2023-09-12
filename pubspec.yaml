@@ -47,7 +47,6 @@ dependencies:
   url_launcher:
   shared_preferences:
   android_intent_plus:
-  image_picker:
   geolocator:
   permission_handler:
   firebase_dynamic_links:
@@ -62,6 +61,8 @@ dependencies:
   scroll_to_index:
   modal_bottom_sheet: ^2.1.2
   shimmer: ^3.0.0
+  image_picker: ^1.0.4
+  simple_barcode_scanner: ^0.0.8
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 

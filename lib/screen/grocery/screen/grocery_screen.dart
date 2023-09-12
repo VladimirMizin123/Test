@@ -11,7 +11,9 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/clear_all_item_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
@@ -31,6 +33,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<String> dList = [];
   GroceryBloc groceryBloc = GroceryBloc();
   List<GroceryShoppingData> edgesList = [];
+  AskReceiveOrder? askReceiveOrder;
 
   bool isGroceryFetchLoadingState = true;
 
@@ -57,6 +60,15 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
             if (state is GroceryFetchSuccessState) {
               edgesList = state.edgesList ?? [];
               isGroceryFetchLoadingState = false;
+              int count = 0;
+
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+
+              selectedItemCount = count;
             }
 
             // Grocery Add-Remove STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -110,6 +122,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                 }
               }
             }
+
+            if (state is GroceryAskReceiveOrderEventState) {
+              askReceiveOrder = state.askReceiveOrder;
+            }
           },
           builder: (context, state) {
             return SafeArea(
@@ -131,7 +147,25 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    Text(state is GroceryFetchSuccessState ? StringUtils.regenerateGroceryList : 'Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    state is GroceryFetchSuccessState
+                        ? GestureDetector(
+                            onTap: () {},
+                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return ClearAllItemBottomSheet(
+                                    bloc: groceryBloc,
+                                  );
+                                },
+                                isDismissible: false,
+                              );
+                            },
+                            child: Text('Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                          ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Container(
@@ -255,7 +289,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      Get.toNamed('/GroceryItemDetails');
+                                      Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: edgesList[index].productName));
                                     },
                                     child: Container(
                                       color: Colors.transparent,
@@ -275,8 +309,21 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                       child: Checkbox(
                                                         activeColor: AppColors.appColor,
                                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                        value: true,
-                                                        onChanged: (bool? value) {},
+                                                        value: edgesList[index].isActive,
+                                                        onChanged: (bool? value) {
+                                                          setState(() {
+                                                            int count = 0;
+                                                            edgesList[index].isActive = !edgesList[index].isActive!;
+
+                                                            for (var i = 0; i < edgesList.length; i++) {
+                                                              if (edgesList[i].isActive == true) {
+                                                                count = count + 1;
+                                                              }
+                                                            }
+
+                                                            selectedItemCount = count;
+                                                          });
+                                                        },
                                                       ),
                                                     ),
                                                   ),
@@ -284,23 +331,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                   Expanded(
                                                     child: SingleChildScrollView(
                                                       scrollDirection: Axis.horizontal,
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          showModalBottomSheet(
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return ClearAllItemBottomSheet(
-                                                                bloc: groceryBloc,
-                                                              );
-                                                            },
-                                                            isDismissible: false,
-                                                          );
-                                                        },
-                                                        child: Text(
-                                                          edgesList[index].productName ?? '',
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: FontUtils.h16(fontColor: AppColors.black),
-                                                        ),
+                                                      child: Text(
+                                                        edgesList[index].productName ?? '',
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: FontUtils.h16(fontColor: AppColors.black),
                                                       ),
                                                     ),
                                                   ),
@@ -346,6 +380,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             unitSize: edgesList[index].unitSize.toString(),
                                                             isAdd: false,
                                                             isRemove: true,
+                                                            isChecked: edgesList[index].isActive ?? false,
                                                           ));
                                                         },
                                                         child: Container(
@@ -397,6 +432,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                       unitSize: edgesList[index].unitSize.toString(),
                                                       isAdd: true,
                                                       isRemove: false,
+                                                      isChecked: edgesList[index].isActive ?? false,
                                                     ));
                                                   },
                                                   child: Container(
@@ -427,12 +463,36 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     ),
                     GroceryAddButtonWidget(
                       onTap: () {
-                        Get.toNamed('/GroceryCartScreen');
-                        // PreferenceUtils.clearPrefs();
-                        // Get.offAllNamed('/LoginScreen');
+                        for (var i = 0; i < edgesList.length; i++) {
+                          setState(() {
+                            edgesList[i].isActive = false;
+                          });
+                        }
+                      },
+                      buttonLable: 'UN-CHECK',
+                      isFillColor: false,
+                      selectedItemCount: selectedItemCount,
+                    ),
+                    GroceryAddButtonWidget(
+                      onTap: () {
+                        List<GroceryShoppingData> edgesDummyList = [];
+                        for (var i = 0; i < edgesList.length; i++) {
+                          if (edgesList[i].isActive == true) {
+                            edgesDummyList.add(edgesList[i]);
+                          }
+                        }
+
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return ReceiveOrderAskBottomSheet(groceryBloc: groceryBloc, selectedEdgesList: edgesDummyList);
+                          },
+                          isDismissible: false,
+                        );
                       },
                       buttonLable: 'View Cart',
                       isFillColor: false,
+                      selectedItemCount: selectedItemCount,
                     )
                   ],
                 ),
@@ -442,5 +502,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
     );
   }
 }
+
 
 // UPDATE

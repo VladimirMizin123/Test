@@ -1,5 +1,3 @@
-
-
 // List<CameraDescription> cameras = [];
 
 import 'package:firebase_core/firebase_core.dart';
@@ -30,25 +28,24 @@ import 'package:gymeats_mobile/screen/grocery/screen/address/add_delivery_addres
 import 'package:gymeats_mobile/screen/grocery/screen/address/map_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/search_delivery_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_search_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/grocery_product_details_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/add_card_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_card_selection_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/gym_eats_menu/gymeats_menu.dart';
 import 'package:gymeats_mobile/screen/home/home.dart';
-import 'package:gymeats_mobile/screen/journal/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
+import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/fifth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
-import 'package:gymeats_mobile/screen/journal/grocery_item_details_screen.dart';
+import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
-import 'package:gymeats_mobile/screen/journal/meal_screen.dart';
+import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
@@ -77,7 +74,6 @@ import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'screen/login/login_screen.dart';
-
 
 // import this all  file
 Future<void> main() async {
@@ -143,7 +139,10 @@ class MyApp extends StatelessWidget {
             ),
             GetPage(
               name: '/ChooseStoreScreen',
-              page: () => const ChooseStoreScreen(),
+              page: () {
+                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                return ChooseStoreScreen(arguments: argument);
+              },
             ),
             GetPage(
               name: '/MealDetailsScreen',
@@ -156,19 +155,22 @@ class MyApp extends StatelessWidget {
               name: '/GrocerySearchScreen',
               page: () => const GrocerySearchScreen(),
             ),
-            GetPage(
-              name: '/GroceryProductDetails',
-              page: () => const GroceryProductDetails(),
-            ),
+            // GetPage(
+            //   name: '/GroceryProductDetails',
+            //   page: () =>  GroceryProductDetails(),
+            // ),
             GetPage(
               name: '/GroceryCartScreen',
-              page: () => const GroceryCartScreen(),
+              page: () {
+                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                return GroceryCartScreen(arguments: argument);
+              },
             ),
             GetPage(
                 name: '/GroceryItemDetails',
                 page: () {
                   GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
-                  return  GroceryItemDetails(arguments : argument);
+                  return GroceryItemDetails(arguments: argument);
                 }),
             GetPage(
               name: '/FoodPreferencesScreen',
@@ -366,10 +368,7 @@ class MyApp extends StatelessWidget {
               name: '/ScanBarcodeScreen',
               page: () => const ScanBarcodeScreen(/*cameras: cameras*/),
             ),
-            GetPage(
-              name: '/GroceryItemDetailsScreen',
-              page: () => const GroceryItemDetailsScreen(),
-            ),
+            
             GetPage(
               name: '/AddNewItemScreen',
               page: () => const AddNewItemScreen(),
@@ -377,10 +376,13 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/ProfileScreen',
               page: () => const ProfileScreen(),
-              ),
-              GetPage(
-              name: '/MealScreen',
-              page: () => const MealScreen(),
+            ),
+            GetPage(
+              name: '/JournalMealScreen',
+              page: () => const JournalMealScreen(),
+            ),GetPage(
+              name: '/JournalSearchScreen',
+              page: () => const JournalSearchScreen(),
             ),
           ],
         );

@@ -147,7 +147,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 ],
               ).paddingSymmetric(horizontal: 6, vertical: 5.h),
               Expanded(
-                child: BlocConsumer(
+                child: 
+                BlocConsumer(
                   bloc: bloc,
                   builder: (context, state) {
                     if (state is LoadDashboardData) {
@@ -525,7 +526,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       padding: EdgeInsets.zero,
       lineHeight: lineHeight!,
       animationDuration: 2000,
-      percent: percentage,
+      percent: percentage > 1 ? 1 : percentage,
       center: const Text(""),
       progressColor: progressColor,
     );

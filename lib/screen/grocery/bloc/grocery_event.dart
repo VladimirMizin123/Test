@@ -1,3 +1,7 @@
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+
 abstract class GroceryEvent {}
 
 class AddGroceryToShoppingListFromSuggesticEvent extends GroceryEvent {
@@ -22,6 +26,7 @@ class GroceryAddToShoppingListEvent extends GroceryEvent {
   final String mealmeStoreId;
   final bool isAdd;
   final bool isRemove;
+  final bool isChecked;
 
   GroceryAddToShoppingListEvent({
     required this.productID,
@@ -34,6 +39,7 @@ class GroceryAddToShoppingListEvent extends GroceryEvent {
     required this.mealmeStoreId,
     this.isAdd = false,
     this.isRemove = false,
+    this.isChecked = false,
   });
 }
 
@@ -44,13 +50,19 @@ class RemoveGroceryEvent extends GroceryEvent {
 }
 
 class GrocerySearchEvent extends GroceryEvent {
-  final String? searchValue;
+  final List<GrocerySearchModel>? grocerySearchModelList;
 
-  GrocerySearchEvent({required this.searchValue});
+  GrocerySearchEvent({required this.grocerySearchModelList});
 }
 
 class GroceryDetailsMealInfoEvent extends GroceryEvent {
   final String? groceryProductName;
 
   GroceryDetailsMealInfoEvent({required this.groceryProductName});
+}
+
+class GrocerySelectedStoreEvent extends GroceryEvent {
+  final List<Cart>? productsList;
+
+  GrocerySelectedStoreEvent({this.productsList});
 }

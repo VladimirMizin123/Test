@@ -46,14 +46,14 @@ class NutritionixGetNxMealInfoByNameModelData {
   final String? nfMetricUom;
   final int? nfCalories;
   final int? nfTotalFat;
-  final double? nfSaturatedFat;
-  final double? nfCholesterol;
+  final int? nfSaturatedFat;
+  final int? nfCholesterol;
   final int? nfSodium;
   final int? nfTotalCarbohydrate;
-  final int? nfDietaryFiber;
+  final double? nfDietaryFiber;
   final int? nfSugars;
   final int? nfProtein;
-  final dynamic nfPotassium;
+  final int? nfPotassium;
   final dynamic nfP;
   final List<FullNutrient>? fullNutrients;
   final String? nixBrandName;
@@ -125,11 +125,11 @@ class NutritionixGetNxMealInfoByNameModelData {
         nfMetricUom: json["nf_metric_uom"],
         nfCalories: json["nf_calories"],
         nfTotalFat: json["nf_total_fat"],
-        nfSaturatedFat: json["nf_saturated_fat"]?.toDouble(),
-        nfCholesterol: json["nf_cholesterol"]?.toDouble(),
+        nfSaturatedFat: json["nf_saturated_fat"],
+        nfCholesterol: json["nf_cholesterol"],
         nfSodium: json["nf_sodium"],
         nfTotalCarbohydrate: json["nf_total_carbohydrate"],
-        nfDietaryFiber: json["nf_dietary_fiber"],
+        nfDietaryFiber: json["nf_dietary_fiber"]?.toDouble(),
         nfSugars: json["nf_sugars"],
         nfProtein: json["nf_protein"],
         nfPotassium: json["nf_potassium"],

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../app/sharedPrefrence.dart';
@@ -21,17 +22,20 @@ class AddEntryScreen extends StatefulWidget {
 
 class _AddEntryScreenState extends State<AddEntryScreen> {
   final routeName = '/add-Entry-screen';
-  final entryController = TextEditingController();
-  final minutesController = TextEditingController();
-  final caloriesBurnedController = TextEditingController();
+  TextEditingController entryController = TextEditingController();
+  TextEditingController minutesController = TextEditingController();
+  TextEditingController caloriesTextBurnedController = TextEditingController();
+
+  AddEntryArguments addEntryArguments = Get.arguments;
 
   AddExerciseBloc bloc = AddExerciseBloc();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    entryController.text = Get.arguments;
+    entryController.text = addEntryArguments.exerciseLogList.exerciseName ?? '';
+    minutesController.text = addEntryArguments.exerciseLogList.workoutTime.toString();
+    caloriesTextBurnedController.text = addEntryArguments.exerciseLogList.caloriesBurned.toString();
   }
 
   @override
@@ -48,7 +52,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: ()=>Get.back(),
+                  onTap: () => Get.back(),
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 25.sp,
@@ -56,7 +60,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   ),
                 ),
                 Text(
-                  StringUtils.addEntry,
+                  addEntryArguments.isFromHistory ? 'Exercise' : StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -87,23 +91,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'minutes',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                       ),
-                      commonUserTypeTextField(
-                          hintText: '00',
-                          controller: minutesController,
-                          context: context,
-                          width: 80.w,
-                          fontSize: 16.sp,
-                          borderColor: AppColors.primaryBlue,
-                          fontWeight: FontWeight.w400,
-                          isSuffix: false,
-                          valueColor: AppColors.darkGray,
-                          fontColor: AppColors.darkGray,
-                          cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.number,
-                          onChange: (value) {}),
+                      commonUserTypeTextField(hintText: '00', controller: minutesController, context: context, width: 80.w, fontSize: 16.sp, borderColor: AppColors.primaryBlue, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
                     ],
                   ).paddingOnly(top: 8.h),
                   Row(
@@ -111,23 +101,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'Calories Burned',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                       ),
-                      commonUserTypeTextField(
-                          hintText: '00cal',
-                          controller: caloriesBurnedController,
-                          context: context,
-                          width: 80.w,
-                          fontSize: 16.sp,
-                          borderColor: AppColors.primaryBlue,
-                          fontWeight: FontWeight.w400,
-                          isSuffix: false,
-                          valueColor: AppColors.darkGray,
-                          fontColor: AppColors.darkGray,
-                          cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.number,
-                          onChange: (value) {}),
+                      commonUserTypeTextField(hintText: '00cal', controller: caloriesTextBurnedController, context: context, width: 80.w, fontSize: 16.sp, borderColor: AppColors.primaryBlue, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
                     ],
                   ).paddingOnly(top: 8.h),
                 ],
@@ -141,21 +117,39 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   if (state is LoadingState) {
                     return const AppCenterLoader();
                   } else {
-                    return buildButton(
-                            context: context,
-                            title: StringUtils.save,
-                            hasImage: false,
-                            textColor: AppColors.skyBlue,
-                            onPressed: () {
-                              bloc.add(SaveClickEvent(
-                                  userId: userId,
-                                  workoutTime: minutesController.text,
-                                  exerciseName: entryController.text,
-                                  caloriesBurned: caloriesBurnedController.text,
-                                  createdBy: ''));
-                            },
-                            bgColor: AppColors.primaryBlue)
-                        .paddingOnly(bottom: 20.h);
+                    return addEntryArguments.isFromHistory
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: simpleTextBorderButton(height: 48.h, context: context, buttonLable: 'Delete', onTap: () {}, isDarkColor: true),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                flex: 1,
+                                child: simpleTextBorderButton(
+                                  height: 48.h,
+                                  context: context,
+                                  buttonLable: 'Update',
+                                  onTap: () {},
+                                  isDarkColor: true,
+                                  isFillColor: true,
+                                ),
+                              ),
+                            ],
+                          )
+                        : buildButton(
+                                context: context,
+                                title: StringUtils.save,
+                                hasImage: false,
+                                textColor: AppColors.skyBlue,
+                                onPressed: () {
+                                  bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                                },
+                                bgColor: AppColors.primaryBlue)
+                            .paddingOnly(bottom: 20.h);
                   }
                 }).paddingOnly(bottom: 20.h),
           ],
@@ -164,11 +158,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     );
   }
 
-  Widget waterDetailsView(
-      {String? waterIcon,
-      String? waterQuantity,
-      double? height,
-      void Function()? onTap}) {
+  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -179,10 +169,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,
@@ -205,4 +192,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       ],
     );
   }
+}
+
+class AddEntryArguments {
+  final ExerciseLogList exerciseLogList;
+  final bool isFromHistory;
+
+  AddEntryArguments({required this.exerciseLogList, this.isFromHistory = false});
 }

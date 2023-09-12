@@ -5,15 +5,43 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/grocery_product_details_screen.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 import 'bottomsheet/item_catalog_filter_bottomsheet.dart';
 import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 
-class ItemCatalogScreen extends StatelessWidget {
-  const ItemCatalogScreen({super.key});
+class ItemCatalogScreen extends StatefulWidget {
+  final List<Cart> selectedStoreProductList;
+  const ItemCatalogScreen({super.key, this.selectedStoreProductList = const []});
+
+  @override
+  State<ItemCatalogScreen> createState() => _ItemCatalogScreenState();
+}
+
+class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
+  List<Product> groceryResult = [];
+  @override
+  void initState() {
+    super.initState();
+    fillData();
+  }
+
+  fillData() {
+    for (var i = 0; i < widget.selectedStoreProductList.length; i++) {
+      for (var j = 0; j < widget.selectedStoreProductList[i].groceryResult!.length; j++) {
+        if (widget.selectedStoreProductList[i].groceryResult != null) {
+          if (widget.selectedStoreProductList[i].groceryResult![j].products != []) {
+            groceryResult.addAll(widget.selectedStoreProductList[i].groceryResult![j].products!);
+          }
+        }
+      }
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,104 +92,178 @@ class ItemCatalogScreen extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio: 0.6,
-                ),
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(12),
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Get.toNamed('/GroceryProductDetails');
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                        boxShadow: boxShadowWidget,
+              child: groceryResult.isEmpty
+                  ? const Center(
+                      child: Text('No Data Found!'),
+                    )
+                  : GridView.builder(
+                      itemCount: groceryResult.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        childAspectRatio: 0.6,
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Image(image: AssetImage(AssetsUtils.productDemoImg)),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Milk Almond Breeze 500ml, 1.5% fat',
-                              textAlign: TextAlign.center,
-                              style: FontUtils.h15(fontColor: AppColors.darkGray),
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.all(12),
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Get.toNamed('/GroceryProductDetails');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return  GroceryProductDetails(product: groceryResult[index]);
+                            }));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: const BorderRadius.all(Radius.circular(12)),
+                              boxShadow: boxShadowWidget,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image(
+                                  image: NetworkImage(groceryResult[index].image!),
+                                  height: 80,
+                                  width: 80,
+                                  fit: BoxFit.cover,
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Text(
+                                    groceryResult[index].itemName ?? '',
+                                    textAlign: TextAlign.center,
+                                    style: FontUtils.h15(fontColor: AppColors.darkGray),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  groceryResult[index].formattedPrice ?? '',
+                                  style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      'Available in: ',
+                                      style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                    ),
+                                    Text(
+                                      'Wallmart',
+                                      style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                !groceryResult[index].isAdded
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            groceryResult[index].isAdded = true;
+                                          });
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.065,
+                                          width: size.height * 0.065,
+                                          decoration: BoxDecoration(border: Border.all(color: AppColors.green), borderRadius: BorderRadius.circular(10)),
+                                          child: Center(child: SvgPicture.asset(AssetsUtils.icShoppingIcon, color: AppColors.green)),
+                                        ),
+                                      )
+                                    : Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          groceryResult[index].cartItemCount == 1
+                                              ? GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      groceryResult.removeWhere((element) => element.productId == groceryResult[index].productId);
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.065,
+                                                    width: size.height * 0.065,
+                                                    decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                    child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                                                  ),
+                                                )
+                                              : GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      groceryResult[index].cartItemCount = groceryResult[index].cartItemCount - 1;
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.065,
+                                                    width: size.height * 0.065,
+                                                    decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                    child: const Center(
+                                                      child: Icon(Icons.remove, size: 27),
+                                                    ),
+                                                  ),
+                                                ),
+                                          SizedBox(width: 8.w),
+                                          Container(
+                                            height: size.height * 0.065,
+                                            width: size.height * 0.065,
+                                            decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                            child: Center(
+                                                child: Text(
+                                              groceryResult[index].cartItemCount.toString(),
+                                              style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                            )),
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                groceryResult[index].cartItemCount = groceryResult[index].cartItemCount + 1;
+                                              });
+                                            },
+                                            child: Container(
+                                              height: size.height * 0.065,
+                                              width: size.height * 0.065,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: AppColors.mint,
+                                              ),
+                                              child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '\$ 5.99',
-                            style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
-                              const SizedBox(width: 3),
-                              Text(
-                                'Available in: ',
-                                style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
-                              ),
-                              Text(
-                                'Wallmart',
-                                style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: size.height * 0.065,
-                                width: size.height * 0.065,
-                                decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
-                              ),
-                              SizedBox(width: 8.w),
-                              Container(
-                                height: size.height * 0.065,
-                                width: size.height * 0.065,
-                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                child: Center(
-                                    child: Text(
-                                  '1',
-                                  style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
-                                )),
-                              ),
-                              SizedBox(width: 8.w),
-                              Container(
-                                height: size.height * 0.065,
-                                width: size.height * 0.065,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: AppColors.mint,
-                                ),
-                                child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: simpleTextBorderButton(
+                context: context,
+                color: AppColors.green,
+                buttonLable: 'Checkout',
+                height: size.height * 0.065,
+                width: size.width,
+                isLoadingWidget: false,
+                onTap: () {
+                  Get.toNamed('/CheckoutScreen');
                 },
+                isDarkColor: true,
+                isFillColor: true,
               ),
-            )
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

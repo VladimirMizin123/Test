@@ -9,9 +9,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -32,7 +30,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   @override
   void initState() {
     super.initState();
-    groceryBloc.add(GroceryDetailsMealInfoEvent(groceryProductName: widget.arguments!.product!.itemName));
+    groceryBloc.add(GroceryDetailsMealInfoEvent(groceryProductName: widget.arguments!.productName!));
   }
 
   @override
@@ -93,7 +91,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                      nutritionixGetNxMealInfoByNameModelData!.foodName ?? '',//  widget.arguments != null ? widget.arguments!.product!.itemName! : '',
+                                        nutritionixGetNxMealInfoByNameModelData!.foodName ?? '',
                                         style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
                                       ),
                                       const SizedBox(width: 7),
@@ -116,7 +114,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                         decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(6)),
                                         child: Center(
                                             child: Text(
-                                          widget.arguments != null ? widget.arguments!.product!.unitSize.toString() : '0',
+                                          '0',
                                           style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
                                         )),
                                       ),
@@ -285,13 +283,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                     width: size.width,
                                     isLoadingWidget: false,
                                     onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return const ReceiveOrderAskBottomSheet();
-                                        },
-                                        isDismissible: false,
-                                      );
+                                      
                                     },
                                     isDarkColor: true,
                                     isFillColor: true,
@@ -352,7 +344,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
 }
 
 class GroceryItemDetailsArguments {
-  final Product? product;
+  final String? productName;
 
-  GroceryItemDetailsArguments({required this.product});
+  GroceryItemDetailsArguments({required this.productName});
 }

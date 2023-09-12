@@ -10,7 +10,8 @@ class GroceryAddButtonWidget extends StatelessWidget {
   final VoidCallback onTap;
   final bool isFillColor;
   final String buttonLable;
-  const GroceryAddButtonWidget({super.key, required this.onTap, required this.isFillColor, required this.buttonLable});
+  final int selectedItemCount;
+  const GroceryAddButtonWidget({super.key, required this.onTap, required this.isFillColor, required this.buttonLable, required this.selectedItemCount});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class GroceryAddButtonWidget extends StatelessWidget {
                       ),
                       child: Center(
                           child: Text(
-                        '3',
+                        selectedItemCount.toString(),
                         style: FontUtils.h18(fontColor: AppColors.whiteColor, fontWeight: FWT.semiBold),
                       ))),
                 ],
