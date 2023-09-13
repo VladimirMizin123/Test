@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/grocery_product_details_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -16,7 +18,9 @@ import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 
 class ItemCatalogScreen extends StatefulWidget {
   final List<Cart> selectedStoreProductList;
-  const ItemCatalogScreen({super.key, this.selectedStoreProductList = const []});
+  final GroceryBloc groceryBloc;
+  final String productId;
+  const ItemCatalogScreen({super.key, this.selectedStoreProductList = const [], required this.groceryBloc, required this.productId});
 
   @override
   State<ItemCatalogScreen> createState() => _ItemCatalogScreenState();
@@ -24,6 +28,7 @@ class ItemCatalogScreen extends StatefulWidget {
 
 class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
   List<Product> groceryResult = [];
+  bool isProductSelect = false;
   @override
   void initState() {
     super.initState();
@@ -111,7 +116,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                           onTap: () {
                             // Get.toNamed('/GroceryProductDetails');
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return  GroceryProductDetails(product: groceryResult[index]);
+                              return GroceryProductDetails(product: groceryResult[index]);
                             }));
                           },
                           child: Container(
@@ -162,12 +167,15 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                !groceryResult[index].isAdded
+                                !groceryResult[index].isAddedToShoppingList
                                     ? GestureDetector(
                                         onTap: () {
-                                          setState(() {
-                                            groceryResult[index].isAdded = true;
-                                          });
+                                          if (!isProductSelect) {
+                                            setState(() {
+                                              groceryResult[index].isAddedToShoppingList = true;
+                                              isProductSelect = true;
+                                            });
+                                          }
                                         },
                                         child: Container(
                                           height: size.height * 0.065,
@@ -180,35 +188,42 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          groceryResult[index].cartItemCount == 1
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      groceryResult.removeWhere((element) => element.productId == groceryResult[index].productId);
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    height: size.height * 0.065,
-                                                    width: size.height * 0.065,
-                                                    decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                                    child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
-                                                  ),
-                                                )
-                                              : GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      groceryResult[index].cartItemCount = groceryResult[index].cartItemCount - 1;
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    height: size.height * 0.065,
-                                                    width: size.height * 0.065,
-                                                    decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                                    child: const Center(
-                                                      child: Icon(Icons.remove, size: 27),
-                                                    ),
-                                                  ),
-                                                ),
+                                          // groceryResult[index].cartItemCount == 1
+                                          //     ? GestureDetector(
+                                          //         onTap: () {
+                                          //           setState(() {
+                                          //             // groceryResult.removeWhere((element) => element.productId == groceryResult[index].productId);
+                                          //             groceryResult[index].isAddedToShoppingList = false;
+                                          //           });
+                                          //         },
+                                          //         child: Container(
+                                          //           height: size.height * 0.065,
+                                          //           width: size.height * 0.065,
+                                          //           decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                          //           child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                                          //         ),
+                                          //       )
+                                          //     :
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                if (groceryResult[index].cartItemCount == 1) {
+                                                  groceryResult[index].isAddedToShoppingList = false;
+                                                  isProductSelect = false;
+                                                } else {
+                                                  groceryResult[index].cartItemCount = groceryResult[index].cartItemCount - 1;
+                                                }
+                                              });
+                                            },
+                                            child: Container(
+                                              height: size.height * 0.065,
+                                              width: size.height * 0.065,
+                                              decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                              child: const Center(
+                                                child: Icon(Icons.remove, size: 27),
+                                              ),
+                                            ),
+                                          ),
                                           SizedBox(width: 8.w),
                                           Container(
                                             height: size.height * 0.065,
@@ -252,12 +267,23 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
               child: simpleTextBorderButton(
                 context: context,
                 color: AppColors.green,
-                buttonLable: 'Checkout',
+                buttonLable: 'Confirm',
                 height: size.height * 0.065,
                 width: size.width,
                 isLoadingWidget: false,
                 onTap: () {
-                  Get.toNamed('/CheckoutScreen');
+                  List<Product> groceryCartList = [];
+
+                  for (var i = 0; i < groceryResult.length; i++) {
+                    if (groceryResult[i].isAddedToShoppingList == true) {
+                      groceryCartList.add(groceryResult[i]);
+                    }
+                  }
+
+                  widget.groceryBloc.add(GroceryProductListEvent(productList: groceryCartList
+                  ,productID: widget.productId
+                  ));
+                  Navigator.pop(context);
                 },
                 isDarkColor: true,
                 isFillColor: true,

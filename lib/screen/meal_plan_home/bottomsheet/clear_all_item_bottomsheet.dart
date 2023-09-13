@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -27,8 +28,7 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
     final screenSize = MediaQuery.of(context).size;
     return BlocConsumer<GroceryBloc, GroceryState>(
         bloc: widget.bloc,
-        listener: (context, state) {
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           return Material(
             color: AppColors.whiteColor,
@@ -71,15 +71,17 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
                             },
                             isDarkColor: true),
                         simpleTextBorderButton(
-                                height: screenSize.height * 0.05,
-                                width: screenSize.width * 0.43,
-                                context: context,
-                                buttonLable: StringUtils.skip,
-                                onTap: () {
-                                },
-                                isDarkColor: true,
-                                isFillColor: true,
-                              ),
+                          height: screenSize.height * 0.05,
+                          width: screenSize.width * 0.43,
+                          context: context,
+                          isLoadingWidget: state is ClearShoppingListLoadingState ? true : false,
+                          buttonLable: StringUtils.skip,
+                          onTap: () {
+                            widget.bloc.add(CleatGroceryEvent());
+                          },
+                          isDarkColor: true,
+                          isFillColor: true,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 5),

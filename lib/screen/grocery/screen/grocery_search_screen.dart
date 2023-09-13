@@ -151,8 +151,17 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                                                         ),
                                                       ],
                                                     ),
-                                                    SvgPicture.asset(AssetsUtils.icAddCircle, height: 30),
-                                                    // SvgPicture.asset(AssetsUtils.icAddIcon, height: 30),
+                                                    groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              groceryBloc.add(GroceryAddToGroceryListEvent(databaseIdOfRecipes: ''));
+                                                              setState(() {
+                                                                groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList = true;
+                                                              });
+                                                            },
+                                                            child: SvgPicture.asset(AssetsUtils.icAddCircle, height: 30),
+                                                          )
+                                                        : SvgPicture.asset(AssetsUtils.icAddIcon, height: 30),
                                                   ],
                                                 ),
                                               ),

@@ -124,7 +124,7 @@ class Product {
   final dynamic mealType;
   final dynamic day;
   final dynamic eatableType;
-  bool isAdded;
+  bool isAddedToShoppingList;
   int cartItemCount;
 
   Product({
@@ -151,7 +151,7 @@ class Product {
     this.mealType,
     this.day,
     this.eatableType,
-    this.isAdded = false,
+    this.isAddedToShoppingList = false,
     this.cartItemCount = 1,
   });
 

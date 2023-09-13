@@ -138,4 +138,23 @@ class GroceryRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> addToShoppingList({required String databaseIdOfRecipes}) async {
+    final response = await apiServices.post('${ApiUrls.addToShoppingList}/$userID', {
+      "databaseIdOfRecipes": [databaseIdOfRecipes]
+    });
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> clearShoppingList() async {
+    final response = await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
 }

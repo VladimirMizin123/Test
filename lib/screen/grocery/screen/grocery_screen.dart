@@ -30,7 +30,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   int selectedItemCount = 0;
   String _selectProduct = 'Product 1';
   List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
-  List<String> dList = [];
   GroceryBloc groceryBloc = GroceryBloc();
   List<GroceryShoppingData> edgesList = [];
   AskReceiveOrder? askReceiveOrder;
@@ -126,6 +125,14 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
             if (state is GroceryAskReceiveOrderEventState) {
               askReceiveOrder = state.askReceiveOrder;
             }
+
+            if (state is ClearShoppingListSuccessState) {
+              if (state.isClear) {
+                setState(() {
+                  edgesList.clear();
+                });
+              }
+            }
           },
           builder: (context, state) {
             return SafeArea(
@@ -147,7 +154,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    state is GroceryFetchSuccessState
+                    edgesList.isEmpty
                         ? GestureDetector(
                             onTap: () {},
                             child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
@@ -461,34 +468,36 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                               ),
                             ),
                     ),
+                    // GroceryAddButtonWidget(
+                    //   onTap: () {
+                    //     for (var i = 0; i < edgesList.length; i++) {
+                    //       setState(() {
+                    //         edgesList[i].isActive = false;
+                    //       });
+                    //     }
+                    //   },
+                    //   buttonLable: 'UN-CHECK',
+                    //   isFillColor: false,
+                    //   selectedItemCount: selectedItemCount,
+                    // ),
                     GroceryAddButtonWidget(
                       onTap: () {
-                        for (var i = 0; i < edgesList.length; i++) {
-                          setState(() {
-                            edgesList[i].isActive = false;
-                          });
-                        }
-                      },
-                      buttonLable: 'UN-CHECK',
-                      isFillColor: false,
-                      selectedItemCount: selectedItemCount,
-                    ),
-                    GroceryAddButtonWidget(
-                      onTap: () {
-                        List<GroceryShoppingData> edgesDummyList = [];
-                        for (var i = 0; i < edgesList.length; i++) {
-                          if (edgesList[i].isActive == true) {
-                            edgesDummyList.add(edgesList[i]);
+                        if (edgesList.isNotEmpty) {
+                          List<GroceryShoppingData> edgesDummyList = [];
+                          for (var i = 0; i < edgesList.length; i++) {
+                            if (edgesList[i].isActive == true) {
+                              edgesDummyList.add(edgesList[i]);
+                            }
                           }
-                        }
 
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return ReceiveOrderAskBottomSheet(groceryBloc: groceryBloc, selectedEdgesList: edgesDummyList);
-                          },
-                          isDismissible: false,
-                        );
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return ReceiveOrderAskBottomSheet(groceryBloc: groceryBloc, selectedEdgesList: edgesDummyList);
+                            },
+                            isDismissible: false,
+                          );
+                        }
                       },
                       buttonLable: 'View Cart',
                       isFillColor: false,
@@ -502,6 +511,3 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
     );
   }
 }
-
-
-// UPDATE

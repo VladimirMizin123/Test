@@ -145,3 +145,32 @@ class GrocerySelectedStoreEventState extends GroceryState {
 
   GrocerySelectedStoreEventState({this.productsList = const []});
 }
+
+class GroceryAddToGrocerySuccessState extends GroceryState {
+  final bool isAdded;
+
+  GroceryAddToGrocerySuccessState({required this.isAdded});
+}
+
+class GroceryAddToGroceryLoadingState extends GroceryState {}
+
+class GroceryAddToGroceryErrorState extends GroceryState {}
+
+class GroceryProductListState extends GroceryState {
+  final List<Product>? productList;
+  final String? productID;
+
+  GroceryProductListState({required this.productList,
+    this.productID});
+}
+
+
+class ClearShoppingListLoadingState extends GroceryState {}
+
+class ClearShoppingListErrorState extends GroceryState {}
+
+class ClearShoppingListSuccessState extends GroceryState {
+  final bool isClear;
+
+  ClearShoppingListSuccessState({required this.isClear});
+}

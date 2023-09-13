@@ -11,7 +11,7 @@ import 'package:gymeats_mobile/widget/divider_widget.dart';
 
 class GroceryProductDetails extends StatefulWidget {
   final Product product;
-   const GroceryProductDetails({super.key, required this.product});
+  const GroceryProductDetails({super.key, required this.product});
 
   @override
   State<GroceryProductDetails> createState() => _GroceryProductDetailsState();
@@ -71,7 +71,7 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Calories', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text( widget.product.calorie ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text(widget.product.calorie ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -91,7 +91,7 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Carbs', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text( widget.product.carbs ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text(widget.product.carbs ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -101,7 +101,7 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text(widget.product.fat ??  '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text(widget.product.fat ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -231,7 +231,7 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                         ? GestureDetector(
                             onTap: () {
                               setState(() {
-                                widget.product.isAdded = true;
+                                widget.product.isAddedToShoppingList = true;
                               });
                             },
                             child: Container(
