@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
+
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
 import '../../../models/fetch_meal_plan_model.dart';
@@ -22,6 +23,10 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     on<MealTrackerData>(_onMealTrackerData);
     on<GetWaterDetails>(_onGetWaterDetails);
     on<GetExerciseDetails>(_onGetExerciseDetails);
+    on<GetSelectedImagePath>(_onGetSelectedImagePath);
+    on<AddNewItemEvent>(_onAddNewItemData);
+    on<AddNewDietEvent>(_onAddNewDietData);
+    on<DailyRecapEvent>(_onDailyRecap);
   }
 
   final GetUserJournalDataRepository _journalDataRepository = GetUserJournalDataRepository();
@@ -31,8 +36,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
   final GetWaterDetailsRepository _waterDetailsRepository = GetWaterDetailsRepository();
   final GetExerciseDetailsRepository _exerciseDetailsRepository = GetExerciseDetailsRepository();
 
-  _onGetUserJournalData(
-      GetUserJournalData event, Emitter<GetUserJournalState> emit) async {
+  _onGetUserJournalData(GetUserJournalData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(LoadingData());
       final response = await _journalDataRepository.getUserJournalData(date: event.date);
@@ -43,23 +47,20 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       });
     } catch (e) {
       emit(ErrorJournalState());
-
     }
   }
 
   List<MealData> dataList = [];
   List<TrackerData> mealTrackerList = [];
 
-  _onGenMealTrackerData(
-      GenMealData event, Emitter<GetUserJournalState> emit) async {
+  _onGenMealTrackerData(GenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
-
       await _planRepository.fetchMealPlan().fold((left) {
         emit(ErrorGenTrackState());
       }, (right) {
         dataList.clear();
         right.data!.map((e) {
-          if(dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == dateTimeNow()){
+          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == dateTimeNow()) {
             dataList.addAll(e.meals!);
           }
         }).toList();
@@ -77,7 +78,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       }, (right) {
         mealTrackerList.clear();
         right.data!.map((e) {
-          if(dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == event.date){
+          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == event.date) {
             mealTrackerList.add(e);
           }
         }).toList();
@@ -93,35 +94,30 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       await _waterDetailsRepository.getWaterDetails(date: event.date).fold((left) {
         emit(ErrorWaterDataState());
       }, (right) {
-
         emit(LoadWaterData(data: right.data!));
       });
     } catch (e) {
       emit(ErrorWaterDataState());
     }
-
   }
 
   _onGetExerciseDetails(GetExerciseDetails event, Emitter<GetUserJournalState> emit) async {
     try {
+      emit(AllExerciseLoadingState());
       await _exerciseDetailsRepository.getExerciseDetails(date: event.date).fold((left) {
         emit(ErrorExerciseState());
       }, (right) {
-        emit(LoadExerciseData(data: right.data!));
+        emit(AllExerciseSuccessState(data: right.data!));
       });
     } catch (e) {
       emit(ErrorExerciseState());
     }
   }
 
-
-  _onAddEatenMeal(
-      AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
+  _onAddEatenMeal(AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(LoadingDoneState());
-      await _eatenMealRepository
-          .addEatenMeal(userId: userId, mealId: event.mealId)
-          .fold((left) {
+      await _eatenMealRepository.addEatenMeal(userId: userId, mealId: event.mealId).fold((left) {
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
@@ -138,6 +134,61 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
+  _onGetSelectedImagePath(GetSelectedImagePath event, Emitter<GetUserJournalState> emit) async {
+    emit(SelectedImagePathState(imgPath: event.imagePath));
+  }
 
+  _onAddNewItemData(AddNewItemEvent event, Emitter<GetUserJournalState> emit) async {
+    try {
+      emit(AddNewItemLoadingData());
+      await _eatenMealRepository.addNewItem(userId: userId, mealId: '').fold((left) {
+        showToast(isSuccess: false, message: left.errorMessage!);
+      }, (right) {
+        showToast(isSuccess: true, message: right.message!);
+        emit(AddNewItemSuccessState(imgPath: ''));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+    }
+  }
 
+  _onAddNewDietData(AddNewDietEvent event, Emitter<GetUserJournalState> emit) async {
+    try {
+      emit(AddNewDietLoadingData());
+      await _eatenMealRepository
+          .addNewDiet(
+        dietName: event.dietName ?? '',
+        proteinPercentage: event.proteinPercentage ?? '',
+        carbsPercentage: event.carbsPercentage ?? '',
+        fatPercentage: event.fatPercentage ?? '',
+        surplusPercentage: event.surplusPercentage ?? '',
+        deficitPercentage: event.deficitPercentage ?? '',
+        mealSchedule: event.mealSchedule ?? '',
+        colorCode: event.colorCode ?? '',
+        isDefault: event.isDefault ?? false,
+      )
+          .fold((left) {
+        showToast(isSuccess: false, message: left.errorMessage!);
+      }, (right) {
+        showToast(isSuccess: true, message: right.message!);
+        emit(AddNewDietSuccessState(imgPath: ''));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+    }
+  }
+
+  _onDailyRecap(DailyRecapEvent event, Emitter<GetUserJournalState> emit) async {
+    try {
+      emit(DailyRecapLoadingData());
+      await _eatenMealRepository.dailyRecap().fold((left) {
+        showToast(isSuccess: false, message: left.errorMessage!);
+      }, (right) {
+        showToast(isSuccess: true, message: right.message!);
+        emit(DailyRecapSuccessState(recapData: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+    }
+  }
 }

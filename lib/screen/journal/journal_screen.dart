@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
+import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
+import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
+import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -33,7 +37,7 @@ class JournalScreen extends StatefulWidget {
 
 class _JournalScreenState extends State<JournalScreen> {
   final routeName = '/JournalScreen';
-  DateTime datetime = DateTime.now();
+  DateTime selectedDateTime = DateTime.now();
   int currentIndex = 0;
   bool yesTap = false;
   bool noTap = false;
@@ -49,12 +53,13 @@ class _JournalScreenState extends State<JournalScreen> {
   GetDashboardModel? model;
   List<MealData>? mealTrackerDataList = [];
   List<TrackerData>? tmpMealTrackerDataList = [];
-  List<MealData>? breakFastList = [];
+  List<MealData> breakFastList = [];
   List<MealData>? lunchDataList = [];
   List<MealData>? dinnerDataList = [];
   List<MealData>? snackDataList = [];
   WaterData? waterData;
   ExerciseData? exerciseData;
+  List<DailyRecapData>? recapData;
 
   GetUserJournalBloc bloc = GetUserJournalBloc();
 
@@ -66,9 +71,7 @@ class _JournalScreenState extends State<JournalScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     bloc.add(GetUserJournalData(date: dateTimeNow()));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToToday();
@@ -87,7 +90,7 @@ class _JournalScreenState extends State<JournalScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    var totalDays = daysInMonth(datetime);
+    var totalDays = daysInMonth(selectedDateTime);
     listOfDates = List<int>.generate(totalDays, (i) => i + 1);
     carouselList = [
       Row(
@@ -175,7 +178,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   }),
                   tilePadding: EdgeInsets.zero,
                   title: Text(
-                    dateTimeDDMMMYYYY(dateTimeVal: datetime.toString()),
+                    dateTimeDDMMMYYYY(dateTimeVal: selectedDateTime.toString()),
                     style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
                   ),
                   children: [
@@ -187,8 +190,8 @@ class _JournalScreenState extends State<JournalScreen> {
                         itemCount: listOfDates.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
-                          final bool isSelected = index == datetime.day - 1;
-                          final currentDate = DateTime(datetime.year, datetime.month, listOfDates[index]);
+                          final bool isSelected = index == selectedDateTime.day - 1;
+                          final currentDate = DateTime(selectedDateTime.year, selectedDateTime.month, listOfDates[index]);
                           final dayAbbreviation = DateFormat.E().format(currentDate);
                           return AutoScrollTag(
                             key: ValueKey(index),
@@ -197,9 +200,9 @@ class _JournalScreenState extends State<JournalScreen> {
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  datetime = DateTime(datetime.year, datetime.month, listOfDates[index]);
+                                  selectedDateTime = DateTime(selectedDateTime.year, selectedDateTime.month, listOfDates[index]);
                                 });
-                                bloc.add(GetUserJournalData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                                bloc.add(GetUserJournalData(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                               },
                               child: Container(
                                 height: 70.h,
@@ -262,7 +265,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     if (state is LoadWaterData) {
                       return const AppCenterLoader();
                     }
-                    if (state is LoadExerciseData) {
+                    if (state is AllExerciseSuccessState) {
                       return initView(textTheme);
                     }
                     if (state is LoadingDoneState) {
@@ -286,31 +289,31 @@ class _JournalScreenState extends State<JournalScreen> {
                   listener: (context, state) async {
                     if (state is LoadUserJournalData) {
                       model = state.model;
-                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) == dateTimeNow()) {
+                      if (dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString()) == dateTimeNow()) {
                         PreferenceUtils.setInt(userMealPlanCountState, 0);
                         bloc.add(GenMealData());
                         // bloc.add(MealTrackerData(
                         //     date: dateTimeYYYYMMDD(
                         //         dateTimeVal: datetime.toString())));
                       } else {
-                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                       }
                     }
                     if (state is ErrorJournalState) {
-                      if (dateTimeYYYYMMDD(dateTimeVal: datetime.toString()) == dateTimeNow()) {
+                      if (dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString()) == dateTimeNow()) {
                         bloc.add(GenMealData());
                       } else {
-                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                        bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                       }
                     }
 
                     if (state is LoadGenMealData) {
                       isDoneLoader = false;
                       mealTrackerDataList = state.genMealDataList;
-                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                       mealTrackerDataList!.map((e) {
                         if (e.meal == 'breakfast') {
-                          breakFastList!.add(e);
+                          breakFastList.add(e);
                         } else if (e.meal == 'lunch') {
                           lunchDataList!.add(e);
                         } else if (e.meal == 'dinner') {
@@ -319,26 +322,32 @@ class _JournalScreenState extends State<JournalScreen> {
                           snackDataList!.add(e);
                         }
                       }).toList();
-                      bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                      bloc.add(MealTrackerData(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                     }
                     if (state is LoadMealTrackData) {
                       print("Meal Id->${state.mealTrackDataList[0].value}");
                       tmpMealTrackerDataList = state.mealTrackDataList;
                     }
                     if (state is ErrorGenTrackState) {
-                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                      bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                     }
                     if (state is LoadWaterData) {
                       waterData = state.data;
                       waterML = waterData!.totalWaterIntake!;
-                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                     }
                     if (state is ErrorWaterDataState) {
-                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: datetime.toString())));
+                      bloc.add(GetExerciseDetails(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
                     }
-                    if (state is LoadExerciseData) {
+                    if (state is AllExerciseSuccessState) {
                       exerciseData = state.data;
                     }
+
+                    // if (state is DailyRecapSuccessState) {
+                    //   recapData = state.recapData;
+                    // }
+
+                    
                     if (state is LoadingDoneState) {
                       isDoneLoader = true;
                     }
@@ -421,18 +430,21 @@ class _JournalScreenState extends State<JournalScreen> {
           if (mealTrackerDataList!.isNotEmpty) ...{
             Column(
               children: [
-                Text(
-                  'Food',
-                  style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
-                ).paddingOnly(top: 5.h),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Food',
+                    style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+                  ).paddingOnly(top: 5.h),
+                ),
                 dashBoardCardView(
                   width: double.infinity.w,
                   margin: EdgeInsets.symmetric(vertical: 10.h),
                   child: Column(
                     children: [
                       InkWell(
-                        onTap: (){
-                          Get.toNamed("/MealScreen",arguments: [breakFastList]);
+                        onTap: () {
+                          Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: breakFastList, dateTime: selectedDateTime));
                         },
                         child: ListTile(
                           leading: Image.asset(
@@ -443,12 +455,14 @@ class _JournalScreenState extends State<JournalScreen> {
                           ),
                           title: Row(
                             children: [
+                              const SizedBox(width: 10),
                               Text(
-                                breakFastList![0].meal!,
+                                breakFastList[0].meal!,
                                 style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                               ),
+                              const SizedBox(width: 10),
                               Text(
-                                '${int.parse(breakFastList![0].calories!.toString().split('.')[1]) >= 50 ? breakFastList![0].calories!.toDouble().ceil().toString() : breakFastList![0].calories!.toDouble().floor().toString()} cal',
+                                '${int.parse(breakFastList[0].calories!.toString().split('.')[1]) >= 50 ? breakFastList[0].calories!.toDouble().ceil().toString() : breakFastList[0].calories!.toDouble().floor().toString()} cal',
                                 style: textTheme.bodyLarge?.copyWith(color: AppColors.terracotta),
                               ),
                             ],
@@ -462,22 +476,27 @@ class _JournalScreenState extends State<JournalScreen> {
                         ),
                       ),
                       Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
-                      InkWell(
-                        onTap: () {
-                          Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList![0]));
-                        },
-                        child: commonJournalFoodData(
-                          title: breakFastList![0].recipe!.name!,
-                          subTitle: '${breakFastList![0].numOfServings} serving',
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 13.h,
-                            color: AppColors.darkGray,
-                          ),
-                          textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                          subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
-                        ).paddingOnly(top: 10.h, bottom: 10.h),
-                      ),
+                      ListView.builder(
+                          itemCount: breakFastList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList[index], currentSelectedData: selectedDateTime));
+                              },
+                              child: commonJournalFoodData(
+                                title: breakFastList[index].recipe!.name!,
+                                subTitle: '${breakFastList[index].numOfServings} serving',
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 13.h,
+                                  color: AppColors.darkGray,
+                                ),
+                                textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                                subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                              ).paddingOnly(top: 10.h, bottom: 10.h),
+                            );
+                          }),
                     ],
                   ),
                 ),
@@ -516,7 +535,8 @@ class _JournalScreenState extends State<JournalScreen> {
               children: [
                 InkWell(
                   onTap: () {
-                    Get.toNamed('/AddWaterScreen', arguments: [model!.data!.dailyWaterGoals!])?.then((value) {
+                    print(model!.data!.dailyWaterGoals);
+                    Get.toNamed('/AddWaterScreen', arguments: AddWaterArguments(dailyGoal: model!.data!.dailyWaterGoals.toString()))?.then((value) {
                       setState(() {
                         waterML = waterML + int.parse(value);
                       });
@@ -568,7 +588,7 @@ class _JournalScreenState extends State<JournalScreen> {
               children: [
                 InkWell(
                   onTap: () {
-                    Get.toNamed('/AddExerciseScreen');
+                    Get.toNamed('/AddExerciseScreen', arguments: AddExerciseArguments(dateTime: selectedDateTime));
                     //   .then((value) {
                     // setState(() {
                     //   exerciseCal = exerciseCal + int.parse(value);
@@ -595,7 +615,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                 ),
                 Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
-                exerciseData!.exerciseLogList!.isNotEmpty && exerciseData!.exerciseLogList!.length > 0
+                exerciseData!.exerciseLogList!.isNotEmpty && exerciseData!.exerciseLogList!.isNotEmpty
                     ? commonJournalFoodData(
                         // title: StringUtils.running,
                         title: exerciseData!.exerciseLogList![0].exerciseName!,
@@ -608,7 +628,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
                         subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                       ).paddingOnly(top: 10.h, bottom: 10.h)
-                    : Offstage(),
+                    : const Offstage(),
                 exerciseData!.exerciseLogList!.isNotEmpty && exerciseData!.exerciseLogList!.length > 1
                     ? commonJournalFoodData(
                         title: exerciseData!.exerciseLogList![1].exerciseName!,
@@ -621,7 +641,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
                         subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
                       ).paddingOnly(bottom: 10.h)
-                    : Offstage(),
+                    : const Offstage(),
               ],
             ),
           ),
@@ -843,17 +863,18 @@ class _JournalScreenState extends State<JournalScreen> {
 
   Widget commonFoodItemView({String image = '', String title = '', String cal = '', TextTheme? textTheme, List<MealData>? dataList}) {
     bool isDone = false;
-    tmpMealTrackerDataList!.forEach((element) {
+    for (var element in tmpMealTrackerDataList!) {
       if (dataList![0].meal == element.meal!.meal) {
         isDone = element.value == "ATE";
       }
-    });
+    }
     // CONFLICT RESOLVED
     return Column(
       children: [
         InkWell(
-          onTap: (){
-            Get.toNamed("/MealScreen",arguments: [dataList]);
+          onTap: () {
+            // Get.toNamed("/JournalMealScreen", arguments: [dataList]);
+            Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: dataList, dateTime: selectedDateTime));
           },
           child: dashBoardCardView(
             width: double.infinity.w,
@@ -864,9 +885,14 @@ class _JournalScreenState extends State<JournalScreen> {
                 width: 25.w,
                 color: AppColors.darkGray,
               ),
-              title: Text(
-                title,
-                style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+              title: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Text(
+                    title,
+                    style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+                  ),
+                ],
               ),
               trailing: Icon(
                 Icons.arrow_forward_ios,

@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -27,6 +29,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController _qrViewController;
+  ScanBarcodeArguments scanBarcodeArguments = Get.arguments;
 
   //
   // CameraController? controller;
@@ -70,7 +73,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 300.h,
               width: 300.w,
               child: QRView(
@@ -82,7 +85,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                   cutOutHeight: 300.h,
                   cutOutWidth: 300.w,
                 ),
-                cameraFacing: CameraFacing.front,
+                cameraFacing: CameraFacing.back,
                 key: qrKey,
                 onQRViewCreated: _onQRViewCreated,
               ),
@@ -134,6 +137,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       debugPrint('scanData: ${scanData.code}');
       // widget.onBarcodeFetched(scanData);
       _qrViewController.dispose();
+      scanBarcodeArguments.journalPlanBloc.add(JournalScanBarcodeEvent(barcode: scanData.code!));
       Navigator.of(context).pop();
     });
   }
@@ -145,4 +149,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
 //     print("Scanned Data: ${scanData.code}");
 //   });
 // }
+}
+
+class ScanBarcodeArguments {
+  final JournalPlanBloc journalPlanBloc;
+
+  ScanBarcodeArguments({required this.journalPlanBloc});
 }

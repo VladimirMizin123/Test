@@ -6,35 +6,38 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
-class GrocerySearchScreen extends StatefulWidget {
-  const GrocerySearchScreen({super.key});
+class JournalSearchScreen extends StatefulWidget {
+  const JournalSearchScreen({super.key});
 
   @override
-  State<GrocerySearchScreen> createState() => _GrocerySearchScreenState();
+  State<JournalSearchScreen> createState() => _JournalSearchScreenState();
 }
 
-class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
+class _JournalSearchScreenState extends State<JournalSearchScreen> {
   TextEditingController searchController = TextEditingController();
-  GroceryBloc groceryBloc = GroceryBloc();
+  JournalPlanBloc journalPlanBloc = JournalPlanBloc();
 
   List<Cart> groceryMultiSearchModelDataList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<GroceryBloc, GroceryState>(
-          bloc: groceryBloc,
+      body: BlocConsumer<JournalPlanBloc, JournalMealPlanState>(
+          bloc: journalPlanBloc,
           listener: (context, state) {
-            if (state is GrocerySearchSuccessState) {
+            if (state is JournalSearchSuccessState) {
               groceryMultiSearchModelDataList = state.groceryMultiSearchProductList ?? [];
+            }
+            if (state is JournalAddToGrocerySuccessState) {
+              // MAKE STATUS TRUE AND CHANGE ICON PLUS SIGN TO CHECK SIGN IN THIS LIST - groceryMultiSearchModelDataList
             }
           },
           builder: (context, state) {
@@ -55,7 +58,7 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                             Get.back();
                           },
                           child: const Icon(Icons.keyboard_arrow_left_outlined, size: 30)),
-                      Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
+                      Text('Breakfast', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                       Opacity(
                         opacity: 0,
                         child: Image.asset(
@@ -79,8 +82,8 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                       child: TextField(
                         controller: searchController,
                         onSubmitted: (String value) {
-                          groceryBloc.add(GrocerySearchEvent(
-                            grocerySearchModelList: [GrocerySearchModel(groceryName: searchController.text, quantity: 0)],
+                          journalPlanBloc.add(JournalSearchEvent(
+                            journalSearchModelList: [GrocerySearchModel(groceryName: searchController.text, quantity: 0)],
                           ));
                         },
                         decoration: InputDecoration(
@@ -96,7 +99,7 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                   ),
                   SizedBox(height: 15.h),
                   Expanded(
-                    child: state is GrocerySearchLoadingState
+                    child: state is JournalSearchLoadingState
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
@@ -151,8 +154,13 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                                                         ),
                                                       ],
                                                     ),
-                                                    SvgPicture.asset(AssetsUtils.icAddCircle, height: 30),
-                                                    // SvgPicture.asset(AssetsUtils.icAddIcon, height: 30),
+                                                    // SvgPicture.asset(AssetsUtils.icAddCircle, height: 30),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        journalPlanBloc.add(JournalAddToGroceryListEvent(databaseIdOfRecipes: ''));
+                                                      },
+                                                      child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30),
+                                                    ),
                                                   ],
                                                 ),
                                               ),

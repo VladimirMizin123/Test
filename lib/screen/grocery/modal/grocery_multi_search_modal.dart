@@ -12,7 +12,7 @@ class GroceryMultiSearchModel {
   final bool? success;
   final dynamic message;
   final dynamic errorMessage;
-  final GroceryMultiSearchModelData? data;
+  final Data? data;
 
   GroceryMultiSearchModel({
     this.success,
@@ -25,7 +25,7 @@ class GroceryMultiSearchModel {
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? null : GroceryMultiSearchModelData.fromJson(json["data"]),
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,31 +36,67 @@ class GroceryMultiSearchModel {
       };
 }
 
-class GroceryMultiSearchModelData {
-  final List<Product>? products;
+class Data {
+  final List<Cart>? carts;
+
+  Data({
+    this.carts,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+        carts: json["carts"] == null ? [] : List<Cart>.from(json["carts"]!.map((x) => Cart.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "carts": carts == null ? [] : List<dynamic>.from(carts!.map((x) => x.toJson())),
+      };
+}
+
+class Cart {
+  final List<GroceryResult>? groceryResult;
   final String? menuId;
   final int? grandTotal;
   final Store? store;
 
-  GroceryMultiSearchModelData({
-    this.products,
+  Cart({
+    this.groceryResult,
     this.menuId,
     this.grandTotal,
     this.store,
   });
 
-  factory GroceryMultiSearchModelData.fromJson(Map<String, dynamic> json) => GroceryMultiSearchModelData(
-        products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
+  factory Cart.fromJson(Map<String, dynamic> json) => Cart(
+        groceryResult: json["groceryResult"] == null ? [] : List<GroceryResult>.from(json["groceryResult"]!.map((x) => GroceryResult.fromJson(x))),
         menuId: json["menu_id"],
         grandTotal: json["grand_total"],
         store: json["store"] == null ? null : Store.fromJson(json["store"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
+        "groceryResult": groceryResult == null ? [] : List<dynamic>.from(groceryResult!.map((x) => x.toJson())),
         "menu_id": menuId,
         "grand_total": grandTotal,
         "store": store?.toJson(),
+      };
+}
+
+class GroceryResult {
+  final String? searchedItemName;
+  final List<Product>? products;
+
+  GroceryResult({
+    this.searchedItemName,
+    this.products,
+  });
+
+  factory GroceryResult.fromJson(Map<String, dynamic> json) => GroceryResult(
+        searchedItemName: json["searchedItemName"],
+        products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "searchedItemName": searchedItemName,
+        "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
       };
 }
 
@@ -74,10 +110,22 @@ class Product {
   final String? formattedPrice;
   final int? originalPrice;
   final List<dynamic>? upcCodes;
-  final int? unitSize;
+  final double? unitSize;
   final String? unitOfMeasurement;
-  final List<dynamic>? attributes;
+  final List<String>? attributes;
   final bool? shouldFetchCustomizations;
+  final dynamic menuId;
+  final int? grandTotal;
+  final dynamic store;
+  final dynamic calorie;
+  final dynamic protein;
+  final dynamic fat;
+  final dynamic carbs;
+  final dynamic mealType;
+  final dynamic day;
+  final dynamic eatableType;
+  bool isAdded;
+  int cartItemCount;
 
   Product({
     this.productId,
@@ -93,6 +141,18 @@ class Product {
     this.unitOfMeasurement,
     this.attributes,
     this.shouldFetchCustomizations,
+    this.menuId,
+    this.grandTotal,
+    this.store,
+    this.calorie,
+    this.protein,
+    this.fat,
+    this.carbs,
+    this.mealType,
+    this.day,
+    this.eatableType,
+    this.isAdded = false,
+    this.cartItemCount = 1,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -105,10 +165,20 @@ class Product {
         formattedPrice: json["formatted_price"],
         originalPrice: json["original_price"],
         upcCodes: json["upc_codes"] == null ? [] : List<dynamic>.from(json["upc_codes"]!.map((x) => x)),
-        unitSize: json["unit_size"],
+        unitSize: json["unit_size"]?.toDouble(),
         unitOfMeasurement: json["unit_of_measurement"],
-        attributes: json["attributes"] == null ? [] : List<dynamic>.from(json["attributes"]!.map((x) => x)),
+        attributes: json["attributes"] == null ? [] : List<String>.from(json["attributes"]!.map((x) => x)),
         shouldFetchCustomizations: json["should_fetch_customizations"],
+        menuId: json["menu_id"],
+        grandTotal: json["grand_total"],
+        store: json["store"],
+        calorie: json["calorie"],
+        protein: json["protein"],
+        fat: json["fat"],
+        carbs: json["carbs"],
+        mealType: json["mealType"],
+        day: json["day"],
+        eatableType: json["eatableType"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -125,6 +195,16 @@ class Product {
         "unit_of_measurement": unitOfMeasurement,
         "attributes": attributes == null ? [] : List<dynamic>.from(attributes!.map((x) => x)),
         "should_fetch_customizations": shouldFetchCustomizations,
+        "menu_id": menuId,
+        "grand_total": grandTotal,
+        "store": store,
+        "calorie": calorie,
+        "protein": protein,
+        "fat": fat,
+        "carbs": carbs,
+        "mealType": mealType,
+        "day": day,
+        "eatableType": eatableType,
       };
 }
 
@@ -136,7 +216,7 @@ class Store {
   final String? type;
   final String? description;
   final LocalHours? localHours;
-  final dynamic dollarSigns;
+  final int? dollarSigns;
   final bool? pickupEnabled;
   final bool? deliveryEnabled;
   final bool? isOpen;
@@ -144,8 +224,9 @@ class Store {
   final bool? offersFirstPartyDelivery;
   final bool? offersThirdPartyDelivery;
   final double? miles;
-  final int? weightedRatingValue;
+  final double? weightedRatingValue;
   final int? aggregatedRatingCount;
+  bool isSelected;
 
   Store({
     this.id,
@@ -165,6 +246,7 @@ class Store {
     this.miles,
     this.weightedRatingValue,
     this.aggregatedRatingCount,
+    this.isSelected = false,
   });
 
   factory Store.fromJson(Map<String, dynamic> json) => Store(
@@ -183,7 +265,7 @@ class Store {
         offersFirstPartyDelivery: json["offers_first_party_delivery"],
         offersThirdPartyDelivery: json["offers_third_party_delivery"],
         miles: json["miles"]?.toDouble(),
-        weightedRatingValue: json["weighted_rating_value"],
+        weightedRatingValue: json["weighted_rating_value"]?.toDouble(),
         aggregatedRatingCount: json["aggregated_rating_count"],
       );
 

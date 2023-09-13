@@ -33,6 +33,11 @@ class ApiUrls {
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
   static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
   static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
+  
+  //For Diet
+  static const String addNewDiet = '${baseUrl}api/Diet/AddNewDiet';
+  static const String getExerciseLogDetailsBy = '${baseUrl}api/Dashboard/GetExerciseLogDetailsBy';
+  static const String getRecapQuestionList = '${baseUrl}api/DailyRecap/GetRecapQuestionList';
 
   //For journal use apis
   static const String getUserJournalData = '${baseUrl}api/Dashboard/GetUserJournalData';
