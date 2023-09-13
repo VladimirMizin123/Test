@@ -256,10 +256,10 @@ class MyApp extends StatelessWidget {
               name: '/FourthGymInstructionScreen',
               page: () => FourthGymInstructionScreen(),
             ),
-            GetPage(
-              name: '/ItemCatalogScreen',
-              page: () => const ItemCatalogScreen(),
-            ),
+            // GetPage(
+            //   name: '/ItemCatalogScreen',
+            //   page: () => const ItemCatalogScreen(),
+            // ),
             GetPage(
               name: '/FiveGymInstructionScreen',
               page: () => FiveGymInstructionScreen(),

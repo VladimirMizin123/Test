@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+
 GetGroceryShoppingListModel getGroceryShoppingListModelFromJson(String str) => GetGroceryShoppingListModel.fromJson(json.decode(str));
 
 String getGroceryShoppingListModelToJson(GetGroceryShoppingListModel data) => json.encode(data.toJson());
@@ -59,6 +61,7 @@ class GroceryShoppingData {
   bool? isDeleteLoading;
   final dynamic userCreatedBy;
   final dynamic userUpdatedBy;
+  Product? cartData;
 
   GroceryShoppingData({
     this.userId,
@@ -83,6 +86,7 @@ class GroceryShoppingData {
     this.isDeleteLoading = false,
     this.userCreatedBy,
     this.userUpdatedBy,
+    this.cartData,
   });
 
   factory GroceryShoppingData.fromJson(Map<String, dynamic> json) => GroceryShoppingData(

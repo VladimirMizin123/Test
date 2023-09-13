@@ -42,7 +42,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
         quantity: 0,
       ));
     }
-   widget.arguments!.groceryBloc!.add(GrocerySearchEvent(
+    widget.arguments!.groceryBloc!.add(GrocerySearchEvent(
       grocerySearchModelList: edgesDummyList,
     ));
   }
@@ -105,7 +105,14 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                   SizedBox(height: 15.h),
                   Expanded(
                     child: productsList.isEmpty
-                        ? const AppCenterLoader()
+                        ? state is GrocerySearchLoadingState
+                            ? const AppCenterLoader()
+                            : Center(
+                                child: Text(
+                                  'No Data Found!',
+                                  style: FontUtils.h14(fontColor: AppColors.black),
+                                ),
+                              )
                         : SingleChildScrollView(
                             child: ListView.builder(
                               itemCount: productsList.length,

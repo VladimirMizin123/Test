@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,20 +33,18 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
   List<GrocerySearchModel> grocerySearchModalDataList = [];
   List<Product>? groceryMultiSearchStoreProductListList = [];
   List<Cart> selectedStoreProductList = [];
+  List<GroceryShoppingData> edgesList = [];
+  List<GroceryShoppingData> onlyProductList = [];
+  int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-    //   for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
-    //     grocerySearchModalDataList.add(GrocerySearchModel(
-    //       groceryName: widget.arguments!.edgesList[i].productName,
-    //       unitMeasurement: widget.arguments!.edgesList[i].unitOfMeasurement,
-    //       unitSize: widget.arguments!.edgesList[i].unitSize!.toInt(),
-    //     ));
-    //   }
-    // });
-    // groceryBloc.add(GrocerySearchEvent(grocerySearchModelList: grocerySearchModalDataList));
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        edgesList = List.from(widget.arguments!.edgesList);
+      });
+    });
   }
 
   @override
@@ -58,6 +57,23 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             // STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             if (state is GrocerySelectedStoreEventState) {
               selectedStoreProductList = state.productsList;
+            }
+            if (state is GroceryProductListState) {
+              for (var i = 0; i < state.productList!.length; i++) {
+                for (var j = 0; j < edgesList.length; j++) {
+                  if (edgesList[j].productId == state.productID) {
+                    edgesList[j].cartData = state.productList![i];
+                  }
+                }
+              }
+
+              for (var i = 0; i < state.productList!.length; i++) {
+                for (var j = 0; j < onlyProductList.length; j++) {
+                  if (onlyProductList[j].productId == state.productID) {
+                    onlyProductList[j].cartData = state.productList![i];
+                  }
+                }
+              }
             }
           },
           builder: (context, state) {
@@ -137,44 +153,295 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     ),
                   ),
                   SizedBox(height: 15.h),
-                  SizedBox(
-                    height: 45,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: ListView.builder(
-                          itemCount: 5,
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: AppColors.coral,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: Center(
-                                      child: Text(
-                                    'From 1 store only',
-                                    style: FontUtils.h15(fontColor: AppColors.terracotta),
-                                  )),
-                                ),
+                  selectedStoreProductList.isEmpty
+                      ? const SizedBox()
+                      : SizedBox(
+                          height: 45,
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (selectedStoreProductList.isEmpty) {
+                                          Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                        } else {
+                                          setState(() {
+                                            selectedIndex = 0;
+                                            List.from(widget.arguments!.edgesList);
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(50),
+                                            color: selectedIndex == 0 ? AppColors.coral : Colors.transparent,
+                                            border: Border.all(
+                                              color: selectedIndex == 0 ? Colors.transparent : AppColors.coral,
+                                            )),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                          child: Center(
+                                              child: Text(
+                                            'All',
+                                            style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                          )),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  selectedStoreProductList.isNotEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              // From 1 store only
+                                              if (selectedStoreProductList.isEmpty) {
+                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              } else {
+                                                setState(() {
+                                                  selectedIndex = 1;
+                                                });
+                                                // selectedStoreProductList
+                                                // List<GroceryShoppingData> edgesDList = [];
+                                                onlyProductList.clear();
+                                                List<List<GroceryShoppingData>> dList = [];
+                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
+                                                  List<GroceryShoppingData> singleDList = [];
+                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
+                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
+                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
+                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
+                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                          } else {
+                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                          }
+                                                        } else {
+                                                          // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                  if (singleDList.isNotEmpty) {
+                                                    dList.add(singleDList);
+                                                  }
+                                                }
+
+                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                if (dList.isNotEmpty) {
+                                                  onlyProductList = List.from(dList.first);
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(50),
+                                                color: selectedIndex == 1 ? AppColors.coral : Colors.transparent,
+                                                border: Border.all(
+                                                  color: selectedIndex == 1 ? Colors.transparent : AppColors.coral,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                child: Center(
+                                                    child: Text(
+                                                  'From 1 store only',
+                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                )),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                  selectedStoreProductList.length >= 2
+                                      ? Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              // From 1 store only
+                                              if (selectedStoreProductList.isEmpty) {
+                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              } else {
+                                                setState(() {
+                                                  selectedIndex = 2;
+                                                });
+                                                // selectedStoreProductList
+                                                // List<GroceryShoppingData> edgesDList = [];
+                                                onlyProductList.clear();
+                                                List<List<GroceryShoppingData>> dList = [];
+                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
+                                                  List<GroceryShoppingData> singleDList = [];
+                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
+                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
+                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
+                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
+                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                          } else {
+                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                          }
+                                                        } else {
+                                                          // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                  if (singleDList.isNotEmpty) {
+                                                    dList.add(singleDList);
+                                                  }
+                                                }
+
+                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                if (dList.isNotEmpty) {
+                                                  for (var i = 0; i < dList.length; i++) {
+                                                    if (i == 0) {
+                                                      onlyProductList.addAll(dList[i]);
+                                                    } else if (i == 1) {
+                                                      onlyProductList.addAll(dList[i]);
+                                                    } else {
+                                                      return;
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(50),
+                                                color: selectedIndex == 2 ? AppColors.coral : Colors.transparent,
+                                                border: Border.all(
+                                                  color: selectedIndex == 2 ? Colors.transparent : AppColors.coral,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                child: Center(
+                                                    child: Text(
+                                                  'From 2 store only',
+                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                )),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                  selectedStoreProductList.length >= 3
+                                      ? Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              // From 1 store only
+                                              if (selectedStoreProductList.isEmpty) {
+                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              } else {
+                                                setState(() {
+                                                  selectedIndex = 3;
+                                                });
+                                                // selectedStoreProductList
+                                                // List<GroceryShoppingData> edgesDList = [];
+                                                onlyProductList.clear();
+                                                List<List<GroceryShoppingData>> dList = [];
+                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
+                                                  List<GroceryShoppingData> singleDList = [];
+                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
+                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
+                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
+                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
+                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                          } else {
+                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                          }
+                                                        } else {
+                                                          // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                  if (singleDList.isNotEmpty) {
+                                                    dList.add(singleDList);
+                                                  }
+                                                }
+
+                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                if (dList.isNotEmpty) {
+                                                  for (var i = 0; i < dList.length; i++) {
+                                                    if (i == 0) {
+                                                      onlyProductList.addAll(dList[i]);
+                                                    } else if (i == 1) {
+                                                      onlyProductList.addAll(dList[i]);
+                                                    } else if (i == 2) {
+                                                      onlyProductList.addAll(dList[i]);
+                                                    } else {
+                                                      return;
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(50),
+                                                color: selectedIndex == 3 ? AppColors.coral : Colors.transparent,
+                                                border: Border.all(
+                                                  color: selectedIndex == 3 ? Colors.transparent : AppColors.coral,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                child: Center(
+                                                    child: Text(
+                                                  'From 3 store only',
+                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                )),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
+                              )
+                              // ListView.builder(
+                              //     itemCount: 5,
+                              //     shrinkWrap: true,
+                              //     physics: const BouncingScrollPhysics(),
+                              //     scrollDirection: Axis.horizontal,
+                              //     itemBuilder: (context, index) {
+                              //       return Padding(
+                              //         padding: const EdgeInsets.symmetric(horizontal: 4),
+                              //         child: Container(
+                              //           height: 40,
+                              //           decoration: BoxDecoration(
+                              //             borderRadius: BorderRadius.circular(50),
+                              //             color: AppColors.coral,
+                              //           ),
+                              //           child: Padding(
+                              //             padding: const EdgeInsets.symmetric(horizontal: 20),
+                              //             child: Center(
+                              //                 child: Text(
+                              //               'From 1 store only',
+                              //               style: FontUtils.h15(fontColor: AppColors.terracotta),
+                              //             )),
+                              //           ),
+                              //         ),
+                              //       );
+                              //     }),
                               ),
-                            );
-                          }),
-                    ),
-                  ),
+                        ),
                   SizedBox(height: 15.h),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
-                        '${widget.arguments!.edgesList.length} Items',
+                        '${selectedIndex == 0 ? edgesList.length : onlyProductList.length} Items',
                         style: FontUtils.h18(fontColor: AppColors.middleGray),
                       ),
                     ),
@@ -184,111 +451,203 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     child: SingleChildScrollView(
                         child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: ListView.builder(
-                                itemCount: widget.arguments!.edgesList.length,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return myItemChooseWidget(screenSize, widget.arguments!.edgesList[index].productName ?? '', () {
-                                    // Get.toNamed('/ItemCatalogScreen');
-                                    if (selectedStoreProductList.isNotEmpty) {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                        return ItemCatalogScreen(
-                                          selectedStoreProductList: selectedStoreProductList,
-                                        );
-                                      }));
-                                    } else {
-                                      Fluttertoast.showToast(msg: 'Please, Select Store!');
-                                    }
-                                  });
-                                })
-                            // Column(
-                            //   children: [
-                            //     myItemChooseWidget(screenSize, 'Almond Milk', () {
-                            //       Get.toNamed('/ItemCatalogScreen');
-                            //     }),
-                            //     myItemChooseWidget(screenSize, 'Mushrooms', () {}),
-                            //     myItemChooseWidget(screenSize, 'Potatoes', () {}),
-                            //     myItemChooseWidget(screenSize, 'Tomatoes', () {}),
-                            //     // Column(
-                            //     //   mainAxisAlignment: MainAxisAlignment.center,
-                            //     //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //     //   children: [
-                            //     //     Row(
-                            //     //       crossAxisAlignment: CrossAxisAlignment.start,
-                            //     //       children: [
-                            //     //         const Image(
-                            //     //           image: AssetImage(AssetsUtils.productDemoImg),
-                            //     //         ),
-                            //     //         const SizedBox(width: 10),
-                            //     //         Expanded(
-                            //     //           child: Column(
-                            //     //             crossAxisAlignment: CrossAxisAlignment.start,
-                            //     //             children: [
-                            //     //               Text(
-                            //     //                 'Milk Almond Breeze 500ml, 1.5% fat',
-                            //     //                 textAlign: TextAlign.start,
-                            //     //                 style: FontUtils.h17(fontColor: AppColors.darkGray),
-                            //     //               ),
-                            //     //               const SizedBox(height: 10),
-                            //     //               Row(
-                            //     //                 mainAxisAlignment: MainAxisAlignment.start,
-                            //     //                 children: [
-                            //     //                   const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
-                            //     //                   const SizedBox(width: 3),
-                            //     //                   Text(
-                            //     //                     'Available in: ',
-                            //     //                     style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
-                            //     //                   ),
-                            //     //                   Text(
-                            //     //                     'Wallmart',
-                            //     //                     style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
-                            //     //                   ),
-                            //     //                 ],
-                            //     //               ),
-                            //     //             ],
-                            //     //           ),
-                            //     //         ),
-                            //     //         const SizedBox(width: 10),
-                            //     //         Text(
-                            //     //           '\$ 5.99',
-                            //     //           style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
-                            //     //         ),
-                            //     //         const SizedBox(height: 10),
-                            //     //       ],
-                            //     //     ),
-                            //     //     const SizedBox(height: 10),
-                            //     //     Row(
-                            //     //       children: [
-                            //     //         Expanded(
-                            //     //           flex: 2,
-                            //     //           child: Container(
-                            //     //             decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
-                            //     //             height: screenSize.height * 0.070,
-                            //     //             child: Padding(
-                            //     //               padding: const EdgeInsets.symmetric(horizontal: 12),
-                            //     //               child: Row(
-                            //     //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //     //                 children: [
-                            //     //                   Text(
-                            //     //                     'Product 1',
-                            //     //                     style: FontUtils.h18(fontColor: AppColors.black),
-                            //     //                   ),
-                            //     //                   const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
-                            //     //                 ],
-                            //     //               ),
-                            //     //             ),
-                            //     //           ),
-                            //     //         ),
-                            //     //       ],
-                            //     //     ),
-                            //     //   ],
-                            //     // ),
-                            //     // const SizedBox(height: 10),
-                            //     // const Divider(thickness: 1.2),
-                            //   ],
-                            // ),
-                            )),
+                            child: selectedIndex == 0
+                                ? ListView.builder(
+                                    itemCount: edgesList.length,
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return edgesList[index].cartData != null
+                                          ? Column(
+                                              children: [
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Image(
+                                                      // image: AssetImage(AssetsUtils.productDemoImg),
+                                                      image: NetworkImage(edgesList[index].cartData!.image!),
+                                                      height: 130,
+                                                      width: 130, fit: BoxFit.cover,
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            edgesList[index].cartData!.itemName ?? '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                                            textAlign: TextAlign.start,
+                                                            style: FontUtils.h17(fontColor: AppColors.darkGray),
+                                                          ),
+                                                          const SizedBox(height: 10),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
+                                                              const SizedBox(width: 3),
+                                                              Text(
+                                                                'Available in: ',
+                                                                style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                                              ),
+                                                              Text(
+                                                                'Wallmart',
+                                                                style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      edgesList[index].cartData!.formattedPrice ?? '', // '\$ 5.99',
+                                                      style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Container(
+                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
+                                                        height: screenSize.height * 0.070,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                'Product 1',
+                                                                style: FontUtils.h18(fontColor: AppColors.black),
+                                                              ),
+                                                              const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
+                                                const Divider(thickness: 1.2),
+                                              ],
+                                            )
+                                          : myItemChooseWidget(screenSize, edgesList[index].productName ?? '', () {
+                                              // Get.toNamed('/ItemCatalogScreen');
+                                              if (selectedStoreProductList.isNotEmpty) {
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                  return ItemCatalogScreen(
+                                                    selectedStoreProductList: selectedStoreProductList,
+                                                    groceryBloc: groceryBloc,
+                                                    productId: edgesList[index].productId!,
+                                                  );
+                                                }));
+                                              } else {
+                                                Fluttertoast.showToast(msg: 'Please, Select Store!');
+                                              }
+                                            });
+                                    })
+                                : ListView.builder(
+                                    itemCount: onlyProductList.length,
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return onlyProductList[index].cartData != null
+                                          ? Column(
+                                              children: [
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Image(
+                                                      // image: AssetImage(AssetsUtils.productDemoImg),
+                                                      image: NetworkImage(onlyProductList[index].cartData!.image!),
+                                                      height: 130,
+                                                      width: 130, fit: BoxFit.cover,
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            onlyProductList[index].cartData!.itemName ?? '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                                            textAlign: TextAlign.start,
+                                                            style: FontUtils.h17(fontColor: AppColors.darkGray),
+                                                          ),
+                                                          const SizedBox(height: 10),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
+                                                              const SizedBox(width: 3),
+                                                              Text(
+                                                                'Available in: ',
+                                                                style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                                              ),
+                                                              Text(
+                                                                'Wallmart',
+                                                                style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      onlyProductList[index].cartData!.formattedPrice ?? '', // '\$ 5.99',
+                                                      style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Container(
+                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
+                                                        height: screenSize.height * 0.070,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                'Product 1',
+                                                                style: FontUtils.h18(fontColor: AppColors.black),
+                                                              ),
+                                                              const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
+                                                const Divider(thickness: 1.2),
+                                              ],
+                                            )
+                                          : myItemChooseWidget(screenSize, onlyProductList[index].productName ?? '', () {
+                                        // Get.toNamed('/ItemCatalogScreen');
+                                        if (selectedStoreProductList.isNotEmpty) {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                            return ItemCatalogScreen(
+                                              selectedStoreProductList: selectedStoreProductList,
+                                              groceryBloc: groceryBloc,
+                                              productId: edgesList[index].productId!,
+                                            );
+                                          }));
+                                        } else {
+                                          Fluttertoast.showToast(msg: 'Please, Select Store!');
+                                        }
+                                      });
+                                    }))),
                   ),
                   Container(
                     color: AppColors.whiteColor,
