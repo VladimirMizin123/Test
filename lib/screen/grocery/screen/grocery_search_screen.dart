@@ -36,6 +36,35 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
             if (state is GrocerySearchSuccessState) {
               groceryMultiSearchModelDataList = state.groceryMultiSearchProductList ?? [];
             }
+
+            if (state is GroceryAddToShoppingSuccessState) {
+              setState(() {
+                for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
+                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
+                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
+                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.recipesAddToGroceryData!.productId) {
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isAddedToShoppingList = true;
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = false;
+                      }
+                    }
+                  }
+                }
+              });
+            }
+
+            if (state is GroceryAddToShoppingLoadingState) {
+              setState(() {
+                for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
+                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
+                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
+                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.productId) {
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = true;
+                      }
+                    }
+                  }
+                }
+              });
+            }
           },
           builder: (context, state) {
             return SafeArea(
@@ -100,80 +129,94 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: ListView.builder(
-                              itemCount: groceryMultiSearchModelDataList.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, i) {
-                                return ListView.builder(
-                                  itemCount: groceryMultiSearchModelDataList[i].groceryResult!.length,
+                        : Stack(
+                            children: [
+                              SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: ListView.builder(
+                                  itemCount: groceryMultiSearchModelDataList.length,
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, ind) {
+                                  itemBuilder: (context, i) {
                                     return ListView.builder(
-                                      itemCount: groceryMultiSearchModelDataList[i].groceryResult![ind].products!.length,
+                                      itemCount: groceryMultiSearchModelDataList[i].groceryResult!.length,
                                       shrinkWrap: true,
                                       physics: const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(12),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      itemBuilder: (context, ind) {
+                                        return ListView.builder(
+                                          itemCount: groceryMultiSearchModelDataList[i].groceryResult![ind].products!.length,
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(12),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
-                                                        Text(
-                                                          groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
-                                                          style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
-                                                        ),
-                                                        Row(
+                                                        Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
                                                             Text(
-                                                              '1 slice, Dave’s Killer Bread - ',
-                                                              style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                                              groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
+                                                              style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
                                                             ),
-                                                            Text(
-                                                              '110 cal',
-                                                              style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  '1 slice, Dave’s Killer Bread - ',
+                                                                  style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                                                ),
+                                                                Text(
+                                                                  '110 cal',
+                                                                  style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
                                                         ),
+                                                        groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
+                                                            ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
+                                                            : groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isLoading
+                                                                ? const Center(child: CircularProgressIndicator())
+                                                                : GestureDetector(
+                                                                    onTap: () {
+                                                                      groceryBloc.add(GroceryAddToShoppingListEvent(
+                                                                        productID: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                        productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
+                                                                        price: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].price.toString(),
+                                                                        unitSize: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString(),
+                                                                        unitOfMeasurement: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
+                                                                        quantity: '1',
+                                                                        recipeId: '',
+                                                                        mealmeStoreId: groceryMultiSearchModelDataList[i].store!.id!,
+                                                                        isAdd: true,
+                                                                        isRemove: false,
+                                                                        isChecked: false,
+                                                                      ));
+                                                                    },
+                                                                    child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
                                                       ],
                                                     ),
-                                                    groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
-                                                        ? GestureDetector(
-                                                            onTap: () {
-                                                              groceryBloc.add(GroceryAddToGroceryListEvent(databaseIdOfRecipes: ''));
-                                                              setState(() {
-                                                                groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList = true;
-                                                              });
-                                                            },
-                                                            child: SvgPicture.asset(AssetsUtils.icAddCircle, height: 30),
-                                                          )
-                                                        : SvgPicture.asset(AssetsUtils.icAddIcon, height: 30),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
+                                            );
+                                          },
                                         );
                                       },
                                     );
                                   },
-                                );
-                              },
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
                   )
                 ],

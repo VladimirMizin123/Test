@@ -19,15 +19,16 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     on<JournalSwapMealDetailsEvent>(_onSwapMealDetails);
     on<JournalScanBarcodeEvent>(_onScanBarcode);
     on<JournalSearchEvent>(_onSearchItem);
-
+    on<JournalAddToShoppingListEvent>(_onAddToShoppingList);
+    on<JournalAddToEatenEvent>(_onAddEaten);
   }
 
   final JournalPlanRepository _repository = JournalPlanRepository();
 
   _onSwapMealDetails(JournalSwapMealDetailsEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalSwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
-  } 
-  
+  }
+
   _onScanBarcode(JournalScanBarcodeEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalBarcodeScannerState(barcode: event.barcode));
   }
@@ -99,6 +100,21 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
+  _onAddToShoppingList(JournalAddToShoppingListEvent event, Emitter<JournalMealPlanState> emit) async {
+    emit(JournalAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
+
+    try {
+      await _repository.recipeAddToShoppingList(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, isChecked: event.isChecked, unitSize: event.unitSize).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(JournalAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData: right.data, isAdd: event.isAdd, isRemove: event.isRemove));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(JournalAddToShoppingErrorState());
+    }
+  }
+
   // _onFetchMealDetails(FetchMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
   //   emit(MealDetailsLoadingState());
 
@@ -152,6 +168,20 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
+  _onAddEaten(JournalAddToEatenEvent event, Emitter<JournalMealPlanState> emit) async {
+    emit(JournalAddEatenLoadingState(mealID: event.mealID));
+    try {
+      await _repository.addEaten(mealID: event.mealID).fold((left) {
+        emit(JournalSearchErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(JournalAddEatenSuccessState(isAdded: right.success, mealID: event.mealID));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(JournalAddEatenErrorState());
+    }
+  }
 
   /// ON FAIL
 

@@ -125,6 +125,7 @@ class Product {
   final dynamic day;
   final dynamic eatableType;
   bool isAddedToShoppingList;
+  bool isLoading;
   int cartItemCount;
 
   Product({
@@ -153,6 +154,7 @@ class Product {
     this.eatableType,
     this.isAddedToShoppingList = false,
     this.cartItemCount = 1,
+    this.isLoading = false,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(

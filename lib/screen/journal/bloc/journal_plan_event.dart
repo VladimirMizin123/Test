@@ -67,3 +67,43 @@ class JournalSearchEvent extends JournalPlanEvent {
 
   JournalSearchEvent({required this.journalSearchModelList});
 }
+
+
+class JournalAddToShoppingListEvent extends JournalPlanEvent {
+  final String productID;
+  final String productName;
+  final String quantity;
+  final String price;
+  final String unitSize;
+  final String unitOfMeasurement;
+  final String recipeId;
+  final String mealmeStoreId;
+  final bool isAdd;
+  final bool isRemove;
+  final bool isChecked;
+
+  JournalAddToShoppingListEvent({
+    required this.productID,
+    required this.productName,
+    required this.quantity,
+    required this.price,
+    required this.unitSize,
+    required this.unitOfMeasurement,
+    required this.recipeId,
+    required this.mealmeStoreId,
+    this.isAdd = false,
+    this.isRemove = false,
+    this.isChecked = false,
+  });
+}
+
+
+class JournalAddToEatenEvent extends JournalPlanEvent {
+  final String mealID;
+
+
+  JournalAddToEatenEvent({
+    required this.mealID,
+
+  });
+}

@@ -444,7 +444,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     children: [
                       InkWell(
                         onTap: () {
-                          Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: breakFastList, dateTime: selectedDateTime));
+                          Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: breakFastList,mealType: breakFastList[0].meal!, dateTime: selectedDateTime));
                         },
                         child: ListTile(
                           leading: Image.asset(
@@ -874,7 +874,7 @@ class _JournalScreenState extends State<JournalScreen> {
         InkWell(
           onTap: () {
             // Get.toNamed("/JournalMealScreen", arguments: [dataList]);
-            Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: dataList, dateTime: selectedDateTime));
+            Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: dataList, mealType: title, dateTime: selectedDateTime));
           },
           child: dashBoardCardView(
             width: double.infinity.w,

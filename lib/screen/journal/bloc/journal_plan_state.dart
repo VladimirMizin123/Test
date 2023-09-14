@@ -1,4 +1,5 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
@@ -86,7 +87,6 @@ class JournalBarcodeScannerState extends JournalMealPlanState {
   JournalBarcodeScannerState({required this.barcode});
 }
 
-
 class JournalSearchLoadingState extends JournalMealPlanState {
   JournalSearchLoadingState();
 }
@@ -99,4 +99,45 @@ class JournalSearchSuccessState extends JournalMealPlanState {
 
 class JournalSearchErrorState extends JournalMealPlanState {
   JournalSearchErrorState();
+}
+
+class JournalAddToShoppingLoadingState extends JournalMealPlanState {
+  final String? productId;
+  final bool isAdd;
+  final bool isRemove;
+
+  JournalAddToShoppingLoadingState({
+    this.productId,
+    this.isAdd = false,
+    this.isRemove = false,
+  });
+}
+
+class JournalAddToShoppingSuccessState extends JournalMealPlanState {
+  final RecipesAddToGroceryData? recipesAddToGroceryData;
+  final bool? isAdded;
+  final bool? isAdd;
+  final bool? isRemove;
+
+  JournalAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+}
+
+class JournalAddToShoppingErrorState extends JournalMealPlanState {}
+
+class JournalAddEatenLoadingState extends JournalMealPlanState {
+  final String mealID;
+
+  JournalAddEatenLoadingState({required this.mealID});
+}
+
+class JournalAddEatenSuccessState extends JournalMealPlanState {
+  final bool? isAdded;
+  final String mealID;
+
+  JournalAddEatenSuccessState({required this.isAdded, required this.mealID});
+
+}
+
+class JournalAddEatenErrorState extends JournalMealPlanState {
+  JournalAddEatenErrorState();
 }

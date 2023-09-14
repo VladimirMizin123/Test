@@ -67,10 +67,7 @@ class GrocerySelectedStoreEvent extends GroceryEvent {
   GrocerySelectedStoreEvent({this.productsList});
 }
 
-class GroceryAddToGroceryListEvent extends GroceryEvent {
-  final String databaseIdOfRecipes;
-  GroceryAddToGroceryListEvent({required this.databaseIdOfRecipes});
-}
+
 
 class GroceryProductListEvent extends GroceryEvent {
   final List<Product>? productList;

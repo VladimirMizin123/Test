@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/country_selection_bottomsheet.dart';
-
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/price_selection_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ItemCatalogFilterBottomSheet extends StatefulWidget {
@@ -87,14 +87,25 @@ class _ItemCatalogFilterBottomSheetState extends State<ItemCatalogFilterBottomSh
                       size: 30,
                     )),
               ),
-              myFilterWidget(
-                  'Price',
-                  '\$2-8',
-                  const Icon(
-                    Icons.keyboard_arrow_right_rounded,
-                    color: AppColors.black,
-                    size: 30,
-                  )),
+              GestureDetector(
+                onTap: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return const PriceSelectionBottomSheet();
+                    },
+                    isDismissible: false,
+                  );
+                },
+                child: myFilterWidget(
+                    'Price',
+                    '\$2-8',
+                    const Icon(
+                      Icons.keyboard_arrow_right_rounded,
+                      color: AppColors.black,
+                      size: 30,
+                    )),
+              ),
               const SizedBox(height: 15),
               simpleTextBorderButton(
                 context: context,

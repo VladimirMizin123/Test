@@ -32,7 +32,6 @@ import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_search_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/add_card_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_card_selection_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
@@ -45,7 +44,6 @@ import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
-import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
@@ -368,7 +366,7 @@ class MyApp extends StatelessWidget {
               name: '/ScanBarcodeScreen',
               page: () => const ScanBarcodeScreen(/*cameras: cameras*/),
             ),
-            
+
             GetPage(
               name: '/AddNewItemScreen',
               page: () => const AddNewItemScreen(),
@@ -380,10 +378,11 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/JournalMealScreen',
               page: () => const JournalMealScreen(),
-            ),GetPage(
-              name: '/JournalSearchScreen',
-              page: () => const JournalSearchScreen(),
             ),
+            // GetPage(
+            //   name: '/JournalSearchScreen',
+            //   page: () =>  const JournalSearchScreen(mealType: ''),
+            // ),
           ],
         );
       },
