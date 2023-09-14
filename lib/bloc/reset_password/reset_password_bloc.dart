@@ -19,10 +19,9 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
   _onLogin(ButtonClickEvent event, Emitter<ResetPasswordState> emit) async {
     bool isNewPassword = newPasswordValid(event.password);
     bool isConfirmPassword = confirmPasswordValid(event.confirmPassword);
-    bool isPasswordMatch = validateConfirmPassword(event.password, event.confirmPassword);
-    bool isPasswordValid = validatePassword(
-      event.password,
-    );
+    bool isPasswordMatch =
+        validateConfirmPassword(event.password, event.confirmPassword);
+    bool isPasswordValid = validatePassword(event.password);
 
     if (isConfirmPassword && isNewPassword && isPasswordMatch) {
       emit(ResetLoadingState());
@@ -30,7 +29,8 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
         await _repository
             .resetPassword(
                 newPassword: event.password,
-                confirmPassword: event.confirmPassword,passwordResetToken: event.passwordResetToken)
+                confirmPassword: event.confirmPassword,
+                passwordResetToken: event.passwordResetToken)
             .fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
           emit(ResetErrorState());
@@ -46,7 +46,8 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
       if (!isNewPassword) {
         onFailError(emit: emit, text: StringUtils.pleaseEnterNewPassword);
       } else if (!isPasswordValid) {
-        onFailError(emit: emit, text: StringUtils.pleaseEnterPasswordValidation);
+        onFailError(
+            emit: emit, text: StringUtils.pleaseEnterPasswordValidation);
       } else if (!isConfirmPassword) {
         onFailError(emit: emit, text: StringUtils.pleaseEnterConfirmPassword);
       } else if (!isPasswordMatch) {
@@ -55,7 +56,8 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
     }
   }
 
-  onFailError({required String text, required Emitter<ResetPasswordState> emit}) {
+  onFailError(
+      {required String text, required Emitter<ResetPasswordState> emit}) {
     showToast(isSuccess: false, message: text);
     emit(ResetErrorState());
   }

@@ -18,7 +18,7 @@ class BuildMyProfileScreen extends StatefulWidget {
 
 class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
   final routeName = '/build_my_profile_screen';
-  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
+  var model = Get.arguments;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -29,7 +29,8 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
         width: size.width.w,
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage(AssetsUtils.buildProfileBG), fit: BoxFit.cover),
+          image: DecorationImage(
+              image: AssetImage(AssetsUtils.buildProfileBG), fit: BoxFit.cover),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -48,33 +49,38 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
                   children: [
                     Text(
                       StringUtils.mindyPro,
-                      style: textTheme.displayMedium?.copyWith(color: const Color(0xFF000000)),
+                      style: textTheme.displayMedium
+                          ?.copyWith(color: const Color(0xFF000000)),
                     ).paddingOnly(bottom: 3.h, left: 3.w, right: 3.w),
                     Text(
                       StringUtils.welcomeCommunity,
-                      style: textTheme.headlineSmall?.copyWith(color: const Color(0xFF000000), height: 1.2),
+                      style: textTheme.headlineSmall?.copyWith(
+                          color: const Color(0xFF000000), height: 1.2),
                     ).paddingOnly(bottom: 5.h, left: 3.w, right: 3.w),
                     Text(
                       StringUtils.welcomeCommunitySub,
-                      style: textTheme.bodyLarge?.copyWith(color: const Color(0xFF000000), height: 1.2),
+                      style: textTheme.bodyLarge?.copyWith(
+                          color: const Color(0xFF000000), height: 1.2),
                     ).paddingOnly(bottom: 8.h, left: 3.w, right: 3.w),
                     Text(
                       StringUtils.welcomeCommunityDescription,
-                      style: textTheme.bodyLarge?.copyWith(color: const Color(0xFF000000), height: 1.2),
+                      style: textTheme.bodyLarge?.copyWith(
+                          color: const Color(0xFF000000), height: 1.2),
                     ).paddingOnly(left: 3.w, right: 3.w),
                     buildButton(
                       context: context,
                       bgColor: AppColors.primaryBlue,
                       onPressed: () {
-                        Get.toNamed('/UserTypeScreen',arguments: model);
+                        Get.toNamed('/UserTypeScreen', arguments: model);
                       },
                       textColor: AppColors.skyBlue,
                       title: StringUtils.buildMyProfile,
                       hasImage: false,
-                    ).paddingOnly(right: 3.w, left: 3.w, top: 13.h, bottom: 3.h),
+                    ).paddingOnly(
+                        right: 3.w, left: 3.w, top: 13.h, bottom: 3.h),
                   ],
                 ),
-              ).paddingOnly(top: 225.h),
+              ).paddingOnly(top: 240.h),
             ],
           ),
         ),

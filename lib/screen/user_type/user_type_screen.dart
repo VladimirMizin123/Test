@@ -21,7 +21,7 @@ class UserTypeScreen extends StatefulWidget {
 }
 
 class _UserTypePageState extends State<UserTypeScreen> {
-  UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
+  var model = Get.arguments;
   final ageController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();

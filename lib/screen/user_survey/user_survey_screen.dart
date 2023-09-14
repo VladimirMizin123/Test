@@ -105,9 +105,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     arguments: userSignUpDataModel);
               }
 
-              if(state is PreviousScreenState){
-                Get.toNamed('/UserTypeScreen',
-                    arguments: model);
+              if (state is PreviousScreenState) {
+                Get.toNamed('/UserTypeScreen', arguments: model);
               }
             }),
       ),
@@ -148,9 +147,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 */
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Center(
               child: Image.asset(
                 AssetsUtils.gymEatsLogo,

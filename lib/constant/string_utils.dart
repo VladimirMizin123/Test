@@ -216,7 +216,7 @@ class StringUtils {
   static const ml = 'ml';
   static const cal = 'cal';
   static const daily = 'Daily';
-  static const pleaseEnterExerciseName  = 'Please enter exercise name';
+  static const pleaseEnterExerciseName = 'Please enter exercise name';
   static const pleaseEnterMinutes = 'Please enter minutes';
   static const pleaseEnterCaloriesBurned = 'Please enter calories burned';
   static const addToGroceryList = 'Add to Grocery List';

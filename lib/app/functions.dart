@@ -27,7 +27,8 @@ int countOptions(SurveyDataQuestion surveyData) {
 }
 
 bool validateEmail(String value) {
-  String pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  String pattern =
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
   RegExp regex = RegExp(pattern);
   if (!regex.hasMatch(value)) {
     return false;
@@ -44,25 +45,25 @@ bool validateConfirmPassword(password, confirmPassword) {
 }
 
 bool validatePassword(String password) {
-  if (password.length <= 8) {
+  if (password.length < 8) {
     return false;
   }
   return true;
 }
 
-String dateTimeNow(){
+String dateTimeNow() {
   DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(now);
   return formattedDate;
 }
 
-String dateTimeYYYYMMDD({required String dateTimeVal}){
+String dateTimeYYYYMMDD({required String dateTimeVal}) {
   DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(dateTimeVal);
   String formattedDate = DateFormat("yyyy-MM-dd").format(dateTime);
   return formattedDate;
 }
 
-String dateTimeDDMMMYYYY({required String dateTimeVal}){
+String dateTimeDDMMMYYYY({required String dateTimeVal}) {
   DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(dateTimeVal);
   String formattedDate = DateFormat("dd MMM yyyy").format(dateTime);
   return formattedDate;

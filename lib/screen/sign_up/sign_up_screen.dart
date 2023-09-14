@@ -46,14 +46,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'You are one step closer to eating better!',
                     style: textTheme.headlineSmall!.copyWith(
-                      color: themeData.primaryColor,
-                    ),
+                        color: themeData.primaryColor, fontSize: 19.5.sp),
                     // style: AppTextStyle.butttonTextStyle
                     //     .copyWith(color: const Color(0xFF004C63)),
                   ).paddingOnly(top: 10),
                   Text(
                     'Create your GYM EATS account to continue',
-                    style: textTheme.bodyMedium!.copyWith(color: const Color(0xFF5F5F5F), fontSize: 17.sp, fontWeight: FontWeight.w400),
+                    style: textTheme.bodyMedium!.copyWith(
+                        color: const Color(0xFF5F5F5F),
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w400),
                   ).paddingOnly(top: 18),
                   commonTextField(
                           context: context,
@@ -116,7 +118,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Get.toNamed('/LoginScreen');
                           // Login Screen
                         },
-                        child: Text(StringUtils.logIn, style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400)),
+                        child: Text(StringUtils.logIn,
+                            style: textTheme.bodyLarge!.copyWith(
+                                decoration: TextDecoration.underline,
+                                color: themeData.primaryColor,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400)),
                       ),
                     ],
                   ).paddingOnly(top: 22.h),
@@ -125,12 +132,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'By clicking "Sign up", you agree to our terms and that you have read our ',
-                          style: textTheme.bodySmall!.copyWith(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.w400),
+                          text:
+                              'By clicking "Sign up", you agree to our terms and that you have read our ',
+                          style: textTheme.bodySmall!.copyWith(
+                              color: Colors.black,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400),
                         ),
                         TextSpan(
                           text: 'Privacy Policy',
-                          style: textTheme.bodySmall!.copyWith(color: const Color(0XFF336633), fontSize: 14.sp, fontWeight: FontWeight.w400),
+                          style: textTheme.bodySmall!.copyWith(
+                              color: const Color(0XFF336633),
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               // Single tapped.
