@@ -16,7 +16,6 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<GrocerySearchEvent>(_onSearchItem);
     on<GroceryDetailsMealInfoEvent>(_onGroceryDetailsMealInfo);
     on<GrocerySelectedStoreEvent>(_onGrocerySelectedStoreEvent);
-    on<GroceryAddToGroceryListEvent>(_onAddToGroceryList);
     on<GroceryProductListEvent>(_onGroceryProductList);
     on<CleatGroceryEvent>(_onClearShoppingList);
   }
@@ -125,23 +124,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     emit(GrocerySelectedStoreEventState(productsList: event.productsList ?? []));
   }
 
-  _onAddToGroceryList(GroceryAddToGroceryListEvent event, Emitter<GroceryState> emit) async {
-    emit(GroceryAddToGroceryLoadingState());
-
-    try {
-      await _repository.addToShoppingList(databaseIdOfRecipes: event.databaseIdOfRecipes).fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-      }, (right) {
-        log('RIGHT PART CALL - - - - - - - - - - - - ');
-
-        emit(GroceryAddToGrocerySuccessState(isAdded: right.success ?? true));
-        showToast(isSuccess: false, message: right.message ?? 'Added!');
-      });
-    } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
-      emit(GroceryAddToGroceryErrorState());
-    }
-  }
+  
 
    _onClearShoppingList(CleatGroceryEvent event, Emitter<GroceryState> emit) async {
     emit(ClearShoppingListLoadingState());

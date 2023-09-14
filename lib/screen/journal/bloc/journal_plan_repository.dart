@@ -1,10 +1,12 @@
 import 'dart:convert';
+
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
@@ -13,7 +15,6 @@ import 'package:gymeats_mobile/service/apis.dart';
 
 class JournalPlanRepository {
   final ApiServices apiServices = ApiServices();
-
 
   String userID = PreferenceUtils.getString(prefUserData);
 
@@ -64,7 +65,7 @@ class JournalPlanRepository {
     }
   }
 
-   Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch({
+  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch({
     required String latitude,
     required String longitude,
     required List<GrocerySearchModel> grocerySearchModal,
@@ -84,6 +85,27 @@ class JournalPlanRepository {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> addEaten({
+    required String mealID,
+  }) async {
+    String apiURL = ApiUrls.addEatenMeal;
+
+    // log(apiURL, name: 'API URL :');
+    final response = await apiServices.post(
+      apiURL,
+      {
+      "mealId": mealID,"userId":userID
+      },
+    );
+    // log(response.body, name: 'API RESPONSE :');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -125,4 +147,39 @@ class JournalPlanRepository {
   //   }
   // }
 
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> recipeAddToShoppingList({
+    required String productID,
+    required String productName,
+    required String quantity,
+    required String price,
+    required String unitSize,
+    required String unitOfMeasurement,
+    required String recipeId,
+    required String mealmeStoreId,
+    required bool isChecked,
+  }) async {
+    String apiURL = ApiUrls.addItemShoppingList;
+
+    // log(apiURL, name: 'API URL :');
+
+    final response = await apiServices.post(apiURL, {
+      "userId": userID,
+      "productId": productID,
+      "productName": productName,
+      "quantity": quantity,
+      "price": price,
+      "unitSize": unitSize,
+      "unitOfMeasurement": unitOfMeasurement,
+      "recipeId": recipeId,
+      "mealmeStoreId": mealmeStoreId,
+      "isChecked": isChecked,
+    });
+    // log(response.body, name: 'API RESPONSE :');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
 }

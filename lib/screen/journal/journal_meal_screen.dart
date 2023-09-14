@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
+import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_skip_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/journal/journal_swap_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
@@ -34,14 +35,13 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
 
   JournalPlanBloc journalPlanBloc = JournalPlanBloc();
   List<MealData> mealList = [];
-  JournalMealScreenArguments? journalMealScreenArguments;
+  JournalMealScreenArguments? journalMealScreenArguments = Get.arguments;
   // List<FetchMealPlanData> mealPlanList = [];
   TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    journalMealScreenArguments = Get.arguments;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       journalPlanBloc.add(JournalPlanFetchEvent());
     });
@@ -110,7 +110,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                       image: AssetsUtils.icBack,
                       color: AppColors.darkGray,
                     ),
-                    Text("Breakfast", style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                    Text(journalMealScreenArguments!.mealType!, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
                     SizedBox(height: 20.h, width: 20.w)
                   ],
                 ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
@@ -140,7 +140,13 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                               // onChange(value);
                             },
                             onTap: () {
-                            Get.toNamed('/JournalSearchScreen');
+                              // Get.toNamed('/JournalSearchScreen');
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return JournalSearchScreen(
+                                  journalMealScreenArguments: journalMealScreenArguments!,
+
+                                );
+                              }));
                             },
                             decoration: InputDecoration(
                               filled: false,
@@ -269,6 +275,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
 class JournalMealScreenArguments {
   final List<MealData>? breakFastList;
   final DateTime? dateTime;
+  final String? mealType;
 
-  JournalMealScreenArguments({required this.breakFastList, required this.dateTime});
+  JournalMealScreenArguments({required this.breakFastList, required this.dateTime, this.mealType});
 }

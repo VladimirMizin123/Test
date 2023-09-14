@@ -71,6 +71,8 @@ class MealData {
   int? numOfServings;
   Recipe? recipe;
   bool isDone;
+  bool isAddedForEatenMeal;
+  bool isLoadingAddedForEatenMeal;
   bool? isSkipped;
 
   MealData({
@@ -80,6 +82,8 @@ class MealData {
     this.numOfServings,
     this.recipe,
     this.isSkipped,
+    this.isAddedForEatenMeal = false,
+    this.isLoadingAddedForEatenMeal = false,
     this.isDone = false,
   });
 
