@@ -31,6 +31,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   int selectedDayIndex = 0;
   final PageController _pageController = PageController();
   List<FetchMealPlanData> mealPlanList = [];
+  bool isLoadingData = false;
 
   MealPlanBloc mealPlanBloc = MealPlanBloc();
 
@@ -51,21 +52,31 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
           listener: (context, state) {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
+              isLoadingData = false;
             }
-            if (state is SkipMealPlanLoadingState) {}
+            if (state is FetchMealPlanLoadingState) {
+              isLoadingData = true;
+            }
+
             if (state is SwapMealDetailsState) {
               Get.back();
               for (var i = 0; i < mealPlanList.length; i++) {
                 if (mealPlanList[i].day == state.day) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
                     if (mealPlanList[i].meals![j].id == state.mealId) {
-                      // print(state.similarMealData!.toJson().toString());
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
-                      mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories;
-                      // mealPlanList[i].meals![j].isSkipped = false;
-                      mealPlanList[i].meals![j].meal = '';
+                      mealPlanList[i].meals![j].meal =state.similarMealData!.name;
                       mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
                       mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;
+                      mealPlanList[i].meals![j].recipe!.databaseId = state.similarMealData!.databaseId;
+                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.numberOfServings;
+                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.instructions = state.similarMealData!.instructions;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.calories = state.similarMealData!.nutrientsPerServing!.calories;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.carbs = state.similarMealData!.nutrientsPerServing!.carbs;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.fat = state.similarMealData!.nutrientsPerServing!.fat;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.protein = state.similarMealData!.nutrientsPerServing!.protein;
                       break;
                     }
                   }
@@ -121,7 +132,14 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    Text(state is FetchMealPlanSuccessState ? StringUtils.regenerateGroceryList : StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    state is FetchMealPlanSuccessState
+                        ? GestureDetector(
+                            onTap: () {
+                              mealPlanList.clear();
+                              mealPlanBloc.add(MealPlanFetchEvent());
+                            },
+                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
+                        : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
                     mealPlanList.isEmpty
                         ? const SizedBox()
                         : Container(
@@ -139,17 +157,17 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     GestureDetector(
                                         onTap: () {
                                           if (selectedDayIndex == 0) {
-                                            return;
+                                          } else {
+                                            _pageController.jumpToPage(selectedDayIndex - 1);
                                           }
-                                          _pageController.jumpToPage(selectedDayIndex - 1);
                                         },
                                         child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
                                     GestureDetector(
                                         onTap: () {
-                                          if (selectedDayIndex == mealPlanList.length - 1) {
-                                            return;
+                                          if (selectedDayIndex == mealPlanList.length) {
+                                          } else {
+                                            _pageController.jumpToPage(selectedDayIndex + 1);
                                           }
-                                          _pageController.jumpToPage(selectedDayIndex + 1);
                                         },
                                         child: arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1)),
                                   ],
@@ -158,7 +176,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                             ),
                           ),
                     mealPlanList.isEmpty
-                        ? state is FetchMealPlanLoadingState
+                        ? isLoadingData
                             ? const Expanded(child: AppCenterLoader())
                             : const SizedBox()
                         : Expanded(

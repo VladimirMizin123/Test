@@ -16,8 +16,8 @@ import 'package:gymeats_mobile/service/apis.dart';
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
 
-  // String userID = PreferenceUtils.getString(prefUserData);
-  String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
+  String userID = PreferenceUtils.getString(prefUserData);
+  // String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
 
   Future<Either<ErrorModel, AddGroceryToShoppingListFromSuggesticModal>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
     String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
