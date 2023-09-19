@@ -311,6 +311,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
+                    
                       Get.toNamed('/AddWaterScreen', arguments: model!.data!.dailyWaterGoals!.toString())!.then((value) {
                         setState(() {
                           waterML = waterML + int.parse(value);

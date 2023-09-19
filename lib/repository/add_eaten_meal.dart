@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:either_dart/either.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import '../models/error_model.dart';
@@ -11,8 +12,8 @@ import '../service/apis.dart';
 class AddEatenMealRepository {
   final ApiServices apiServices = ApiServices();
 
-  // String userID = PreferenceUtils.getString(prefUserData);
-  String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
+  String userID = PreferenceUtils.getString(prefUserData);
+  // String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
 
   Future<Either<ErrorModel, SuccessModel>> addEatenMeal({
     required String mealId,
