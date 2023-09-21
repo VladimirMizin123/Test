@@ -67,6 +67,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].meal =state.similarMealData!.name;
                       mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;
                       mealPlanList[i].meals![j].recipe!.databaseId = state.similarMealData!.databaseId;
                       mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;

@@ -57,7 +57,11 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
           if (state is JournalFetchMealPlanSuccessState) {
             for (var i = 0; i < state.mealPlanList.length; i++) {
               if (DateTime(state.mealPlanList[i].date!.year, state.mealPlanList[i].date!.month, state.mealPlanList[i].date!.day) == DateTime(journalMealScreenArguments!.dateTime!.year, journalMealScreenArguments!.dateTime!.month, journalMealScreenArguments!.dateTime!.day)) {
-                mealList = state.mealPlanList[i].meals ?? [];
+                for (var j = 0; j < state.mealPlanList[i].meals!.length; j++) {
+                  if (state.mealPlanList[i].meals![j].meal!.trim().toLowerCase() == journalMealScreenArguments!.mealType!.trim().toLowerCase()) {
+                    mealList.add(state.mealPlanList[i].meals![j]);
+                  }
+                }
                 break;
               }
             }
@@ -75,9 +79,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
             Get.back();
             for (var i = 0; i < mealList.length; i++) {
               if (mealList[i].id == state.mealId) {
-                mealList[i].id = state.similarMealData!.id;
+                mealList[i].recipe!.id = state.similarMealData!.id;
                 mealList[i].calories = state.similarMealData!.nutrientsPerServing!.calories;
-                // mealList[i].isSkipped = false;
                 mealList[i].meal = '';
                 mealList[i].numOfServings = state.similarMealData!.serving;
                 mealList[i].recipe!.mainImage = state.similarMealData!.mainImage;
@@ -106,11 +109,16 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SvgImage(
-                      image: AssetsUtils.icBack,
-                      color: AppColors.darkGray,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const SvgImage(
+                        image: AssetsUtils.icBack,
+                        color: AppColors.darkGray,
+                      ),
                     ),
-                    Text(journalMealScreenArguments!.mealType!, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                    Text(journalMealScreenArguments!.mealType!.capitalize ?? '', style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
                     SizedBox(height: 20.h, width: 20.w)
                   ],
                 ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
@@ -144,7 +152,6 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 return JournalSearchScreen(
                                   journalMealScreenArguments: journalMealScreenArguments!,
-
                                 );
                               }));
                             },

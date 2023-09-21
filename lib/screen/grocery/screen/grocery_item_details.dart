@@ -88,11 +88,13 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        nutritionixGetNxMealInfoByNameModelData!.foodName ?? '',
-                                        style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                      Expanded(
+                                        child: Text(
+                                          nutritionixGetNxMealInfoByNameModelData!.foodName ?? '',
+                                          style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                        ),
                                       ),
                                       const SizedBox(width: 7),
                                       const Icon(Icons.info_outline, color: AppColors.primaryBlue)
@@ -159,10 +161,10 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     children: [
-                                      myProgressBarCardView('Cal', 102.2, 2000, AppColors.primaryBlue),
-                                      myProgressBarCardView('Fat', 102.2, 2000, AppColors.coral),
-                                      myProgressBarCardView('Carbs', 102.2, 2000, AppColors.mint),
-                                      myProgressBarCardView('Protein', 102.2, 2000, AppColors.skyBlue),
+                                      myProgressBarCardView('Cal', 102.2, nutritionixGetNxMealInfoByNameModelData!.nfCalories == null ? 0 : double.parse(nutritionixGetNxMealInfoByNameModelData!.nfCalories.toString()), AppColors.primaryBlue),
+                                      myProgressBarCardView('Fat', 102.2, nutritionixGetNxMealInfoByNameModelData!.nfTotalFat == null ? 0 : double.parse(nutritionixGetNxMealInfoByNameModelData!.nfTotalFat.toString()), AppColors.coral),
+                                      myProgressBarCardView('Carbs', 102.2, nutritionixGetNxMealInfoByNameModelData!.nfTotalCarbohydrate == null ? 0 : double.parse(nutritionixGetNxMealInfoByNameModelData!.nfTotalCarbohydrate.toString()), AppColors.mint),
+                                      myProgressBarCardView('Protein', 102.2, nutritionixGetNxMealInfoByNameModelData!.nfTotalFat == null ? 0 : double.parse(nutritionixGetNxMealInfoByNameModelData!.nfTotalFat.toString()), AppColors.skyBlue),
                                     ],
                                   ),
                                   const SizedBox(height: 10),

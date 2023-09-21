@@ -75,7 +75,7 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
                           width: screenSize.width * 0.43,
                           context: context,
                           isLoadingWidget: state is ClearShoppingListLoadingState ? true : false,
-                          buttonLable: StringUtils.skip,
+                          buttonLable: 'Clear',
                           onTap: () {
                             widget.bloc.add(CleatGroceryEvent());
                           },

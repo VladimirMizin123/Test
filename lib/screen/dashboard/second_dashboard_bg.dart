@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
+import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../constant/asset_utils.dart';
 import '../../constant/string_utils.dart';
@@ -60,7 +62,7 @@ class SecondDashBoardView extends StatelessWidget {
               alignment: Alignment.topRight,
               child: InkWell(
                 onTap: (){
-                  Get.toNamed('/AddEntryScreen')!.then((value) {
+                  Get.toNamed('/AddEntryScreen',arguments: AddEntryArguments(isFromHistory: false,exerciseLogList: ExerciseLogList()))!.then((value) {
                     Get.back(result: value);
                   });
                 },

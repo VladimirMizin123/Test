@@ -31,7 +31,10 @@ class ApiUrls {
   static const String getTotalIntakeWater = '${baseUrl}api/Dashboard/GetTotalIntakeWater';
   static const String getTotalCaloriesBurnedByExercise = '${baseUrl}api/Dashboard/GetTotalCaloriesBurnedByExercise';
   static const String addExercise = '${baseUrl}api/Dashboard/AddExercise';
+  static const String updateExercise = '${baseUrl}api/ExerciseList/UpdateExercise';
+  static const String removeExercise = '${baseUrl}api/Dashboard/RemoveExercise';
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
+  static const String removeWater = '${baseUrl}api/Dashboard/RemoveWater';
   static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
   static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
   
@@ -39,9 +42,11 @@ class ApiUrls {
   static const String addNewDiet = '${baseUrl}api/Diet/AddNewDiet';
   static const String getExerciseLogDetailsBy = '${baseUrl}api/Dashboard/GetExerciseLogDetailsBy';
   static const String getRecapQuestionList = '${baseUrl}api/DailyRecap/GetRecapQuestionList';
+  static const String addOrUpdateDailyRecap = '${baseUrl}api/DailyRecap/AddOrUpdateDailyRecap';
 
   //For journal use apis
   static const String getUserJournalData = '${baseUrl}api/Dashboard/GetUserJournalData';
   static const String getWaterLogDetails = '${baseUrl}api/Dashboard/GetWaterLogDetails';
   static const String getExerciseLogDetails = '${baseUrl}api/Dashboard/GetExerciseLogDetails';
+  static const String getExerciseList = '${baseUrl}api/ExerciseList/GetExerciseList';
 }

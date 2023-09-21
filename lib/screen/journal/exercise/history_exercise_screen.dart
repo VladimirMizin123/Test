@@ -14,7 +14,6 @@ import 'package:gymeats_mobile/widget/app_center_loader.dart';
 class HistoryExerciseScreen extends StatefulWidget {
   final DateTime? dateTime;
 
-
   const HistoryExerciseScreen({super.key, this.dateTime});
 
   @override
@@ -27,9 +26,7 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
   @override
   void initState() {
     super.initState();
-        journalPlanBloc.add(GetExerciseDetails(date: widget.dateTime!.toString()));
-
-
+    journalPlanBloc.add(GetExerciseDetails(date: widget.dateTime!.toString()));
   }
 
   @override
@@ -39,7 +36,7 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
     return BlocConsumer<GetUserJournalBloc, GetUserJournalState>(
       bloc: journalPlanBloc,
       listener: (BuildContext context, GetUserJournalState state) {
-        if (state is AllExerciseSuccessState) {
+        if (state is AllExerciseLogSuccessState) {
           exerciseLogList = state.data!.exerciseLogList!;
         }
       },
@@ -47,7 +44,7 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
         return Column(
           children: [
             exerciseLogList.isEmpty
-                ? state is AllExerciseLoadingState
+                ? state is AllExerciseLogLoadingState
                     ? const Expanded(child: AppCenterLoader())
                     : Center(
                         child: Text(
@@ -64,7 +61,7 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index],isFromHistory: true))!.then((value) => Get.back());
+                              Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index], isFromHistory: true))!.then((value) => Get.back());
                             },
                             child: ListTile(
                               title: Text(exerciseLogList[index].exerciseName ?? ''),

@@ -136,7 +136,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
         emit(ClearShoppingListSuccessState(isClear: right.success ?? true));
-        showToast(isSuccess: false, message: right.message ?? 'Added!');
+        showToast(isSuccess: true, message: right.message ?? 'Added!');
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

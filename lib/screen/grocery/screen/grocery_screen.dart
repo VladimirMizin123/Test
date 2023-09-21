@@ -33,6 +33,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   GroceryBloc groceryBloc = GroceryBloc();
   List<GroceryShoppingData> edgesList = [];
   AskReceiveOrder? askReceiveOrder;
+  bool isListClearByClick = false;
 
   bool isGroceryFetchLoadingState = true;
 
@@ -60,13 +61,11 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               edgesList = state.edgesList ?? [];
               isGroceryFetchLoadingState = false;
               int count = 0;
-
               for (var i = 0; i < edgesList.length; i++) {
                 if (edgesList[i].isActive == true) {
                   count = count + 1;
                 }
               }
-
               selectedItemCount = count;
             }
 
@@ -80,6 +79,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                   break;
                 }
               }
+              int count = 0;
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+              selectedItemCount = count;
             }
 
             if (state is GroceryAddToShoppingSuccessState) {
@@ -91,6 +97,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                   break;
                 }
               }
+              int count = 0;
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+              selectedItemCount = count;
             }
 
             // Grocery Delete STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -101,6 +114,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                   break;
                 }
               }
+              int count = 0;
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+              selectedItemCount = count;
             }
 
             if (state is RemoveGrocerySuccessState) {
@@ -111,6 +131,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                   break;
                 }
               }
+              int count = 0;
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+              selectedItemCount = count;
             }
 
             if (state is RemoveGroceryErrorState) {
@@ -120,6 +147,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                   break;
                 }
               }
+              int count = 0;
+              for (var i = 0; i < edgesList.length; i++) {
+                if (edgesList[i].isActive == true) {
+                  count = count + 1;
+                }
+              }
+              selectedItemCount = count;
             }
 
             if (state is GroceryAskReceiveOrderEventState) {
@@ -130,9 +164,18 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (state.isClear) {
                 setState(() {
                   edgesList.clear();
+                  Navigator.pop(context);
+                  isListClearByClick = true;
                 });
               }
             }
+            int count = 0;
+            for (var i = 0; i < edgesList.length; i++) {
+              if (edgesList[i].isActive == true) {
+                count = count + 1;
+              }
+            }
+            selectedItemCount = count;
           },
           builder: (context, state) {
             return SafeArea(
@@ -154,25 +197,29 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    edgesList.isEmpty
-                        ? GestureDetector(
-                            onTap: () {},
-                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) {
-                                  return ClearAllItemBottomSheet(
-                                    bloc: groceryBloc,
+                    edgesList.isEmpty && isListClearByClick
+                        ? Text('Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.grayColor, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h)
+                        : edgesList.isEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  groceryBloc.add(GroceryFetchEvent());
+                                },
+                                child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return ClearAllItemBottomSheet(
+                                        bloc: groceryBloc,
+                                      );
+                                    },
+                                    isDismissible: false,
                                   );
                                 },
-                                isDismissible: false,
-                              );
-                            },
-                            child: Text('Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
-                          ),
+                                child: Text('Clear My Grocery List', style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                              ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Container(
@@ -183,7 +230,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         ),
                         child: TextFormField(
                           onTap: () {
-                            Get.toNamed('/GrocerySearchScreen');
+                            Get.toNamed('/GrocerySearchScreen')!.then((value) {
+                              groceryBloc.add(GroceryFetchEvent());
+                            });
                           },
                           readOnly: true,
                           decoration: InputDecoration(

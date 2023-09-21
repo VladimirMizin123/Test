@@ -23,8 +23,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
-  final emailController = TextEditingController(text: 'parth.elision@gmail.com');
-  final passwordController = TextEditingController(text: '123456789');
+  final emailController = TextEditingController(text: 'sojitratest01@mailinator.com');
+  // final emailController = TextEditingController(text: 'parth.elision@gmail.com');
+  final passwordController = TextEditingController(text: 'Sojitra@321');
+  // final passwordController = TextEditingController(text: '123456789');
 
   LoginBloc bloc = LoginBloc();
 

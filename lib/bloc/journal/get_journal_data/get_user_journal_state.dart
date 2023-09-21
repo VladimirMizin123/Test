@@ -1,4 +1,5 @@
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
+import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 
 import '../../../models/exercise_log_details_model.dart';
 import '../../../models/fetch_meal_plan_model.dart';
@@ -25,10 +26,17 @@ class LoadMealTrackData extends GetUserJournalState {
   LoadMealTrackData({required this.mealTrackDataList});
 }
 
+class AllExerciseLogLoadingState extends GetUserJournalState {}
+
+class AllExerciseLogSuccessState extends GetUserJournalState {
+  ExerciseData? data;
+  AllExerciseLogSuccessState({required this.data});
+}
+
 class AllExerciseLoadingState extends GetUserJournalState {}
 
 class AllExerciseSuccessState extends GetUserJournalState {
-  ExerciseData? data;
+  List<GetAllExerciseData> data;
   AllExerciseSuccessState({required this.data});
 }
 
@@ -57,7 +65,7 @@ class ErrorExerciseState extends GetUserJournalState {
   // ErrorJournalState({required this.errMessage});
 }
 
-class LoadingData extends GetUserJournalState {}
+class GetUserJournalDataLoading extends GetUserJournalState {}
 
 class LoadingDoneState extends GetUserJournalState {}
 
@@ -89,4 +97,21 @@ class DailyRecapSuccessState extends GetUserJournalState {
   final List<DailyRecapData>? recapData;
 
   DailyRecapSuccessState({required this.recapData});
+}
+
+class DailyRecapAnsLoadingData extends GetUserJournalState {}
+
+class DailyRecapAnsSuccessState extends GetUserJournalState {
+  final bool recapData;
+
+  DailyRecapAnsSuccessState({required this.recapData});
+}
+
+
+class RemoveWaterLoadingData extends GetUserJournalState {}
+
+class RemoveWaterSuccessState extends GetUserJournalState {
+  final bool removeWater;
+
+  RemoveWaterSuccessState({required this.removeWater});
 }

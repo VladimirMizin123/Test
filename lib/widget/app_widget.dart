@@ -435,7 +435,7 @@ Widget mealPlanCard({
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(mealData.meal ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                Text(mealData.meal ?? '', style: FontUtils.h12(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
                                 Text(mealData.recipe!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
                                 Text(mealData.calories!.toStringAsFixed(2), style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
                               ],
