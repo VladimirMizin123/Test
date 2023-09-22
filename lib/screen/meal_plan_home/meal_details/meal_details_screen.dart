@@ -175,7 +175,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                   fetchModelData!.recipe!.ingredients![index].isSelected = !fetchModelData!.recipe!.ingredients![index].isSelected;
 
                                                                   for (var i = 0; i < fetchModelData!.recipe!.ingredients!.length; i++) {
-                                                                    if (fetchModelData!.recipe!.ingredients![index].isSelected) {
+                                                                    if (fetchModelData!.recipe!.ingredients![i].isSelected) {
                                                                       isAddButtonEnable = true;
                                                                       break;
                                                                     } else {
