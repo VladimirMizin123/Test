@@ -566,7 +566,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                                 height: screenSize.height * 0.070,
                                                                 width: screenSize.height * 0.070,
                                                                 decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                                                child: Center(child: SvgPicture.asset(AssetsUtils.icDelete)),
+                                                                child: Center(child:  SvgPicture.asset(AssetsUtils.icDelete)),
                                                               ),
                                                             )
                                                           :  GestureDetector(
