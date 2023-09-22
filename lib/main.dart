@@ -15,7 +15,6 @@ import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
-import 'package:gymeats_mobile/screen/forgot_password/forgot_password_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/Gym_works_info.dart';
 import 'package:gymeats_mobile/screen/gender_screen/first_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/five_gym_instruction.dart';
@@ -56,7 +55,6 @@ import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_s
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/profile/profile_screen.dart';
-import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
@@ -71,7 +69,9 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
+import 'screen/reset_password/reset_password_screen.dart';
 
 // import this all  file
 Future<void> main() async {
@@ -124,8 +124,8 @@ class MyApp extends StatelessWidget {
               page: () => const LoginScreen(),
             ),
             GetPage(
-              name: '/ForgotPasswordScreen',
-              page: () => const ForgotPasswordScreen(),
+              name: '/CreateNewPasswordScreen',
+              page: () => const CreateNewPasswordScreen(),
             ),
             GetPage(
               name: '/OpenEmailAppScreen',

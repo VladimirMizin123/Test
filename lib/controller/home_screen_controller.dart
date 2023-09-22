@@ -62,6 +62,10 @@ class HomeScreenController extends GetxController {
     } else if (!validatePassword(passwordController.text)) {
       showToast(
           message: StringUtils.pleaseEnterPasswordValidation, isSuccess: false);
+    } else if (!validateStrongPassword(passwordController.text)) {
+      showToast(
+          message: StringUtils.pleaseEnterStrongPasswordValidation,
+          isSuccess: false);
     } else if (confirmPasswordController.text.isEmpty) {
       showToast(
           message: StringUtils.pleaseEnterConfirmPassword, isSuccess: false);

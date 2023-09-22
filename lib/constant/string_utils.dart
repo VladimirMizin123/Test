@@ -51,6 +51,7 @@ class StringUtils {
   static const logIn = 'Log In';
   static const signUp = 'Sign Up';
   static const apple = 'Continue with Apple';
+  static const google = 'Continue with Google';
   static const joinGymEats = 'Join GYM EATS';
   static const loginSubText = 'Type your email and password to continue';
   static const showMealBtnText = 'Show Me My Meal Plan';
@@ -102,10 +103,13 @@ class StringUtils {
   static const pleaseEnterFirstName = 'Please enter first name';
   static const pleaseEnterLastName = 'Please enter last name';
   static const pleaseEnterEmail = 'Please enter email';
+  static const alreadyRegisterEmail = 'Email address is already registered';
   static const enterValidEmail = 'Enter valid email';
   static const pleaseEnterPassword = 'Please enter password';
   static const pleaseEnterNewPassword = 'Please enter new password';
   static const pleaseEnterPasswordValidation = 'Password must be 8 character';
+  static const pleaseEnterStrongPasswordValidation =
+      'Password must be at least 1 uppercase letter, 1 special character and 1 number';
   static const pleaseEnterConfirmPassword = 'Please enter confirm password';
   static const passwordNotMatch = 'Password does\'t match';
   static const userSurveySelectionError = 'Please select at list one option';

@@ -22,12 +22,12 @@ class AddEntryScreen extends StatefulWidget {
 }
 
 class _AddEntryScreenState extends State<AddEntryScreen> {
-  final routeName = '/add-Entry-screen';
+  final routeName = '/AddEntryScreen';
   TextEditingController entryController = TextEditingController();
   TextEditingController minutesController = TextEditingController();
   TextEditingController caloriesTextBurnedController = TextEditingController();
 
-  AddEntryArguments addEntryArguments = Get.arguments;
+  var addEntryArguments = Get.arguments;
 
   AddExerciseBloc bloc = AddExerciseBloc();
 
@@ -35,12 +35,28 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   void initState() {
     super.initState();
     if (addEntryArguments.isFromHistory) {
-      entryController.text = addEntryArguments.exerciseLogList!.exerciseName == null ? '' : addEntryArguments.exerciseLogList!.exerciseName ?? '';
-      minutesController.text = addEntryArguments.exerciseLogList!.workoutTime == null ? '' : addEntryArguments.exerciseLogList!.workoutTime.toString();
-      caloriesTextBurnedController.text = addEntryArguments.exerciseLogList!.caloriesBurned == null ? '' : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
+      entryController.text =
+          addEntryArguments.exerciseLogList!.exerciseName == null
+              ? ''
+              : addEntryArguments.exerciseLogList!.exerciseName ?? '';
+      minutesController.text =
+          addEntryArguments.exerciseLogList!.workoutTime == null
+              ? ''
+              : addEntryArguments.exerciseLogList!.workoutTime.toString();
+      caloriesTextBurnedController.text =
+          addEntryArguments.exerciseLogList!.caloriesBurned == null
+              ? ''
+              : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
     } else {
-      entryController.text = addEntryArguments.allExerciseData!.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
-      caloriesTextBurnedController.text = addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
+      entryController.text =
+          addEntryArguments.allExerciseData!.exerciseName == null
+              ? ''
+              : addEntryArguments.allExerciseData!.exerciseName ?? '';
+      caloriesTextBurnedController.text =
+          addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null
+              ? ''
+              : addEntryArguments.allExerciseData!.calorieBurnedPerMinute
+                  .toString();
     }
   }
 
@@ -66,7 +82,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   ),
                 ),
                 Text(
-                  addEntryArguments.isFromHistory ? 'Exercise' : StringUtils.addEntry,
+                  addEntryArguments.isFromHistory
+                      ? 'Exercise'
+                      : StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -97,9 +115,23 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'minutes',
-                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: AppColors.darkGray),
                       ),
-                      commonUserTypeTextField(hintText: '00', controller: minutesController, context: context, width: 80.w, fontSize: 16.sp, borderColor: AppColors.primaryBlue, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
+                      commonUserTypeTextField(
+                          hintText: '00',
+                          controller: minutesController,
+                          context: context,
+                          width: 80.w,
+                          fontSize: 16.sp,
+                          borderColor: AppColors.primaryBlue,
+                          fontWeight: FontWeight.w400,
+                          isSuffix: false,
+                          valueColor: AppColors.darkGray,
+                          fontColor: AppColors.darkGray,
+                          cursorColor: AppColors.darkGray,
+                          textInputType: TextInputType.number,
+                          onChange: (value) {}),
                     ],
                   ).paddingOnly(top: 8.h),
                   Row(
@@ -107,9 +139,23 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'Calories Burned',
-                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: AppColors.darkGray),
                       ),
-                      commonUserTypeTextField(hintText: '00cal', controller: caloriesTextBurnedController, context: context, width: 80.w, fontSize: 16.sp, borderColor: AppColors.primaryBlue, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
+                      commonUserTypeTextField(
+                          hintText: '00cal',
+                          controller: caloriesTextBurnedController,
+                          context: context,
+                          width: 80.w,
+                          fontSize: 16.sp,
+                          borderColor: AppColors.primaryBlue,
+                          fontWeight: FontWeight.w400,
+                          isSuffix: false,
+                          valueColor: AppColors.darkGray,
+                          fontColor: AppColors.darkGray,
+                          cursorColor: AppColors.darkGray,
+                          textInputType: TextInputType.number,
+                          onChange: (value) {}),
                     ],
                   ).paddingOnly(top: 8.h),
                 ],
@@ -144,7 +190,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                         context: context,
                                         buttonLable: 'Delete',
                                         onTap: () {
-                                          bloc.add(DeleteExerciseEvent(exerciseName: entryController.text));
+                                          bloc.add(DeleteExerciseEvent(
+                                              exerciseName:
+                                                  entryController.text));
                                         },
                                         isDarkColor: true,
                                       ),
@@ -157,7 +205,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                   context: context,
                                   buttonLable: 'Update',
                                   onTap: () {
-                                    bloc.add(UpdateExerciseEvent(id: '', calorieBurnedPerMinute: minutesController.text, exerciseName: entryController.text));
+                                    bloc.add(UpdateExerciseEvent(
+                                        id: '',
+                                        calorieBurnedPerMinute:
+                                            minutesController.text,
+                                        exerciseName: entryController.text));
                                   },
                                   isDarkColor: true,
                                   isFillColor: true,
@@ -171,7 +223,13 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                 hasImage: false,
                                 textColor: AppColors.skyBlue,
                                 onPressed: () {
-                                  bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                                  bloc.add(SaveClickEvent(
+                                      userId: userId,
+                                      workoutTime: minutesController.text,
+                                      exerciseName: entryController.text,
+                                      caloriesBurned:
+                                          caloriesTextBurnedController.text,
+                                      createdBy: ''));
                                 },
                                 bgColor: AppColors.primaryBlue)
                             .paddingOnly(bottom: 20.h);
@@ -183,7 +241,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     );
   }
 
-  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
+  Widget waterDetailsView(
+      {String? waterIcon,
+      String? waterQuantity,
+      double? height,
+      void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -194,7 +256,10 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,
@@ -224,5 +289,6 @@ class AddEntryArguments {
   final GetAllExerciseData? allExerciseData;
   final bool isFromHistory;
 
-  AddEntryArguments({this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
+  AddEntryArguments(
+      {this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
 }

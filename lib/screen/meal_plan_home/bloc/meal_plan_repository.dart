@@ -16,19 +16,24 @@ import 'package:gymeats_mobile/service/apis.dart';
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
 
-
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+    int mealPlanScreenCountState =
+        PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';
+      print('genMealPlan apiURL : $apiURL');
     } else {
       apiURL = '${ApiUrls.getMealPlan}/$userID';
+      print('getMealPlan apiURL : $apiURL');
     }
     final response = await apiServices.get(apiURL);
+    print('Meal response.body : ${response.body}');
+    print('Meal response.statusCode : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Meal response.body123 : ${response.body}');
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -36,8 +41,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan({required String mealID}) async {
-    final response = await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
+  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan(
+      {required String mealID}) async {
+    final response =
+        await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SkipMealPlanModel.fromJson(jsonDecode(response.body)));
@@ -46,19 +53,24 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, RecipesAddToGroceryModel>> recipeAddToGrocery({required String databaseIdOfRecipes}) async {
-    final response = await apiServices.post('${ApiUrls.addToShoppingList}/$userID', {
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> recipeAddToGrocery(
+      {required String databaseIdOfRecipes}) async {
+    final response =
+        await apiServices.post('${ApiUrls.addToShoppingList}/$userID', {
       "databaseIdOfRecipes": [databaseIdOfRecipes]
     });
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem({required String recipeID, required int serving}) async {
-    final response = await apiServices.get('${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
+  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem(
+      {required String recipeID, required int serving}) async {
+    final response = await apiServices.get(
+        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -66,8 +78,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails({required String recipeID}) async {
-    final response = await apiServices.get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
+  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
+      {required String recipeID}) async {
+    final response = await apiServices
+        .get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -82,7 +96,9 @@ class MealPlanRepository {
     required String maximumMiles,
     required bool pickup,
   }) async {
-    final response = await apiServices.post('${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude', {}
+    final response = await apiServices.post(
+        '${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude',
+        {}
         // {
         //   "name": name,
         //   "latitude": latitude,

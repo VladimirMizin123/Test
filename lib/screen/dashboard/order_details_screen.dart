@@ -43,16 +43,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 40.h,
-                          width: 40.w,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.white),
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                            size: 18,
-                            color: AppColors.darkGray,
-                          ).paddingOnly(left: 5.w),
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: Container(
+                            height: 40.h,
+                            width: 40.w,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle, color: Colors.white),
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 18,
+                              color: AppColors.darkGray,
+                            ).paddingOnly(left: 5.w),
+                          ),
                         ),
                         Image.asset(
                           AssetsUtils.gymEatsSpoon,

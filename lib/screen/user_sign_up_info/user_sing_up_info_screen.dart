@@ -202,31 +202,37 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     final pageData = model.options!
                                         .sublist(startIndex, endIndex);
 
-                                    return Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: pageData
-                                          .map((item) => Container(
-                                                /*height: 80.h,
-                                            width: 80.h,*/
-                                                padding:
-                                                    const EdgeInsets.all(18),
-                                                margin: const EdgeInsets.only(
-                                                    right: 2.5, left: 2.5),
-                                                alignment: Alignment.center,
-                                                decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.black54),
-                                                child: Text(
-                                                  item,
-                                                  style: const TextStyle(
-                                                      fontSize: 12.0,
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ),
-                                              ))
-                                          .toList(),
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: pageData
+                                            .map((item) => Container(
+                                                  /*height: 80.h,
+                                              width: 80.h,*/
+                                                  padding:
+                                                      const EdgeInsets.all(18),
+                                                  margin: const EdgeInsets.only(
+                                                      right: 2.5, left: 2.5),
+                                                  alignment: Alignment.center,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          color:
+                                                              Colors.black54),
+                                                  child: Text(
+                                                    item,
+                                                    style: const TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                      ),
                                     );
                                   },
                                 ),

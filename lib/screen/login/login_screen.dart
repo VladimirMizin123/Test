@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +11,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../app/firebase_deep_link.dart';
 import '../../bloc/login/login_bloc.dart';
 import '../../bloc/login/login_event.dart';
 import '../../constant/string_utils.dart';
@@ -25,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   // final emailController = TextEditingController(text: 'admin@gmail.com');
   // final passwordController = TextEditingController(text: 'Admin@123');
 
@@ -76,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     .paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed('/ForgotPasswordScreen');
+                    Get.toNamed('/ResetPasswordScreen');
                     clearFiled();
                   },
                   child: Align(
@@ -118,16 +123,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: textTheme.headlineSmall,
                   ).paddingSymmetric(vertical: 15.h),
                 ),
-                buildButton(
-                    context: context,
-                    hasImage: true,
-                    imagePath: AssetsUtils.appleLogo,
-                    onPressed: () async {
-                      await appleSignIn();
-                    },
-                    textColor: Colors.white,
-                    bgColor: Colors.black,
-                    title: StringUtils.apple),
+                kIsWeb
+                    ? const SizedBox()
+                    : Platform.isIOS
+                        ? buildButton(
+                            context: context,
+                            hasImage: true,
+                            imagePath: AssetsUtils.appleLogo,
+                            onPressed: () async {
+                              await appleSignIn();
+                            },
+                            textColor: Colors.white,
+                            bgColor: Colors.black,
+                            title: StringUtils.apple)
+                        : buildButton(
+                            context: context,
+                            hasImage: true,
+                            imagePath: AssetsUtils.googleLogo,
+                            onPressed: () {},
+                            textColor: Colors.white,
+                            bgColor: Colors.black,
+                            title: StringUtils.google),
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

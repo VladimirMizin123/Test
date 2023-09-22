@@ -51,6 +51,15 @@ bool validatePassword(String password) {
   return true;
 }
 
+bool validateStrongPassword(String strongPassword) {
+  RegExp regExp =
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+  if (!regExp.hasMatch(strongPassword)) {
+    return false;
+  }
+  return true;
+}
+
 String dateTimeNow() {
   DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(now);

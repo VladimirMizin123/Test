@@ -23,14 +23,13 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   final routeName = '/add-water-screen';
   TextEditingController waterController = TextEditingController();
 
-  AddWaterArguments? addWaterArguments = Get.arguments;
+  AddWaterArguments addWaterArguments = Get.arguments;
   AddWaterBloc bloc = AddWaterBloc();
 
   @override
   void initState() {
     super.initState();
-
-    waterController.text = addWaterArguments != null ? addWaterArguments!.dailyGoal ?? '' : '';
+    waterController.text = addWaterArguments.dailyGoal.toString();
   }
 
   @override
@@ -64,14 +63,16 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                             ),
                             Text(
                               StringUtils.addWater,
-                              style: textTheme.displayMedium?.copyWith(color: Colors.black),
+                              style: textTheme.displayMedium
+                                  ?.copyWith(color: Colors.black),
                             ).paddingOnly(right: 28.w),
                             const SizedBox(),
                           ],
                         ).paddingOnly(top: 30.h),
                         Text(
-                          'Your Daily Goal: ${addWaterArguments!.dailyGoal} ml',
-                          style: textTheme.bodyMedium?.copyWith(color: AppColors.middleGray),
+                          'Your Daily Goal: ${addWaterArguments.dailyGoal} ml',
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.middleGray),
                         ),
                         dashBoardCardView(
                           // height: 240.h,
@@ -91,22 +92,47 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                                         controller: waterController,
                                         cursorColor: AppColors.darkGray,
                                         keyboardType: TextInputType.number,
-                                        style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.darkGray),
                                         decoration: InputDecoration(
                                           hintText: '00',
-                                          hintStyle: const TextStyle(fontSize: 12, color: AppColors.grayColor),
+                                          hintStyle: const TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.grayColor),
                                           isDense: true,
-                                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                          disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.primaryBlue)),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.primaryBlue)),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.primaryBlue)),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.primaryBlue)),
                                         ),
                                       ),
                                     ),
                                     SizedBox(width: 5.w),
                                     Text(
                                       StringUtils.ml,
-                                      style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                                      style: textTheme.bodyLarge
+                                          ?.copyWith(color: AppColors.darkGray),
                                     )
                                   ],
                                 ),
@@ -164,7 +190,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                       hasImage: false,
                       textColor: AppColors.skyBlue,
                       onPressed: () {
-                        bloc.add(SaveClickEvent(waterML: waterController.text));
+                        setState(() {
+                          bloc.add(
+                              SaveClickEvent(waterML: waterController.text));
+                        });
                       },
                       bgColor: AppColors.primaryBlue);
                 }
@@ -174,7 +203,11 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     );
   }
 
-  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
+  Widget waterDetailsView(
+      {String? waterIcon,
+      String? waterQuantity,
+      double? height,
+      void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -185,7 +218,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,

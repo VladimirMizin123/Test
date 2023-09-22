@@ -89,7 +89,7 @@ class OpenEmailAppScreen extends StatelessWidget {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
-                            Get.toNamed('/ForgotPasswordScreen');
+                            Get.toNamed('/ResetPasswordScreen');
                           },
                       ),
                     ],

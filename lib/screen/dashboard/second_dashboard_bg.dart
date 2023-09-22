@@ -11,7 +11,7 @@ import '../../constant/string_utils.dart';
 class SecondDashBoardView extends StatelessWidget {
   const SecondDashBoardView({super.key});
 
-  final routeName = '/second-dashboard';
+  final routeName = '/SecondDashBoardView';
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +61,13 @@ class SecondDashBoardView extends StatelessWidget {
             Align(
               alignment: Alignment.topRight,
               child: InkWell(
-                onTap: (){
-                  Get.toNamed('/AddEntryScreen',arguments: AddEntryArguments(isFromHistory: false,exerciseLogList: ExerciseLogList()))!.then((value) {
+                onTap: () {
+                  // Get.toNamed('/AddEntryScreen', arguments: Get.arguments)
+                  Get.toNamed('/AddEntryScreen',
+                          arguments: AddEntryArguments(
+                              isFromHistory: false,
+                              exerciseLogList: ExerciseLogList()))!
+                      .then((value) {
                     Get.back(result: value);
                   });
                 },
@@ -78,8 +83,8 @@ class SecondDashBoardView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       'Skip',
-                      style:
-                          textTheme.headlineSmall?.copyWith(color: Colors.white),
+                      style: textTheme.headlineSmall
+                          ?.copyWith(color: Colors.white),
                     ),
                   ),
                 ),

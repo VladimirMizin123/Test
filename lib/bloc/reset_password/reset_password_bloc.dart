@@ -22,6 +22,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
     bool isPasswordMatch =
         validateConfirmPassword(event.password, event.confirmPassword);
     bool isPasswordValid = validatePassword(event.password);
+    bool isStrongPasswordValid = validateStrongPassword(event.password);
 
     if (isConfirmPassword && isNewPassword && isPasswordMatch) {
       emit(ResetLoadingState());
@@ -48,6 +49,9 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
       } else if (!isPasswordValid) {
         onFailError(
             emit: emit, text: StringUtils.pleaseEnterPasswordValidation);
+      } else if (!isStrongPasswordValid) {
+        onFailError(
+            emit: emit, text: StringUtils.pleaseEnterStrongPasswordValidation);
       } else if (!isConfirmPassword) {
         onFailError(emit: emit, text: StringUtils.pleaseEnterConfirmPassword);
       } else if (!isPasswordMatch) {
