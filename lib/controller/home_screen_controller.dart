@@ -62,6 +62,10 @@ class HomeScreenController extends GetxController {
     } else if (!validatePassword(passwordController.text)) {
       showToast(
           message: StringUtils.pleaseEnterPasswordValidation, isSuccess: false);
+    } else if (!validateStrongPassword(passwordController.text)) {
+      showToast(
+          message: StringUtils.pleaseEnterStrongPasswordValidation,
+          isSuccess: false);
     } else if (confirmPasswordController.text.isEmpty) {
       showToast(
           message: StringUtils.pleaseEnterConfirmPassword, isSuccess: false);
@@ -77,12 +81,12 @@ class HomeScreenController extends GetxController {
           userName: emailController.text,
           confirmPassword: confirmPasswordController.text);
 
-      Get.toNamed('/PremiumScreen',arguments: userData);
-      fNameController.clear();
+      Get.toNamed('/PremiumScreen', arguments: userData);
+      /*fNameController.clear();
       lastNameController.clear();
       emailController.clear();
       passwordController.clear();
-      confirmPasswordController.clear();
+      confirmPasswordController.clear();*/
     }
   }
 }

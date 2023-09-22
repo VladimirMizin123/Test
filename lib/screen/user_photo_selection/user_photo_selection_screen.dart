@@ -170,13 +170,18 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text(StringUtils.skip,
-                        style: AppTextStyle.gymEatsStyle.copyWith(
-                            color: AppColors.disable,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/UserSignUpInfoScreen');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(StringUtils.skip,
+                          style: AppTextStyle.gymEatsStyle.copyWith(
+                              color: AppColors.disable,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ),
                   Row(
                     children: [

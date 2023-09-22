@@ -15,7 +15,6 @@ import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
-import 'package:gymeats_mobile/screen/forgot_password/forgot_password_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/Gym_works_info.dart';
 import 'package:gymeats_mobile/screen/gender_screen/first_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/five_gym_instruction.dart';
@@ -56,7 +55,6 @@ import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_s
 import 'package:gymeats_mobile/screen/open_email/open_email_app_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/premium_screen.dart';
 import 'package:gymeats_mobile/screen/profile/profile_screen.dart';
-import 'package:gymeats_mobile/screen/reset_password/reset_password_screen.dart';
 import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
@@ -71,7 +69,9 @@ import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
+import 'screen/reset_password/reset_password_screen.dart';
 
 // import this all  file
 Future<void> main() async {
@@ -80,7 +80,11 @@ Future<void> main() async {
   await PreferenceUtils.init();
   await Firebase.initializeApp(
     name: 'GymEats',
-    options: FirebaseOptions(apiKey: apiKey, appId: appId, messagingSenderId: messagingSenderId, projectId: projectId),
+    options: FirebaseOptions(
+        apiKey: apiKey,
+        appId: appId,
+        messagingSenderId: messagingSenderId,
+        projectId: projectId),
   );
   await initDynamicLinks();
   if (PreferenceUtils.getBool(prefIsLogin)) {
@@ -109,15 +113,19 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail) ? '/AppManagerScreen' : '/AppManagerScreen',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
+                  PreferenceUtils.getBool(prefIsConfirmEmail)
+              ? '/AppManagerScreen'
+              : '/',
+          // initialRoute: 'SignUpScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
               page: () => const LoginScreen(),
             ),
             GetPage(
-              name: '/ForgotPasswordScreen',
-              page: () => const ForgotPasswordScreen(),
+              name: '/CreateNewPasswordScreen',
+              page: () => const CreateNewPasswordScreen(),
             ),
             GetPage(
               name: '/OpenEmailAppScreen',
@@ -138,14 +146,18 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/ChooseStoreScreen',
               page: () {
-                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                GroceryCartScreenArguments? argument =
+                    (Get.arguments is GroceryCartScreenArguments)
+                        ? Get.arguments
+                        : null;
                 return ChooseStoreScreen(arguments: argument);
               },
             ),
             GetPage(
               name: '/MealDetailsScreen',
               page: () {
-                MealPlanArguments? argument = (Get.arguments is MealPlanArguments) ? Get.arguments : null;
+                MealPlanArguments? argument =
+                    (Get.arguments is MealPlanArguments) ? Get.arguments : null;
                 return MealDetailsScreen(mealDataArguments: argument);
               },
             ),
@@ -160,14 +172,20 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/GroceryCartScreen',
               page: () {
-                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                GroceryCartScreenArguments? argument =
+                    (Get.arguments is GroceryCartScreenArguments)
+                        ? Get.arguments
+                        : null;
                 return GroceryCartScreen(arguments: argument);
               },
             ),
             GetPage(
                 name: '/GroceryItemDetails',
                 page: () {
-                  GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
+                  GroceryItemDetailsArguments? argument =
+                      (Get.arguments is GroceryItemDetailsArguments)
+                          ? Get.arguments
+                          : null;
                   return GroceryItemDetails(arguments: argument);
                 }),
             GetPage(

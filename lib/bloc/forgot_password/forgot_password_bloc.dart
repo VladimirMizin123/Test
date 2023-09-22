@@ -17,7 +17,8 @@ class ForgotPasswordBloc extends Bloc<ButtonClickEvent, ForgotPasswordState> {
 
   final ForgotPasswordRepository _repository = ForgotPasswordRepository();
 
-  _onForgotPassword(ButtonClickEvent event, Emitter<ForgotPasswordState> emit) async {
+  _onForgotPassword(
+      ButtonClickEvent event, Emitter<ForgotPasswordState> emit) async {
     bool isEmail = emailValid(event.email);
     bool isValidEmail = validateEmail(event.email);
 
@@ -41,14 +42,15 @@ class ForgotPasswordBloc extends Bloc<ButtonClickEvent, ForgotPasswordState> {
       }
     } else {
       if (isEmail) {
-        onFailError(emit: emit, text: StringUtils.pleaseEnterEmail);
-      } else {
         onFailError(emit: emit, text: StringUtils.enterValidEmail);
+      } else {
+        onFailError(emit: emit, text: StringUtils.pleaseEnterEmail);
       }
     }
   }
 
-  onFailError({required String text, required Emitter<ForgotPasswordState> emit}) {
+  onFailError(
+      {required String text, required Emitter<ForgotPasswordState> emit}) {
     showToast(isSuccess: false, message: text);
     emit(ForgotErrorState());
   }

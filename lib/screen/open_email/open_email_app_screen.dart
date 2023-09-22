@@ -32,20 +32,22 @@ class OpenEmailAppScreen extends StatelessWidget {
                 Center(
                   child: Image.asset(
                     AssetsUtils.emailApp,
-                    fit: BoxFit.cover,
-                    height: 150.h,
-                    width: 150.w,
+                    height: 170.h,
+                    width: 170.w,
+                    fit: BoxFit.fill,
                   ),
                 ),
                 Text(
                   StringUtils.checkMail,
-                  style: textTheme.displayLarge?.copyWith(letterSpacing: -0.8, color: const Color(0xFF010101)),
+                  style: textTheme.displayLarge?.copyWith(
+                      letterSpacing: -0.8, color: const Color(0xFF010101)),
                 ).paddingOnly(top: 60.h),
                 Text(
                   StringUtils.checkSubMail,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
-                ),
+                  style: textTheme.bodyLarge
+                      ?.copyWith(color: AppColors.middleGray, fontSize: 17.sp),
+                ).paddingSymmetric(horizontal: 20.w),
                 buildButton(
                         context: context,
                         onPressed: () {
@@ -62,7 +64,8 @@ class OpenEmailAppScreen extends StatelessWidget {
                   child: Text(
                     StringUtils.skipText,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge?.copyWith(color: AppColors.primaryBlue),
+                    style: textTheme.headlineSmall
+                        ?.copyWith(color: AppColors.primaryBlue),
                   ).paddingOnly(top: 20.h),
                 ),
                 RichText(
@@ -70,16 +73,23 @@ class OpenEmailAppScreen extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: 'Didn’t receive the email? Check your spam filter or ',
-                        style: textTheme.bodySmall!.copyWith(color: AppColors.darkGray, fontSize: 14.sp, fontWeight: FontWeight.w300),
+                        text:
+                            'Didn’t receive the email? Check your spam filter or ',
+                        style: textTheme.bodySmall!.copyWith(
+                            color: AppColors.darkGray,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w300),
                       ),
                       TextSpan(
                         text: 'try another email address',
-                        style: textTheme.bodySmall!.copyWith(color: AppColors.terracotta, fontSize: 14.sp, fontWeight: FontWeight.w300),
+                        style: textTheme.bodySmall!.copyWith(
+                            color: AppColors.terracotta,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w300),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
-                            openGmailHomePage();
+                            Get.toNamed('/ResetPasswordScreen');
                           },
                       ),
                     ],

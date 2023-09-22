@@ -71,6 +71,9 @@ class AssetsUtils {
   static const String journalBG6 = "assets/image/journalBg6.png";
   static const icExercise = "assets/icon/ic_exercise.png";
   static const icDemoIcon = "assets/image/demo_icon.png";
+  static const productDemoImg = "assets/image/product_demo_img.png";
+  static const productDemoImg1 = "assets/image/product_demo_img_1.png";
+  static const paymentDoneBg = "assets/image/payment_done_bg.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
@@ -113,6 +116,7 @@ class AssetsUtils {
   static const icLocationIcon = '${svgPath}ic_location_icon.svg';
   static const icFlagIcon = '${svgPath}ic_flag_icon.svg';
   static const gymEatsLogoRound = '${svgPath}gym_eats_logo.svg';
+  static const googleLogo = '${svgPath}google.svg';
 
   /// Icons
 
@@ -151,7 +155,4 @@ class AssetsUtils {
   static const searchPen = "assets/icon/searchPen.png";
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
-  static const productDemoImg = "assets/image/product_demo_img.png";
-  static const productDemoImg1 = "assets/image/product_demo_img_1.png";
-  static const paymentDoneBg = "assets/image/payment_done_bg.png";
 }

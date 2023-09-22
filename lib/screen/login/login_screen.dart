@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../app/firebase_deep_link.dart';
 import '../../bloc/login/login_bloc.dart';
 import '../../bloc/login/login_event.dart';
 import '../../constant/string_utils.dart';
@@ -75,14 +78,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 commonTextField(context: context, controller: passwordController, hintText: StringUtils.password).paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed('/ForgotPasswordScreen');
+                    Get.toNamed('/ResetPasswordScreen');
                     clearFiled();
                   },
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Text(
                       StringUtils.forgot,
-                      style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                      style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                     ),
                   ).paddingOnly(top: 20.h),
                 ),
@@ -111,20 +114,46 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.center,
                   child: Text(
                     StringUtils.or,
-                    style: textTheme.bodyLarge,
+                    style: textTheme.headlineSmall,
                   ).paddingSymmetric(vertical: 15.h),
                 ),
-                buildButton(
-                    context: context,
-                    hasImage: true,
-                    imagePath: AssetsUtils.appleLogo,
-                    onPressed: () async {
-                      await appleSignIn();
-                    },
-                    textColor: const Color(0xFFD9E9EE),
-                    bgColor: Colors.black,
-                    title: StringUtils.apple),
-                Wrap(
+                kIsWeb
+                    ? const SizedBox()
+                    : Platform.isIOS
+                        ? buildButton(
+                            context: context,
+                            hasImage: true,
+                            imagePath: AssetsUtils.appleLogo,
+                            onPressed: () async {
+                              await appleSignIn();
+                            },
+                            textColor: Colors.white,
+                            bgColor: Colors.black,
+                            title: StringUtils.apple)
+                        : buildButton(context: context, hasImage: true, imagePath: AssetsUtils.googleLogo, onPressed: () {}, textColor: Colors.white, bgColor: Colors.black, title: StringUtils.google),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: StringUtils.donTAccount,
+                        style: textTheme.bodyMedium!.copyWith(
+                          color: const Color(0xFF373737),
+                        ),
+                      ),
+                      TextSpan(
+                        text: StringUtils.signUp,
+                        style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            // Single tapped.
+                            Get.toNamed('/SignUpScreen');
+                          },
+                      ),
+                    ],
+                  ),
+                ).paddingOnly(top: 25.h, left: 60.w),
+                /*Wrap(
                   children: [
                     Text(StringUtils.donTAccount,
                         style: textTheme.bodyMedium!.copyWith(
@@ -135,10 +164,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Login Screen
                         Get.toNamed('/SignUpScreen');
                       },
-                      child: Text(StringUtils.signUp, style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400)),
+                      child: Text(StringUtils.signUp,
+                          style: textTheme.bodyLarge!.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: themeData.primaryColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400)),
                     ),
                   ],
-                ).paddingOnly(top: 22.h, left: 60.w),
+                ).paddingOnly(top: 22.h, left: 60.w),*/
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
