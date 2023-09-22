@@ -126,20 +126,7 @@ Widget commonTextField({
   );
 }
 
-Widget commonUserTypeTextField(
-    {required String hintText,
-    required TextEditingController controller,
-    required BuildContext context,
-    required double width,
-    required double fontSize,
-    required FontWeight? fontWeight,
-    required Color fontColor,
-    required Color valueColor,
-    Color? borderColor,
-    required Color cursorColor,
-    required TextInputType textInputType,
-    required Function(String value) onChange,
-    bool isSuffix = false}) {
+Widget commonUserTypeTextField({required String hintText, required TextEditingController controller, required BuildContext context, required double width, required double fontSize, required FontWeight? fontWeight, required Color fontColor, required Color valueColor, Color? borderColor, required Color cursorColor, required TextInputType textInputType, required Function(String value) onChange, bool isSuffix = false,bool isReadOnly = false}) {
   return Container(
     height: 48.h,
     width: width.w,
@@ -155,13 +142,16 @@ Widget commonUserTypeTextField(
           child: TextFormField(
             controller: controller,
             keyboardType: textInputType,
+            
             cursorColor: cursorColor,
             style: TextStyle(fontWeight: fontWeight, color: valueColor),
             onChanged: (value) {
               onChange(value);
             },
+            readOnly: isReadOnly,
             decoration: InputDecoration(
               filled: false,
+              
               hintText: hintText,
               hintStyle: TextStyle(
                   fontSize: fontSize.sp,

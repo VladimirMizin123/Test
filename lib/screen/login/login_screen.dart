@@ -27,13 +27,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  // final emailController = TextEditingController(text: 'admin@gmail.com');
-  // final passwordController = TextEditingController(text: 'Admin@123');
+  // final emailController = TextEditingController(text: 'parth.elision@gmail.com');
+  // final passwordController = TextEditingController(text: '123456789');
 
   LoginBloc bloc = LoginBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      emailController.text = 'sojitratest01@mailinator.com';
+      passwordController.text = 'Sojitra@321';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,26 +68,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Text(
                   StringUtils.welcome,
-                  style: textTheme.displayLarge?.copyWith(
-                      letterSpacing: -0.8,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black),
+                  style: textTheme.displayLarge?.copyWith(letterSpacing: -0.8, fontWeight: FontWeight.w800, color: Colors.black),
                 ).paddingOnly(top: 16.h, bottom: 0),
                 Text(
                   StringUtils.loginSubText,
-                  style: textTheme.bodyLarge
-                      ?.copyWith(color: AppColors.middleGray),
+                  style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
-                commonTextField(
-                        context: context,
-                        controller: emailController,
-                        hintText: StringUtils.email)
-                    .paddingOnly(top: 20.h),
-                commonTextField(
-                        context: context,
-                        controller: passwordController,
-                        hintText: StringUtils.password)
-                    .paddingOnly(top: 16.h),
+                commonTextField(context: context, controller: emailController, hintText: StringUtils.email).paddingOnly(top: 20.h),
+                commonTextField(context: context, controller: passwordController, hintText: StringUtils.password).paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
                     Get.toNamed('/ResetPasswordScreen');
@@ -88,8 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       StringUtils.forgot,
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: AppColors.darkGray),
+                      style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
                     ),
                   ).paddingOnly(top: 20.h),
                 ),
@@ -107,9 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return buildButton(
                               context: context,
                               onPressed: () {
-                                bloc.add(LoginClickEvent(
-                                    email: emailController.text,
-                                    password: passwordController.text));
+                                bloc.add(LoginClickEvent(email: emailController.text, password: passwordController.text));
                               },
                               textColor: const Color(0xFFD9E9EE),
                               bgColor: const Color(0xFF004C63),
@@ -136,14 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             textColor: Colors.white,
                             bgColor: Colors.black,
                             title: StringUtils.apple)
-                        : buildButton(
-                            context: context,
-                            hasImage: true,
-                            imagePath: AssetsUtils.googleLogo,
-                            onPressed: () {},
-                            textColor: Colors.white,
-                            bgColor: Colors.black,
-                            title: StringUtils.google),
+                        : buildButton(context: context, hasImage: true, imagePath: AssetsUtils.googleLogo, onPressed: () {}, textColor: Colors.white, bgColor: Colors.black, title: StringUtils.google),
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -156,11 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextSpan(
                         text: StringUtils.signUp,
-                        style: textTheme.bodyLarge!.copyWith(
-                            decoration: TextDecoration.underline,
-                            color: themeData.primaryColor,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400),
+                        style: textTheme.bodyLarge!.copyWith(decoration: TextDecoration.underline, color: themeData.primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w400),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
@@ -195,19 +178,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text:
-                            'By clicking "Sign up", you agree to our terms and that you have read our ',
-                        style: textTheme.bodySmall!.copyWith(
-                            color: Colors.black,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400),
+                        text: 'By clicking "Sign up", you agree to our terms and that you have read our ',
+                        style: textTheme.bodySmall!.copyWith(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.w400),
                       ),
                       TextSpan(
                         text: 'Privacy Policy',
-                        style: textTheme.bodySmall!.copyWith(
-                            color: const Color(0XFF336633),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400),
+                        style: textTheme.bodySmall!.copyWith(color: const Color(0XFF336633), fontSize: 14.sp, fontWeight: FontWeight.w400),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.

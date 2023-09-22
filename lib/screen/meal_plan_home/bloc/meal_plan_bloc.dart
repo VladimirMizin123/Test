@@ -17,6 +17,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     on<FetchMealDetailsEvent>(_onFetchMealDetails);
     on<RestaurantSearchEvent>(_onRestaurantSearch);
     on<SwapMealDetailsEvent>(_onSwapMealDetails);
+    on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
@@ -127,6 +128,21 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       print(e);
       showToast(isSuccess: false, message: e.toString());
       emit(RestaurantSearchErrorState());
+    }
+  }
+
+  _onAddToShoppingList(GroceryAddToShoppingListEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GroceryAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
+
+    try {
+      await _repository.recipeAddToShoppingList(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, isChecked: event.isChecked, unitSize: event.unitSize).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData: right.data, isAdd: event.isAdd, isRemove: event.isRemove));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GroceryAddToShoppingErrorState());
     }
   }
 

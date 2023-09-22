@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -129,12 +130,23 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Image(
-                                  image: NetworkImage(groceryResult[index].image!),
+                                CachedNetworkImage(
                                   height: 80,
                                   width: 80,
+                                  imageUrl: groceryResult[index].image!,
                                   fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                    color: AppColors.lightGrey,
+                                  )),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
                                 ),
+                                // Image(
+                                //   image: NetworkImage(groceryResult[index].image!),
+                                //   height: 80,
+                                //   width: 80,
+                                //   fit: BoxFit.cover,
+                                // ),
                                 const SizedBox(height: 10),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -204,54 +216,65 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                           //         ),
                                           //       )
                                           //     :
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                if (groceryResult[index].cartItemCount == 1) {
-                                                  groceryResult[index].isAddedToShoppingList = false;
-                                                  isProductSelect = false;
-                                                } else {
-                                                  groceryResult[index].cartItemCount = groceryResult[index].cartItemCount - 1;
-                                                }
-                                              });
-                                            },
-                                            child: Container(
-                                              height: size.height * 0.065,
-                                              width: size.height * 0.065,
-                                              decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                              child: const Center(
-                                                child: Icon(Icons.remove, size: 27),
+                                          SizedBox(width: 8.w),
+
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (groceryResult[index].cartItemCount == 1) {
+                                                    groceryResult[index].isAddedToShoppingList = false;
+                                                    isProductSelect = false;
+                                                  } else {
+                                                    groceryResult[index].cartItemCount = groceryResult[index].cartItemCount - 1;
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                height: size.height * 0.060,
+                                                // width: size.height * 0.045,
+                                                decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                child: const Center(
+                                                  child: Icon(Icons.remove, size: 27),
+                                                ),
                                               ),
                                             ),
                                           ),
                                           SizedBox(width: 8.w),
-                                          Container(
-                                            height: size.height * 0.065,
-                                            width: size.height * 0.065,
-                                            decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                            child: Center(
-                                                child: Text(
-                                              groceryResult[index].cartItemCount.toString(),
-                                              style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
-                                            )),
-                                          ),
-                                          SizedBox(width: 8.w),
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                groceryResult[index].cartItemCount = groceryResult[index].cartItemCount + 1;
-                                              });
-                                            },
+                                          Expanded(
                                             child: Container(
-                                              height: size.height * 0.065,
-                                              width: size.height * 0.065,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: AppColors.mint,
-                                              ),
-                                              child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                            height: size.height * 0.060,
+                                              // width: size.height * 0.045,
+                                            
+                                              decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                              child: Center(
+                                                  child: Text(
+                                                groceryResult[index].cartItemCount.toString(),
+                                                style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                              )),
                                             ),
                                           ),
+                                          SizedBox(width: 8.w),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  groceryResult[index].cartItemCount = groceryResult[index].cartItemCount + 1;
+                                                });
+                                              },
+                                              child: Container(
+                                                height: size.height * 0.060,
+                                                // width: size.height * 0.045,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: AppColors.mint,
+                                                ),
+                                                child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.w),
+
                                         ],
                                       ),
                               ],
@@ -280,9 +303,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                     }
                   }
 
-                  widget.groceryBloc.add(GroceryProductListEvent(productList: groceryCartList
-                  ,productID: widget.productId
-                  ));
+                  widget.groceryBloc.add(GroceryProductListEvent(productList: groceryCartList, productID: widget.productId));
                   Navigator.pop(context);
                 },
                 isDarkColor: true,

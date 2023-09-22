@@ -31,32 +31,19 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
 
   AddExerciseBloc bloc = AddExerciseBloc();
 
+  bool isButtonEnable = false;
+
   @override
   void initState() {
     super.initState();
     if (addEntryArguments.isFromHistory) {
-      entryController.text =
-          addEntryArguments.exerciseLogList!.exerciseName == null
-              ? ''
-              : addEntryArguments.exerciseLogList!.exerciseName ?? '';
-      minutesController.text =
-          addEntryArguments.exerciseLogList!.workoutTime == null
-              ? ''
-              : addEntryArguments.exerciseLogList!.workoutTime.toString();
-      caloriesTextBurnedController.text =
-          addEntryArguments.exerciseLogList!.caloriesBurned == null
-              ? ''
-              : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
+      entryController.text = addEntryArguments.exerciseLogList!.exerciseName == null ? '' : addEntryArguments.exerciseLogList!.exerciseName ?? '';
+      minutesController.text = addEntryArguments.exerciseLogList!.workoutTime == null ? '1' : addEntryArguments.exerciseLogList!.workoutTime.toString();
+      caloriesTextBurnedController.text = addEntryArguments.exerciseLogList!.caloriesBurned == null ? '' : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
     } else {
-      entryController.text =
-          addEntryArguments.allExerciseData!.exerciseName == null
-              ? ''
-              : addEntryArguments.allExerciseData!.exerciseName ?? '';
-      caloriesTextBurnedController.text =
-          addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null
-              ? ''
-              : addEntryArguments.allExerciseData!.calorieBurnedPerMinute
-                  .toString();
+      entryController.text = addEntryArguments.allExerciseData!.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
+      caloriesTextBurnedController.text = addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
+      minutesController.text = '1';
     }
   }
 
@@ -119,19 +106,33 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
-                          hintText: '00',
-                          controller: minutesController,
-                          context: context,
-                          width: 80.w,
-                          fontSize: 16.sp,
-                          borderColor: AppColors.primaryBlue,
-                          fontWeight: FontWeight.w400,
-                          isSuffix: false,
-                          valueColor: AppColors.darkGray,
-                          fontColor: AppColors.darkGray,
-                          cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.number,
-                          onChange: (value) {}),
+                        hintText: '00',
+                        controller: minutesController,
+                        context: context,
+                        width: 80.w,
+                        fontSize: 16.sp,
+                        borderColor: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w400,
+                        isSuffix: false,
+                        valueColor: AppColors.darkGray,
+                        fontColor: AppColors.darkGray,
+                        cursorColor: AppColors.darkGray,
+                        textInputType: TextInputType.number,
+                        onChange: (value) {
+                          if (value.isNotEmpty) {
+                            isButtonEnable = true;
+                            if (addEntryArguments.isFromHistory) {
+                              caloriesTextBurnedController.text = (int.parse(minutesController.text) * addEntryArguments.exerciseLogList!.caloriesBurned!).toString();
+                            } else {
+                              caloriesTextBurnedController.text = (int.parse(minutesController.text) * addEntryArguments.allExerciseData!.calorieBurnedPerMinute).toString();
+                            }
+                          } else {
+                            isButtonEnable = false;
+                            caloriesTextBurnedController.text = '0';
+                          }
+                          setState(() {});
+                        },
+                      ),
                     ],
                   ).paddingOnly(top: 8.h),
                   Row(
@@ -143,19 +144,21 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
-                          hintText: '00cal',
-                          controller: caloriesTextBurnedController,
-                          context: context,
-                          width: 80.w,
-                          fontSize: 16.sp,
-                          borderColor: AppColors.primaryBlue,
-                          fontWeight: FontWeight.w400,
-                          isSuffix: false,
-                          valueColor: AppColors.darkGray,
-                          fontColor: AppColors.darkGray,
-                          cursorColor: AppColors.darkGray,
-                          textInputType: TextInputType.number,
-                          onChange: (value) {}),
+                        hintText: '00cal',
+                        isReadOnly: true,
+                        controller: caloriesTextBurnedController,
+                        context: context,
+                        width: 80.w,
+                        fontSize: 16.sp,
+                        borderColor: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w400,
+                        isSuffix: false,
+                        valueColor: AppColors.darkGray,
+                        fontColor: AppColors.darkGray,
+                        cursorColor: AppColors.darkGray,
+                        textInputType: TextInputType.number,
+                        onChange: (value) {},
+                      ),
                     ],
                   ).paddingOnly(top: 8.h),
                 ],
@@ -218,21 +221,15 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             ],
                           )
                         : buildButton(
-                                context: context,
-                                title: StringUtils.save,
-                                hasImage: false,
-                                textColor: AppColors.skyBlue,
-                                onPressed: () {
-                                  bloc.add(SaveClickEvent(
-                                      userId: userId,
-                                      workoutTime: minutesController.text,
-                                      exerciseName: entryController.text,
-                                      caloriesBurned:
-                                          caloriesTextBurnedController.text,
-                                      createdBy: ''));
-                                },
-                                bgColor: AppColors.primaryBlue)
-                            .paddingOnly(bottom: 20.h);
+                            context: context,
+                            title: StringUtils.save,
+                            hasImage: false,
+                            textColor: AppColors.skyBlue,
+                            onPressed: () {
+                              bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                            },
+                            bgColor: isButtonEnable ? AppColors.primaryBlue : AppColors.gray,
+                          ).paddingOnly(bottom: 20.h);
                   }
                 }).paddingOnly(bottom: 20.h),
           ],

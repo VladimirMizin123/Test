@@ -29,7 +29,8 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   @override
   void initState() {
     super.initState();
-    waterController.text = addWaterArguments.dailyGoal.toString();
+
+    // waterController.text = addWaterArguments != null ? addWaterArguments!.dailyGoal ?? '' : '';
   }
 
   @override

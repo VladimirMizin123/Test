@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,16 +110,29 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // const Icon(Icons.search, color: AppColors.green),
                             SvgPicture.asset(AssetsUtils.icLocation, color: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green),
                             const SizedBox(width: 10),
-                            Text(
-                              'Choose a Store',
-                              style: FontUtils.h16(fontColor: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green, fontWeight: FWT.semiBold),
-                            ),
+                            selectedStoreProductList.isEmpty
+                                ? Text(
+                                    'Choose a Store',
+                                    style: FontUtils.h16(fontColor: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green, fontWeight: FWT.semiBold),
+                                  )
+                                : selectedStoreProductList[0].store!.logoPhotos == null
+                                    ? const SizedBox()
+                                    : CachedNetworkImage(
+                                        height: 20,
+                                        imageUrl: selectedStoreProductList[0].store!.logoPhotos![0],
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => const Center(
+                                            child: CircularProgressIndicator(
+                                          color: AppColors.lightGrey,
+                                        )),
+                                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                                      ),
                             const SizedBox(width: 10),
                             const Icon(
                               Icons.keyboard_arrow_down_rounded,
@@ -463,12 +477,22 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 Row(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Image(
-                                                      // image: AssetImage(AssetsUtils.productDemoImg),
-                                                      image: NetworkImage(edgesList[index].cartData!.image!),
+                                                    CachedNetworkImage(
                                                       height: 130,
-                                                      width: 130, fit: BoxFit.cover,
+                                                      width: 130,
+                                                      imageUrl: edgesList[index].cartData!.image!,
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) => const Center(
+                                                          child: CircularProgressIndicator(
+                                                        color: AppColors.lightGrey,
+                                                      )),
+                                                      errorWidget: (context, url, error) => const Icon(Icons.error),
                                                     ),
+                                                    // Image(
+                                                    //   image: NetworkImage(edgesList[index].cartData!.image!),
+                                                    //   height: 130,
+                                                    //   width: 130, fit: BoxFit.cover,
+                                                    // ),
                                                     const SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
@@ -510,7 +534,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 Row(
                                                   children: [
                                                     Expanded(
-                                                      flex: 2,
+                                                      flex: 3,
                                                       child: Container(
                                                         decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
                                                         height: screenSize.height * 0.070,
@@ -529,6 +553,77 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         ),
                                                       ),
                                                     ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: edgesList[index].cartData!.cartItemCount == 1
+                                                          ? GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  edgesList[index].cartData = null;
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: screenSize.height * 0.070,
+                                                                width: screenSize.height * 0.070,
+                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                                child: Center(child:  SvgPicture.asset(AssetsUtils.icDelete)),
+                                                              ),
+                                                            )
+                                                          :  GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            if (edgesList[index].cartData!.cartItemCount == 1) {
+                                                              edgesList[index].cartData!.isAddedToShoppingList = false;
+                                                              // isProductSelect = false;
+                                                            } else {
+                                                              edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount - 1;
+                                                            }
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          height: screenSize.height * 0.070,
+                                                          // width: size.height * 0.045,
+                                                          decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                          child: const Center(
+                                                            child: Icon(Icons.remove, size: 27),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: Container(
+                                                        height: screenSize.height * 0.070,
+                                                        // width: size.height * 0.045,
+
+                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                        child: Center(
+                                                            child: Text(
+                                                          edgesList[index].cartData!.cartItemCount.toString(),
+                                                          style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                                        )),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount + 1;
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          height: screenSize.height * 0.070,
+                                                          // width: size.height * 0.045,
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(10),
+                                                            color: AppColors.mint,
+                                                          ),
+                                                          child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
                                                   ],
                                                 ),
                                                 const SizedBox(height: 10),
@@ -561,12 +656,23 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 Row(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Image(
-                                                      // image: AssetImage(AssetsUtils.productDemoImg),
-                                                      image: NetworkImage(onlyProductList[index].cartData!.image!),
+                                                    CachedNetworkImage(
                                                       height: 130,
-                                                      width: 130, fit: BoxFit.cover,
+                                                      width: 130,
+                                                      imageUrl: onlyProductList[index].cartData!.image!,
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) => const Center(
+                                                          child: CircularProgressIndicator(
+                                                        color: AppColors.lightGrey,
+                                                      )),
+                                                      errorWidget: (context, url, error) => const Icon(Icons.error),
                                                     ),
+                                                    // Image(
+                                                    //   // image: AssetImage(AssetsUtils.productDemoImg),
+                                                    //   image: NetworkImage(onlyProductList[index].cartData!.image!),
+                                                    //   height: 130,
+                                                    //   width: 130, fit: BoxFit.cover,
+                                                    // ),
                                                     const SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
@@ -608,7 +714,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 Row(
                                                   children: [
                                                     Expanded(
-                                                      flex: 2,
+                                                      flex: 3,
                                                       child: Container(
                                                         decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
                                                         height: screenSize.height * 0.070,
@@ -627,6 +733,77 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         ),
                                                       ),
                                                     ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: edgesList[index].cartData!.cartItemCount == 1
+                                                          ? GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  edgesList[index].cartData = null;
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: screenSize.height * 0.070,
+                                                                width: screenSize.height * 0.070,
+                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                                child: Center(child:  SvgPicture.asset(AssetsUtils.icDelete)),
+                                                              ),
+                                                            )
+                                                          : GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  if (edgesList[index].cartData!.cartItemCount == 1) {
+                                                                    edgesList[index].cartData!.isAddedToShoppingList = false;
+                                                                    // isProductSelect = false;
+                                                                  } else {
+                                                                    edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount - 1;
+                                                                  }
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: screenSize.height * 0.070,
+                                                                // width: size.height * 0.045,
+                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                                child: const Center(
+                                                                  child: Icon(Icons.remove, size: 27),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: Container(
+                                                        height: screenSize.height * 0.070,
+                                                        // width: size.height * 0.045,
+
+                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                        child: Center(
+                                                            child: Text(
+                                                          edgesList[index].cartData!.cartItemCount.toString(),
+                                                          style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                                        )),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    Expanded(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount + 1;
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          height: screenSize.height * 0.070,
+                                                          // width: size.height * 0.045,
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(10),
+                                                            color: AppColors.mint,
+                                                          ),
+                                                          child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
                                                   ],
                                                 ),
                                                 const SizedBox(height: 10),
@@ -634,19 +811,19 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               ],
                                             )
                                           : myItemChooseWidget(screenSize, onlyProductList[index].productName ?? '', () {
-                                        // Get.toNamed('/ItemCatalogScreen');
-                                        if (selectedStoreProductList.isNotEmpty) {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                            return ItemCatalogScreen(
-                                              selectedStoreProductList: selectedStoreProductList,
-                                              groceryBloc: groceryBloc,
-                                              productId: edgesList[index].productId!,
-                                            );
-                                          }));
-                                        } else {
-                                          Fluttertoast.showToast(msg: 'Please, Select Store!');
-                                        }
-                                      });
+                                              // Get.toNamed('/ItemCatalogScreen');
+                                              if (selectedStoreProductList.isNotEmpty) {
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                  return ItemCatalogScreen(
+                                                    selectedStoreProductList: selectedStoreProductList,
+                                                    groceryBloc: groceryBloc,
+                                                    productId: edgesList[index].productId!,
+                                                  );
+                                                }));
+                                              } else {
+                                                Fluttertoast.showToast(msg: 'Please, Select Store!');
+                                              }
+                                            });
                                     }))),
                   ),
                   Container(
