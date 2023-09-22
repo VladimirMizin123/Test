@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
@@ -476,7 +477,11 @@ class _JournalScreenState extends State<JournalScreen> {
                                             InkWell(
                                               onTap: () {
                                                 // REMOVE WATER
-                                                bloc.add(RemoveWaterEvent(quantity: waterML.toString()));
+                                                if (getDashboardModel!.data!.dailyWaterGoals == 0) {
+                                                  Fluttertoast.showToast(msg: 'WalterGoal Can\'t be 0');
+                                                } else {
+                                                  bloc.add(RemoveWaterEvent(quantity: waterML.toString()));
+                                                }
                                               },
                                               child: commonJournalFoodData(
                                                 title: 'Water',
