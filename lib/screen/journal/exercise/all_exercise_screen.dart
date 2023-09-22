@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_st
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
+import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 
@@ -20,13 +21,14 @@ class AllExerciseScreen extends StatefulWidget {
 }
 
 class _AllExerciseScreenState extends State<AllExerciseScreen> {
-  List<ExerciseLogList> exerciseLogList = [];
+  List<GetAllExerciseData> allExerciseList = [];
   GetUserJournalBloc journalPlanBloc = GetUserJournalBloc();
+  
 
   @override
   void initState() {
     super.initState();
-    journalPlanBloc.add(GetExerciseDetails(date: widget.dateTime!.toString()));
+    journalPlanBloc.add(GetAllExerciseDetails());
   }
 
   @override
@@ -36,13 +38,13 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
         bloc: journalPlanBloc,
         listener: (BuildContext context, GetUserJournalState state) {
           if (state is AllExerciseSuccessState) {
-            exerciseLogList = state.data!.exerciseLogList!;
+            allExerciseList = state.data;
           }
         },
         builder: (BuildContext context, GetUserJournalState state) {
           return Column(
             children: [
-              exerciseLogList.isEmpty
+              allExerciseList.isEmpty
                   ? state is AllExerciseLoadingState
                       ? const Expanded(child: AppCenterLoader())
                       : Center(
@@ -52,7 +54,7 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
                           ).paddingOnly(top: 10.h, bottom: 10.h),
                         )
                   : ListView.builder(
-                      itemCount: exerciseLogList.length,
+                      itemCount: allExerciseList.length,
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
@@ -60,10 +62,10 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
                           children: [
                             InkWell(
                               onTap: () {
-                                Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index]))!.then((value) => Get.back());
+                                Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(allExerciseData: allExerciseList[index],isFromHistory: false))!.then((value) => Get.back());
                               },
                               child: ListTile(
-                                title: Text(exerciseLogList[index].exerciseName ?? ''),
+                                title: Text(allExerciseList[index].exerciseName ?? ''),
                                 trailing: Icon(
                                   Icons.arrow_forward_ios,
                                   size: 15.h,

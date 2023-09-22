@@ -15,3 +15,23 @@ class SaveClickEvent extends AddWaterEvent {
     required this.createdBy,
   });
 }
+
+class UpdateExerciseEvent extends AddWaterEvent {
+  final String? id;
+  final String? exerciseName;
+  final String? calorieBurnedPerMinute;
+
+  UpdateExerciseEvent({
+    this.id,
+    this.calorieBurnedPerMinute,
+    this.exerciseName,
+  });
+}
+
+class DeleteExerciseEvent extends AddWaterEvent {
+  final String? exerciseName;
+
+  DeleteExerciseEvent({
+    this.exerciseName,
+  });
+}

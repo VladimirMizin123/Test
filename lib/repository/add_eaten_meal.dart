@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
-import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
+
 import '../models/error_model.dart';
 import '../models/success_model.dart';
 import '../service/api_urls.dart';
@@ -71,6 +71,7 @@ class AddEatenMealRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+
   Future<Either<ErrorModel, DailyRecapModal>> dailyRecap() async {
     final response = await apiServices.get(ApiUrls.getRecapQuestionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -80,5 +81,26 @@ class AddEatenMealRepository {
     }
   }
 
+  Future<Either<ErrorModel, SuccessModel>> dailyRecapAns({String? queID, bool? recapAns}) async {
+    final response = await apiServices.post(
+      ApiUrls.addOrUpdateDailyRecap,
+      {"userId": userID, "recapQuestionid": queID, "recapAnswer": recapAns},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
 
+  Future<Either<ErrorModel, SuccessModel>> removeWater({String? quantity, bool? recapAns}) async {
+    final response = await apiServices.delete(
+      '${ApiUrls.removeWater}?quantity=$quantity&userId=$userID',
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
 }

@@ -22,6 +22,10 @@ class GetExerciseDetails extends GetUserJournalEvent {
   GetExerciseDetails({required this.date});
 }
 
+class GetAllExerciseDetails extends GetUserJournalEvent {
+  GetAllExerciseDetails();
+}
+
 class GetSelectedImagePath extends GetUserJournalEvent {
   final String? imagePath;
   GetSelectedImagePath({required this.imagePath});
@@ -52,4 +56,18 @@ class AddNewDietEvent extends GetUserJournalEvent {
 
 class DailyRecapEvent extends GetUserJournalEvent {
   DailyRecapEvent();
+}
+
+class DailyRecapAnsEvent extends GetUserJournalEvent {
+  final String? queID;
+  final bool? recapAns;
+
+  DailyRecapAnsEvent({required this.queID, required this.recapAns});
+}
+
+
+class RemoveWaterEvent extends GetUserJournalEvent {
+  final String? quantity;
+
+  RemoveWaterEvent({this.quantity});
 }

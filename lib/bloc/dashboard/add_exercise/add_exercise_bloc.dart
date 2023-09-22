@@ -12,6 +12,8 @@ import 'add_exercise_state.dart';
 class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
   AddExerciseBloc() : super(InitialState()) {
     on<SaveClickEvent>(_onAddWater);
+    on<UpdateExerciseEvent>(_onUpdateExercise);
+    on<DeleteExerciseEvent>(_onDeleteExercise);
   }
 
   final AddExerciseRepository _repository = AddExerciseRepository();
@@ -45,14 +47,53 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
         emit(ErrorState());
       }
     } else {
-      if(!isExerciseName){
+      if (!isExerciseName) {
         onFailError(emit: emit, text: StringUtils.pleaseEnterExerciseName);
-      } else if(!isWorkoutTime){
+      } else if (!isWorkoutTime) {
         onFailError(emit: emit, text: StringUtils.pleaseEnterMinutes);
-      }else {
+      } else {
         onFailError(emit: emit, text: StringUtils.pleaseEnterCaloriesBurned);
       }
+    }
+  }
 
+  _onUpdateExercise(UpdateExerciseEvent event, Emitter<AddWaterState> emit) async {
+    emit(UpdateLoadingState());
+    try {
+      await _repository
+          .updateExercise(
+        exerciseId: event.id!,
+        calorieBurnedPerMinuted: event.calorieBurnedPerMinute!,
+        exerciseName: event.exerciseName!,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        showToast(isSuccess: true, message: right.message!);
+        emit(UpdateLoadingSuccessState());
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(ErrorState());
+    }
+  }
+
+  _onDeleteExercise(DeleteExerciseEvent event, Emitter<AddWaterState> emit) async {
+    emit(DeleteLoadingState());
+    try {
+      await _repository
+          .deleteExercise(
+        exerciseName: event.exerciseName!,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        showToast(isSuccess: true, message: right.message!);
+        emit(DeleteLoadingSuccessState());
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(ErrorState());
     }
   }
 

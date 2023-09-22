@@ -44,6 +44,7 @@ class DailyRecapData {
   final dynamic updatedBy;
   final DateTime? updatedOn;
   final bool? isActive;
+  int isSelected;
   final bool? isDeleted;
   final dynamic userCreatedBy;
   final dynamic userUpdatedBy;
@@ -56,6 +57,7 @@ class DailyRecapData {
     this.updatedBy,
     this.updatedOn,
     this.isActive,
+    this.isSelected = -1,
     this.isDeleted,
     this.userCreatedBy,
     this.userUpdatedBy,

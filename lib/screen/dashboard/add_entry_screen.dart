@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
+import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../app/sharedPrefrence.dart';
@@ -33,9 +34,14 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   @override
   void initState() {
     super.initState();
-    entryController.text = addEntryArguments.exerciseLogList.exerciseName ?? '';
-    minutesController.text = addEntryArguments.exerciseLogList.workoutTime.toString();
-    caloriesTextBurnedController.text = addEntryArguments.exerciseLogList.caloriesBurned.toString();
+    if (addEntryArguments.isFromHistory) {
+      entryController.text = addEntryArguments.exerciseLogList!.exerciseName == null ? '' : addEntryArguments.exerciseLogList!.exerciseName ?? '';
+      minutesController.text = addEntryArguments.exerciseLogList!.workoutTime == null ? '' : addEntryArguments.exerciseLogList!.workoutTime.toString();
+      caloriesTextBurnedController.text = addEntryArguments.exerciseLogList!.caloriesBurned == null ? '' : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
+    } else {
+      entryController.text = addEntryArguments.allExerciseData!.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
+      caloriesTextBurnedController.text = addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
+    }
   }
 
   @override
@@ -52,7 +58,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: () => Get.back(),
+                  onTap: () => Navigator.pop(context),
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 25.sp,
@@ -114,6 +120,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                 bloc: bloc,
                 builder: (context, state) {
                   debugPrint('water state--> $state');
+                  if (state is DeleteLoadingSuccessState) {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      Get.back();
+                    });
+                  }
                   if (state is LoadingState) {
                     return const AppCenterLoader();
                   } else {
@@ -124,7 +135,19 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             children: [
                               Expanded(
                                 flex: 1,
-                                child: simpleTextBorderButton(height: 48.h, context: context, buttonLable: 'Delete', onTap: () {}, isDarkColor: true),
+                                child: state is DeleteLoadingState
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : simpleTextBorderButton(
+                                        height: 48.h,
+                                        context: context,
+                                        buttonLable: 'Delete',
+                                        onTap: () {
+                                          bloc.add(DeleteExerciseEvent(exerciseName: entryController.text));
+                                        },
+                                        isDarkColor: true,
+                                      ),
                               ),
                               const SizedBox(width: 20),
                               Expanded(
@@ -133,7 +156,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                   height: 48.h,
                                   context: context,
                                   buttonLable: 'Update',
-                                  onTap: () {},
+                                  onTap: () {
+                                    bloc.add(UpdateExerciseEvent(id: '', calorieBurnedPerMinute: minutesController.text, exerciseName: entryController.text));
+                                  },
                                   isDarkColor: true,
                                   isFillColor: true,
                                 ),
@@ -195,8 +220,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
 }
 
 class AddEntryArguments {
-  final ExerciseLogList exerciseLogList;
+  final ExerciseLogList? exerciseLogList;
+  final GetAllExerciseData? allExerciseData;
   final bool isFromHistory;
 
-  AddEntryArguments({required this.exerciseLogList, this.isFromHistory = false});
+  AddEntryArguments({this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
 }

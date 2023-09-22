@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -39,12 +40,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   int waterML = PreferenceUtils.getInt(prefWaterML);
   int exerciseCal = PreferenceUtils.getInt(prefExerciseCAl);
 
-  List<Widget> carouselList = [];
   bool isDoneLoader = false;
+  String mealId = '';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     PreferenceUtils.setInt(userMealPlanCountState, 0);
     bloc.add(GenMealTrackerData());
@@ -53,39 +53,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    carouselList = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          commonSliderView(
-            icon: AssetsUtils.breakFastIcon,
-            title: StringUtils.breakfast,
-            textTheme: Theme.of(context).textTheme,
-          ),
-          commonSliderView(
-            icon: AssetsUtils.lunchIcon,
-            title: StringUtils.lunch,
-            textTheme: Theme.of(context).textTheme,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          commonSliderView(
-            icon: AssetsUtils.snackIcon,
-            title: StringUtils.snack,
-            textTheme: Theme.of(context).textTheme,
-          ),
-          commonSliderView(
-            icon: AssetsUtils.dinnerIcon,
-            title: StringUtils.dinner,
-            textTheme: Theme.of(context).textTheme,
-          ),
-        ],
-      ),
-    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -147,8 +114,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 ],
               ).paddingSymmetric(horizontal: 6, vertical: 5.h),
               Expanded(
-                child: 
-                BlocConsumer(
+                child: BlocConsumer(
                   bloc: bloc,
                   builder: (context, state) {
                     if (state is LoadDashboardData) {
@@ -187,6 +153,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     }
                     if (state is LoadingDoneState) {
                       isDoneLoader = true;
+                      mealId = state.mealID;
                     }
                   },
                 ),
@@ -311,8 +278,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                    
-                      Get.toNamed('/AddWaterScreen', arguments: model!.data!.dailyWaterGoals!.toString())!.then((value) {
+                      Get.toNamed('/AddWaterScreen', arguments: AddWaterArguments(dailyGoal: model!.data!.dailyWaterGoals!.toString()))!.then((value) {
                         setState(() {
                           waterML = waterML + int.parse(value);
                         });
@@ -340,7 +306,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      Get.toNamed('/SecondDashBoardView')!.then((value) {
+                      Get.toNamed(
+                        '/SecondDashBoardView',
+                      )!
+                          .then((value) {
                         setState(() {
                           exerciseCal = exerciseCal + int.parse(value);
                         });
@@ -380,7 +349,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           bloc.add(AddEatenMealData(mealId: trackerDataList![index].id!));
                         }
                       },
-                      child: isDoneLoader
+                      child: isDoneLoader && trackerDataList![index].id == mealId 
                           ? SizedBox(height: 25.h, width: 25.w, child: const AppCenterLoader())
                           : Container(
                               height: 25.h,
@@ -403,7 +372,38 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             SizedBox(
               height: 75.h,
               child: CarouselSlider(
-                items: carouselList,
+                items: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      commonSliderView(
+                        icon: AssetsUtils.breakFastIcon,
+                        title: StringUtils.breakfast,
+                        textTheme: Theme.of(context).textTheme,
+                      ),
+                      commonSliderView(
+                        icon: AssetsUtils.lunchIcon,
+                        title: StringUtils.lunch,
+                        textTheme: Theme.of(context).textTheme,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      commonSliderView(
+                        icon: AssetsUtils.snackIcon,
+                        title: StringUtils.snack,
+                        textTheme: Theme.of(context).textTheme,
+                      ),
+                      commonSliderView(
+                        icon: AssetsUtils.dinnerIcon,
+                        title: StringUtils.dinner,
+                        textTheme: Theme.of(context).textTheme,
+                      ),
+                    ],
+                  ),
+                ],
                 options: CarouselOptions(
                   autoPlay: false,
                   height: 120.h,

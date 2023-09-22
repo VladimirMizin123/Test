@@ -26,6 +26,7 @@ class MealDetailsScreen extends StatefulWidget {
 class _MealDetailsScreenState extends State<MealDetailsScreen> {
   int selectedIndex = 0;
   MealPlanBloc bloc = MealPlanBloc();
+  bool isAddButtonEnable = false;
 
   FetchModelData? fetchModelData;
 
@@ -172,6 +173,15 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               onChanged: (bool? value) {
                                                                 setState(() {
                                                                   fetchModelData!.recipe!.ingredients![index].isSelected = !fetchModelData!.recipe!.ingredients![index].isSelected;
+
+                                                                  for (var i = 0; i < fetchModelData!.recipe!.ingredients!.length; i++) {
+                                                                    if (fetchModelData!.recipe!.ingredients![index].isSelected) {
+                                                                      isAddButtonEnable = true;
+                                                                      break;
+                                                                    } else {
+                                                                      isAddButtonEnable = false;
+                                                                    }
+                                                                  }
                                                                 });
                                                               },
                                                               activeColor: AppColors.appColor,
@@ -315,10 +325,12 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                         width: screenSize.width,
                                         isLoadingWidget: state is AddToGroceryLoadingState ? true : false,
                                         onTap: () {
-                                          bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
+                                          if (isAddButtonEnable) {
+                                            bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
+                                          }
                                         },
-                                        isDarkColor: true,
-                                        isFillColor: true,
+                                        isDarkColor: isAddButtonEnable,
+                                        isFillColor: isAddButtonEnable,
                                       ),
                                       SizedBox(height: 14.h),
                                       GestureDetector(
