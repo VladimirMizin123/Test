@@ -61,7 +61,7 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index], isFromHistory: true))!.then((value) => Get.back());
+                              Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index], isFromHistory: true));
                             },
                             child: ListTile(
                               title: Text(exerciseLogList[index].exerciseName ?? ''),

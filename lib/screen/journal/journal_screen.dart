@@ -155,6 +155,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       height: 70.h,
                       child: ListView.builder(
                         controller: scrollController,
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: listOfDates.length,
                         scrollDirection: Axis.horizontal,
@@ -390,6 +391,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                             ListView.builder(
                                                 itemCount: breakFastList.length,
                                                 shrinkWrap: true,
+                                                physics: const NeverScrollableScrollPhysics(),
                                                 itemBuilder: (context, index) {
                                                   return InkWell(
                                                     onTap: () {

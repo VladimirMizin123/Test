@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -12,7 +13,6 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
-import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class MealDetailsScreen extends StatefulWidget {
@@ -318,20 +318,51 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                               // ),
                                             ]),
                                       const SizedBox(height: 15),
-                                      simpleTextBorderButton(
-                                        context: context,
-                                        buttonLable: StringUtils.addToGroceryList,
-                                        height: screenSize.height * 0.065,
-                                        width: screenSize.width,
-                                        isLoadingWidget: state is AddToGroceryLoadingState ? true : false,
+                                      GestureDetector(
                                         onTap: () {
                                           if (isAddButtonEnable) {
-                                            bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
+                                            // bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
+                                            bloc.add(GroceryAddToShoppingListEvent(
+                                              productID: '',
+                                              productName: widget.mealDataArguments!.mealData!.recipe!.name!,
+                                              price: '',
+                                              unitSize: '',
+                                              unitOfMeasurement: '',
+                                              quantity: '1',
+                                              recipeId: '',
+                                              mealmeStoreId: '',
+                                              isAdd: true,
+                                              isRemove: false,
+                                              isChecked: false,
+                                            ));
+                                          } else {
+                                            Fluttertoast.showToast(msg: 'Select atleast 1 Ingredients');
                                           }
                                         },
-                                        isDarkColor: isAddButtonEnable,
-                                        isFillColor: isAddButtonEnable,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                                          child: Container(
+                                            height: screenSize.height * 0.065,
+                                            width: screenSize.width,
+                                            decoration: isAddButtonEnable ? BoxDecoration(color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(color: AppColors.gray, borderRadius: BorderRadius.circular(8)),
+                                            child: Center(child: state is AddToGroceryLoadingState ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(StringUtils.addToGroceryList, style: FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: FWT.semiBold))),
+                                          ),
+                                        ),
                                       ),
+                                      // simpleTextBorderButton(
+                                      //   context: context,
+                                      //   buttonLable: StringUtils.addToGroceryList,
+                                      //   height: screenSize.height * 0.065,
+                                      //   width: screenSize.width,
+                                      //   isLoadingWidget: state is AddToGroceryLoadingState ? true : false,
+                                      //   onTap: () {
+                                      //     if (isAddButtonEnable) {
+                                      //       bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
+                                      //     }
+                                      //   },
+                                      //   isDarkColor: isAddButtonEnable,
+                                      //   isFillColor: isAddButtonEnable,
+                                      // ),
                                       SizedBox(height: 14.h),
                                       GestureDetector(
                                         onTap: () {

@@ -28,8 +28,8 @@ class GroceryPlanScreen extends StatefulWidget {
 class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   final routeName = '/GroceryPlanScreen';
   int selectedItemCount = 0;
-  String _selectProduct = 'Product 1';
-  List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
+  String _selectProduct = 'Spoon';
+  List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   List<GroceryShoppingData> edgesList = [];
   AskReceiveOrder? askReceiveOrder;

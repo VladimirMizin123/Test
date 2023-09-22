@@ -101,4 +101,39 @@ class MealPlanRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> recipeAddToShoppingList({
+    required String productID,
+    required String productName,
+    required String quantity,
+    required String price,
+    required String unitSize,
+    required String unitOfMeasurement,
+    required String recipeId,
+    required String mealmeStoreId,
+    required bool isChecked,
+  }) async {
+    String apiURL = ApiUrls.addItemShoppingList;
+
+    final response = await apiServices.post(apiURL, {
+      "userId": userID,
+      "productId": productID,
+      "productName": productName,
+      "quantity": quantity,
+      "price": price,
+      "unitSize": unitSize,
+      "unitOfMeasurement": unitOfMeasurement,
+      "recipeId": recipeId,
+      "mealmeStoreId": mealmeStoreId,
+      "isChecked": isChecked,
+    });
+    // log(response.body, name: 'API RESPONSE :');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
 }

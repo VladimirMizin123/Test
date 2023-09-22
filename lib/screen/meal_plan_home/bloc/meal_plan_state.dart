@@ -1,4 +1,5 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
@@ -78,3 +79,27 @@ class SwapMealDetailsState extends FetchMealPlanState {
 
   SwapMealDetailsState({this.similarMealData, this.mealId, this.day});
 }
+
+
+class GroceryAddToShoppingLoadingState extends FetchMealPlanState {
+  final String? productId;
+  final bool isAdd;
+  final bool isRemove;
+
+  GroceryAddToShoppingLoadingState({
+    this.productId,
+    this.isAdd = false,
+    this.isRemove = false,
+  });
+}
+
+class GroceryAddToShoppingSuccessState extends FetchMealPlanState {
+  final RecipesAddToGroceryData? recipesAddToGroceryData;
+  final bool? isAdded;
+  final bool? isAdd;
+  final bool? isRemove;
+
+  GroceryAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+}
+
+class GroceryAddToShoppingErrorState extends FetchMealPlanState {}

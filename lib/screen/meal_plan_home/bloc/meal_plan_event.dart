@@ -16,6 +16,34 @@ class AddToGroceryListEvent extends MealPlanEvent {
   AddToGroceryListEvent({required this.databaseIdOfRecipes});
 }
 
+class GroceryAddToShoppingListEvent extends MealPlanEvent {
+  final String productID;
+  final String productName;
+  final String quantity;
+  final String price;
+  final String unitSize;
+  final String unitOfMeasurement;
+  final String recipeId;
+  final String mealmeStoreId;
+  final bool isAdd;
+  final bool isRemove;
+  final bool isChecked;
+
+  GroceryAddToShoppingListEvent({
+    required this.productID,
+    required this.productName,
+    required this.quantity,
+    required this.price,
+    required this.unitSize,
+    required this.unitOfMeasurement,
+    required this.recipeId,
+    required this.mealmeStoreId,
+    this.isAdd = false,
+    this.isRemove = false,
+    this.isChecked = false,
+  });
+}
+
 class FetchSwapMealItemEvent extends MealPlanEvent {
   final String? recipeID;
   final int? serving;

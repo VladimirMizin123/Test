@@ -96,7 +96,9 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
                           //   }
                           // }
                           // if (edgesDummyList.isNotEmpty) {
-                          Get.toNamed('/GroceryCartScreen', arguments: GroceryCartScreenArguments(edgesList: widget.selectedEdgesList, askReceiveOrder: selectedIndex == 0 ? AskReceiveOrder.bringTheOrder : AskReceiveOrder.pickMySelf));
+                          Get.toNamed('/GroceryCartScreen', arguments: GroceryCartScreenArguments(edgesList: widget.selectedEdgesList, askReceiveOrder: selectedIndex == 0 ? AskReceiveOrder.bringTheOrder : AskReceiveOrder.pickMySelf))!.then((value) {
+                          Get.back();
+                          });
                           // }
                         }
                       },

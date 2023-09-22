@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,12 +24,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final routeName = '/login';
-  final emailController = TextEditingController(text: 'sojitratest01@mailinator.com');
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   // final emailController = TextEditingController(text: 'parth.elision@gmail.com');
-  final passwordController = TextEditingController(text: 'Sojitra@321');
   // final passwordController = TextEditingController(text: '123456789');
 
   LoginBloc bloc = LoginBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      emailController.text = 'sojitratest01@mailinator.com';
+      passwordController.text = 'Sojitra@321';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
