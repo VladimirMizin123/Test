@@ -18,6 +18,8 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     on<RestaurantSearchEvent>(_onRestaurantSearch);
     on<SwapMealDetailsEvent>(_onSwapMealDetails);
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
+    on<GrocerySearchEvent>(_onSearchItem);
+
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
@@ -62,10 +64,10 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(AddToGroceryLoadingState());
 
     try {
-      await _repository.recipeAddToGrocery(databaseIdOfRecipes: event.databaseIdOfRecipes).fold((left) {
+      await _repository.recipeAddToGrocery(addItemsToShoppingList: event.addItemsList).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        log('RIGHT PART CALL - - - - - - - - - - - - ');
+        log('_onAddToGroceryList RIGHT PART CALL - - - - - - - - - - - - ');
 
         emit(AddToGrocerySuccessState(isAdded: right.success ?? true));
         showToast(isSuccess: false, message: right.message ?? 'Added!');
@@ -128,6 +130,21 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       print(e);
       showToast(isSuccess: false, message: e.toString());
       emit(RestaurantSearchErrorState());
+    }
+  }
+
+  _onSearchItem(GrocerySearchEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GrocerySearchLoadingState());
+    try {
+      await _repository.grocerySearch(latitude: '37.7786357', longitude: '-122.3918135', grocerySearchModal: event.grocerySearchModelList!).fold((left) {
+        emit(GrocerySearchErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GrocerySearchSuccessState(groceryMultiSearchProductList: right.data!.carts));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GrocerySearchErrorState());
     }
   }
 

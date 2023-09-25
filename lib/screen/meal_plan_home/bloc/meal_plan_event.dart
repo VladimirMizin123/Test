@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 
 abstract class MealPlanEvent {}
@@ -12,8 +14,8 @@ class SkipMealPlanEvent extends MealPlanEvent {
 }
 
 class AddToGroceryListEvent extends MealPlanEvent {
-  final String databaseIdOfRecipes;
-  AddToGroceryListEvent({required this.databaseIdOfRecipes});
+  final List<AddItemsToShoppingListModal> addItemsList;
+  AddToGroceryListEvent({required this.addItemsList});
 }
 
 class GroceryAddToShoppingListEvent extends MealPlanEvent {
@@ -55,6 +57,12 @@ class FetchMealDetailsEvent extends MealPlanEvent {
   final String? recipeID;
 
   FetchMealDetailsEvent({this.recipeID});
+}
+
+class GrocerySearchEvent extends MealPlanEvent {
+  final List<GrocerySearchModel>? grocerySearchModelList;
+
+  GrocerySearchEvent({required this.grocerySearchModelList});
 }
 
 class SwapMealDetailsEvent extends MealPlanEvent {
