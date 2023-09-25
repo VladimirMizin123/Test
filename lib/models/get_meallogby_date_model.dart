@@ -33,13 +33,13 @@ class GetMealLogByDate {
 class MealDataByDate {
   String? mealName;
   dynamic mealId;
-  double? calorie;
+  num? calorie;
   String? mealType;
-  int? noOfServing;
+  num? noOfServing;
   String? recipeId;
-  double? protein;
-  double? fat;
-  double? carbs;
+  num? protein;
+  num? fat;
+  num? carbs;
   String? value;
   String? userId;
   User? user;
@@ -163,7 +163,7 @@ class User {
   bool? twoFactorEnabled;
   dynamic lockoutEnd;
   bool? lockoutEnabled;
-  int? accessFailedCount;
+  num? accessFailedCount;
 
   User(
       {this.firstName,

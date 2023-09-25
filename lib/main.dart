@@ -64,7 +64,7 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
-
+import 'package:app_links/app_links.dart';
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
@@ -87,18 +87,58 @@ Future<void> main() async {
         projectId: projectId),
   );
   await initDynamicLinks();
+
+// Subscribe to all events when app is started.
+// (Use allStringLinkStream to get it as [String])
+
+  String? forgetPasswordToken;
+  bool? isFromConfirm;
+
   if (PreferenceUtils.getBool(prefIsLogin)) {
     if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
       userId = PreferenceUtils.getString(prefUserData);
     }
   }
-  runApp(MyApp());
+  runApp(MyApp(
+    forgotPasswordToken: forgetPasswordToken,
+    isFromConfirm: isFromConfirm,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key, this.forgotPasswordToken, this.isFromConfirm});
+  final String? forgotPasswordToken;
+  final bool? isFromConfirm;
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
+  final _appLinks = AppLinks();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _appLinks.allUriLinkStream.listen((uri) {
+        print("uri.path ${uri.path}");
+
+        if (uri.path == '/auth/setNewPassword') {
+          final token = PreferenceUtils.getString(forgetPassToken);
+          if (token != '') {
+            // navigate to password reset screen
+
+            Get.toNamed('/ResetPasswordScreen', preventDuplicates: false);
+          }
+        } else if (uri.path == '/auth/confirmEmail') {
+          Get.toNamed('/LoginScreen', preventDuplicates: false);
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +153,15 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
-                  PreferenceUtils.getBool(prefIsConfirmEmail)
-              ? '/AppManagerScreen'
-              : '/',
+          initialRoute: widget.forgotPasswordToken != "" &&
+                  widget.forgotPasswordToken != null
+              ? '/setNewPassword'
+              : PreferenceUtils.getBool(prefIsLogin) &&
+                      PreferenceUtils.getBool(prefIsConfirmEmail)
+                  ? '/AppManagerScreen'
+                  : widget.isFromConfirm == true
+                      ? '/LoginScreen'
+                      : '/',
           // initialRoute: 'SignUpScreen',
           getPages: [
             GetPage(
@@ -124,7 +169,7 @@ class MyApp extends StatelessWidget {
               page: () => const LoginScreen(),
             ),
             GetPage(
-              name: '/CreateNewPasswordScreen',
+              name: '/setNewPassword',
               page: () => const CreateNewPasswordScreen(),
             ),
             GetPage(

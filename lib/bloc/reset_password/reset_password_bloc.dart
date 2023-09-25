@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/reset_password/reset_password_event.dart';
 import 'package:gymeats_mobile/bloc/reset_password/reset_password_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
@@ -36,6 +37,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
           onFailError(emit: emit, text: left.errorMessage!);
           emit(ResetErrorState());
         }, (right) {
+          PreferenceUtils.removePref(forgetPassToken);
           emit(ResetSuccessState());
           Get.toNamed('/LoginScreen', preventDuplicates: false);
         });

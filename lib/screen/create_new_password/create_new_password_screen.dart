@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../app/firebase_deep_link.dart';
@@ -22,17 +23,25 @@ class CreateNewPasswordScreen extends StatefulWidget {
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
-  final routeName = '/CreateNewPasswordScreen';
+  final routeName = '/setNewPassword';
   final newPassController = TextEditingController();
   final confirmPassController = TextEditingController();
-  String resetToken = Get.arguments as String;
+  String? resetToken;
 
   ResetPasswordBloc bloc = ResetPasswordBloc();
+
+  @override
+  void initState() {
+    super.initState();
+
+    resetToken = PreferenceUtils.getString(forgetPassToken);
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -152,7 +161,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                             bloc.add(ButtonClickEvent(
                                 password: newPassController.text,
                                 confirmPassword: confirmPassController.text,
-                                passwordResetToken: resetToken));
+                                passwordResetToken: PreferenceUtils.getString(
+                                    forgetPassToken)));
                           },
                           textColor: AppColors.skyBlue,
                           bgColor: const Color(0xFF004C63),

@@ -31,15 +31,13 @@ void handleDeepLink(PendingDynamicLinkData? initialLink) {
 
     // Handle the deep link here, e.g., parse the resetToken
     String resetToken = deepLink.queryParameters['resetToken'].toString();
-    if (resetToken.isNotEmpty &&
-        resetToken != '' &&
-        deepLink.path == '/CreateNewPasswordScreen') {
+    if (resetToken.isNotEmpty && resetToken != '') {
       // GetPage(
       //   name: '/CreateNewPasswordScreen',
       //   page: () => const CreateNewPasswordScreen(),
       //   arguments: resetToken,
       // );
-      Get.toNamed('/CreateNewPasswordScreen', arguments: resetToken);
+      Get.toNamed('/setNewPassword', arguments: resetToken);
     }
   }
 }

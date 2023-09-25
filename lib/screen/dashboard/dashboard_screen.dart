@@ -45,11 +45,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   GetDashboardBloc bloc = GetDashboardBloc();
   GetDashboardModel model = GetDashboardModel();
-  double outOfTotalCalories = 0.0;
+  num outOfTotalCalories = 0.0;
   List<MealData> trackerDataList = [];
 
-  int waterML = PreferenceUtils.getInt(prefWaterML);
-  int exerciseCal = PreferenceUtils.getInt(prefExerciseCAl);
+  num waterML = PreferenceUtils.getInt(prefWaterML);
+  num exerciseCal = PreferenceUtils.getInt(prefExerciseCAl);
 
   List<Widget> carouselList = [];
   bool isDoneLoader = false;
@@ -208,11 +208,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       print('logData : $logData');
 
                       logData.forEach((element) {
-
                         print('element : ${element.id}');
                         print('element : ${element.recipeId}');
-
-
                       });
                     }
                     if (state is LoadMealData) {
@@ -308,7 +305,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             calDataView(
                               imgIcon: AssetsUtils.breakFastIcon,
                               title: 'Eaten',
-                              calCount: int.parse(model.data!.totalIntakeFood!
+                              calCount: /*int.parse(model.data!.totalIntakeFood!
                                           .toString()
                                           .split('.')[1]) >=
                                       50
@@ -316,7 +313,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       .toDouble()
                                       .ceil()
                                       .toString()
-                                  : model.data!.totalIntakeFood!
+                                  :*/
+                                  model.data!.totalIntakeFood!
                                       .toDouble()
                                       .floor()
                                       .toString(),
@@ -326,7 +324,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             calDataView(
                               imgIcon: AssetsUtils.dumBBell,
                               title: 'Burned',
-                              calCount: int.parse(model
+                              calCount: /*int.parse(model
                                           .data!.totalBurnedByExercise!
                                           .toString()
                                           .split('.')[1]) >=
@@ -335,7 +333,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       .toDouble()
                                       .ceil()
                                       .toString()
-                                  : model.data!.totalBurnedByExercise!
+                                  :*/
+                                  model.data!.totalBurnedByExercise!
                                       .toDouble()
                                       .floor()
                                       .toString(),
@@ -352,7 +351,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       calciumDataView(
                         title: 'Carbs',
                         textTheme: Theme.of(context).textTheme,
-                        gramCount: int.parse(model.data!.totalIntakeCarbs!
+                        gramCount: /*int.parse(model.data!.totalIntakeCarbs!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
@@ -360,7 +359,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 .toDouble()
                                 .ceil()
                                 .toString()
-                            : model.data!.totalIntakeCarbs!
+                            :*/
+                            model.data!.totalIntakeCarbs!
                                 .toDouble()
                                 .floor()
                                 .toString(),
@@ -388,7 +388,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               model.data!.totalProtein!.toDouble().ceil(),
                           title: 'Protein',
                           textTheme: Theme.of(context).textTheme,
-                          gramCount: int.parse(model.data!.totalIntakeProtein!
+                          gramCount: /*int.parse(model.data!.totalIntakeProtein!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
@@ -396,11 +396,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   .toDouble()
                                   .ceil()
                                   .toString()
-                              : model.data!.totalIntakeProtein!
+                              :*/
+                              model.data!.totalIntakeProtein!
                                   .toDouble()
                                   .floor()
                                   .toString(),
-                          totalGram: int.parse(model.data!.totalProtein!
+                          totalGram: /*int.parse(model.data!.totalProtein!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
@@ -408,7 +409,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   .toDouble()
                                   .ceil()
                                   .toString()
-                              : model.data!.totalProtein!
+                              :*/
+                              model.data!.totalProtein!
                                   .toDouble()
                                   .floor()
                                   .toString(),
@@ -419,7 +421,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 model.data!.totalFat!.toDouble().ceil(),
                         title: 'Fat',
                         textTheme: Theme.of(context).textTheme,
-                        gramCount: int.parse(model.data!.totalIntakeFat!
+                        gramCount: /*int.parse(model.data!.totalIntakeFat!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
@@ -427,19 +429,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 .toDouble()
                                 .ceil()
                                 .toString()
-                            : model.data!.totalIntakeFat!
+                            :*/
+                            model.data!.totalIntakeFat!
                                 .toDouble()
                                 .floor()
                                 .toString(),
-                        totalGram: int.parse(model.data!.totalFat!
+                        totalGram: /*int.parse(model.data!.totalFat!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
                             ? model.data!.totalFat!.toDouble().ceil().toString()
-                            : model.data!.totalFat!
-                                .toDouble()
-                                .floor()
-                                .toString(),
+                            :*/
+                            model.data!.totalFat!.toDouble().floor().toString(),
                         progressColor: AppColors.coral,
                       ),
                     ],
@@ -493,7 +494,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                           .toInt())))
                           ?.then((value) {
                         setState(() {
-                          if(value==null){
+                          if (value == null) {
                             return;
                           }
                           exerciseCal = exerciseCal + int.parse(value);
@@ -540,34 +541,40 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     eatSubTitle: trackerDataList[index].recipe!.name ?? '',
                     textTheme: Theme.of(context).textTheme,
                     trailing: InkWell(
-                      onTap: isEaten?null:() {
-                        if (!trackerDataList[index].isDone) {
-                          bloc.add(AddEatenMealData(
-                              value: 0,
-                              mealName: trackerDataList[index].recipe!.name,
-                              mealType: trackerDataList[index].meal,
-                              noOfServing: trackerDataList[index].numOfServings,
-                              recipeId: trackerDataList[index].recipe!.id,
-                              userId: PreferenceUtils.getString(prefUserData),
-                              calorie: trackerDataList[index]
-                                  .recipe!
-                                  .nutrientsPerServing!
-                                  .calories,
-                              carbs: trackerDataList[index]
-                                  .recipe!
-                                  .nutrientsPerServing!
-                                  .carbs,
-                              fat: trackerDataList[index]
-                                  .recipe!
-                                  .nutrientsPerServing!
-                                  .fat,
-                              protein: trackerDataList[index]
-                                  .recipe!
-                                  .nutrientsPerServing!
-                                  .protein,
-                              mealId: trackerDataList[index].id.toString()));
-                        }
-                      },
+                      onTap: isEaten
+                          ? null
+                          : () {
+                              if (!trackerDataList[index].isDone) {
+                                bloc.add(AddEatenMealData(
+                                    value: 0,
+                                    mealName:
+                                        trackerDataList[index].recipe!.name,
+                                    mealType: trackerDataList[index].meal,
+                                    noOfServing:
+                                        trackerDataList[index].numOfServings,
+                                    recipeId: trackerDataList[index].recipe!.id,
+                                    userId:
+                                        PreferenceUtils.getString(prefUserData),
+                                    calorie: trackerDataList[index]
+                                        .recipe!
+                                        .nutrientsPerServing!
+                                        .calories,
+                                    carbs: trackerDataList[index]
+                                        .recipe!
+                                        .nutrientsPerServing!
+                                        .carbs,
+                                    fat: trackerDataList[index]
+                                        .recipe!
+                                        .nutrientsPerServing!
+                                        .fat,
+                                    protein: trackerDataList[index]
+                                        .recipe!
+                                        .nutrientsPerServing!
+                                        .protein,
+                                    mealId:
+                                        trackerDataList[index].id.toString()));
+                              }
+                            },
                       child: isDoneLoader && trackerDataList[index].id == mealId
                           ? SizedBox(
                               height: 25.h,
@@ -584,9 +591,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ),
                               child: Center(
                                 child: Icon(
-                                  isEaten
-                                      ? Icons.check
-                                      : Icons.add,
+                                  isEaten ? Icons.check : Icons.add,
                                   color: isEaten
                                       ? Colors.white
                                       : AppColors.primaryBlue,

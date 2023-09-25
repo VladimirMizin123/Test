@@ -12,6 +12,7 @@ const String prefPasswordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';
 const String prefWaterML = 'waterML';
 const String prefExerciseCAl = 'exerciseCAl';
+const String forgetPassToken = 'forget_pass_token';
 
 class PreferenceUtils {
   static Future<SharedPreferences> get _instance async =>

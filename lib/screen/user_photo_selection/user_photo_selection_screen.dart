@@ -172,7 +172,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed('/UserSignUpInfoScreen');
+                      Get.toNamed('/UserSignUpInfoScreen', arguments: model);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),

@@ -61,7 +61,6 @@ class _HomeState extends State<Home> {
             children: [
               Column(
                 children: [
-
                   SizedBox(height: 50.h),
                   buildButton(
                     context: context,
