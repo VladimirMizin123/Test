@@ -64,6 +64,7 @@ dependencies:
   shimmer: ^3.0.0
   image_picker: ^1.0.4
   simple_barcode_scanner: ^0.0.8
+  video_player: ^2.7.2
 #  video_player: ^2.4.5
 #  chewie: ^1.7.1
 #  firebase_dynamic_links: ^5.3.5
@@ -97,6 +98,8 @@ flutter:
     - assets/icon/
     - assets/svg/
     - assets/video/
+    - assets/video/big_buck_bunny_720p_30mb.mp4
+    - assets/video/gym_eats_presentation.mp4
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
 import '../../../models/fetch_meal_plan_model.dart';
@@ -24,16 +25,22 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
 
   _onGetSurveyData(
       GetDashboardData event, Emitter<GetDashboardState> emit) async {
-    _onGetSurveyData(
-        GetDashboardData event, Emitter<GetDashboardState> emit) async {
-      try {
-        final response = await _dashboardRepository.getDashboardData();
-        response.fold((left) {}, (right) {
-          emit(LoadDashboardData(model: right));
+    try {
+      final response = await _dashboardRepository.getDashboardData();
+      final data = await _dashboardRepository
+          .getMealLogByDate(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
+      response.fold((left) {}, (right) {
+        data.fold(
+            (left) => {
+                  emit(LoadDashboardData(model: right, data: [])),
+                }, (r) {
+          emit(LoadDashboardData(model: right, data: r.data));
         });
-      } catch (e) {
-        emit(ErrorStateData(errMessage: e.toString()));
-      }
+        // emit(LoadDashboardData(model: right));
+      });
+    } catch (e) {
+      emit(ErrorStateData(errMessage: e.toString()));
     }
   }
 
@@ -68,7 +75,18 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     try {
       emit(LoadingDoneState(mealID: event.mealId));
       await _eatenMealRepository
-          .addEatenMeal(userId: userId, mealId: event.mealId)
+          .addEatenMeal(
+              userId: userId,
+              mealId: event.mealId,
+              value: event.value,
+              mealName: event.mealName,
+              mealType: event.mealType,
+              noOfServing: event.noOfServing,
+              protein: event.protein,
+              fat: event.fat,
+              carbs: event.carbs,
+              recipeId: event.recipeId,
+              calorie: event.calorie)
           .fold((left) {
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {

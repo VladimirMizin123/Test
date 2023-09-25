@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/sign_up_model.dart';
+import 'package:video_player/video_player.dart';
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../widget/app_widget.dart';
@@ -17,15 +18,20 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final routeName = '/';
+  //final videoPath = "assets/video/big_buck_bunny_720p_30mb.mp4";
   final videoPath = "assets/video/gym_eats_presentation.mp4";
-  // late VideoPlayerController videoPlayerController;
+  late VideoPlayerController _videoPlayerController;
   // late ChewieController chewieController;
 
   @override
   void initState() {
-    AssetsUtils.welcomeBg;
-    AssetsUtils.welcomeLogo;
+    _videoPlayerController = VideoPlayerController.asset(videoPath)
+      ..initialize().then((_) => setState(() {
+            _videoPlayerController.play();
+            _videoPlayerController.setLooping(true);
+          }));
     super.initState();
+
     // videoPlayerController =
     //     VideoPlayerController.networkUrl(Uri.parse(videoPath));
     // videoPlayerController.initialize().then((value) {
@@ -44,41 +50,34 @@ class _HomeState extends State<Home> {
     // print(
     //     "Is Vide Controller Initialized : ${videoPlayerController.value.isInitialized}");
     return Scaffold(
-      body: Container(
-        height: size.height.h,
-        width: size.width.w,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(AssetsUtils.welcomeBg),
-            fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          if (_videoPlayerController.value.isInitialized)
+            Center(
+              child: VideoPlayer(_videoPlayerController),
+            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Column(
+                children: [
+
+                  SizedBox(height: 50.h),
+                  buildButton(
+                    context: context,
+                    title: StringUtils.letsEat,
+                    onPressed: () {
+                      Get.toNamed('/GymEatsMenuScreen');
+                    },
+                    bgColor: AppColors.letsEatButton,
+                    textColor: AppColors.letsEat,
+                  ).paddingSymmetric(horizontal: 20),
+                  SizedBox(height: 40.h),
+                ],
+              )
+            ],
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Column(
-              children: [
-                Image.asset(
-                  AssetsUtils.welcomeLogo,
-                  height: 160.h,
-                  width: 160.w,
-                ),
-                SizedBox(height: 50.h),
-                buildButton(
-                  context: context,
-                  title: StringUtils.letsEat,
-                  onPressed: () {
-                    Get.toNamed('/GymEatsMenuScreen');
-                  },
-                  bgColor: AppColors.letsEatButton,
-                  textColor: AppColors.letsEat,
-                ),
-                SizedBox(height: 40.h),
-              ],
-            )
-          ],
-        ),
+        ],
       ),
     );
   }

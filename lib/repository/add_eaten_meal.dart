@@ -18,9 +18,46 @@ class AddEatenMealRepository {
   Future<Either<ErrorModel, SuccessModel>> addEatenMeal({
     required String mealId,
     required String userId,
+    String? mealName,
+    num? calorie,
+    String? mealType,
+    num? noOfServing,
+    String? recipeId,
+    num? protein,
+    num? fat,
+    num? carbs,
+    num? value,
   }) async {
-    Map<String, dynamic> data = {'mealId': mealId, 'userId': userId};
-    final response = await apiServices.post(ApiUrls.addEatenMeal, data);
+    /*
+    {
+  "mealName": "string",
+  "suggesticMealId": "string",
+  "calorie": 0,
+  "mealType": "string",
+  "noOfServing": 0,
+  "recipeId": "string",
+  "protein": 0,
+  "fat": 0,
+  "carbs": 0,
+  "value": 0,
+  "userId": "string"
+}
+     */
+
+    Map<String, dynamic> data = {
+      "suggesticMealId": mealId,
+      "mealName": mealName??'',
+      "calorie": calorie??0,
+      "mealType": mealType??'',
+      "noOfServing": noOfServing??0,
+     // "recipeId": recipeId,
+      "protein": protein??0,
+      "fat": fat??0,
+      "carbs": carbs??0,
+      "value": value??0,
+      "userId": userId,
+    };
+    final response = await apiServices.post(ApiUrls.addMealLog, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -81,7 +118,8 @@ class AddEatenMealRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> dailyRecapAns({String? queID, bool? recapAns}) async {
+  Future<Either<ErrorModel, SuccessModel>> dailyRecapAns(
+      {String? queID, bool? recapAns}) async {
     final response = await apiServices.post(
       ApiUrls.addOrUpdateDailyRecap,
       {"userId": userID, "recapQuestionid": queID, "recapAnswer": recapAns},
@@ -93,7 +131,8 @@ class AddEatenMealRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> removeWater({String? quantity, bool? recapAns}) async {
+  Future<Either<ErrorModel, SuccessModel>> removeWater(
+      {String? quantity, bool? recapAns}) async {
     final response = await apiServices.delete(
       '${ApiUrls.removeWater}?quantity=$quantity&userId=$userID',
     );

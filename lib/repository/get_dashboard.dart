@@ -36,7 +36,7 @@ class GetDashboardDataRepository {
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
     print('getMealLogByDate response : ${response.body}');
     print('getMealLogByDate response statusCode : ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201 ) {
       return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

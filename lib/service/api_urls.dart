@@ -75,4 +75,6 @@ class ApiUrls {
   //MealLog
   static const String getMealLogByDate =
       '${baseUrl}api/MealLog/GetMealLogByDate';
+
+  static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
 }

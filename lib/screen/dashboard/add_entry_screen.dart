@@ -41,8 +41,8 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       minutesController.text = addEntryArguments.exerciseLogList!.workoutTime == null ? '1' : addEntryArguments.exerciseLogList!.workoutTime.toString();
       caloriesTextBurnedController.text = addEntryArguments.exerciseLogList!.caloriesBurned == null ? '' : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
     } else {
-      entryController.text = addEntryArguments.allExerciseData!.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
-      caloriesTextBurnedController.text = addEntryArguments.allExerciseData!.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
+      entryController.text = addEntryArguments.allExerciseData?.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
+      caloriesTextBurnedController.text = addEntryArguments.allExerciseData?.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
       minutesController.text = '1';
     }
   }
