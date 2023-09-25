@@ -1,6 +1,7 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
@@ -80,7 +81,6 @@ class SwapMealDetailsState extends FetchMealPlanState {
   SwapMealDetailsState({this.similarMealData, this.mealId, this.day});
 }
 
-
 class GroceryAddToShoppingLoadingState extends FetchMealPlanState {
   final String? productId;
   final bool isAdd;
@@ -103,3 +103,17 @@ class GroceryAddToShoppingSuccessState extends FetchMealPlanState {
 }
 
 class GroceryAddToShoppingErrorState extends FetchMealPlanState {}
+
+class GrocerySearchLoadingState extends FetchMealPlanState {
+  GrocerySearchLoadingState();
+}
+
+class GrocerySearchSuccessState extends FetchMealPlanState {
+  final List<Cart>? groceryMultiSearchProductList;
+
+  GrocerySearchSuccessState({required this.groceryMultiSearchProductList});
+}
+
+class GrocerySearchErrorState extends FetchMealPlanState {
+  GrocerySearchErrorState();
+}

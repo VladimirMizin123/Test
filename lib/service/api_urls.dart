@@ -10,6 +10,9 @@ class ApiUrls {
   static const String skipMeal = '${baseUrl}api/Suggestic/SkipMeal';
   static const String addToShoppingList =
       '${baseUrl}api/Suggestic/AddToShoppingList';
+
+      static const String addItemsToShoppingList = '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
+
   static const String getSwapMeal = '${baseUrl}api/Suggestic/GetSwapMeal';
   static const String getRecipeDetailById =
       '${baseUrl}api/Suggestic/GetRecipeDetailById';

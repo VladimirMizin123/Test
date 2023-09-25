@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,10 +10,13 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -27,8 +32,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   int selectedIndex = 0;
   MealPlanBloc bloc = MealPlanBloc();
   bool isAddButtonEnable = false;
-
   FetchModelData? fetchModelData;
+
+  List<GrocerySearchModel> grocerySearchList = [];
+  List<Cart> searchCartList = [];
+  bool isCircularLoading = false;
 
   @override
   void initState() {
@@ -45,8 +53,47 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
           bloc: bloc,
           listener: (context, state) {
+            // if (state is MealDetailsLoadingState) {
+            //   isCircularLoading = true;
+            // }
             if (state is MealDetailsSuccessState) {
               fetchModelData = state.fetchModelData;
+            }
+
+            if (state is GrocerySearchLoadingState) {
+              isCircularLoading = true;
+            }
+
+            if (state is GrocerySearchSuccessState) {
+              searchCartList = state.groceryMultiSearchProductList ?? [];
+
+              List<AddItemsToShoppingListModal> addItemsList = [];
+              // isCircularLoading = false;
+
+              for (var i = 0; i < searchCartList.length; i++) {
+                for (var j = 0; j < searchCartList[i].groceryResult!.length; j++) {
+                  for (var k = 0; k < searchCartList[i].groceryResult![j].products!.length; k++) {
+                    addItemsList.add(
+                      AddItemsToShoppingListModal(
+                        productId: searchCartList[i].groceryResult![j].products![k].productId!,
+                        price: searchCartList[i].groceryResult![j].products![k].price!,
+                        unitOfMeasurement: searchCartList[i].groceryResult![j].products![k].unitOfMeasurement == null ? '' : searchCartList[i].groceryResult![j].products![k].unitOfMeasurement!,
+                        unitSize: searchCartList[i].groceryResult![j].products![k].unitSize!.toInt(),
+                        productName: searchCartList[i].groceryResult![j].products![k].itemName ?? '',
+                        quantity: 1,
+                        isChecked: true,
+                        recipeId: fetchModelData!.recipe!.id!,
+                        mealmeStoreId: '',
+                      ),
+                    );
+                  }
+                }
+              }
+              bloc.add(AddToGroceryListEvent(addItemsList: addItemsList));
+            }
+
+            if (state is AddToGrocerySuccessState) {
+              isCircularLoading = false;
             }
           },
           builder: (context, state) {
@@ -173,6 +220,12 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               onChanged: (bool? value) {
                                                                 setState(() {
                                                                   fetchModelData!.recipe!.ingredients![index].isSelected = !fetchModelData!.recipe!.ingredients![index].isSelected;
+
+                                                                  if (value == false) {
+                                                                    grocerySearchList.removeWhere((element) => element.groceryName == fetchModelData!.recipe!.ingredients![index].name);
+                                                                  } else {
+                                                                    grocerySearchList.add(GrocerySearchModel(groceryName: fetchModelData!.recipe!.ingredients![index].name, quantity: 1));
+                                                                  }
 
                                                                   for (var i = 0; i < fetchModelData!.recipe!.ingredients!.length; i++) {
                                                                     if (fetchModelData!.recipe!.ingredients![i].isSelected) {
@@ -321,20 +374,23 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                       GestureDetector(
                                         onTap: () {
                                           if (isAddButtonEnable) {
-                                            // bloc.add(AddToGroceryListEvent(databaseIdOfRecipes: widget.mealDataArguments!.mealData!.recipe!.databaseId!));
-                                            bloc.add(GroceryAddToShoppingListEvent(
-                                              productID: '',
-                                              productName: widget.mealDataArguments!.mealData!.recipe!.name!,
-                                              price: '',
-                                              unitSize: '',
-                                              unitOfMeasurement: '',
-                                              quantity: '1',
-                                              recipeId: '',
-                                              mealmeStoreId: '',
-                                              isAdd: true,
-                                              isRemove: false,
-                                              isChecked: false,
-                                            ));
+                                            bloc.add(
+                                              GrocerySearchEvent(grocerySearchModelList: grocerySearchList),
+                                            );
+
+                                            // bloc.add(GroceryAddToShoppingListEvent(
+                                            //   productID: '',
+                                            //   productName: widget.mealDataArguments!.mealData!.recipe!.name!,
+                                            //   price: '',
+                                            //   unitSize: '',
+                                            //   unitOfMeasurement: '',
+                                            //   quantity: '1',
+                                            //   recipeId: '',
+                                            //   mealmeStoreId: '',
+                                            //   isAdd: true,
+                                            //   isRemove: false,
+                                            //   isChecked: false,
+                                            // ));
                                           } else {
                                             Fluttertoast.showToast(msg: 'Select atleast 1 Ingredients');
                                           }
@@ -345,7 +401,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                             height: screenSize.height * 0.065,
                                             width: screenSize.width,
                                             decoration: isAddButtonEnable ? BoxDecoration(color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(color: AppColors.gray, borderRadius: BorderRadius.circular(8)),
-                                            child: Center(child: state is AddToGroceryLoadingState ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(StringUtils.addToGroceryList, style: FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: FWT.semiBold))),
+                                            child: Center(child: isCircularLoading ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(StringUtils.addToGroceryList, style: FontUtils.h16(fontColor: AppColors.whiteColor, fontWeight: FWT.semiBold))),
                                           ),
                                         ),
                                       ),
