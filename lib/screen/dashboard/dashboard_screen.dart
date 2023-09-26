@@ -140,11 +140,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(
-                    AssetsUtils.user,
-                    height: 25.h,
-                    width: 25.w,
-                    color: AppColors.darkGray,
+                  InkWell(
+                    onTap: () {
+                      Get.toNamed('/GoogleMapScreen');
+                    },
+                    child: Image.asset(
+                      AssetsUtils.user,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
+                    ),
                   ),
                   Text(
                     StringUtils.dashboard,

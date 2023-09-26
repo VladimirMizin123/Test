@@ -39,8 +39,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const BackButtonWidget(),
-                Text('Checkout', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                Text('Checkout',
+                    style: FontUtils.h20(
+                        fontColor: AppColors.oxFF010101,
+                        fontWeight: FWT.semiBold)),
+                Opacity(
+                    opacity: 0,
+                    child: Text('Edit',
+                        style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             Expanded(
@@ -59,9 +65,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       const SizedBox(height: 15),
                       Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.terracotta)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.terracotta)),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                           child: Row(
                             children: [
                               SvgPicture.asset(AssetsUtils.icCardImg),
@@ -69,14 +78,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               Expanded(
                                   child: Text(
                                 'Choose payment\nmethod',
-                                style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                style: FontUtils.h18(
+                                    fontColor: AppColors.black,
+                                    fontWeight: FWT.semiBold),
                               )),
                               Text(
                                 'Edit',
-                                style: FontUtils.h16(fontColor: AppColors.terracotta),
+                                style: FontUtils.h16(
+                                    fontColor: AppColors.terracotta),
                               ),
                               const SizedBox(width: 5),
-                              const Icon(Icons.chevron_right_rounded, color: AppColors.terracotta),
+                              const Icon(Icons.chevron_right_rounded,
+                                  color: AppColors.terracotta),
                             ],
                           ),
                         ),
@@ -97,22 +110,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           boxShadow: boxShadowWidget,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                           child: Row(
                             children: [
-                              SvgPicture.asset(AssetsUtils.icLocation, color: AppColors.green, height: 25),
+                              SvgPicture.asset(AssetsUtils.icLocation,
+                                  color: AppColors.green, height: 25),
                               const SizedBox(width: 15),
                               Expanded(
                                   child: Text(
                                 'Bring me the order',
-                                style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                style: FontUtils.h18(
+                                    fontColor: AppColors.black,
+                                    fontWeight: FWT.medium),
                               )),
                               Text(
                                 'Edit',
-                                style: FontUtils.h16(fontColor: AppColors.terracotta),
+                                style: FontUtils.h16(
+                                    fontColor: AppColors.terracotta),
                               ),
                               const SizedBox(width: 5),
-                              const Icon(Icons.chevron_right_rounded, color: AppColors.terracotta),
+                              const Icon(Icons.chevron_right_rounded,
+                                  color: AppColors.terracotta),
                             ],
                           ),
                         ),
@@ -122,7 +141,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         height: 200,
                         width: double.infinity,
                         decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(12)),
                           color: AppColors.lightGrey,
                         ),
                       ),
@@ -134,17 +154,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           height: 60,
                           width: double.infinity,
                           decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+                            borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(12)),
                             color: AppColors.whiteColor,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Row(children: [
-                              SvgPicture.asset(AssetsUtils.icHome, color: AppColors.green, height: 25),
+                              SvgPicture.asset(AssetsUtils.icHome,
+                                  color: AppColors.green, height: 25),
                               const SizedBox(width: 15),
                               Text(
                                 'Where?',
-                                style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.light),
+                                style: FontUtils.h18(
+                                    fontColor: AppColors.black,
+                                    fontWeight: FWT.light),
                               ),
                               const Spacer(),
                               const Icon(Icons.chevron_right_rounded)
@@ -163,17 +187,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         },
                         children: [
                           ExpansionPanel(
-                            headerBuilder: (BuildContext context, bool isExpanded) {
+                            headerBuilder:
+                                (BuildContext context, bool isExpanded) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
                                 child: Row(children: [
-                                  SvgPicture.asset(AssetsUtils.icListIcon, color: AppColors.green, height: 25),
+                                  SvgPicture.asset(AssetsUtils.icListIcon,
+                                      color: AppColors.green, height: 25),
                                   const SizedBox(width: 15),
                                   Text(
                                     'Your Order',
-                                    style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.light),
+                                    style: FontUtils.h18(
+                                        fontColor: AppColors.black,
+                                        fontWeight: FWT.light),
                                   ),
-                                  const SizedBox(width: 5),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
                                   Container(
                                     height: 25,
                                     width: 25,
@@ -184,7 +215,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     child: Center(
                                         child: Text(
                                       '2',
-                                      style: FontUtils.h12(fontColor: AppColors.whiteColor),
+                                      style: FontUtils.h12(
+                                          fontColor: AppColors.whiteColor),
                                     )),
                                   ),
                                 ]),
@@ -193,21 +225,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             body: Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         'Wallmart',
-                                        style: FontUtils.h22(fontColor: AppColors.black),
+                                        style: FontUtils.h22(
+                                            fontColor: AppColors.black),
                                       )),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
                                       'Order #123456',
-                                      style: FontUtils.h12(fontColor: AppColors.green, fontWeight: FWT.semiBold),
+                                      style: FontUtils.h12(
+                                          fontColor: AppColors.green,
+                                          fontWeight: FWT.semiBold),
                                     ),
                                   ),
                                 ),
@@ -223,21 +260,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 const SizedBox(height: 5),
                                 const DividerWidget(),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         'Wallmart',
-                                        style: FontUtils.h22(fontColor: AppColors.black),
+                                        style: FontUtils.h22(
+                                            fontColor: AppColors.black),
                                       )),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
                                       'Order #123456',
-                                      style: FontUtils.h12(fontColor: AppColors.green, fontWeight: FWT.semiBold),
+                                      style: FontUtils.h12(
+                                          fontColor: AppColors.green,
+                                          fontWeight: FWT.semiBold),
                                     ),
                                   ),
                                 ),
@@ -262,7 +304,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Order Notes',
-                          style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                          style: FontUtils.h20(
+                            fontColor: AppColors.middleGray,
+                            fontWeight: FWT.semiBold,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -278,7 +323,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: Row(children: [
                             Text(
                               'Cut the bread, please!',
-                              style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.medium),
+                              style: FontUtils.h18(
+                                  fontColor: AppColors.black,
+                                  fontWeight: FWT.medium),
                             ),
                           ]),
                         ),
@@ -355,11 +402,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         Text(
                           'Total',
-                          style: FontUtils.h22(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                          style: FontUtils.h22(
+                              fontColor: AppColors.black,
+                              fontWeight: FWT.semiBold),
                         ),
                         Text(
                           '\$ 14.97',
-                          style: FontUtils.h22(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                          style: FontUtils.h22(
+                              fontColor: AppColors.black,
+                              fontWeight: FWT.semiBold),
                         ),
                       ],
                     ),
@@ -403,7 +454,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           Text(
             value,
-            style: FontUtils.h20(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+            style: FontUtils.h20(
+                fontColor: AppColors.black, fontWeight: FWT.semiBold),
           ),
         ],
       ),
@@ -447,7 +499,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           Text(
             value,
-            style: FontUtils.h22(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+            style: FontUtils.h22(
+                fontColor: AppColors.black, fontWeight: FWT.semiBold),
           ),
         ],
       ),
