@@ -23,6 +23,7 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
+import 'package:gymeats_mobile/screen/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/add_delivery_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/map_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/search_delivery_address_screen.dart';
@@ -81,10 +82,11 @@ Future<void> main() async {
   await Firebase.initializeApp(
     name: 'GymEats',
     options: FirebaseOptions(
-        apiKey: apiKey,
-        appId: appId,
-        messagingSenderId: messagingSenderId,
-        projectId: projectId),
+      apiKey: apiKey,
+      appId: appId,
+      messagingSenderId: messagingSenderId,
+      projectId: projectId,
+    ),
   );
   await initDynamicLinks();
 
@@ -116,7 +118,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
-
 
   @override
   void initState() {
@@ -442,6 +443,11 @@ class _MyAppState extends State<MyApp> {
               name: '/JournalMealScreen',
               page: () => const JournalMealScreen(),
             ),
+            GetPage(
+              name: '/GoogleMapScreen',
+              page: () => const GetUserAddress(),
+            ),
+
             // GetPage(
             //   name: '/JournalSearchScreen',
             //   page: () =>  const JournalSearchScreen(mealType: ''),
@@ -450,6 +456,7 @@ class _MyAppState extends State<MyApp> {
         );
       },
       child: const Home(),
+      // child: const GetUserAddress(),
     );
   }
 }

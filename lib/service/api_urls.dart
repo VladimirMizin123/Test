@@ -11,7 +11,8 @@ class ApiUrls {
   static const String addToShoppingList =
       '${baseUrl}api/Suggestic/AddToShoppingList';
 
-      static const String addItemsToShoppingList = '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
+  static const String addItemsToShoppingList =
+      '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
 
   static const String getSwapMeal = '${baseUrl}api/Suggestic/GetSwapMeal';
   static const String getRecipeDetailById =
@@ -80,4 +81,25 @@ class ApiUrls {
       '${baseUrl}api/MealLog/GetMealLogByDate';
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
+
+  static const String mapApiKey = 'AIzaSyAfEDvN9t66JxrKSApYumdKyw63rrWZzkE';
+
+  static String searchLocationURL(String value) {
+    String url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$value&key=$mapApiKey';
+    return url;
+  }
+
+  static String findLatLngURL(String value) {
+    String url =
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$value&key=$mapApiKey';
+    return url;
+  }
+
+  static String findAddressURL({String? lat, String? lng}) {
+    String url =
+        'https://maps.google.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapApiKey';
+
+    return url;
+  }
 }
