@@ -47,7 +47,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           style: textTheme.displayMedium?.copyWith(color: Colors.black),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
+          icon:
+              Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
           onPressed: () => Navigator.pop(context),
         ).paddingOnly(left: 10.w),
       ),
@@ -57,7 +58,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             if (state is SelectedImagePathState) {
               pickedImageFilePath = state.imgPath ?? '';
               setState(() {});
-              print('Picked Image File Path --------------- $pickedImageFilePath');
+              print(
+                  'Picked Image File Path --------------- $pickedImageFilePath');
             }
           },
           builder: (context, state) {
@@ -89,7 +91,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     child: Container(
                                       height: 160.h,
                                       width: double.infinity.w,
-                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                          color: AppColors.disable),
                                       child: Image.file(
                                         File(pickedImageFilePath),
                                         fit: BoxFit.cover,
@@ -99,11 +104,16 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 : Container(
                                     height: 160.h,
                                     width: double.infinity.w,
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
+                                        color: AppColors.disable),
                                     child: Center(
                                       child: Text(
                                         StringUtils.addPhoto,
-                                        style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+                                        style: textTheme.headlineSmall
+                                            ?.copyWith(
+                                                color: AppColors.middleGray),
                                       ),
                                     ),
                                   ),
@@ -117,37 +127,68 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           TextFormField(
                             controller: nameController,
                             cursorColor: AppColors.darkGray,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                            keyboardType: TextInputType.text,
+                            style: const TextStyle(
+                                fontSize: 16, color: AppColors.darkGray),
                             decoration: InputDecoration(
                               hintText: 'Item Name',
-                              hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
+                              hintStyle: const TextStyle(
+                                  fontSize: 14, color: AppColors.grayColor),
                               isDense: true,
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.grayColor)),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.grayColor)),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
+                              disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
                             ),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(StringUtils.weight, style: textTheme.bodyLarge?.copyWith(color: Colors.black)),
+                              Text(StringUtils.weight,
+                                  style: textTheme.bodyLarge
+                                      ?.copyWith(color: Colors.black)),
                               SizedBox(
                                 width: 80.w,
                                 child: TextFormField(
                                   controller: weightController,
                                   cursorColor: AppColors.darkGray,
                                   keyboardType: TextInputType.number,
-                                  style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                                  style: const TextStyle(
+                                      fontSize: 16, color: AppColors.darkGray),
                                   decoration: InputDecoration(
                                     hintText: '00',
-                                    hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
+                                    hintStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.grayColor),
                                     isDense: true,
-                                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                    disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
-                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    disabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
                                   ),
                                 ),
                               ),
@@ -196,15 +237,51 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              dashBoardCardView(margin: const EdgeInsets.only(right: 4), child: calciumDataView(title: 'Cal', percent: 0.16, gramCount: '320', progressColor: AppColors.primaryBlue, textTheme: textTheme, totalGram: '2000 cal', controller: calController)),
-                              dashBoardCardView(margin: const EdgeInsets.only(left: 4), child: calciumDataView(title: 'Fat', percent: 0.77, gramCount: '100', progressColor: AppColors.coral, textTheme: textTheme, totalGram: '177 g', controller: fatController)),
+                              dashBoardCardView(
+                                  margin: const EdgeInsets.only(right: 4),
+                                  child: calciumDataView(
+                                      title: 'Cal',
+                                      percent: 0.16,
+                                      gramCount: '320',
+                                      progressColor: AppColors.primaryBlue,
+                                      textTheme: textTheme,
+                                      totalGram: '2000 cal',
+                                      controller: calController)),
+                              dashBoardCardView(
+                                  margin: const EdgeInsets.only(left: 4),
+                                  child: calciumDataView(
+                                      title: 'Fat',
+                                      percent: 0.77,
+                                      gramCount: '100',
+                                      progressColor: AppColors.coral,
+                                      textTheme: textTheme,
+                                      totalGram: '177 g',
+                                      controller: fatController)),
                             ],
                           ).paddingSymmetric(vertical: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              dashBoardCardView(margin: const EdgeInsets.only(right: 4), child: calciumDataView(title: 'Carbs', textTheme: textTheme, gramCount: '100', percent: 0.77, totalGram: '177 g', progressColor: AppColors.mint, controller: carbsController)),
-                              dashBoardCardView(margin: const EdgeInsets.only(left: 4), child: calciumDataView(title: 'Protein', textTheme: textTheme, gramCount: '32', percent: 0.66, totalGram: '48 g', progressColor: AppColors.skyBlue, controller: proteinController)),
+                              dashBoardCardView(
+                                  margin: const EdgeInsets.only(right: 4),
+                                  child: calciumDataView(
+                                      title: 'Carbs',
+                                      textTheme: textTheme,
+                                      gramCount: '100',
+                                      percent: 0.77,
+                                      totalGram: '177 g',
+                                      progressColor: AppColors.mint,
+                                      controller: carbsController)),
+                              dashBoardCardView(
+                                  margin: const EdgeInsets.only(left: 4),
+                                  child: calciumDataView(
+                                      title: 'Protein',
+                                      textTheme: textTheme,
+                                      gramCount: '32',
+                                      percent: 0.66,
+                                      totalGram: '48 g',
+                                      progressColor: AppColors.skyBlue,
+                                      controller: proteinController)),
                             ],
                           ).paddingSymmetric(vertical: 4),
                         ],
@@ -254,17 +331,33 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           title.toString(),
           style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
         ),
-        commonProgressbar(progressColor: progressColor, width: 70.w, lineHeight: 8.0, percent: percent ?? 0.5),
+        commonProgressbar(
+            progressColor: progressColor,
+            width: 70.w,
+            lineHeight: 8.0,
+            percent: percent ?? 0.5),
         Text(
           '$gramCount / $totalGram',
-          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray, height: 1.7),
+          style: textTheme?.bodyMedium
+              ?.copyWith(color: AppColors.darkGray, height: 1.7),
         ),
-        SizedBox(width: 70, child: commonTextField(context: context, hintText: "cal", isPassword: false, controller: controller)).paddingSymmetric(vertical: 5),
+        SizedBox(
+                width: 70,
+                child: commonTextField(
+                    context: context,
+                    hintText: "cal",
+                    isPassword: false,
+                    controller: controller))
+            .paddingSymmetric(vertical: 5),
       ],
     ).paddingSymmetric(horizontal: 33.w, vertical: 6.h);
   }
 
-  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
+  Widget commonProgressbar(
+      {Color? progressColor,
+      double? width,
+      double? lineHeight,
+      double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: Radius.circular(10.r),

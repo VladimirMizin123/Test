@@ -6,18 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/bloc/mealLog/get_meallogby_date_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
-import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
+import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-
 import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_event.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_state.dart';
@@ -38,8 +37,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   final routeName = '/DashBoardScreen';
   int currentIndex = 0;
 
-  GetMealLogByDateBloc dateBloc = GetMealLogByDateBloc();
   GetMealLogByDate mealDateModel = GetMealLogByDate();
+  GetUserJournalBloc journalBloc = GetUserJournalBloc();
+
   // String recipeIdView = '';
   // List<MealDataByDate> idDataList = [];
 
@@ -60,9 +60,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   void initState() {
     super.initState();
     bloc.add(GenMealTrackerData());
-
-    dateBloc.add(GetMealLogByDateData(
-        date: DateFormat('yyyy-MM-dd').format(DateTime.now())));
+    /* dateBloc.add(GetMealLogByDateData(
+        date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);
   }
 
@@ -461,11 +460,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       Get.toNamed('/AddWaterScreen',
                               arguments: AddWaterArguments(
                                   dailyGoal:
-                                      model.data!.dailyWaterGoals!.toString()))!
+                                      model.data!.dailyWaterGoals.toString()))!
                           .then((value) {
-                        setState(() {
-                          waterML = waterML + int.parse(value ?? '');
-                        });
+                        bloc.add(GetDashboardData());
                       });
                     },
                     child: dashBoardCardView(
@@ -490,7 +487,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      Get.toNamed('/SecondDashBoardView',
+                      Get.toNamed('/AddExerciseScreen',
+                              arguments: AddExerciseArguments(
+                                  dateTime: DateTime.now()))!
+                          .then((value) {
+                        bloc.add(GetDashboardData());
+                      });
+                      /*Get.toNamed('/SecondDashBoardView',
                               arguments: AddEntryArguments(
                                   exerciseLogList: ExerciseLogList(
                                       caloriesBurned: model
@@ -503,7 +506,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           }
                           exerciseCal = exerciseCal + int.parse(value);
                         });
-                      });
+                      });*/
                     },
                     child: dashBoardCardView(
                       margin:

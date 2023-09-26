@@ -1163,7 +1163,7 @@ class _JournalScreenState extends State<JournalScreen> {
       animation: true,
       lineHeight: lineHeight!,
       animationDuration: 2000,
-      percent: percent ?? 0.0,
+      percent: (percent ?? 0.0) >= 1 ? 1.0 : percent ?? 0.0,
       center: const Text(""),
       linearStrokeCap: LinearStrokeCap.round,
       progressColor: progressColor,
@@ -1187,7 +1187,7 @@ class _JournalScreenState extends State<JournalScreen> {
         commonProgressbar(
           progressColor: progressColor,
           width: 80.w,
-          percent: percentage,
+          percent: percentage >= 1.0 ? 1.0 : percentage,
           lineHeight: 8.0,
         ),
         Text(

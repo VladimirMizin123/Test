@@ -64,11 +64,10 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
 
                 <data
-                    android:host="gymeats.azurewebsites.net"
-                    android:pathPrefix="/email/confirmEmail"
-                    android:scheme="https" />
+                    android:host="gymeats.azurewebsites.net" android:pathPrefix="/email/confirmEmail" />
             </intent-filter>
 
         </activity>

@@ -65,6 +65,7 @@ import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
 import 'package:app_links/app_links.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
@@ -117,7 +118,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
 
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -134,6 +134,8 @@ class _MyAppState extends State<MyApp> {
             Get.offAllNamed(
               '/setNewPassword',
             );
+          } else {
+            showToast(message: 'Link has Expired.', isSuccess: false);
           }
         } else {
           Get.offAllNamed(

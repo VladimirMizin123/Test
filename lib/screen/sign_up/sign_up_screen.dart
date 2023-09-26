@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -97,16 +100,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     StringUtils.or,
                     style: textTheme.bodyLarge,
                   ).paddingSymmetric(vertical: 15.h),
-                  buildButton(
-                      context: context,
-                      hasImage: true,
-                      imagePath: AssetsUtils.appleLogo,
-                      onPressed: () async {
-                        await homeController.appleSignIn();
-                      },
-                      textColor: const Color(0xFFD9E9EE),
-                      bgColor: Colors.black,
-                      title: StringUtils.apple),
+                  kIsWeb
+                      ? const SizedBox()
+                      : Platform.isIOS
+                          ? buildButton(
+                              context: context,
+                              hasImage: true,
+                              imagePath: AssetsUtils.appleLogo,
+                              onPressed: () async {
+                                await homeController.appleSignIn();
+                              },
+                              textColor: const Color(0xFFD9E9EE),
+                              bgColor: Colors.black,
+                              title: StringUtils.apple)
+                          : buildButton(
+                              context: context,
+                              hasImage: true,
+                              imagePath: AssetsUtils.googleLogo,
+                              onPressed: () {},
+                              textColor: Colors.white,
+                              bgColor: Colors.black,
+                              title: StringUtils.google),
                   Wrap(
                     children: [
                       Text(StringUtils.alreadyAccount,

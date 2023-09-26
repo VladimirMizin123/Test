@@ -16,7 +16,8 @@ class AddExerciseScreen extends StatefulWidget {
   State<AddExerciseScreen> createState() => _AddExerciseScreenState();
 }
 
-class _AddExerciseScreenState extends State<AddExerciseScreen> with SingleTickerProviderStateMixin {
+class _AddExerciseScreenState extends State<AddExerciseScreen>
+    with SingleTickerProviderStateMixin {
   final routeName = '/AddExerciseScreen';
   final searchExerciseController = TextEditingController();
   late TabController tabController;
@@ -90,7 +91,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> with SingleTicker
                     labelColor: AppColors.primaryBlue,
                     indicatorColor: AppColors.primaryBlue,
                     unselectedLabelColor: AppColors.gray,
-                    labelStyle: textTheme.headlineSmall?.copyWith(color: AppColors.primaryBlue),
+                    labelStyle: textTheme.headlineSmall
+                        ?.copyWith(color: AppColors.primaryBlue),
                     tabs: const [
                       Tab(text: StringUtils.history),
                       Tab(text: StringUtils.allExercises),
@@ -100,12 +102,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> with SingleTicker
                 Expanded(
                   child: SizedBox(
                     width: double.maxFinite,
-                    height: 150,
                     child: TabBarView(
                       controller: tabController,
                       children: [
-                        HistoryExerciseScreen(dateTime: addExerciseArguments.dateTime),
-                        AllExerciseScreen(dateTime: addExerciseArguments.dateTime),
+                        HistoryExerciseScreen(
+                            dateTime: addExerciseArguments.dateTime),
+                        AllExerciseScreen(
+                            dateTime: addExerciseArguments.dateTime),
                       ],
                     ),
                   ).paddingOnly(left: 20.w, right: 10.w),
@@ -119,9 +122,15 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> with SingleTicker
   void filterExercises(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredExerciseList = allExerciseList;
+        setState(() {
+          filteredExerciseList = allExerciseList;
+        });
       } else {
-        filteredExerciseList = allExerciseList.where((exercise) => exercise.toLowerCase().contains(query.toLowerCase())).toList();
+        filteredExerciseList = allExerciseList
+            .where((exercise) =>
+                exercise.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+        setState(() {});
       }
     });
   }

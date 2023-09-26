@@ -35,7 +35,6 @@ class _HomeState extends State<Home> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
       final _appLinks = AppLinks();
       _appLinks.allUriLinkStream.listen((uri) {
         print("uri.path ${uri.path}");
@@ -48,6 +47,8 @@ class _HomeState extends State<Home> {
             Get.offAllNamed(
               '/setNewPassword',
             );
+          } else {
+            showToast(message: 'Link has Expired', isSuccess: false);
           }
         } else {
           Get.offAllNamed(
