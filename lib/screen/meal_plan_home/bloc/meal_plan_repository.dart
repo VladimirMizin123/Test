@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:either_dart/either.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
@@ -23,7 +25,8 @@ class MealPlanRepository {
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+    int mealPlanScreenCountState =
+        PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';
@@ -39,13 +42,21 @@ class MealPlanRepository {
       print('Meal response.body123 : ${response.body}');
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 401) {
+
+      PreferenceUtils.clearPrefs();
+      Get.offAllNamed('/LoginScreen');
+
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan({required String mealID}) async {
-    final response = await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
+  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan(
+      {required String mealID}) async {
+    final response =
+        await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SkipMealPlanModel.fromJson(jsonDecode(response.body)));
@@ -54,7 +65,9 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> recipeAddToGrocery({required List<AddItemsToShoppingListModal> addItemsToShoppingList}) async {
+  Future<Either<ErrorModel, SuccessModel>> recipeAddToGrocery(
+      {required List<AddItemsToShoppingListModal>
+          addItemsToShoppingList}) async {
     final response = await apiServices.post(
       ApiUrls.addItemsToShoppingList,
       {"userId": userID, "itemList": addItemsToShoppingList},
@@ -66,8 +79,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem({required String recipeID, required int serving}) async {
-    final response = await apiServices.get('${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
+  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem(
+      {required String recipeID, required int serving}) async {
+    final response = await apiServices.get(
+        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -75,8 +90,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails({required String recipeID}) async {
-    final response = await apiServices.get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
+  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
+      {required String recipeID}) async {
+    final response = await apiServices
+        .get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -91,7 +108,9 @@ class MealPlanRepository {
     required String maximumMiles,
     required bool pickup,
   }) async {
-    final response = await apiServices.post('${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude', {}
+    final response = await apiServices.post(
+        '${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude',
+        {}
         // {
         //   "name": name,
         //   "latitude": latitude,
@@ -139,7 +158,8 @@ class MealPlanRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

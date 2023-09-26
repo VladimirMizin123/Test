@@ -428,9 +428,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Text(
-                                              'Order Best Match from Restaurant',
-                                              style: FontUtils.h20(fontColor: AppColors.primaryBlue, fontWeight: FWT.semiBold),
+                                            Flexible(
+                                              child: Text(
+                                                'Order Best Match from Restaurant',
+                                                style: FontUtils.h20(fontColor: AppColors.primaryBlue, fontWeight: FWT.semiBold),
+                                              ),
                                             ),
                                             SizedBox(width: 10.w),
                                             const Icon(

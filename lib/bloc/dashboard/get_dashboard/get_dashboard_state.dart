@@ -20,7 +20,8 @@ class LoadMealData extends GetDashboardState {
 
 class ErrorStateData extends GetDashboardState {
   String errMessage;
-  ErrorStateData({required this.errMessage});
+
+  ErrorStateData({required this.errMessage,});
 }
 
 class LoadingData extends GetDashboardState {}

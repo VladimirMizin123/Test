@@ -116,13 +116,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
-  final _appLinks = AppLinks();
+
 
   @override
   void initState() {
-    super.initState();
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("Call initDynamicLinks");
+      final _appLinks = AppLinks();
       _appLinks.allUriLinkStream.listen((uri) {
         print("uri.path ${uri.path}");
 
@@ -131,13 +131,18 @@ class _MyAppState extends State<MyApp> {
           if (token != '') {
             // navigate to password reset screen
 
-            Get.toNamed('/ResetPasswordScreen', preventDuplicates: false);
+            Get.offAllNamed(
+              '/setNewPassword',
+            );
           }
-        } else if (uri.path == '/auth/confirmEmail') {
-          Get.toNamed('/LoginScreen', preventDuplicates: false);
+        } else {
+          Get.offAllNamed(
+            '/LoginScreen',
+          );
         }
       });
     });
+    super.initState();
   }
 
   @override
@@ -153,15 +158,10 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: widget.forgotPasswordToken != "" &&
-                  widget.forgotPasswordToken != null
-              ? '/setNewPassword'
-              : PreferenceUtils.getBool(prefIsLogin) &&
-                      PreferenceUtils.getBool(prefIsConfirmEmail)
-                  ? '/AppManagerScreen'
-                  : widget.isFromConfirm == true
-                      ? '/LoginScreen'
-                      : '/',
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
+                  PreferenceUtils.getBool(prefIsConfirmEmail)
+              ? '/AppManagerScreen'
+              : '/',
           // initialRoute: 'SignUpScreen',
           getPages: [
             GetPage(

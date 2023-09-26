@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -30,7 +31,31 @@ class _HomeState extends State<Home> {
             _videoPlayerController.play();
             _videoPlayerController.setLooping(true);
           }));
+
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      final _appLinks = AppLinks();
+      _appLinks.allUriLinkStream.listen((uri) {
+        print("uri.path ${uri.path}");
+
+        if (uri.path == '/auth/setNewPassword') {
+          final token = PreferenceUtils.getString(forgetPassToken);
+          if (token != '') {
+            // navigate to password reset screen
+
+            Get.offAllNamed(
+              '/setNewPassword',
+            );
+          }
+        } else {
+          Get.offAllNamed(
+            '/LoginScreen',
+          );
+        }
+      });
+    });
 
     // videoPlayerController =
     //     VideoPlayerController.networkUrl(Uri.parse(videoPath));

@@ -222,6 +222,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       isDoneLoader = true;
                       mealId = state.mealID;
                     }
+
+                    if (state is ErrorStateData) {
+                      //showToast(isSuccess: false, message: state.errMessage);
+                    }
                   },
                 ),
               ),

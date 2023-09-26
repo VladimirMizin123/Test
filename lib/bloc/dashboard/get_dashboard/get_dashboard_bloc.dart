@@ -51,7 +51,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     try {
       emit(LoadingData());
       await _planRepository.fetchMealPlan().fold((left) {
-        emit(ErrorStateData(errMessage: left.errorMessage!));
+        emit(ErrorStateData(errMessage: left.errorMessage!,));
       }, (right) {
         right.data!.map((e) {
           if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
