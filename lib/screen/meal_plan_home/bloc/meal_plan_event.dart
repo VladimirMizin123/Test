@@ -10,7 +10,25 @@ class MealPlanFetchEvent extends MealPlanEvent {
 
 class SkipMealPlanEvent extends MealPlanEvent {
   final String mealID;
-  SkipMealPlanEvent({required this.mealID});
+  final String? mealName;
+  final num? calorie;
+  final String? mealType;
+  final num? noOfServing;
+  final String? recipeId;
+  final num? protein;
+  final num? fat;
+  final num? carbs;
+
+  SkipMealPlanEvent(
+      {required this.mealID,
+      this.mealName,
+      this.calorie,
+      this.mealType,
+      this.noOfServing,
+      this.recipeId,
+      this.protein,
+      this.fat,
+      this.carbs});
 }
 
 class AddToGroceryListEvent extends MealPlanEvent {
@@ -70,9 +88,7 @@ class SwapMealDetailsEvent extends MealPlanEvent {
   final int? day;
   final String? mealId;
 
-  SwapMealDetailsEvent({this.similarMealData,
-    this.day,
-    this.mealId});
+  SwapMealDetailsEvent({this.similarMealData, this.day, this.mealId});
 }
 
 class RestaurantSearchEvent extends MealPlanEvent {
@@ -82,5 +98,10 @@ class RestaurantSearchEvent extends MealPlanEvent {
   final String? maximumMiles;
   final bool? pickup;
 
-  RestaurantSearchEvent({this.name, this.latitude, this.longitude, this.maximumMiles, this.pickup});
+  RestaurantSearchEvent(
+      {this.name,
+      this.latitude,
+      this.longitude,
+      this.maximumMiles,
+      this.pickup});
 }

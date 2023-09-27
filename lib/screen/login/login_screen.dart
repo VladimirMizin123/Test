@@ -36,14 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   LoginBloc bloc = LoginBloc();
 
-  @override
+  /* @override
   void initState() {
     super.initState();
     if (kDebugMode) {
       emailController.text = 'sojitratest01@mailinator.com';
       passwordController.text = 'Sojitra@321';
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

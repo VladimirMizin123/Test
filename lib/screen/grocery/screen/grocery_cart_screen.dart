@@ -29,7 +29,13 @@ class GroceryCartScreen extends StatefulWidget {
 }
 
 class _GroceryCartScreenState extends State<GroceryCartScreen> {
-  List<String> productList = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
+  List<String> productList = [
+    'Product 1',
+    'Product 2',
+    'Product 3',
+    'Product 4',
+    'Product 5'
+  ];
   GroceryBloc groceryBloc = GroceryBloc();
   List<GrocerySearchModel> grocerySearchModalDataList = [];
   List<Product>? groceryMultiSearchStoreProductListList = [];
@@ -91,8 +97,13 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const BackButtonWidget(),
-                      Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                      Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
+                      Text('Grocery List',
+                          style: FontUtils.h20(
+                              fontColor: AppColors.oxFF010101,
+                              fontWeight: FWT.semiBold)),
+                      Text('Edit',
+                          style:
+                              FontUtils.h16(fontColor: AppColors.oxFF010101)),
                     ],
                   ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                   GestureDetector(
@@ -106,34 +117,57 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     },
                     child: Container(
                       width: screenSize.width * 0.50,
-                      decoration: BoxDecoration(color: selectedStoreProductList.isEmpty ? AppColors.middleGray.withOpacity(0.10) : AppColors.mint, borderRadius: BorderRadius.circular(50), border: Border.all(color: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green)),
+                      decoration: BoxDecoration(
+                          color: selectedStoreProductList.isEmpty
+                              ? AppColors.middleGray.withOpacity(0.10)
+                              : AppColors.mint,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                              color: selectedStoreProductList.isEmpty
+                                  ? AppColors.middleGray
+                                  : AppColors.green)),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // const Icon(Icons.search, color: AppColors.green),
-                            SvgPicture.asset(AssetsUtils.icLocation, color: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green),
-                            const SizedBox(width: 10),
+                            SvgPicture.asset(AssetsUtils.icLocation,
+                                color: selectedStoreProductList.isEmpty
+                                    ? AppColors.middleGray
+                                    : AppColors.green),
                             selectedStoreProductList.isEmpty
                                 ? Text(
                                     'Choose a Store',
-                                    style: FontUtils.h16(fontColor: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green, fontWeight: FWT.semiBold),
+                                    style: FontUtils.h14(
+                                        fontColor:
+                                            selectedStoreProductList.isEmpty
+                                                ? AppColors.middleGray
+                                                : AppColors.green,
+                                        fontWeight: FWT.semiBold),
                                   )
-                                : selectedStoreProductList[0].store!.logoPhotos == null
+                                : selectedStoreProductList[0]
+                                            .store!
+                                            .logoPhotos ==
+                                        null
                                     ? const SizedBox()
                                     : CachedNetworkImage(
                                         height: 20,
-                                        imageUrl: selectedStoreProductList[0].store!.logoPhotos![0],
+                                        imageUrl: selectedStoreProductList[0]
+                                            .store!
+                                            .logoPhotos![0],
                                         fit: BoxFit.cover,
-                                        placeholder: (context, url) => const Center(
-                                            child: CircularProgressIndicator(
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                                child:
+                                                    CircularProgressIndicator(
                                           color: AppColors.lightGrey,
                                         )),
-                                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
                                       ),
-                            const SizedBox(width: 10),
                             const Icon(
                               Icons.keyboard_arrow_down_rounded,
                               color: AppColors.green,
@@ -149,7 +183,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextFormField(
@@ -160,8 +195,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           hintText: 'Search for item',
                           hintStyle: FontUtils.h16(),
                           border: InputBorder.none,
-                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
+                          focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -179,32 +216,43 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                 scrollDirection: Axis.horizontal,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
                                     child: GestureDetector(
                                       onTap: () {
                                         if (selectedStoreProductList.isEmpty) {
-                                          Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                          Fluttertoast.showToast(
+                                              msg: 'Please, select a Store!');
                                         } else {
                                           setState(() {
                                             selectedIndex = 0;
-                                            List.from(widget.arguments!.edgesList);
+                                            List.from(
+                                                widget.arguments!.edgesList);
                                           });
                                         }
                                       },
                                       child: Container(
                                         height: 40,
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(50),
-                                            color: selectedIndex == 0 ? AppColors.coral : Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            color: selectedIndex == 0
+                                                ? AppColors.coral
+                                                : Colors.transparent,
                                             border: Border.all(
-                                              color: selectedIndex == 0 ? Colors.transparent : AppColors.coral,
+                                              color: selectedIndex == 0
+                                                  ? Colors.transparent
+                                                  : AppColors.coral,
                                             )),
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
                                           child: Center(
                                               child: Text(
                                             'All',
-                                            style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                            style: FontUtils.h15(
+                                                fontColor:
+                                                    AppColors.terracotta),
                                           )),
                                         ),
                                       ),
@@ -212,12 +260,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                   ),
                                   selectedStoreProductList.isNotEmpty
                                       ? Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
                                           child: GestureDetector(
                                             onTap: () {
                                               // From 1 store only
-                                              if (selectedStoreProductList.isEmpty) {
-                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              if (selectedStoreProductList
+                                                  .isEmpty) {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Please, select a Store!');
                                               } else {
                                                 setState(() {
                                                   selectedIndex = 1;
@@ -225,16 +277,54 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 // selectedStoreProductList
                                                 // List<GroceryShoppingData> edgesDList = [];
                                                 onlyProductList.clear();
-                                                List<List<GroceryShoppingData>> dList = [];
-                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
-                                                  List<GroceryShoppingData> singleDList = [];
-                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
-                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
-                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
-                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
-                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                List<List<GroceryShoppingData>>
+                                                    dList = [];
+                                                for (var i = 0;
+                                                    i <
+                                                        widget.arguments!
+                                                            .edgesList.length;
+                                                    i++) {
+                                                  List<GroceryShoppingData>
+                                                      singleDList = [];
+                                                  for (var j = 0;
+                                                      j <
+                                                          selectedStoreProductList
+                                                              .length;
+                                                      j++) {
+                                                    for (var k = 0;
+                                                        k <
+                                                            selectedStoreProductList[
+                                                                    j]
+                                                                .groceryResult!
+                                                                .length;
+                                                        k++) {
+                                                      for (var l = 0;
+                                                          l <
+                                                              selectedStoreProductList[
+                                                                      j]
+                                                                  .groceryResult![
+                                                                      k]
+                                                                  .products!
+                                                                  .length;
+                                                          l++) {
+                                                        if (widget
+                                                                .arguments!
+                                                                .edgesList[i]
+                                                                .productName ==
+                                                            selectedStoreProductList[j]
+                                                                .groceryResult![
+                                                                    k]
+                                                                .products![l]
+                                                                .itemName) {
+                                                          if (singleDList
+                                                              .contains(widget
+                                                                      .arguments!
+                                                                      .edgesList[
+                                                                  i])) {
                                                           } else {
-                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                            singleDList.add(widget
+                                                                .arguments!
+                                                                .edgesList[i]);
                                                           }
                                                         } else {
                                                           // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
@@ -247,27 +337,38 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                   }
                                                 }
 
-                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                dList.sort((a, b) => a.length
+                                                    .compareTo(b.length));
                                                 if (dList.isNotEmpty) {
-                                                  onlyProductList = List.from(dList.first);
+                                                  onlyProductList =
+                                                      List.from(dList.first);
                                                 }
                                               }
                                             },
                                             child: Container(
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(50),
-                                                color: selectedIndex == 1 ? AppColors.coral : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                color: selectedIndex == 1
+                                                    ? AppColors.coral
+                                                    : Colors.transparent,
                                                 border: Border.all(
-                                                  color: selectedIndex == 1 ? Colors.transparent : AppColors.coral,
+                                                  color: selectedIndex == 1
+                                                      ? Colors.transparent
+                                                      : AppColors.coral,
                                                 ),
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
                                                 child: Center(
                                                     child: Text(
                                                   'From 1 store only',
-                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                  style: FontUtils.h15(
+                                                      fontColor:
+                                                          AppColors.terracotta),
                                                 )),
                                               ),
                                             ),
@@ -276,12 +377,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       : const SizedBox(),
                                   selectedStoreProductList.length >= 2
                                       ? Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
                                           child: GestureDetector(
                                             onTap: () {
                                               // From 1 store only
-                                              if (selectedStoreProductList.isEmpty) {
-                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              if (selectedStoreProductList
+                                                  .isEmpty) {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Please, select a Store!');
                                               } else {
                                                 setState(() {
                                                   selectedIndex = 2;
@@ -289,16 +394,54 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 // selectedStoreProductList
                                                 // List<GroceryShoppingData> edgesDList = [];
                                                 onlyProductList.clear();
-                                                List<List<GroceryShoppingData>> dList = [];
-                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
-                                                  List<GroceryShoppingData> singleDList = [];
-                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
-                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
-                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
-                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
-                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                List<List<GroceryShoppingData>>
+                                                    dList = [];
+                                                for (var i = 0;
+                                                    i <
+                                                        widget.arguments!
+                                                            .edgesList.length;
+                                                    i++) {
+                                                  List<GroceryShoppingData>
+                                                      singleDList = [];
+                                                  for (var j = 0;
+                                                      j <
+                                                          selectedStoreProductList
+                                                              .length;
+                                                      j++) {
+                                                    for (var k = 0;
+                                                        k <
+                                                            selectedStoreProductList[
+                                                                    j]
+                                                                .groceryResult!
+                                                                .length;
+                                                        k++) {
+                                                      for (var l = 0;
+                                                          l <
+                                                              selectedStoreProductList[
+                                                                      j]
+                                                                  .groceryResult![
+                                                                      k]
+                                                                  .products!
+                                                                  .length;
+                                                          l++) {
+                                                        if (widget
+                                                                .arguments!
+                                                                .edgesList[i]
+                                                                .productName ==
+                                                            selectedStoreProductList[j]
+                                                                .groceryResult![
+                                                                    k]
+                                                                .products![l]
+                                                                .itemName) {
+                                                          if (singleDList
+                                                              .contains(widget
+                                                                      .arguments!
+                                                                      .edgesList[
+                                                                  i])) {
                                                           } else {
-                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                            singleDList.add(widget
+                                                                .arguments!
+                                                                .edgesList[i]);
                                                           }
                                                         } else {
                                                           // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
@@ -311,13 +454,18 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                   }
                                                 }
 
-                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                dList.sort((a, b) => a.length
+                                                    .compareTo(b.length));
                                                 if (dList.isNotEmpty) {
-                                                  for (var i = 0; i < dList.length; i++) {
+                                                  for (var i = 0;
+                                                      i < dList.length;
+                                                      i++) {
                                                     if (i == 0) {
-                                                      onlyProductList.addAll(dList[i]);
+                                                      onlyProductList
+                                                          .addAll(dList[i]);
                                                     } else if (i == 1) {
-                                                      onlyProductList.addAll(dList[i]);
+                                                      onlyProductList
+                                                          .addAll(dList[i]);
                                                     } else {
                                                       return;
                                                     }
@@ -328,18 +476,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             child: Container(
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(50),
-                                                color: selectedIndex == 2 ? AppColors.coral : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                color: selectedIndex == 2
+                                                    ? AppColors.coral
+                                                    : Colors.transparent,
                                                 border: Border.all(
-                                                  color: selectedIndex == 2 ? Colors.transparent : AppColors.coral,
+                                                  color: selectedIndex == 2
+                                                      ? Colors.transparent
+                                                      : AppColors.coral,
                                                 ),
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
                                                 child: Center(
                                                     child: Text(
                                                   'From 2 store only',
-                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                  style: FontUtils.h15(
+                                                      fontColor:
+                                                          AppColors.terracotta),
                                                 )),
                                               ),
                                             ),
@@ -348,12 +505,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       : const SizedBox(),
                                   selectedStoreProductList.length >= 3
                                       ? Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
                                           child: GestureDetector(
                                             onTap: () {
                                               // From 1 store only
-                                              if (selectedStoreProductList.isEmpty) {
-                                                Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                              if (selectedStoreProductList
+                                                  .isEmpty) {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Please, select a Store!');
                                               } else {
                                                 setState(() {
                                                   selectedIndex = 3;
@@ -361,16 +522,54 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 // selectedStoreProductList
                                                 // List<GroceryShoppingData> edgesDList = [];
                                                 onlyProductList.clear();
-                                                List<List<GroceryShoppingData>> dList = [];
-                                                for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
-                                                  List<GroceryShoppingData> singleDList = [];
-                                                  for (var j = 0; j < selectedStoreProductList.length; j++) {
-                                                    for (var k = 0; k < selectedStoreProductList[j].groceryResult!.length; k++) {
-                                                      for (var l = 0; l < selectedStoreProductList[j].groceryResult![k].products!.length; l++) {
-                                                        if (widget.arguments!.edgesList[i].productName == selectedStoreProductList[j].groceryResult![k].products![l].itemName) {
-                                                          if (singleDList.contains(widget.arguments!.edgesList[i])) {
+                                                List<List<GroceryShoppingData>>
+                                                    dList = [];
+                                                for (var i = 0;
+                                                    i <
+                                                        widget.arguments!
+                                                            .edgesList.length;
+                                                    i++) {
+                                                  List<GroceryShoppingData>
+                                                      singleDList = [];
+                                                  for (var j = 0;
+                                                      j <
+                                                          selectedStoreProductList
+                                                              .length;
+                                                      j++) {
+                                                    for (var k = 0;
+                                                        k <
+                                                            selectedStoreProductList[
+                                                                    j]
+                                                                .groceryResult!
+                                                                .length;
+                                                        k++) {
+                                                      for (var l = 0;
+                                                          l <
+                                                              selectedStoreProductList[
+                                                                      j]
+                                                                  .groceryResult![
+                                                                      k]
+                                                                  .products!
+                                                                  .length;
+                                                          l++) {
+                                                        if (widget
+                                                                .arguments!
+                                                                .edgesList[i]
+                                                                .productName ==
+                                                            selectedStoreProductList[j]
+                                                                .groceryResult![
+                                                                    k]
+                                                                .products![l]
+                                                                .itemName) {
+                                                          if (singleDList
+                                                              .contains(widget
+                                                                      .arguments!
+                                                                      .edgesList[
+                                                                  i])) {
                                                           } else {
-                                                            singleDList.add(widget.arguments!.edgesList[i]);
+                                                            singleDList.add(widget
+                                                                .arguments!
+                                                                .edgesList[i]);
                                                           }
                                                         } else {
                                                           // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
@@ -383,15 +582,21 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                   }
                                                 }
 
-                                                dList.sort((a, b) => a.length.compareTo(b.length));
+                                                dList.sort((a, b) => a.length
+                                                    .compareTo(b.length));
                                                 if (dList.isNotEmpty) {
-                                                  for (var i = 0; i < dList.length; i++) {
+                                                  for (var i = 0;
+                                                      i < dList.length;
+                                                      i++) {
                                                     if (i == 0) {
-                                                      onlyProductList.addAll(dList[i]);
+                                                      onlyProductList
+                                                          .addAll(dList[i]);
                                                     } else if (i == 1) {
-                                                      onlyProductList.addAll(dList[i]);
+                                                      onlyProductList
+                                                          .addAll(dList[i]);
                                                     } else if (i == 2) {
-                                                      onlyProductList.addAll(dList[i]);
+                                                      onlyProductList
+                                                          .addAll(dList[i]);
                                                     } else {
                                                       return;
                                                     }
@@ -402,18 +607,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             child: Container(
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(50),
-                                                color: selectedIndex == 3 ? AppColors.coral : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                color: selectedIndex == 3
+                                                    ? AppColors.coral
+                                                    : Colors.transparent,
                                                 border: Border.all(
-                                                  color: selectedIndex == 3 ? Colors.transparent : AppColors.coral,
+                                                  color: selectedIndex == 3
+                                                      ? Colors.transparent
+                                                      : AppColors.coral,
                                                 ),
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
                                                 child: Center(
                                                     child: Text(
                                                   'From 3 store only',
-                                                  style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                  style: FontUtils.h15(
+                                                      fontColor:
+                                                          AppColors.terracotta),
                                                 )),
                                               ),
                                             ),
@@ -469,24 +683,35 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                 ? ListView.builder(
                                     itemCount: edgesList.length,
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       return edgesList[index].cartData != null
                                           ? Column(
                                               children: [
                                                 Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     CachedNetworkImage(
                                                       height: 130,
                                                       width: 130,
-                                                      imageUrl: edgesList[index].cartData!.image!,
+                                                      imageUrl: edgesList[index]
+                                                          .cartData!
+                                                          .image!,
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) => const Center(
-                                                          child: CircularProgressIndicator(
-                                                        color: AppColors.lightGrey,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                        color:
+                                                            AppColors.lightGrey,
                                                       )),
-                                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Icon(
+                                                              Icons.error),
                                                     ),
                                                     // Image(
                                                     //   image: NetworkImage(edgesList[index].cartData!.image!),
@@ -496,26 +721,54 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     const SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
-                                                            edgesList[index].cartData!.itemName ?? '', // 'Milk Almond Breeze 500ml, 1.5% fat',
-                                                            textAlign: TextAlign.start,
-                                                            style: FontUtils.h17(fontColor: AppColors.darkGray),
+                                                            edgesList[index]
+                                                                    .cartData!
+                                                                    .itemName ??
+                                                                '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            style: FontUtils.h17(
+                                                                fontColor:
+                                                                    AppColors
+                                                                        .darkGray),
                                                           ),
-                                                          const SizedBox(height: 10),
+                                                          const SizedBox(
+                                                              height: 10),
                                                           Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
                                                             children: [
-                                                              const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
-                                                              const SizedBox(width: 3),
+                                                              const Icon(
+                                                                  Icons
+                                                                      .info_outline_rounded,
+                                                                  color: AppColors
+                                                                      .terracotta,
+                                                                  size: 20),
+                                                              const SizedBox(
+                                                                  width: 3),
                                                               Text(
                                                                 'Available in: ',
-                                                                style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                                                style: FontUtils.h12(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .middleGray,
+                                                                    fontWeight:
+                                                                        FWT.semiBold),
                                                               ),
                                                               Text(
                                                                 'Wallmart',
-                                                                style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                                style: FontUtils.h12(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .black,
+                                                                    fontWeight:
+                                                                        FWT.semiBold),
                                                               ),
                                                             ],
                                                           ),
@@ -524,8 +777,15 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Text(
-                                                      edgesList[index].cartData!.formattedPrice ?? '', // '\$ 5.99',
-                                                      style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                                                      edgesList[index]
+                                                              .cartData!
+                                                              .formattedPrice ??
+                                                          '', // '\$ 5.99',
+                                                      style: FontUtils.h17(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.semiBold),
                                                     ),
                                                     const SizedBox(height: 10),
                                                   ],
@@ -536,18 +796,42 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     Expanded(
                                                       flex: 3,
                                                       child: Container(
-                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
-                                                        height: screenSize.height * 0.070,
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: AppColors
+                                                                    .switchColor,
+                                                                width: 1.2),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        6)),
+                                                        height:
+                                                            screenSize.height *
+                                                                0.070,
                                                         child: Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      12),
                                                           child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             children: [
                                                               Text(
                                                                 'Product 1',
-                                                                style: FontUtils.h18(fontColor: AppColors.black),
+                                                                style: FontUtils.h18(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .black),
                                                               ),
-                                                              const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                                              const Icon(
+                                                                  Icons
+                                                                      .check_circle_outline_outlined,
+                                                                  size: 30,
+                                                                  color: AppColors
+                                                                      .switchColor)
                                                             ],
                                                           ),
                                                         ),
@@ -555,52 +839,114 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     ),
                                                     SizedBox(width: 8.w),
                                                     Expanded(
-                                                      child: edgesList[index].cartData!.cartItemCount == 1
+                                                      child: edgesList[index]
+                                                                  .cartData!
+                                                                  .cartItemCount ==
+                                                              1
                                                           ? GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
-                                                                  edgesList[index].cartData = null;
+                                                                  edgesList[index]
+                                                                          .cartData =
+                                                                      null;
                                                                 });
                                                               },
                                                               child: Container(
-                                                                height: screenSize.height * 0.070,
-                                                                width: screenSize.height * 0.070,
-                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                                                child: Center(child:  SvgPicture.asset(AssetsUtils.icDelete)),
+                                                                height: screenSize
+                                                                        .height *
+                                                                    0.070,
+                                                                width: screenSize
+                                                                        .height *
+                                                                    0.070,
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: AppColors
+                                                                            .disable),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                                child: Center(
+                                                                    child: SvgPicture.asset(
+                                                                        AssetsUtils
+                                                                            .icDelete)),
                                                               ),
                                                             )
-                                                          :  GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            if (edgesList[index].cartData!.cartItemCount == 1) {
-                                                              edgesList[index].cartData!.isAddedToShoppingList = false;
-                                                              // isProductSelect = false;
-                                                            } else {
-                                                              edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount - 1;
-                                                            }
-                                                          });
-                                                        },
-                                                        child: Container(
-                                                          height: screenSize.height * 0.070,
-                                                          // width: size.height * 0.045,
-                                                          decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                                          child: const Center(
-                                                            child: Icon(Icons.remove, size: 27),
-                                                          ),
-                                                        ),
-                                                      ),
+                                                          : GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  if (edgesList[
+                                                                              index]
+                                                                          .cartData!
+                                                                          .cartItemCount ==
+                                                                      1) {
+                                                                    edgesList[
+                                                                            index]
+                                                                        .cartData!
+                                                                        .isAddedToShoppingList = false;
+                                                                    // isProductSelect = false;
+                                                                  } else {
+                                                                    edgesList[
+                                                                            index]
+                                                                        .cartData!
+                                                                        .cartItemCount = edgesList[index]
+                                                                            .cartData!
+                                                                            .cartItemCount -
+                                                                        1;
+                                                                  }
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: screenSize
+                                                                        .height *
+                                                                    0.070,
+                                                                // width: size.height * 0.045,
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: AppColors
+                                                                            .mint,
+                                                                        width:
+                                                                            2),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .remove,
+                                                                      size: 27),
+                                                                ),
+                                                              ),
+                                                            ),
                                                     ),
                                                     SizedBox(width: 8.w),
                                                     Expanded(
                                                       child: Container(
-                                                        height: screenSize.height * 0.070,
+                                                        height:
+                                                            screenSize.height *
+                                                                0.070,
                                                         // width: size.height * 0.045,
 
-                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: AppColors
+                                                                    .disable),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
                                                         child: Center(
                                                             child: Text(
-                                                          edgesList[index].cartData!.cartItemCount.toString(),
-                                                          style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                                          edgesList[index]
+                                                              .cartData!
+                                                              .cartItemCount
+                                                              .toString(),
+                                                          style: FontUtils.h18(
+                                                              fontWeight:
+                                                                  FWT.semiBold,
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray),
                                                         )),
                                                       ),
                                                     ),
@@ -609,17 +955,36 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setState(() {
-                                                            edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount + 1;
+                                                            edgesList[index]
+                                                                    .cartData!
+                                                                    .cartItemCount =
+                                                                edgesList[index]
+                                                                        .cartData!
+                                                                        .cartItemCount +
+                                                                    1;
                                                           });
                                                         },
                                                         child: Container(
-                                                          height: screenSize.height * 0.070,
+                                                          height: screenSize
+                                                                  .height *
+                                                              0.070,
                                                           // width: size.height * 0.045,
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(10),
-                                                            color: AppColors.mint,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            color:
+                                                                AppColors.mint,
                                                           ),
-                                                          child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                                          child: const Center(
+                                                              child: Icon(
+                                                                  Icons.add,
+                                                                  color:
+                                                                      AppColors
+                                                                          .green,
+                                                                  size: 27)),
                                                         ),
                                                       ),
                                                     ),
@@ -630,42 +995,65 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 const Divider(thickness: 1.2),
                                               ],
                                             )
-                                          : myItemChooseWidget(screenSize, edgesList[index].productName ?? '', () {
+                                          : myItemChooseWidget(
+                                              screenSize,
+                                              edgesList[index].productName ??
+                                                  '', () {
                                               // Get.toNamed('/ItemCatalogScreen');
-                                              if (selectedStoreProductList.isNotEmpty) {
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                              if (selectedStoreProductList
+                                                  .isNotEmpty) {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
                                                   return ItemCatalogScreen(
-                                                    selectedStoreProductList: selectedStoreProductList,
+                                                    selectedStoreProductList:
+                                                        selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId: edgesList[index].productId!,
+                                                    productId: edgesList[index]
+                                                        .productId!,
                                                   );
                                                 }));
                                               } else {
-                                                Fluttertoast.showToast(msg: 'Please, Select Store!');
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Please, Select Store!');
                                               }
                                             });
                                     })
                                 : ListView.builder(
                                     itemCount: onlyProductList.length,
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                      return onlyProductList[index].cartData != null
+                                      return onlyProductList[index].cartData !=
+                                              null
                                           ? Column(
                                               children: [
                                                 Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     CachedNetworkImage(
                                                       height: 130,
                                                       width: 130,
-                                                      imageUrl: onlyProductList[index].cartData!.image!,
+                                                      imageUrl:
+                                                          onlyProductList[index]
+                                                              .cartData!
+                                                              .image!,
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) => const Center(
-                                                          child: CircularProgressIndicator(
-                                                        color: AppColors.lightGrey,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                        color:
+                                                            AppColors.lightGrey,
                                                       )),
-                                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Icon(
+                                                              Icons.error),
                                                     ),
                                                     // Image(
                                                     //   // image: AssetImage(AssetsUtils.productDemoImg),
@@ -676,26 +1064,55 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     const SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
-                                                            onlyProductList[index].cartData!.itemName ?? '', // 'Milk Almond Breeze 500ml, 1.5% fat',
-                                                            textAlign: TextAlign.start,
-                                                            style: FontUtils.h17(fontColor: AppColors.darkGray),
+                                                            onlyProductList[
+                                                                        index]
+                                                                    .cartData!
+                                                                    .itemName ??
+                                                                '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            style: FontUtils.h17(
+                                                                fontColor:
+                                                                    AppColors
+                                                                        .darkGray),
                                                           ),
-                                                          const SizedBox(height: 10),
+                                                          const SizedBox(
+                                                              height: 10),
                                                           Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
                                                             children: [
-                                                              const Icon(Icons.info_outline_rounded, color: AppColors.terracotta, size: 20),
-                                                              const SizedBox(width: 3),
+                                                              const Icon(
+                                                                  Icons
+                                                                      .info_outline_rounded,
+                                                                  color: AppColors
+                                                                      .terracotta,
+                                                                  size: 20),
+                                                              const SizedBox(
+                                                                  width: 3),
                                                               Text(
                                                                 'Available in: ',
-                                                                style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.semiBold),
+                                                                style: FontUtils.h12(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .middleGray,
+                                                                    fontWeight:
+                                                                        FWT.semiBold),
                                                               ),
                                                               Text(
                                                                 'Wallmart',
-                                                                style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                                style: FontUtils.h12(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .black,
+                                                                    fontWeight:
+                                                                        FWT.semiBold),
                                                               ),
                                                             ],
                                                           ),
@@ -704,8 +1121,15 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Text(
-                                                      onlyProductList[index].cartData!.formattedPrice ?? '', // '\$ 5.99',
-                                                      style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                                                      onlyProductList[index]
+                                                              .cartData!
+                                                              .formattedPrice ??
+                                                          '', // '\$ 5.99',
+                                                      style: FontUtils.h17(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.semiBold),
                                                     ),
                                                     const SizedBox(height: 10),
                                                   ],
@@ -716,18 +1140,42 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     Expanded(
                                                       flex: 3,
                                                       child: Container(
-                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
-                                                        height: screenSize.height * 0.070,
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: AppColors
+                                                                    .switchColor,
+                                                                width: 1.2),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        6)),
+                                                        height:
+                                                            screenSize.height *
+                                                                0.070,
                                                         child: Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      12),
                                                           child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             children: [
                                                               Text(
                                                                 'Product 1',
-                                                                style: FontUtils.h18(fontColor: AppColors.black),
+                                                                style: FontUtils.h18(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .black),
                                                               ),
-                                                              const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                                              const Icon(
+                                                                  Icons
+                                                                      .check_circle_outline_outlined,
+                                                                  size: 30,
+                                                                  color: AppColors
+                                                                      .switchColor)
                                                             ],
                                                           ),
                                                         ),
@@ -735,37 +1183,82 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     ),
                                                     SizedBox(width: 8.w),
                                                     Expanded(
-                                                      child: edgesList[index].cartData!.cartItemCount == 1
+                                                      child: edgesList[index]
+                                                                  .cartData!
+                                                                  .cartItemCount ==
+                                                              1
                                                           ? GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
-                                                                  edgesList[index].cartData = null;
+                                                                  edgesList[index]
+                                                                          .cartData =
+                                                                      null;
                                                                 });
                                                               },
                                                               child: Container(
-                                                                height: screenSize.height * 0.070,
-                                                                width: screenSize.height * 0.070,
-                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                                                child: Center(child:  SvgPicture.asset(AssetsUtils.icDelete)),
+                                                                height: screenSize
+                                                                        .height *
+                                                                    0.070,
+                                                                width: screenSize
+                                                                        .height *
+                                                                    0.070,
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: AppColors
+                                                                            .disable),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                                child: Center(
+                                                                    child: SvgPicture.asset(
+                                                                        AssetsUtils
+                                                                            .icDelete)),
                                                               ),
                                                             )
                                                           : GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
-                                                                  if (edgesList[index].cartData!.cartItemCount == 1) {
-                                                                    edgesList[index].cartData!.isAddedToShoppingList = false;
+                                                                  if (edgesList[
+                                                                              index]
+                                                                          .cartData!
+                                                                          .cartItemCount ==
+                                                                      1) {
+                                                                    edgesList[
+                                                                            index]
+                                                                        .cartData!
+                                                                        .isAddedToShoppingList = false;
                                                                     // isProductSelect = false;
                                                                   } else {
-                                                                    edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount - 1;
+                                                                    edgesList[
+                                                                            index]
+                                                                        .cartData!
+                                                                        .cartItemCount = edgesList[index]
+                                                                            .cartData!
+                                                                            .cartItemCount -
+                                                                        1;
                                                                   }
                                                                 });
                                                               },
                                                               child: Container(
-                                                                height: screenSize.height * 0.070,
+                                                                height: screenSize
+                                                                        .height *
+                                                                    0.070,
                                                                 // width: size.height * 0.045,
-                                                                decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                                                child: const Center(
-                                                                  child: Icon(Icons.remove, size: 27),
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: AppColors
+                                                                            .mint,
+                                                                        width:
+                                                                            2),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .remove,
+                                                                      size: 27),
                                                                 ),
                                                               ),
                                                             ),
@@ -773,14 +1266,31 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     SizedBox(width: 8.w),
                                                     Expanded(
                                                       child: Container(
-                                                        height: screenSize.height * 0.070,
+                                                        height:
+                                                            screenSize.height *
+                                                                0.070,
                                                         // width: size.height * 0.045,
 
-                                                        decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: AppColors
+                                                                    .disable),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
                                                         child: Center(
                                                             child: Text(
-                                                          edgesList[index].cartData!.cartItemCount.toString(),
-                                                          style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                                          edgesList[index]
+                                                              .cartData!
+                                                              .cartItemCount
+                                                              .toString(),
+                                                          style: FontUtils.h18(
+                                                              fontWeight:
+                                                                  FWT.semiBold,
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray),
                                                         )),
                                                       ),
                                                     ),
@@ -789,17 +1299,36 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setState(() {
-                                                            edgesList[index].cartData!.cartItemCount = edgesList[index].cartData!.cartItemCount + 1;
+                                                            edgesList[index]
+                                                                    .cartData!
+                                                                    .cartItemCount =
+                                                                edgesList[index]
+                                                                        .cartData!
+                                                                        .cartItemCount +
+                                                                    1;
                                                           });
                                                         },
                                                         child: Container(
-                                                          height: screenSize.height * 0.070,
+                                                          height: screenSize
+                                                                  .height *
+                                                              0.070,
                                                           // width: size.height * 0.045,
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(10),
-                                                            color: AppColors.mint,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            color:
+                                                                AppColors.mint,
                                                           ),
-                                                          child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                                          child: const Center(
+                                                              child: Icon(
+                                                                  Icons.add,
+                                                                  color:
+                                                                      AppColors
+                                                                          .green,
+                                                                  size: 27)),
                                                         ),
                                                       ),
                                                     ),
@@ -810,18 +1339,29 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 const Divider(thickness: 1.2),
                                               ],
                                             )
-                                          : myItemChooseWidget(screenSize, onlyProductList[index].productName ?? '', () {
+                                          : myItemChooseWidget(
+                                              screenSize,
+                                              onlyProductList[index]
+                                                      .productName ??
+                                                  '', () {
                                               // Get.toNamed('/ItemCatalogScreen');
-                                              if (selectedStoreProductList.isNotEmpty) {
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                              if (selectedStoreProductList
+                                                  .isNotEmpty) {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
                                                   return ItemCatalogScreen(
-                                                    selectedStoreProductList: selectedStoreProductList,
+                                                    selectedStoreProductList:
+                                                        selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId: edgesList[index].productId!,
+                                                    productId: edgesList[index]
+                                                        .productId!,
                                                   );
                                                 }));
                                               } else {
-                                                Fluttertoast.showToast(msg: 'Please, Select Store!');
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Please, Select Store!');
                                               }
                                             });
                                     }))),
@@ -829,7 +1369,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   Container(
                     color: AppColors.whiteColor,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       child: Column(
                         children: [
                           Row(
@@ -837,11 +1378,15 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                             children: [
                               Text(
                                 'Total',
-                                style: FontUtils.h20(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                style: FontUtils.h20(
+                                    fontColor: AppColors.black,
+                                    fontWeight: FWT.semiBold),
                               ),
                               Text(
                                 '\$ 0.00',
-                                style: FontUtils.h22(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                style: FontUtils.h22(
+                                    fontColor: AppColors.black,
+                                    fontWeight: FWT.semiBold),
                               )
                             ],
                           ),
@@ -899,7 +1444,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     'Choose a Brand (required)',
                     style: FontUtils.h16(fontColor: AppColors.black),
                   ),
-                  const Icon(Icons.chevron_right_rounded, color: AppColors.black)
+                  const Icon(Icons.chevron_right_rounded,
+                      color: AppColors.black)
                 ],
               ),
             ),
@@ -918,5 +1464,8 @@ class GroceryCartScreenArguments {
   final AskReceiveOrder askReceiveOrder;
   final GroceryBloc? groceryBloc;
 
-  GroceryCartScreenArguments({required this.edgesList, required this.askReceiveOrder, this.groceryBloc});
+  GroceryCartScreenArguments(
+      {required this.edgesList,
+      required this.askReceiveOrder,
+      this.groceryBloc});
 }

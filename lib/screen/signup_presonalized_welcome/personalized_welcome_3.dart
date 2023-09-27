@@ -8,32 +8,32 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
-  const ThirdPersonalizedWelcomeScreen({super.key, this.chooseGender = 'Female'});
+  const ThirdPersonalizedWelcomeScreen({super.key});
 
-  final String chooseGender;
   final routeName = '/ThirdPersonalizedWelcome';
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    final Gender = Get.arguments;
     return Scaffold(
       body: Container(
         height: size.height.h,
         width: size.width.w,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: chooseGender == 'Male'
+            image: Gender == 'Male'
                 ? const AssetImage(AssetsUtils.malePersonalized3)
-                : chooseGender == 'Female'
+                : Gender == 'Female'
                     ? const AssetImage(AssetsUtils.feMalePersonalized3)
-                    : chooseGender == 'Non'
+                    : Gender == 'Non'
                         ? const AssetImage(AssetsUtils.nonPersonalized3)
                         : const AssetImage('AppStrings.mindyBG'),
             fit: BoxFit.cover,
           ),
         ),
-        child: chooseGender == 'Male'
+        child: Gender == 'Male'
             ? Column(
                 children: [
                   Image.asset(
@@ -48,12 +48,14 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             StringUtils.welcomeBack,
-                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue),
+                            style: textTheme.displayMedium
+                                ?.copyWith(color: AppColors.primaryBlue),
                           ).paddingOnly(bottom: 10.h),
                           Text(
                             StringUtils.neverUnderestimate,
                             textAlign: TextAlign.center,
-                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue, height: 1.1),
+                            style: textTheme.displayMedium?.copyWith(
+                                color: AppColors.primaryBlue, height: 1.1),
                           ),
                         ],
                       )).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
@@ -61,14 +63,17 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                   buildButton(
                     context: context,
                     bgColor: AppColors.primaryBlue,
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.toNamed('/FourthPersonalizedWelcome',
+                          arguments: Gender);
+                    },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
                     hasImage: false,
                   ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                 ],
               )
-            : chooseGender == 'Female'
+            : Gender == 'Female'
                 ? Column(
                     children: [
                       buildGymEatsHeader(
@@ -77,12 +82,14 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 StringUtils.welcomeBack,
-                                style: textTheme.displayMedium?.copyWith(color: Colors.white),
+                                style: textTheme.displayMedium
+                                    ?.copyWith(color: Colors.white),
                               ).paddingOnly(bottom: 10.h),
                               Text(
                                 StringUtils.neverUnderestimate,
                                 textAlign: TextAlign.center,
-                                style: textTheme.displayMedium?.copyWith(color: Colors.white, height: 1.1),
+                                style: textTheme.displayMedium?.copyWith(
+                                    color: Colors.white, height: 1.1),
                               ),
                             ],
                           )).paddingOnly(left: 20.w, right: 20.w, top: 35.h),
@@ -99,14 +106,17 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                       buildButton(
                         context: context,
                         bgColor: AppColors.terracotta,
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed('/FourthPersonalizedWelcome',
+                              arguments: Gender);
+                        },
                         textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
                         hasImage: false,
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
                   )
-                : chooseGender == 'Non'
+                : Gender == 'Non'
                     ? Column(
                         children: [
                           Image.asset(
@@ -117,28 +127,38 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                           ).paddingOnly(top: 35.h),
                           const Spacer(),
                           buildGymEatsHeader(
-                              bgColor: Colors.transparent,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    StringUtils.welcomeBack,
-                                    style: textTheme.displayMedium?.copyWith(color: Colors.white),
-                                  ).paddingOnly(bottom: 10.h),
-                                  Text(
-                                    StringUtils.neverUnderestimate,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.displayMedium?.copyWith(color: Colors.white, height: 1.1),
-                                  ),
-                                ],
-                              )).paddingOnly(bottom: 10.h, right: 20.w, left: 20.w),
+                                  bgColor: Colors.transparent,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        StringUtils.welcomeBack,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(color: Colors.white),
+                                      ).paddingOnly(bottom: 10.h),
+                                      Text(
+                                        StringUtils.neverUnderestimate,
+                                        textAlign: TextAlign.center,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(
+                                                color: Colors.white,
+                                                height: 1.1),
+                                      ),
+                                    ],
+                                  ))
+                              .paddingOnly(
+                                  bottom: 10.h, right: 20.w, left: 20.w),
                           buildButton(
                             context: context,
                             bgColor: AppColors.green,
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed('/FourthPersonalizedWelcome',
+                                  arguments: Gender);
+                            },
                             textColor: AppColors.mint,
                             title: StringUtils.iAmReady,
                             hasImage: false,
-                          ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
+                          ).paddingOnly(
+                              bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
                         ],
                       )
                     : Container(),

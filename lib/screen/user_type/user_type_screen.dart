@@ -254,9 +254,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       weight: weightController.text);
                               Get.toNamed('/UserSurveyScreen',
                                   arguments: userSignUpDataModel);
-                              ageController.clear();
+                              /*ageController.clear();
                               weightController.clear();
-                              heightController.clear();
+                              heightController.clear();*/
                             }
                           },
                           textColor: Colors.white,
@@ -274,9 +274,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                 isFemale = state.isFemale;
                 isNon = state.isNon;
 
-                ageController.clear();
+                /* ageController.clear();
                 weightController.clear();
-                heightController.clear();
+                heightController.clear();*/
 
                 if (isMale) {
                   userInfoImage = AssetsUtils.icMaleChart;

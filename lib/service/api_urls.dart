@@ -82,6 +82,10 @@ class ApiUrls {
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
 
+  //UserDetails
+  static const String getUserDetailsById =
+      '${baseUrl}api/UserDetails/GetProfileDetailsById';
+
   static const String mapApiKey = 'AIzaSyAfEDvN9t66JxrKSApYumdKyw63rrWZzkE';
 
   static String searchLocationURL(String value) {

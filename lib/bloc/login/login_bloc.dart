@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 
 import '../../app/functions.dart';
 import '../../models/sign_up_model.dart';
+import '../../repository/get_user_details.dart';
 import '../../repository/login.dart';
 import '../../widget/app_widget.dart';
 
@@ -18,6 +19,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   final LoginRepository _repository = LoginRepository();
+  final GetUserDetailsByIDDataRepository _dataRepository =
+      GetUserDetailsByIDDataRepository();
 
   _onLogin(LoginClickEvent event, Emitter<LoginState> emit) async {
     debugPrint('email--> ${event.email}');
@@ -29,25 +32,50 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isEmail && isPassword && isValidEmail) {
       emit(LoginLoadingState());
       try {
-        await _repository
-            .login(email: event.email.trim(), password: event.password)
-            .fold((left) {
+        final response = await _repository.login(
+            email: event.email.trim(), password: event.password);
+
+        response.fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
-        }, (right) {
+        }, (right) async {
           if (right.data != null) {
-            PreferenceUtils.setString(
+            await PreferenceUtils.setString(
                 prefToken, right.data!.token!.accessToken!);
             userId = right.data!.userId!;
-            PreferenceUtils.setString(
-                prefUserData, right.data!.userId!);
-            PreferenceUtils.setBool(prefIsLogin, true);
-            PreferenceUtils.setBool(prefIsConfirmEmail, true);
-
+            await PreferenceUtils.setString(prefUserData, right.data!.userId!);
+            await PreferenceUtils.setBool(prefIsLogin, true);
+            await PreferenceUtils.setBool(prefIsConfirmEmail, true);
           }
-
-          emit(LoginSuccessfulState());
-         Get.toNamed('/AppManagerScreen',preventDuplicates: false);
+          final getUserDetailsResponse = await _dataRepository
+              .getUserDetailsData(right.data?.userId ?? userId);
+          getUserDetailsResponse.fold((left) {
+            onFailError(emit: emit, text: left.errorMessage!);
+          }, (r) {
+            final getGender = r.data!.gender;
+            print('getGender : $getGender');
+            // emit(LoginSuccessfulState());
+            Get.toNamed('/FirstPersonalizedWelcomeScreen',
+                arguments: getGender);
+            // Get.toNamed('/AppManagerScreen', preventDuplicates: false);
+          });
         });
+        // await _repository
+        //     .login(email: event.email.trim(), password: event.password)
+        //     .fold((left) {
+        //   onFailError(emit: emit, text: left.errorMessage!);
+        // }, (right) {
+        //   if (right.data != null) {
+        //     PreferenceUtils.setString(
+        //         prefToken, right.data!.token!.accessToken!);
+        //     userId = right.data!.userId!;
+        //     PreferenceUtils.setString(prefUserData, right.data!.userId!);
+        //     PreferenceUtils.setBool(prefIsLogin, true);
+        //     PreferenceUtils.setBool(prefIsConfirmEmail, true);
+        //   }
+        //   emit(LoginSuccessfulState());
+        //   // Get.toNamed('/FirstPersonalizedWelcomeScreen',arguments: );
+        //   Get.toNamed('/AppManagerScreen', preventDuplicates: false);
+        // });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());
         emit(LoginErrorState());
