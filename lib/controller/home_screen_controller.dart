@@ -48,7 +48,7 @@ class HomeScreenController extends GetxController {
     }
   }
 
-  joinGymEatButton() {
+  joinGymEatButton() async {
     if (fNameController.text.isEmpty) {
       showToast(message: StringUtils.pleaseEnterFirstName, isSuccess: false);
     } else if (lastNameController.text.isEmpty) {
@@ -80,7 +80,12 @@ class HomeScreenController extends GetxController {
           password: passwordController.text,
           userName: emailController.text,
           confirmPassword: confirmPasswordController.text);
+      final value =
+          await Get.toNamed('/GoogleMapScreen', arguments: 'isFromRegister');
 
+      print('==value===>${value}');
+
+      userData.addAddressModel = value;
       Get.toNamed('/PremiumScreen', arguments: userData);
       /*fNameController.clear();
       lastNameController.clear();

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'get_survey_model.dart';
+import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 
 class UserSignUpDataModel {
   String? confirmPassword;
@@ -19,6 +19,7 @@ class UserSignUpDataModel {
   String? longitude;
   File? userProfileImage;
   List<String>? options;
+  AddAddressModel? addAddressModel;
 
   UserSignUpDataModel(
       {this.gender,
