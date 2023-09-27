@@ -102,4 +102,6 @@ class ApiUrls {
 
     return url;
   }
+
+  static const String addNewAddress = '${baseUrl}api/UserAddress/AddNewAddress';
 }
