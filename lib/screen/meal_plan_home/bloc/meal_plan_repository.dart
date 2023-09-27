@@ -3,12 +3,10 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
-import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
@@ -43,7 +41,6 @@ class MealPlanRepository {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 401) {
-
       PreferenceUtils.clearPrefs();
       Get.offAllNamed('/LoginScreen');
 
@@ -53,17 +50,14 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan(
-      {required String mealID}) async {
-    final response =
-        await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SkipMealPlanModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
-  }
+  // Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan({required String mealID}) async {
+  //   final response = await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
+  //     return Right(SkipMealPlanModel.fromJson(jsonDecode(response.body)));
+  //   } else {
+  //     return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+  //   }
+  // }
 
   Future<Either<ErrorModel, SuccessModel>> recipeAddToGrocery(
       {required List<AddItemsToShoppingListModal>
@@ -85,6 +79,38 @@ class MealPlanRepository {
         '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> addEatenMeal({
+    required String mealId,
+    String? mealName,
+    num? calorie,
+    String? mealType,
+    num? noOfServing,
+    String? recipeId,
+    num? protein,
+    num? fat,
+    num? carbs,
+  }) async {
+    Map<String, dynamic> data = {
+      "mealName": mealName ?? '',
+      "suggesticMealId": mealId,
+      "calorie": calorie ?? 0,
+      "mealType": mealType ?? '',
+      "noOfServing": noOfServing ?? 0,
+      "recipeId": recipeId,
+      "protein": protein ?? 0,
+      "fat": fat ?? 0,
+      "carbs": carbs ?? 0,
+      "value": 2,
+      "userId": userID,
+    };
+    final response = await apiServices.post(ApiUrls.addMealLog, data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

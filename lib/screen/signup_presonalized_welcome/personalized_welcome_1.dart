@@ -8,32 +8,33 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FirstPersonalizedWelcomeScreen extends StatelessWidget {
-  const FirstPersonalizedWelcomeScreen({super.key, this.chooseGender = 'Female'});
+  const FirstPersonalizedWelcomeScreen({super.key});
 
-  final String chooseGender;
   final routeName = '/FirstPersonalizedWelcome';
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    final gender = Get.arguments;
+    print('gender : $gender');
     return Scaffold(
       body: Container(
         height: size.height.h,
         width: size.width.w,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: chooseGender == 'Male'
+            image: gender == 'Male'
                 ? const AssetImage(AssetsUtils.malePersonalized1)
-                : chooseGender == 'Female'
+                : gender == 'Female'
                     ? const AssetImage(AssetsUtils.feMalePersonalized1)
-                    : chooseGender == 'Non'
+                    : gender == 'Non'
                         ? const AssetImage(AssetsUtils.nonPersonalized1)
                         : const AssetImage('AppStrings.mindyBG'),
             fit: BoxFit.cover,
           ),
         ),
-        child: chooseGender == 'Male'
+        child: gender == 'Male'
             ? Column(
                 children: [
                   const Spacer(),
@@ -48,26 +49,31 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             StringUtils.welcomeBack,
-                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue),
+                            style: textTheme.displayMedium
+                                ?.copyWith(color: AppColors.primaryBlue),
                           ).paddingOnly(bottom: 10.h),
                           Text(
                             StringUtils.readyToStep,
                             textAlign: TextAlign.center,
-                            style: textTheme.displayMedium?.copyWith(color: AppColors.primaryBlue, height: 1.1),
+                            style: textTheme.displayMedium?.copyWith(
+                                color: AppColors.primaryBlue, height: 1.1),
                           ),
                         ],
                       )).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
                   buildButton(
                     context: context,
                     bgColor: AppColors.primaryBlue,
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.toNamed('/SecondPersonalizedWelcome',
+                          arguments: gender);
+                    },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
                     hasImage: false,
                   ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                 ],
               )
-            : chooseGender == 'Female'
+            : gender == 'Female'
                 ? Column(
                     children: [
                       const Spacer(),
@@ -83,26 +89,31 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 StringUtils.welcomeBack,
-                                style: textTheme.displayMedium?.copyWith(color: AppColors.terracotta),
+                                style: textTheme.displayMedium
+                                    ?.copyWith(color: AppColors.terracotta),
                               ).paddingOnly(bottom: 10.h),
                               Text(
                                 StringUtils.readyToStep,
                                 textAlign: TextAlign.center,
-                                style: textTheme.displayMedium?.copyWith(color: AppColors.terracotta, height: 1.1),
+                                style: textTheme.displayMedium?.copyWith(
+                                    color: AppColors.terracotta, height: 1.1),
                               ),
                             ],
                           )).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
                       buildButton(
                         context: context,
                         bgColor: AppColors.terracotta,
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed('/SecondPersonalizedWelcome',
+                              arguments: gender);
+                        },
                         textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
                         hasImage: false,
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
                   )
-                : chooseGender == 'Non'
+                : gender == 'Non'
                     ? Column(
                         children: [
                           Image.asset(
@@ -112,25 +123,34 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                             color: Colors.white,
                           ).paddingOnly(top: 35.h),
                           buildGymEatsHeader(
-                              bgColor: Colors.white.withOpacity(0.8),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    StringUtils.welcomeBack,
-                                    style: textTheme.displayMedium?.copyWith(color: AppColors.green),
-                                  ).paddingOnly(bottom: 10.h),
-                                  Text(
-                                    StringUtils.readyToStep,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.displayMedium?.copyWith(color: AppColors.green, height: 1.1),
-                                  ),
-                                ],
-                              )).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
+                                  bgColor: Colors.white.withOpacity(0.8),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        StringUtils.welcomeBack,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(color: AppColors.green),
+                                      ).paddingOnly(bottom: 10.h),
+                                      Text(
+                                        StringUtils.readyToStep,
+                                        textAlign: TextAlign.center,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(
+                                                color: AppColors.green,
+                                                height: 1.1),
+                                      ),
+                                    ],
+                                  ))
+                              .paddingSymmetric(
+                                  horizontal: 20.w, vertical: 20.h),
                           const Spacer(),
                           buildButton(
                             context: context,
                             bgColor: AppColors.green,
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed('/SecondPersonalizedWelcome',
+                                  arguments: gender);
+                            },
                             textColor: AppColors.mint,
                             title: StringUtils.iAmReady,
                             hasImage: false,

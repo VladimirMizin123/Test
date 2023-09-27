@@ -13,6 +13,7 @@ class ApiServices {
   String token = PreferenceUtils.getString(prefToken);
 
   Future<dynamic> get(String url) async {
+    token = PreferenceUtils.getString(prefToken);
     try {
       Map<String, String>? headers;
       if (token.isEmpty) {
@@ -99,7 +100,8 @@ class ApiServices {
         };
       }
       debugPrint('post url--> $url');
-      final response = await http.put(Uri.parse(url), body: body, headers: headers);
+      final response =
+          await http.put(Uri.parse(url), body: body, headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -150,7 +152,8 @@ class ApiServices {
   ) async {
     try {
       body ??= {};
-      final response = await http.post(Uri.parse(url), body: jsonEncode(body), headers: {
+      final response =
+          await http.post(Uri.parse(url), body: jsonEncode(body), headers: {
         'content-type': 'application/json',
         'accept': '*/*',
         'Api_Key': ApiUrls.apiKey,
@@ -167,7 +170,10 @@ class ApiServices {
     }
   }
 
-  Future<http.Response> postMultipart({required String url, required Map<String, String> body, required List<http.MultipartFile> files}) async {
+  Future<http.Response> postMultipart(
+      {required String url,
+      required Map<String, String> body,
+      required List<http.MultipartFile> files}) async {
     try {
       Map<String, String>? headers;
       if (token.isEmpty) {
@@ -246,7 +252,8 @@ class ApiServices {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException('Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
+        throw FetchDataException(
+            'Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
 }

@@ -23,10 +23,11 @@ class FetchMealPlanErrorState extends FetchMealPlanState {}
 
 // SKIP MEAL PLAN
 class SkipMealPlanSuccessState extends FetchMealPlanState {
-  final SkipMealPlanData skipMealPlanData;
+  final bool skipMealPlanData;
   final String mealID;
 
-  SkipMealPlanSuccessState({required this.skipMealPlanData, required this.mealID});
+  SkipMealPlanSuccessState(
+      {required this.skipMealPlanData, required this.mealID});
 }
 
 class SkipMealPlanLoadingState extends FetchMealPlanState {}
@@ -99,7 +100,11 @@ class GroceryAddToShoppingSuccessState extends FetchMealPlanState {
   final bool? isAdd;
   final bool? isRemove;
 
-  GroceryAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+  GroceryAddToShoppingSuccessState(
+      {required this.recipesAddToGroceryData,
+      required this.isAdd,
+      required this.isAdded,
+      required this.isRemove});
 }
 
 class GroceryAddToShoppingErrorState extends FetchMealPlanState {}

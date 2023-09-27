@@ -374,15 +374,15 @@ class _MyAppState extends State<MyApp> {
               page: () => const FirstPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/SecondPersonalizedWelcomeScreen',
+              name: '/SecondPersonalizedWelcome',
               page: () => const SecondPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/ThirdPersonalizedWelcomeScreen',
+              name: '/ThirdPersonalizedWelcome',
               page: () => const ThirdPersonalizedWelcomeScreen(),
             ),
             GetPage(
-              name: '/FourthPersonalizedWelcomeScreen',
+              name: '/FourthPersonalizedWelcome',
               page: () => const FourthPersonalizedWelcomeScreen(),
             ),
             GetPage(
