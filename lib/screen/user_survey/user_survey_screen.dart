@@ -189,9 +189,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 ));
               },
             ),
-            SizedBox(
-              height: 30.h,
-            ),
+            SizedBox(height: 30.h),
             Expanded(
               child: SingleChildScrollView(
                 child: GridView.count(

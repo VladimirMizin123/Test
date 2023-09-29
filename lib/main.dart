@@ -166,7 +166,6 @@ class _MyAppState extends State<MyApp> {
                   PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
               : '/',
-          // initialRoute: 'SignUpScreen',
           getPages: [
             GetPage(
               name: '/LoginScreen',
@@ -290,8 +289,8 @@ class _MyAppState extends State<MyApp> {
               page: () => const GenderScreen(),
             ),
             GetPage(
-              name: '/GymInstructionScreen',
-              page: () => GymInstructionScreen(),
+              name: '/FirstGymInstructionScreen',
+              page: () => FirstGymInstructionScreen(),
             ),
             GetPage(
               name: '/SecondGymInstructionScreen',

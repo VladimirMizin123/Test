@@ -10,7 +10,6 @@ import '../../widget/app_widget.dart';
 class GymWorkInfoScreen extends StatefulWidget {
   const GymWorkInfoScreen({super.key});
 
-
   @override
   State<GymWorkInfoScreen> createState() => _GymWorkInfoScreenState();
 }
@@ -60,27 +59,35 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                           Text(
                             StringUtils.header1,
                             textAlign: TextAlign.center,
-                            style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF004C63)),
+                            style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF004C63)),
                           ).paddingOnly(bottom: 15.h),
                           Text(
                             StringUtils.header2,
                             textAlign: TextAlign.center,
-                            style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF004C63)),
+                            style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF004C63)),
                           ).paddingOnly(bottom: 15.h),
                           Text(
                             StringUtils.header3,
                             textAlign: TextAlign.center,
-                            style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF004C63)),
+                            style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF004C63)),
                           ).paddingOnly(),
                         ],
-                      ).paddingOnly(left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
+                      ).paddingOnly(
+                          left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
                     ),
                   ).paddingOnly(bottom: 36.h, top: 180.h),
                   buildButton(
                     context: context,
                     bgColor: const Color(0xFF004C63),
                     onPressed: () {
-                      Get.toNamed('/GymInstructionScreen',arguments: gender );
+                      Get.toNamed('/FirstGymInstructionScreen',
+                          arguments: gender);
                     },
                     textColor: const Color(0xFFD9E9EE),
                     title: StringUtils.gymWorkText,
@@ -112,27 +119,35 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                               Text(
                                 StringUtils.header1,
                                 textAlign: TextAlign.center,
-                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFFC58575)),
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFC58575)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header2,
                                 textAlign: TextAlign.center,
-                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFFC58575)),
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFC58575)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header3,
                                 textAlign: TextAlign.center,
-                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFFC58575)),
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFC58575)),
                               ).paddingOnly(),
                             ],
-                          ).paddingOnly(left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
+                          ).paddingOnly(
+                              left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
                         ),
                       ).paddingOnly(bottom: 36.h, top: 135.h),
                       buildButton(
                         context: context,
                         bgColor: const Color(0xFFCE6B53),
                         onPressed: () {
-                          Get.toNamed('/GymInstructionScreen',arguments: gender );
+                          Get.toNamed('/FirstGymInstructionScreen',
+                              arguments: gender);
                         },
                         textColor: const Color(0xFFF9D5C5),
                         title: StringUtils.gymWorkText,
@@ -140,56 +155,63 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                       ).paddingOnly(bottom: 50.h, right: 20.w, left: 20.w),
                     ],
                   )
-                :  ListView(
-                        children: [
-                          SvgPicture.asset(
-                            AssetsUtils.roundBlueLogo,
-                            color: Colors.white,
-                            height: 100.h,
-                            width: 100.w,
-                          ).paddingOnly(bottom: 25.h, top: 130.h),
-                          Container(
-                            width: 335.w,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    StringUtils.header1,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF336633)),
-                                  ).paddingOnly(bottom: 15.h),
-                                  Text(
-                                    StringUtils.header2,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF336633)),
-                                  ).paddingOnly(bottom: 15.h),
-                                  Text(
-                                    StringUtils.header3,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400, color: Color(0xFF336633)),
-                                  ).paddingOnly(),
-                                ],
-                              ).paddingOnly(left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
-                            ),
-                          ).paddingOnly(bottom: 36.h),
-                          buildButton(
-                            context: context,
-                            bgColor: const Color(0xFF336633),
-                            onPressed: () {
-                              Get.toNamed('/GymInstructionScreen',arguments: gender );
-                            },
-                            textColor: const Color(0xFFD9E9EE),
-                            title: StringUtils.gymWorkText,
-                            hasImage: false,
-                          ).paddingOnly(bottom: 50.h, right: 20.w, left: 20.w),
-                        ],
-                      ).paddingOnly(left: 20.w, right: 20.w)
-        ,
+                : ListView(
+                    children: [
+                      SvgPicture.asset(
+                        AssetsUtils.roundBlueLogo,
+                        color: Colors.white,
+                        height: 100.h,
+                        width: 100.w,
+                      ).paddingOnly(bottom: 25.h, top: 130.h),
+                      Container(
+                        width: 335.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                StringUtils.header1,
+                                textAlign: TextAlign.center,
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF336633)),
+                              ).paddingOnly(bottom: 15.h),
+                              Text(
+                                StringUtils.header2,
+                                textAlign: TextAlign.center,
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF336633)),
+                              ).paddingOnly(bottom: 15.h),
+                              Text(
+                                StringUtils.header3,
+                                textAlign: TextAlign.center,
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF336633)),
+                              ).paddingOnly(),
+                            ],
+                          ).paddingOnly(
+                              left: 12.w, right: 12.w, top: 15.h, bottom: 15.h),
+                        ),
+                      ).paddingOnly(bottom: 36.h),
+                      buildButton(
+                        context: context,
+                        bgColor: const Color(0xFF336633),
+                        onPressed: () {
+                          Get.toNamed('/FirstGymInstructionScreen',
+                              arguments: gender);
+                        },
+                        textColor: const Color(0xFFD9E9EE),
+                        title: StringUtils.gymWorkText,
+                        hasImage: false,
+                      ).paddingOnly(bottom: 50.h, right: 20.w, left: 20.w),
+                    ],
+                  ).paddingOnly(left: 20.w, right: 20.w),
       ),
     );
   }

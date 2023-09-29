@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gymeats_mobile/models/check_email_exist_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/functions.dart';
@@ -29,6 +30,20 @@ class ForgotPasswordRepository {
       PreferenceUtils.setString(
           forgetPassToken, jsonDecode(response.body)['data']);
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, CheckEmailExist>> checkEmailExistFunction(
+      String email) async {
+    final response = await apiServices.get(
+      '${ApiUrls.checkEmail}/$email',
+    );
+    print("responseCheckEmail : ${response.body}");
+    print("responseCheckEmail statusCode: ${response.statusCode}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(CheckEmailExist.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

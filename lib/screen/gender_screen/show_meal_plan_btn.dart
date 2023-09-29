@@ -9,9 +9,9 @@ import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
 
 class ShowMealPlanBtnScreen extends StatelessWidget {
-   ShowMealPlanBtnScreen({super.key});
+  ShowMealPlanBtnScreen({super.key});
 
-  final routeName = '/ShowMealPlanBtn';
+  final routeName = '/ShowMealPlanBtnScreen';
   final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
@@ -24,17 +24,15 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
             ? AppColors.primaryBlue
             : gender == StringUtils.female
                 ? AppColors.terracotta
-                :AppColors.green
-                   ,
+                : AppColors.green,
         textColor: gender == StringUtils.male
             ? AppColors.skyBlue
-            : gender ==StringUtils.female
+            : gender == StringUtils.female
                 ? AppColors.coral
-                : AppColors.mint
-                    ,
+                : AppColors.mint,
         image: gender == StringUtils.male
             ? AssetsUtils.male_meal_Bg
-            : gender ==StringUtils.female
+            : gender == StringUtils.female
                 ? AssetsUtils.female_meal_Bg
                 : AssetsUtils.non_meal_Bg,
         textTheme: textTheme,
@@ -79,9 +77,16 @@ class ShowMealPlanBtnScreen extends StatelessWidget {
             height: 100.h,
             width: 100.w,
           ).paddingOnly(top: 250.h),
-          buildButton(context: context, textColor: textColor, title: StringUtils.showMealBtnText, onPressed: () {
-            Get.toNamed('/AppManagerScreen');
-          }, bgColor: bgColor, hasImage: false).paddingOnly(top: 24.h, bottom: 20.h),
+          buildButton(
+                  context: context,
+                  textColor: textColor,
+                  title: StringUtils.showMealBtnText,
+                  onPressed: () {
+                    Get.toNamed('/LoginScreen');
+                  },
+                  bgColor: bgColor,
+                  hasImage: false)
+              .paddingOnly(top: 24.h, bottom: 20.h),
         ],
       ).paddingSymmetric(horizontal: 20.w),
     );

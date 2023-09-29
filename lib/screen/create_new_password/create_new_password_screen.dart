@@ -27,6 +27,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final newPassController = TextEditingController();
   final confirmPassController = TextEditingController();
   String? resetToken;
+  bool isPassword = false;
 
   ResetPasswordBloc bloc = ResetPasswordBloc();
 
@@ -57,7 +58,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () => Get.back(),
+                      onTap: () {
+                        Get.offAllNamed('/LoginScreen');
+                      },
                       child: const Icon(
                         Icons.arrow_back_ios,
                         color: AppColors.darkGray,
@@ -94,13 +97,21 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     commonTextField(
                             context: context,
                             controller: newPassController,
+                            eyeShow: true,
+                            isPassword: isPassword,
+                            onTap: () {
+                              isPassword = !isPassword;
+                              setState(() {});
+                            },
                             hintText: StringUtils.writePassword)
                         .paddingOnly(left: 2.w, right: 2.w),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           height: 6.h,
                           width: 6.h,
+                          margin: EdgeInsets.only(right: 15.w, top: 5.h),
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: Color(0xFF010101),
@@ -110,6 +121,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                           StringUtils.validatePassLength,
                           style: textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              fontSize: 11.5.sp,
                               color: AppColors.darkGray),
                         )
                       ],
@@ -127,6 +140,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     commonTextField(
                             context: context,
                             controller: confirmPassController,
+                            eyeShow: true,
                             hintText: StringUtils.writeConfirmPassword)
                         .paddingOnly(left: 2.w, right: 2.w),
                     Row(
@@ -134,6 +148,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                         Container(
                           height: 6.h,
                           width: 6.h,
+                          margin: EdgeInsets.only(right: 15.w),
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: Color(0xFF010101),

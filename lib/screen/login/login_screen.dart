@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool isPassword = false;
 
   // final emailController = TextEditingController(text: 'parth.elision@gmail.com');
   // final passwordController = TextEditingController(text: '123456789');
@@ -85,10 +86,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: StringUtils.email)
                     .paddingOnly(top: 20.h),
                 commonTextField(
-                        context: context,
-                        controller: passwordController,
-                        hintText: StringUtils.password)
-                    .paddingOnly(top: 16.h),
+                    context: context,
+                    controller: passwordController,
+                    hintText: StringUtils.password,
+                    eyeShow: true,
+                    isPassword: isPassword,
+                    onTap: () {
+                      isPassword = !isPassword;
+                      setState(() {});
+                    }).paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
                     Get.toNamed('/ResetPasswordScreen');

@@ -175,8 +175,8 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       await _repository
           .grocerySearch(
-              latitude: '37.7786357',
-              longitude: '-122.3918135',
+              latitude: '41.881832',
+              longitude: '-87.623177',
               grocerySearchModal: event.grocerySearchModelList!)
           .fold((left) {
         emit(GrocerySearchErrorState());

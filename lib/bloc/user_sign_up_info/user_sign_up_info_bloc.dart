@@ -85,12 +85,11 @@ class UserSignUpInfoBloc
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);
         emit(SignUpSuccessState());
-        Get.toNamed('/LoginScreen',);
+        Get.toNamed('/GenderScreen', arguments: event.model.gender);
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(SignUpErrorState());
     }
   }
-
 }

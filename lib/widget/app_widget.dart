@@ -87,6 +87,9 @@ Widget buildBorderButton({
 Widget commonTextField({
   String? hintText,
   bool isPassword = false,
+  bool eyeShow = false,
+  Function()? onTap,
+  Widget? suffixIcon,
   TextEditingController? controller,
   required BuildContext context,
 }) {
@@ -97,7 +100,11 @@ Widget commonTextField({
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
             color: const Color(0xFF5F5F5F),
           ),
-      obscureText: isPassword,
+      obscureText: eyeShow == true
+          ? isPassword
+              ? false
+              : true
+          : false,
       decoration: InputDecoration(
         hintText: hintText,
         isDense: true,
@@ -121,12 +128,34 @@ Widget commonTextField({
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
+        suffixIcon: eyeShow == true
+            ? InkWell(
+                onTap: onTap,
+                child: Icon(
+                  isPassword ? Icons.visibility_off : Icons.visibility,
+                  size: 18.sp,
+                ))
+            : null,
       ),
     ),
   );
 }
 
-Widget commonUserTypeTextField({required String hintText, required TextEditingController controller, required BuildContext context, required double width, required double fontSize, required FontWeight? fontWeight, required Color fontColor, required Color valueColor, Color? borderColor, required Color cursorColor, required TextInputType textInputType, required Function(String value) onChange, bool isSuffix = false,bool isReadOnly = false}) {
+Widget commonUserTypeTextField(
+    {required String hintText,
+    required TextEditingController controller,
+    required BuildContext context,
+    required double width,
+    required double fontSize,
+    required FontWeight? fontWeight,
+    required Color fontColor,
+    required Color valueColor,
+    Color? borderColor,
+    required Color cursorColor,
+    required TextInputType textInputType,
+    required Function(String value) onChange,
+    bool isSuffix = false,
+    bool isReadOnly = false}) {
   return Container(
     height: 48.h,
     width: width.w,
@@ -142,7 +171,6 @@ Widget commonUserTypeTextField({required String hintText, required TextEditingCo
           child: TextFormField(
             controller: controller,
             keyboardType: textInputType,
-            
             cursorColor: cursorColor,
             style: TextStyle(fontWeight: fontWeight, color: valueColor),
             onChanged: (value) {
@@ -151,7 +179,6 @@ Widget commonUserTypeTextField({required String hintText, required TextEditingCo
             readOnly: isReadOnly,
             decoration: InputDecoration(
               filled: false,
-              
               hintText: hintText,
               hintStyle: TextStyle(
                   fontSize: fontSize.sp,

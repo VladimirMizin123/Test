@@ -8,9 +8,11 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import '../../widget/app_widget.dart';
 
 class FiveGymInstructionScreen extends StatelessWidget {
-  FiveGymInstructionScreen({super.key,});
+  FiveGymInstructionScreen({
+    super.key,
+  });
 
-  final routeName = '/FiveGymInstruction';
+  final routeName = '/FiveGymInstructionScreen';
   final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
@@ -42,28 +44,37 @@ class FiveGymInstructionScreen extends StatelessWidget {
                       textColor2: AppColors.coral,
                     )
                   : commonInstructionView(
-                          context: context,
-                          textTheme: textTheme,
-                          header1: AppColors.greenPressed,
-                          header2: AppColors.green,
-                          borderColor: AppColors.green,
-                          Bgcolor: AppColors.green,
-                          image: AssetsUtils.non_instrucion5,
-                          textColor1: AppColors.green,
-                          textColor2: AppColors.mint,
-                        )
-                      ),
+                      context: context,
+                      textTheme: textTheme,
+                      header1: AppColors.greenPressed,
+                      header2: AppColors.green,
+                      borderColor: AppColors.green,
+                      Bgcolor: AppColors.green,
+                      image: AssetsUtils.non_instrucion5,
+                      textColor1: AppColors.green,
+                      textColor2: AppColors.mint,
+                    )),
     );
   }
 
-  Widget commonInstructionView({TextTheme? textTheme, BuildContext? context, String? image, Color? header1, Color? header2, Color? borderColor, Color? Bgcolor, Color? textColor1, Color? textColor2}) {
+  Widget commonInstructionView(
+      {TextTheme? textTheme,
+      BuildContext? context,
+      String? image,
+      Color? header1,
+      Color? header2,
+      Color? borderColor,
+      Color? Bgcolor,
+      Color? textColor1,
+      Color? textColor2}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           StringUtils.genderInstruction5,
           textAlign: TextAlign.center,
-          style: textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
+          style:
+              textTheme?.headlineSmall?.copyWith(color: header1, height: 1.2),
         ).paddingOnly(top: 35.h, bottom: 16.h, left: 5.w, right: 5.w),
         Text(StringUtils.genderSubInstruction8,
                 style: textTheme?.bodyLarge
@@ -88,7 +99,9 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 context: context!,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
-                onPressed: () {Get.back();},
+                onPressed: () {
+                  Get.back();
+                },
                 title: StringUtils.previous,
                 textColor: textColor1,
               ),
@@ -101,7 +114,7 @@ class FiveGymInstructionScreen extends StatelessWidget {
                 textColor: textColor2,
                 title: StringUtils.next,
                 onPressed: () {
-                  Get.toNamed('/ShowMealPlanBtnScreen',arguments: gender );
+                  Get.toNamed('/ShowMealPlanBtnScreen', arguments: gender);
                 },
                 bgColor: Bgcolor,
               ),

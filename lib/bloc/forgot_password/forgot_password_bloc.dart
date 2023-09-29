@@ -25,16 +25,24 @@ class ForgotPasswordBloc extends Bloc<ButtonClickEvent, ForgotPasswordState> {
     if (isEmail && isValidEmail) {
       emit(ForgotLoadingState());
       try {
-        await _repository
-            .forgotPassword(
-          email: event.email,
-        )
-            .fold((left) {
+        await _repository.checkEmailExistFunction(event.email).fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) async {
-          showToast(isSuccess: true, message: right.message!);
-          emit(ForgotSuccessState());
-          Get.toNamed('/OpenEmailAppScreen');
+          if (right.data!.isEmailExist == true) {
+            await _repository
+                .forgotPassword(
+              email: event.email,
+            )
+                .fold((left) {
+              onFailError(emit: emit, text: left.errorMessage!);
+            }, (right) async {
+              showToast(isSuccess: true, message: right.message!);
+              emit(ForgotSuccessState());
+              Get.toNamed('/OpenEmailAppScreen');
+            });
+          } else {
+            onFailError(emit: emit, text: "Email address is not registered.");
+          }
         });
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());

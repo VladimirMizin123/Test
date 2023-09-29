@@ -105,6 +105,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       isMale ? Colors.white : Colors.black,
                                   bgColor: isMale ? color : Colors.transparent,
                                   onClick: () {
+                                    ageController.clear();
+                                    heightController.clear();
+                                    weightController.clear();
                                     bloc.add(UserTypeClickEvent(
                                         isFemale: false,
                                         isMale: true,
@@ -120,6 +123,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                   bgColor:
                                       isFemale ? color : Colors.transparent,
                                   onClick: () {
+                                    ageController.clear();
+                                    heightController.clear();
+                                    weightController.clear();
                                     bloc.add(UserTypeClickEvent(
                                         isFemale: true,
                                         isMale: false,
@@ -134,6 +140,9 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       isNon ? Colors.white : Colors.black,
                                   bgColor: isNon ? color : Colors.transparent,
                                   onClick: () {
+                                    ageController.clear();
+                                    heightController.clear();
+                                    weightController.clear();
                                     bloc.add(UserTypeClickEvent(
                                         isFemale: false,
                                         isMale: false,
