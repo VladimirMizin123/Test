@@ -4,6 +4,7 @@ class ApiUrls {
   static const String login = '${baseUrl}api/Auth/login';
   static const String register = '${baseUrl}api/Auth/signup-form';
   static const String confirmEmail = '${baseUrl}api/Auth/confirmEmail';
+  static const String checkEmail = '${baseUrl}api/Auth/CheckEmailExist';
   // static const String register = '${baseUrl}api/Auth/register';
   static const String genMealPlan = '${baseUrl}api/Suggestic/GenMealPlan';
   static const String getMealPlan = '${baseUrl}api/Suggestic/GetMealPlan';

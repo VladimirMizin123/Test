@@ -284,8 +284,8 @@ class _GetUserAddressState extends State<GetUserAddress> {
           IconButton(
             onPressed: () async {
               await findAddressURL(
-                lat: selectedLatLng!.latitude.toString(),
-                lng: selectedLatLng!.longitude.toString(),
+                lat: selectedLatLng?.latitude.toString(),
+                lng: selectedLatLng?.longitude.toString(),
               );
 
               print('==streetNum=====>${streetNum}');
@@ -298,8 +298,8 @@ class _GetUserAddressState extends State<GetUserAddress> {
 
               if (argumentsValue == 'isFromRegister') {
                 AddAddressModel addAddressModel = AddAddressModel();
-                addAddressModel.latitude = selectedLatLng!.latitude;
-                addAddressModel.longitude = selectedLatLng!.longitude;
+                addAddressModel.latitude = selectedLatLng?.latitude;
+                addAddressModel.longitude = selectedLatLng?.longitude;
 
                 addAddressModel.streetNum = streetNum;
                 addAddressModel.streetName = streetName;

@@ -37,10 +37,11 @@ class StringUtils {
   static const enterPassword = 'Enter your new password';
   static const newPassword = 'New Password';
   static const confirmPassword = 'Confirm New Password';
-  static const matchPassword = '      Both passwords must match';
+  static const matchPassword = 'Both passwords must match';
   static const writePassword = 'Write your new password';
   static const writeConfirmPassword = 'Write your confirm new password';
-  static const validatePassLength = '      At least 8 characters';
+  static const validatePassLength =
+      'At least 8 characters, 1 Upper case letter , 1 special character\nand 1 number';
   static const skipText = 'Skip, I’ll do it later';
   static const checkSubMail =
       'We have sent a password recover instructions to your email.';
@@ -227,6 +228,5 @@ class StringUtils {
   static const details = 'Details';
   static const deliveryTime = 'Delivery time: ';
   static const orderType = 'Order type: ';
-
   static const basedMeal = 'Based on your Meal Plan';
 }

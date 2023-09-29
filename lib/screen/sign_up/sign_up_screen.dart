@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
@@ -10,6 +11,10 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
+import '../../bloc/forgot_password/forgot_password_bloc.dart';
+import '../../bloc/sign_up/sign_up_bloc.dart';
+import '../../bloc/sign_up/sign_up_event.dart';
+import '../../bloc/sign_up/sign_up_state.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
 
@@ -22,6 +27,10 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   HomeScreenController homeScreenController = Get.put(HomeScreenController());
+  bool isPassword = false;
+  bool isConFirmPassword = false;
+
+  SignUpBloc bloc = SignUpBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -76,26 +85,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: StringUtils.email)
                       .paddingOnly(top: 16),
                   commonTextField(
-                          isPassword: true,
                           context: context,
                           controller: homeController.passwordController,
+                          eyeShow: true,
+                          isPassword: isPassword,
+                          onTap: () {
+                            isPassword = !isPassword;
+                            setState(() {});
+                          },
                           hintText: StringUtils.password)
                       .paddingOnly(top: 16),
                   commonTextField(
-                          isPassword: true,
                           context: context,
+                          eyeShow: true,
+                          isPassword: isConFirmPassword,
+                          onTap: () {
+                            isConFirmPassword = !isConFirmPassword;
+                            setState(() {});
+                          },
                           controller: homeController.confirmPasswordController,
                           hintText: StringUtils.confirmPassword)
                       .paddingOnly(top: 16),
-                  buildButton(
-                          context: context,
-                          onPressed: () {
-                            homeController.joinGymEatButton();
-                          },
-                          textColor: const Color(0xFFD9E9EE),
-                          bgColor: const Color(0xFF004C63),
-                          title: StringUtils.joinGymEats)
-                      .paddingOnly(top: 25.h),
+                  BlocConsumer<SignUpBloc, SignUpState>(
+                      bloc: bloc,
+                      listener: (context, state) {
+                        if (state is IsEmailSuccessState) {}
+                      },
+                      builder: (context, state) {
+                        if (state is IsEmailLoadingState) {}
+                        return buildButton(
+                                context: context,
+                                onPressed: () async {
+                                  final data =
+                                      await homeController.joinGymEatButton();
+                                  if (data == null) {
+                                    return;
+                                  }
+                                  bloc.add(
+                                    CheckEmailEvent(
+                                      email:
+                                          homeController.emailController.text,
+                                      confirmPassword: homeController
+                                          .confirmPasswordController.text,
+                                      fName:
+                                          homeController.fNameController.text,
+                                      lName: homeController
+                                          .lastNameController.text,
+                                      password: homeController
+                                          .passwordController.text,
+                                      userName:
+                                          homeController.emailController.text,
+                                    ),
+                                  );
+                                },
+                                textColor: const Color(0xFFD9E9EE),
+                                bgColor: const Color(0xFF004C63),
+                                title: StringUtils.joinGymEats)
+                            .paddingOnly(top: 25.h);
+                      }),
                   Text(
                     StringUtils.or,
                     style: textTheme.bodyLarge,

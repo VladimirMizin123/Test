@@ -33,7 +33,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
         getSurvey = right.data;
         getNewSurvey = getSurvey;
         listSurveyData.add(getNewSurvey!);
-        emit(LoadSurveyData(surveyData: getNewSurvey!,isAPIData: true));
+        emit(LoadSurveyData(surveyData: getNewSurvey!, isAPIData: true));
       });
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
@@ -41,7 +41,8 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSurveyCheck(CheckSurveyData event, Emitter<UserSurveyState> emit) {
-    getNewSurvey!.options![event.index].isSelect = !getNewSurvey!.options![event.index].isSelect;
+    getNewSurvey!.options![event.index].isSelect =
+        !getNewSurvey!.options![event.index].isSelect;
     emit(LoadSurveyData(surveyData: getNewSurvey!));
   }
 
@@ -71,11 +72,12 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
           listSurveyData.add(getNewSurvey!);
           emit(LoadSurveyData(surveyData: getNewSurvey!));
         } else {
-          emit(NextScreenState(dietId: getNewSurvey!.options![event.index].diet!.id!));
-
+          emit(NextScreenState(
+              dietId: getNewSurvey!.options![event.index].diet!.id!));
         }
       } else {
-        showToast(message: StringUtils.userSurveySelectionError, isSuccess: false);
+        showToast(
+            message: StringUtils.userSurveySelectionError, isSuccess: false);
       }
     } else {
       if (listSurveyData.isNotEmpty) {
@@ -84,7 +86,6 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
           getNewSurvey = listSurveyData[listSurveyData.length - 1];
 
           emit(LoadSurveyData(surveyData: getNewSurvey!));
-
         } else {
           emit(PreviousScreenState());
 

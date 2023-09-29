@@ -17,10 +17,12 @@ class BestMatchRestaurantsScreen extends StatefulWidget {
   const BestMatchRestaurantsScreen({super.key});
 
   @override
-  State<BestMatchRestaurantsScreen> createState() => _BestMatchRestaurantsScreenState();
+  State<BestMatchRestaurantsScreen> createState() =>
+      _BestMatchRestaurantsScreenState();
 }
 
-class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen> {
+class _BestMatchRestaurantsScreenState
+    extends State<BestMatchRestaurantsScreen> {
   MealPlanBloc mealPlanBloc = MealPlanBloc();
 
   List<RestaurantProduct> productsList = [];
@@ -29,7 +31,12 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
   void initState() {
     super.initState();
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    mealPlanBloc.add(RestaurantSearchEvent(name: 'Spicy Beans On Toast', latitude: '37.7786357', longitude: '-122.3918135', maximumMiles: '1.5', pickup: false));
+    mealPlanBloc.add(RestaurantSearchEvent(
+        name: 'Spicy Beans On Toast',
+        latitude: '41.881832',
+        longitude: '-87.623177',
+        maximumMiles: '1.5',
+        pickup: false));
     // });
   }
 
@@ -61,12 +68,14 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                         onTap: () {
                           Get.back();
                         },
-                        child: const Icon(Icons.keyboard_arrow_left_sharp, color: AppColors.darkGray, size: 40))),
+                        child: const Icon(Icons.keyboard_arrow_left_sharp,
+                            color: AppColors.darkGray, size: 40))),
                 DraggableScrollableSheet(
                     initialChildSize: 0.4,
                     minChildSize: 0.2,
                     maxChildSize: 0.7,
-                    builder: (BuildContext context, ScrollController scrollController) {
+                    builder: (BuildContext context,
+                        ScrollController scrollController) {
                       return Container(
                         color: AppColors.whiteColor,
                         child: Padding(
@@ -78,21 +87,26 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                   child: Container(
                                     height: 3.h,
                                     width: 80.w,
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: AppColors.disable),
                                   )),
                               const SizedBox(height: 15),
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   'See Best Matches',
-                                  style: FontUtils.h22(fontColor: AppColors.darkGray, fontWeight: FWT.bold),
+                                  style: FontUtils.h22(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.bold),
                                 ),
                               ),
                               const SizedBox(height: 15),
                               Expanded(
                                 child: state is RestaurantSearchLoadingState
                                     ? const Center(
-                                        child: CircularProgressIndicator(color: AppColors.primaryBlue),
+                                        child: CircularProgressIndicator(
+                                            color: AppColors.primaryBlue),
                                       )
                                     : productsList.isEmpty
                                         ? const SizedBox()
@@ -100,20 +114,36 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                             controller: scrollController,
                                             itemCount: productsList.length,
                                             padding: EdgeInsets.zero,
-                                            itemBuilder: (BuildContext context, int index) {
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
                                               return Padding(
-                                                padding: const EdgeInsets.only(bottom: 12),
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
                                                 child: Row(
                                                   children: [
                                                     Expanded(
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Stack(
                                                             children: [
                                                               ClipRRect(
-                                                                borderRadius: BorderRadius.circular(12),
-                                                                child: SizedBox(height: screenSize.height * 0.25, width: double.infinity, child: CachedNetworkImageWidget(imgURL: productsList[index].image ?? '')
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                                child: SizedBox(
+                                                                    height: screenSize
+                                                                            .height *
+                                                                        0.25,
+                                                                    width: double
+                                                                        .infinity,
+                                                                    child: CachedNetworkImageWidget(
+                                                                        imgURL:
+                                                                            productsList[index].image ??
+                                                                                '')
                                                                     //  Image.network(
                                                                     //   // AssetsUtils.defaultImage,
                                                                     //   productsList[index].image!,
@@ -122,34 +152,65 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                                                     ),
                                                               ),
                                                               Padding(
-                                                                padding: const EdgeInsets.only(top: 12, left: 12),
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top: 12,
+                                                                        left:
+                                                                            12),
                                                                 child: Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                   children: [
                                                                     Container(
-                                                                      decoration: BoxDecoration(
-                                                                        color: AppColors.whiteColor,
-                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: AppColors
+                                                                            .whiteColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10),
                                                                       ),
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                                        child: Text(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                6,
+                                                                            vertical:
+                                                                                4),
+                                                                        child:
+                                                                            Text(
                                                                           'Free delivery',
-                                                                          style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.black,
+                                                                              fontWeight: FWT.semiBold),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(height: 10),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            10),
                                                                     Container(
-                                                                      decoration: BoxDecoration(
-                                                                        color: AppColors.whiteColor,
-                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: AppColors
+                                                                            .whiteColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10),
                                                                       ),
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                                        child: Text(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                6,
+                                                                            vertical:
+                                                                                4),
+                                                                        child:
+                                                                            Text(
                                                                           '-10% off',
-                                                                          style: FontUtils.h12(fontColor: AppColors.terracotta, fontWeight: FWT.semiBold),
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.terracotta,
+                                                                              fontWeight: FWT.semiBold),
                                                                         ),
                                                                       ),
                                                                     ),
@@ -157,34 +218,65 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                                                 ),
                                                               ),
                                                               Padding(
-                                                                padding: const EdgeInsets.only(top: 12, left: 12),
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top: 12,
+                                                                        left:
+                                                                            12),
                                                                 child: Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                   children: [
                                                                     Container(
-                                                                      decoration: BoxDecoration(
-                                                                        color: AppColors.whiteColor,
-                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: AppColors
+                                                                            .whiteColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10),
                                                                       ),
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                                        child: Text(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                6,
+                                                                            vertical:
+                                                                                4),
+                                                                        child:
+                                                                            Text(
                                                                           'Free delivery',
-                                                                          style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.black,
+                                                                              fontWeight: FWT.semiBold),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(height: 10),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            10),
                                                                     Container(
-                                                                      decoration: BoxDecoration(
-                                                                        color: AppColors.whiteColor,
-                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: AppColors
+                                                                            .whiteColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10),
                                                                       ),
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                                        child: Text(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                6,
+                                                                            vertical:
+                                                                                4),
+                                                                        child:
+                                                                            Text(
                                                                           '-10% off',
-                                                                          style: FontUtils.h12(fontColor: AppColors.terracotta, fontWeight: FWT.semiBold),
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.terracotta,
+                                                                              fontWeight: FWT.semiBold),
                                                                         ),
                                                                       ),
                                                                     ),
@@ -194,25 +286,45 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                                               Positioned(
                                                                 right: 12,
                                                                 bottom: 12,
-                                                                child: Container(
-                                                                  decoration: BoxDecoration(
-                                                                    color: AppColors.whiteColor,
-                                                                    borderRadius: BorderRadius.circular(10),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: AppColors
+                                                                        .whiteColor,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
                                                                   ),
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                        horizontal:
+                                                                            6,
+                                                                        vertical:
+                                                                            4),
                                                                     child: Row(
                                                                       children: [
-                                                                        SvgPicture.asset(AssetsUtils.icThumbUpLine),
-                                                                        const SizedBox(width: 5),
+                                                                        SvgPicture.asset(
+                                                                            AssetsUtils.icThumbUpLine),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                5),
                                                                         Text(
                                                                           '95%',
-                                                                          style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                                          style: FontUtils.h16(
+                                                                              fontColor: AppColors.black,
+                                                                              fontWeight: FWT.semiBold),
                                                                         ),
-                                                                        const SizedBox(width: 5),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                5),
                                                                         Text(
                                                                           '(145)',
-                                                                          style: FontUtils.h14(fontColor: AppColors.disable, fontWeight: FWT.light),
+                                                                          style: FontUtils.h14(
+                                                                              fontColor: AppColors.disable,
+                                                                              fontWeight: FWT.light),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -221,21 +333,55 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                                               ),
                                                             ],
                                                           ),
-                                                          const SizedBox(height: 5),
+                                                          const SizedBox(
+                                                              height: 5),
                                                           Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             children: [
-                                                              Text(productsList[index].itemName ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h18(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold)),
+                                                              Text(
+                                                                  productsList[
+                                                                              index]
+                                                                          .itemName ??
+                                                                      '',
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  maxLines: 2,
+                                                                  style: FontUtils.h18(
+                                                                      fontColor:
+                                                                          AppColors
+                                                                              .darkGray,
+                                                                      fontWeight:
+                                                                          FWT.semiBold)),
                                                               Container(
-                                                                decoration: BoxDecoration(
-                                                                  color: AppColors.lightGrey,
-                                                                  borderRadius: BorderRadius.circular(10),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: AppColors
+                                                                      .lightGrey,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
                                                                 ),
                                                                 child: Padding(
-                                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                                  padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                      horizontal:
+                                                                          10,
+                                                                      vertical:
+                                                                          4),
                                                                   child: Text(
-                                                                    productsList[index].category ?? '',
-                                                                    style: FontUtils.h14(fontColor: AppColors.black, fontWeight: FWT.regular),
+                                                                    productsList[index]
+                                                                            .category ??
+                                                                        '',
+                                                                    style: FontUtils.h14(
+                                                                        fontColor:
+                                                                            AppColors
+                                                                                .black,
+                                                                        fontWeight:
+                                                                            FWT.regular),
                                                                   ),
                                                                 ),
                                                               ),
@@ -243,16 +389,42 @@ class _BestMatchRestaurantsScreenState extends State<BestMatchRestaurantsScreen>
                                                           ),
                                                           Row(
                                                             children: [
-                                                              SvgPicture.asset(AssetsUtils.icScooter),
-                                                              const SizedBox(width: 10),
-                                                              Text(productsList[index].formattedPrice ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                                              const SizedBox(width: 10),
-                                                              const CircleAvatar(maxRadius: 3, backgroundColor: AppColors.darkGray),
-                                                              const SizedBox(width: 10),
-                                                              Text('15-25 min', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                                              SvgPicture.asset(
+                                                                  AssetsUtils
+                                                                      .icScooter),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              Text(
+                                                                  productsList[
+                                                                              index]
+                                                                          .formattedPrice ??
+                                                                      '',
+                                                                  style: FontUtils.h14(
+                                                                      fontColor:
+                                                                          AppColors
+                                                                              .darkGray,
+                                                                      fontWeight:
+                                                                          FWT.lightMedium)),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              const CircleAvatar(
+                                                                  maxRadius: 3,
+                                                                  backgroundColor:
+                                                                      AppColors
+                                                                          .darkGray),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              Text('15-25 min',
+                                                                  style: FontUtils.h14(
+                                                                      fontColor:
+                                                                          AppColors
+                                                                              .darkGray,
+                                                                      fontWeight:
+                                                                          FWT.lightMedium)),
                                                             ],
                                                           ),
-                                                          const SizedBox(height: 5),
+                                                          const SizedBox(
+                                                              height: 5),
                                                         ],
                                                       ),
                                                     )

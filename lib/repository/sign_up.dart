@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:either_dart/either.dart';
 import '../app/sharedPrefrence.dart';
 import '../constant/string_utils.dart';
+import '../models/check_email_exist_model.dart';
 import '../models/error_model.dart';
 import '../models/sign_up_data_navigate_model.dart';
 import '../models/sign_up_model.dart';
@@ -58,6 +59,20 @@ class SignUpRepository {
         url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, CheckEmailExist>> checkIsEmailExist(
+      String email) async {
+    final response = await apiServices.get(
+      '${ApiUrls.checkEmail}/$email',
+    );
+    print("responseCheckEmail : ${response.body}");
+    print("responseCheckEmail statusCode: ${response.statusCode}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(CheckEmailExist.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

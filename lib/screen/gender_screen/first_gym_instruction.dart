@@ -5,10 +5,12 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
-class GymInstructionScreen extends StatelessWidget {
-   GymInstructionScreen({super.key,});
+class FirstGymInstructionScreen extends StatelessWidget {
+  FirstGymInstructionScreen({
+    super.key,
+  });
 
-  final routeName = '/GymInstruction';
+  final routeName = '/FirstGymInstructionScreen';
   final String gender = Get.arguments as String;
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class GymInstructionScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
-        child: gender ==StringUtils.male
+        child: gender == StringUtils.male
             ? commonInstructionView(
                 context: context,
                 image: AssetsUtils.male_instrucion1,
@@ -27,7 +29,7 @@ class GymInstructionScreen extends StatelessWidget {
                 textColor1: const Color(0xFF004C63),
                 textColor2: const Color(0xFFD9E9EE),
                 textTheme: textTheme)
-            : gender ==StringUtils.female
+            : gender == StringUtils.female
                 ? commonInstructionView(
                     context: context,
                     image: AssetsUtils.female_instrucion1,
@@ -38,22 +40,30 @@ class GymInstructionScreen extends StatelessWidget {
                     textColor1: const Color(0xFFCE6B53),
                     textColor2: const Color(0xFFF9D5C5),
                     textTheme: textTheme)
-                :commonInstructionView(
-                        context: context,
-                        image: AssetsUtils.non_instrucion1,
-                        Bgcolor: const Color(0xFF336633),
-                        borderColor: const Color(0xFF336633),
-                        header1: const Color(0xFF1F3D1F),
-                        header2: const Color(0xFF336633),
-                        textColor1: const Color(0xFF336633),
-                        textColor2: const Color(0xFFC1EACE),
-                        textTheme: textTheme)
-                    ,
+                : commonInstructionView(
+                    context: context,
+                    image: AssetsUtils.non_instrucion1,
+                    Bgcolor: const Color(0xFF336633),
+                    borderColor: const Color(0xFF336633),
+                    header1: const Color(0xFF1F3D1F),
+                    header2: const Color(0xFF336633),
+                    textColor1: const Color(0xFF336633),
+                    textColor2: const Color(0xFFC1EACE),
+                    textTheme: textTheme),
       ),
     );
   }
 
-  Widget commonInstructionView({TextTheme? textTheme, BuildContext? context, String? image, Color? header1, Color? header2, Color? borderColor, Color? Bgcolor, Color? textColor1, Color? textColor2}) {
+  Widget commonInstructionView(
+      {TextTheme? textTheme,
+      BuildContext? context,
+      String? image,
+      Color? header1,
+      Color? header2,
+      Color? borderColor,
+      Color? Bgcolor,
+      Color? textColor1,
+      Color? textColor2}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,7 +108,7 @@ class GymInstructionScreen extends StatelessWidget {
                 textColor: textColor2,
                 title: StringUtils.next,
                 onPressed: () {
-                  Get.toNamed('/SecondGymInstructionScreen',arguments: gender );
+                  Get.toNamed('/SecondGymInstructionScreen', arguments: gender);
                 },
                 bgColor: Bgcolor,
               ),
