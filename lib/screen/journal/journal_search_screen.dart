@@ -8,6 +8,8 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
@@ -34,7 +36,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      journalPlanBloc.add(JournalPlanFetchEvent());
+      // journalPlanBloc.add(JournalPlanFetchEvent());
     });
   }
 
@@ -122,9 +124,9 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                       child: TextField(
                         controller: searchController,
                         onSubmitted: (String value) {
-                          // journalPlanBloc.add(JournalSearchEvent(
-                          //   journalSearchModelList: [GrocerySearchModel(groceryName: searchController.text, quantity: 0)],
-                          // ));
+                          journalPlanBloc.add(JournalSearchEvent(
+                            journalSearchModelList: [GrocerySearchModel(groceryName: searchController.text, quantity: 0)],
+                          ));
                         },
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.search),
@@ -139,182 +141,184 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                   ),
                   SizedBox(height: 15.h),
                   Expanded(
-                    child: mealList.isEmpty
-                        ? state is JournalFetchMealPlanLoadingState
-                            ? const AppCenterLoader()
-                            : const SizedBox()
-                        : SingleChildScrollView(
-                            child: ListView.builder(
-                              itemCount: mealList.length,
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  child: Container(
-                                    decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                mealList[index].recipe!.name ?? '',
-                                                style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    '1 slice, Dave’s Killer Bread - ',
-                                                    style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
-                                                  ),
-                                                  Text(
-                                                    '110 cal',
-                                                    style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          mealList[index].isAddedForEatenMeal
-                                              ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
-                                              : mealList[index].isLoadingAddedForEatenMeal
-                                                  ? const Center(child: CircularProgressIndicator())
-                                                  : GestureDetector(
-                                                      onTap: () {
-                                                        journalPlanBloc.add(JournalAddToEatenEvent(mealID: mealList[index].id!));
-                                                      },
-                                                      child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-
-                                // mealPlanCard(
-                                //   onTap: () {
-                                //     // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
-                                //     Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: mealList[index], currentSelectedData: widget.journalMealScreenArguments.dateTime));
-                                //   },
-                                //   mealData: mealList[index],
-                                //   context: context,
-                                //   onSkipMealTap: () {
-                                //     showModalBottomSheet(
-                                //       context: context,
-                                //       builder: (context) {
-                                //         return JournalSkipMealBottomSheet(
-                                //           bloc: journalPlanBloc,
-                                //           mealData: mealList[index],
-                                //         );
-                                //       },
-                                //       isDismissible: false,
-                                //     );
-                                //   },
-                                //   onSwapMealTap: () {
-                                //     showModalBottomSheet(
-                                //       context: context,
-                                //       builder: (context) {
-                                //         return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
-                                //       },
-                                //     );
-                                //   },
-                                // );
-                              },
-                            ),
-                          ),
-                    // state is JournalSearchLoadingState
-                    //     ? const Center(
-                    //         child: CircularProgressIndicator(),
-                    //       )
+                    child: 
+                    
+                    // mealList.isEmpty
+                    //     ? state is JournalFetchMealPlanLoadingState
+                    //         ? const AppCenterLoader()
+                    //         : const SizedBox()
                     //     : SingleChildScrollView(
-                    //         physics: const BouncingScrollPhysics(),
                     //         child: ListView.builder(
-                    //           itemCount: groceryMultiSearchModelDataList.length,
+                    //           itemCount: mealList.length,
                     //           shrinkWrap: true,
+                    //           scrollDirection: Axis.vertical,
                     //           physics: const NeverScrollableScrollPhysics(),
-                    //           itemBuilder: (context, i) {
-                    //             return ListView.builder(
-                    //               itemCount: groceryMultiSearchModelDataList[i].groceryResult!.length,
-                    //               shrinkWrap: true,
-                    //               physics: const NeverScrollableScrollPhysics(),
-                    //               itemBuilder: (context, ind) {
-                    //                 return ListView.builder(
-                    //                   itemCount: groceryMultiSearchModelDataList[i].groceryResult![ind].products!.length,
-                    //                   shrinkWrap: true,
-                    //                   physics: const NeverScrollableScrollPhysics(),
-                    //                   itemBuilder: (context, index) {
-                    //                     return Padding(
-                    //                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    //                       child: GestureDetector(
-                    //                         onTap: () {
-                    //                           Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
-                    //                         },
-                    //                         child: Container(
-                    //                           decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
-                    //                           child: Padding(
-                    //                             padding: const EdgeInsets.all(12),
-                    //                             child: Row(
-                    //                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //                               children: [
-                    //                                 Column(
-                    //                                   crossAxisAlignment: CrossAxisAlignment.start,
-                    //                                   children: [
-                    //                                     Text(
-                    //                                       groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
-                    //                                       style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
-                    //                                     ),
-                    //                                     Row(
-                    //                                       children: [
-                    //                                         Text(
-                    //                                           '1 slice, Dave’s Killer Bread - ',
-                    //                                           style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
-                    //                                         ),
-                    //                                         Text(
-                    //                                           '110 cal',
-                    //                                           style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
-                    //                                         ),
-                    //                                       ],
-                    //                                     ),
-                    //                                   ],
-                    //                                 ),
-                    //                                 groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
-                    //                                     ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
-                    //                                     : groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isLoading
-                    //                                         ? const Center(child: CircularProgressIndicator())
-                    //                                         : GestureDetector(
-                    //                                             onTap: () {
-                    //                                               journalPlanBloc.add(JournalAddToShoppingListEvent(
-                    //                                                 productID: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                    //                                                 productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
-                    //                                                 price: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].price.toString(),
-                    //                                                 unitSize: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString(),
-                    //                                                 unitOfMeasurement: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
-                    //                                                 quantity: '1',
-                    //                                                 recipeId: '',
-                    //                                                 mealmeStoreId: groceryMultiSearchModelDataList[i].store!.id!,
-                    //                                                 isAdd: true,
-                    //                                                 isRemove: false,
-                    //                                                 isChecked: false,
-                    //                                               ));
-                    //                                             },
-                    //                                             child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
-                    //                               ],
-                    //                             ),
+                    //           itemBuilder: (BuildContext context, int index) {
+                    //             return Padding(
+                    //               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    //               child: Container(
+                    //                 decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
+                    //                 child: Padding(
+                    //                   padding: const EdgeInsets.all(12),
+                    //                   child: Row(
+                    //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //                     children: [
+                    //                       Column(
+                    //                         crossAxisAlignment: CrossAxisAlignment.start,
+                    //                         children: [
+                    //                           Text(
+                    //                             mealList[index].recipe!.name ?? '',
+                    //                             style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
                     //                           ),
-                    //                         ),
+                    //                           Row(
+                    //                             children: [
+                    //                               Text(
+                    //                                 '1 slice, Dave’s Killer Bread - ',
+                    //                                 style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                    //                               ),
+                    //                               Text(
+                    //                                 '110 cal',
+                    //                                 style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
+                    //                               ),
+                    //                             ],
+                    //                           ),
+                    //                         ],
                     //                       ),
-                    //                     );
-                    //                   },
-                    //                 );
-                    //               },
+                    //                       mealList[index].isAddedForEatenMeal
+                    //                           ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
+                    //                           : mealList[index].isLoadingAddedForEatenMeal
+                    //                               ? const Center(child: CircularProgressIndicator())
+                    //                               : GestureDetector(
+                    //                                   onTap: () {
+                    //                                     journalPlanBloc.add(JournalAddToEatenEvent(mealID: mealList[index].id!));
+                    //                                   },
+                    //                                   child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
+                    //                     ],
+                    //                   ),
+                    //                 ),
+                    //               ),
                     //             );
+                    //             // mealPlanCard(
+                    //             //   onTap: () {
+                    //             //     // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                    //             //     Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: mealList[index], currentSelectedData: widget.journalMealScreenArguments.dateTime));
+                    //             //   },
+                    //             //   mealData: mealList[index],
+                    //             //   context: context,
+                    //             //   onSkipMealTap: () {
+                    //             //     showModalBottomSheet(
+                    //             //       context: context,
+                    //             //       builder: (context) {
+                    //             //         return JournalSkipMealBottomSheet(
+                    //             //           bloc: journalPlanBloc,
+                    //             //           mealData: mealList[index],
+                    //             //         );
+                    //             //       },
+                    //             //       isDismissible: false,
+                    //             //     );
+                    //             //   },
+                    //             //   onSwapMealTap: () {
+                    //             //     showModalBottomSheet(
+                    //             //       context: context,
+                    //             //       builder: (context) {
+                    //             //         return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
+                    //             //       },
+                    //             //     );
+                    //             //   },
+                    //             // );
                     //           },
                     //         ),
                     //       ),
+                    state is JournalSearchLoadingState
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: ListView.builder(
+                              itemCount: groceryMultiSearchModelDataList.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, i) {
+                                return ListView.builder(
+                                  itemCount: groceryMultiSearchModelDataList[i].groceryResult!.length,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, ind) {
+                                    return ListView.builder(
+                                      itemCount: groceryMultiSearchModelDataList[i].groceryResult![ind].products!.length,
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(12),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
+                                                          style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              '1 slice, Dave’s Killer Bread - ',
+                                                              style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                                            ),
+                                                            Text(
+                                                              '110 cal',
+                                                              style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
+                                                        ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
+                                                        : groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isLoading
+                                                            ? const Center(child: CircularProgressIndicator())
+                                                            : GestureDetector(
+                                                                onTap: () {
+                                                                journalPlanBloc.add(JournalAddToEatenEvent(mealID: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!));
+                                                                  // journalPlanBloc.add(JournalAddToShoppingListEvent(
+                                                                  //   productID: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                  //   productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
+                                                                  //   price: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].price.toString(),
+                                                                  //   unitSize: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString(),
+                                                                  //   unitOfMeasurement: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
+                                                                  //   quantity: '1',
+                                                                  //   recipeId: '',
+                                                                  //   mealmeStoreId: groceryMultiSearchModelDataList[i].store!.id!,
+                                                                  //   isAdd: true,
+                                                                  //   isRemove: false,
+                                                                  //   isChecked: false,
+                                                                  // ));
+                                                                },
+                                                                child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
                   )
                 ],
               ),

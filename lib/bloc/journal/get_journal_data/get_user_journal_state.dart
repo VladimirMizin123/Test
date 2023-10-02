@@ -109,6 +109,7 @@ class DailyRecapAnsSuccessState extends GetUserJournalState {
 
 
 class RemoveWaterLoadingData extends GetUserJournalState {}
+class RemoveWaterErrorState extends GetUserJournalState {}
 
 class RemoveWaterSuccessState extends GetUserJournalState {
   final bool removeWater;
