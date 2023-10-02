@@ -14,7 +14,8 @@ import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_se
 import 'package:gymeats_mobile/widget/cache_network_image_widget.dart';
 
 class BestMatchRestaurantsScreen extends StatefulWidget {
-  const BestMatchRestaurantsScreen({super.key});
+  final String productName;
+  const BestMatchRestaurantsScreen({super.key, required this.productName});
 
   @override
   State<BestMatchRestaurantsScreen> createState() =>
@@ -31,12 +32,7 @@ class _BestMatchRestaurantsScreenState
   void initState() {
     super.initState();
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    mealPlanBloc.add(RestaurantSearchEvent(
-        name: 'Spicy Beans On Toast',
-        latitude: '41.881832',
-        longitude: '-87.623177',
-        maximumMiles: '1.5',
-        pickup: false));
+    mealPlanBloc.add(RestaurantSearchEvent(name: widget.productName, latitude: '37.7786357', longitude: '-122.3918135', maximumMiles: '1.5', pickup: false));
     // });
   }
 

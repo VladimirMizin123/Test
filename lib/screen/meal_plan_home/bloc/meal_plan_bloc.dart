@@ -19,29 +19,25 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     on<SwapMealDetailsEvent>(_onSwapMealDetails);
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
     on<GrocerySearchEvent>(_onSearchItem);
+    on<GetMealLogByDateEvent>(_onGetMealLogByDate);
+    on<GetAllRestrictionEvent>(_onGetAllRestriction);
+    on<AddUserRestrictionEvent>(_onAddUserRestriction);
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
 
-  _onSwapMealDetails(
-      SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
-    emit(SwapMealDetailsState(
-        similarMealData: event.similarMealData,
-        day: event.day,
-        mealId: event.mealId));
+  _onSwapMealDetails(SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(SwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
   }
 
-  _onFetchMealPlan(
-      MealPlanFetchEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onFetchMealPlan(MealPlanFetchEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(FetchMealPlanLoadingState());
 
     try {
       await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(FetchMealPlanSuccessState(
-            mealPlanList:
-                right.data == null ? [] : right.data!.reversed.toList()));
+        emit(FetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -49,8 +45,51 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onSkipMealPlan(
-      SkipMealPlanEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onGetMealLogByDate(GetMealLogByDateEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(OnGetMealLogByDateLoadingState());
+
+    try {
+      await _repository.getMealLogByDate(event.date!).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(OnGetMealLogByDateSuccessState(modelData: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(FetchMealPlanErrorState());
+    }
+  }
+
+  _onGetAllRestriction(GetAllRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GetAllRestrictionLoadingState());
+    try {
+      final response = await _repository.getAllRestriction();
+      response.fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetAllRestrictionSuccessState(edgesRestrictionList: right.data.restrictions.edgesRestrictionList));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetAllRestrictionErrorState());
+    }
+  }
+  _onAddUserRestriction(AddUserRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GetAllRestrictionLoadingState());
+    try {
+      final response = await _repository.addUserRestriction();
+      response.fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetAllRestrictionSuccessState(edgesRestrictionList: right.data.restrictions.edgesRestrictionList));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetAllRestrictionErrorState());
+    }
+  }
+
+  _onSkipMealPlan(SkipMealPlanEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(SkipMealPlanLoadingState());
 
     try {
@@ -71,8 +110,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(SkipMealPlanSuccessState(
-            skipMealPlanData: right.success!, mealID: event.mealID));
+        emit(SkipMealPlanSuccessState(skipMealPlanData: right.success!, mealID: event.mealID));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -80,14 +118,11 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onAddToGroceryList(
-      AddToGroceryListEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onAddToGroceryList(AddToGroceryListEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(AddToGroceryLoadingState());
 
     try {
-      await _repository
-          .recipeAddToGrocery(addItemsToShoppingList: event.addItemsList)
-          .fold((left) {
+      await _repository.recipeAddToGrocery(addItemsToShoppingList: event.addItemsList).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('_onAddToGroceryList RIGHT PART CALL - - - - - - - - - - - - ');
@@ -101,20 +136,16 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onFetchSwapMealItem(
-      FetchSwapMealItemEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onFetchSwapMealItem(FetchSwapMealItemEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(FetchSwapMealLoadingState());
 
     try {
-      await _repository
-          .fetchSwapMealItem(recipeID: event.recipeID!, serving: event.serving!)
-          .fold((left) {
+      await _repository.fetchSwapMealItem(recipeID: event.recipeID!, serving: event.serving!).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(FetchSwapMealSuccessState(
-            similarMealData: right.data!.recipeSwapOptions!.similar));
+        emit(FetchSwapMealSuccessState(similarMealData: right.data!.recipeSwapOptions!.similar));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -122,8 +153,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onFetchMealDetails(
-      FetchMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onFetchMealDetails(FetchMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(MealDetailsLoadingState());
 
     try {
@@ -144,18 +174,10 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onRestaurantSearch(
-      RestaurantSearchEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onRestaurantSearch(RestaurantSearchEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(RestaurantSearchLoadingState());
     try {
-      await _repository
-          .restaurantSearch(
-              name: event.name!,
-              latitude: event.latitude!,
-              longitude: event.longitude!,
-              maximumMiles: event.maximumMiles!,
-              pickup: event.pickup!)
-          .fold((left) {
+      await _repository.restaurantSearch(name: event.name!, latitude: event.latitude!, longitude: event.longitude!, maximumMiles: event.maximumMiles!, pickup: event.pickup!).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
@@ -169,21 +191,14 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onSearchItem(
-      GrocerySearchEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onSearchItem(GrocerySearchEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(GrocerySearchLoadingState());
     try {
-      await _repository
-          .grocerySearch(
-              latitude: '41.881832',
-              longitude: '-87.623177',
-              grocerySearchModal: event.grocerySearchModelList!)
-          .fold((left) {
+      await _repository.grocerySearch(latitude: '37.7786357', longitude: '-122.3918135', grocerySearchModal: event.grocerySearchModelList!).fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GrocerySearchSuccessState(
-            groceryMultiSearchProductList: right.data!.carts));
+        emit(GrocerySearchSuccessState(groceryMultiSearchProductList: right.data!.carts));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -191,33 +206,14 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-  _onAddToShoppingList(GroceryAddToShoppingListEvent event,
-      Emitter<FetchMealPlanState> emit) async {
-    emit(GroceryAddToShoppingLoadingState(
-        productId: event.productID,
-        isAdd: event.isAdd,
-        isRemove: event.isRemove));
+  _onAddToShoppingList(GroceryAddToShoppingListEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GroceryAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
 
     try {
-      await _repository
-          .recipeAddToShoppingList(
-              mealmeStoreId: event.mealmeStoreId,
-              price: event.price,
-              productID: event.productID,
-              productName: event.productName,
-              quantity: event.quantity,
-              recipeId: event.recipeId,
-              unitOfMeasurement: event.unitOfMeasurement,
-              isChecked: event.isChecked,
-              unitSize: event.unitSize)
-          .fold((left) {
+      await _repository.recipeAddToShoppingList(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, isChecked: event.isChecked, unitSize: event.unitSize).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryAddToShoppingSuccessState(
-            isAdded: right.success ?? false,
-            recipesAddToGroceryData: right.data,
-            isAdd: event.isAdd,
-            isRemove: event.isRemove));
+        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData: right.data, isAdd: event.isAdd, isRemove: event.isRemove));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -227,8 +223,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
 
   /// ON FAIL
 
-  onFailError(
-      {required String text, required Emitter<FetchMealPlanState> emit}) {
+  onFailError({required String text, required Emitter<FetchMealPlanState> emit}) {
     showToast(isSuccess: false, message: text);
     emit(FetchMealPlanErrorState());
   }

@@ -7,6 +7,7 @@ class ApiUrls {
   static const String checkEmail = '${baseUrl}api/Auth/CheckEmailExist';
   // static const String register = '${baseUrl}api/Auth/register';
   static const String genMealPlan = '${baseUrl}api/Suggestic/GenMealPlan';
+  static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
   static const String getMealPlan = '${baseUrl}api/Suggestic/GetMealPlan';
   static const String skipMeal = '${baseUrl}api/Suggestic/SkipMeal';
   static const String addToShoppingList =
@@ -23,6 +24,9 @@ class ApiUrls {
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
+  static const String getAllRestrictionList = '${baseUrl}api/Suggestic/GetAllRestrictionList';
+  static const String addRestrictionAndGetMealPlan = '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
+
 
   //Grocery Flow
   static const String addGroceryToShoppingListFromSuggestic =
@@ -56,8 +60,6 @@ class ApiUrls {
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
   static const String removeWater = '${baseUrl}api/Dashboard/RemoveWater';
   static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
-  static const String getMealTrackerData =
-      '${baseUrl}api/Suggestic/GetMealTrackerData';
 
   //For Diet
   static const String addNewDiet = '${baseUrl}api/Diet/AddNewDiet';
@@ -80,6 +82,7 @@ class ApiUrls {
   //MealLog
   static const String getMealLogByDate =
       '${baseUrl}api/MealLog/GetMealLogByDate';
+      
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
 

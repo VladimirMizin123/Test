@@ -9,12 +9,14 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/skip_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/swap_meal_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../widget/app_center_loader.dart';
@@ -31,6 +33,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   int selectedDayIndex = 0;
   final PageController _pageController = PageController();
   List<FetchMealPlanData> mealPlanList = [];
+  List<MealDataByDate>? mealDataByDate = [];
   bool isLoadingData = false;
 
   MealPlanBloc mealPlanBloc = MealPlanBloc();
@@ -53,9 +56,20 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
               isLoadingData = false;
+
+              for (var i = 0; i < mealPlanList.length; i++) {
+                mealPlanBloc.add(GetMealLogByDateEvent(date: "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
+                break;
+              }
             }
+
             if (state is FetchMealPlanLoadingState) {
               isLoadingData = true;
+            }
+
+            if (state is OnGetMealLogByDateSuccessState) {
+              // MAKE SKIP OBJECT FROM HERE,,,,,
+              mealDataByDate = state.modelData;
             }
 
             if (state is SwapMealDetailsState) {
@@ -65,52 +79,21 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
                     if (mealPlanList[i].meals![j].id == state.mealId) {
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
-                      mealPlanList[i].meals![j].meal =
-                          state.similarMealData!.mealTags![0]; //
-                      mealPlanList[i].meals![j].recipe!.name =
-                          state.similarMealData!.name; //
-                      mealPlanList[i].meals![j].numOfServings =
-                          state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].recipe!.id =
-                          state.similarMealData!.id;
-                      mealPlanList[i].meals![j].calories = state
-                          .similarMealData!.nutrientsPerServing!.calories; //
-                      mealPlanList[i].meals![j].recipe!.mainImage =
-                          state.similarMealData!.mainImage;
-                      mealPlanList[i].meals![j].recipe!.databaseId =
-                          state.similarMealData!.databaseId;
-                      mealPlanList[i].meals![j].recipe!.serving =
-                          state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].numOfServings =
-                          state.similarMealData!.numberOfServings;
-                      mealPlanList[i].meals![j].recipe!.serving =
-                          state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].recipe!.instructions =
-                          state.similarMealData!.instructions;
-                      mealPlanList[i]
-                              .meals![j]
-                              .recipe!
-                              .nutrientsPerServing!
-                              .calories =
-                          state.similarMealData!.nutrientsPerServing!.calories;
-                      mealPlanList[i]
-                              .meals![j]
-                              .recipe!
-                              .nutrientsPerServing!
-                              .carbs =
-                          state.similarMealData!.nutrientsPerServing!.carbs;
-                      mealPlanList[i]
-                              .meals![j]
-                              .recipe!
-                              .nutrientsPerServing!
-                              .fat =
-                          state.similarMealData!.nutrientsPerServing!.fat;
-                      mealPlanList[i]
-                              .meals![j]
-                              .recipe!
-                              .nutrientsPerServing!
-                              .protein =
-                          state.similarMealData!.nutrientsPerServing!.protein;
+                      mealPlanList[i].meals![j].meal = state.similarMealData!.mealTags![0]; //
+                      mealPlanList[i].meals![j].recipe!.name = state.similarMealData!.name; //
+                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.id = state.similarMealData!.id;
+                      mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories; //
+                      mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;
+                      mealPlanList[i].meals![j].recipe!.databaseId = state.similarMealData!.databaseId;
+                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.numberOfServings;
+                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.instructions = state.similarMealData!.instructions;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.calories = state.similarMealData!.nutrientsPerServing!.calories;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.carbs = state.similarMealData!.nutrientsPerServing!.carbs;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.fat = state.similarMealData!.nutrientsPerServing!.fat;
+                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.protein = state.similarMealData!.nutrientsPerServing!.protein;
                       break;
                     }
                   }
@@ -125,7 +108,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   if (mealPlanList[i].meals![j].id == state.mealID) {
                     mealPlanList[i].meals![j].isSkipped = true;
                   }
-                }
+                } // TWVhbDoxNTQ2NDM1NzY=
               }
             }
           },
@@ -151,12 +134,15 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           width: 25.w,
                           color: AppColors.darkGray,
                         ),
-                        Text(StringUtils.mealPlan,
-                            style:
-                                FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                        Text(StringUtils.mealPlan, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
                         GestureDetector(
                           onTap: () {
-                            Get.toNamed('/FoodPreferencesScreen');
+                            // Get.toNamed('/FoodPreferencesScreen');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return const FoodPreferencesScreen();
+                            })).then((value) {
+                              mealPlanBloc.add(MealPlanFetchEvent());
+                            });
                           },
                           child: Image.asset(
                             AssetsUtils.filter,
@@ -174,30 +160,19 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                               mealPlanList.clear();
                               mealPlanBloc.add(MealPlanFetchEvent());
                             },
-                            child: Text(StringUtils.regenerateGroceryList,
-                                    style: FontUtils.h18(
-                                        fontColor: AppColors.primaryBlue,
-                                        fontWeight: FWT.medium))
-                                .paddingSymmetric(vertical: 10.h))
-                        : Text(StringUtils.showGroceryList,
-                                style: FontUtils.h18(
-                                    fontColor: AppColors.primaryBlue,
-                                    fontWeight: FWT.medium))
-                            .paddingSymmetric(vertical: 10.h),
+                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
+                        : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
                     mealPlanList.isEmpty
                         ? const SizedBox()
                         : Container(
                             color: Colors.grey.withOpacity(0.05),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   '${StringUtils.day} ${mealPlanList[selectedDayIndex].day}',
-                                  style: FontUtils.h20(
-                                      fontColor: AppColors.middleGray,
-                                      fontWeight: FWT.medium),
+                                  style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
                                 ),
                                 Wrap(
                                   children: [
@@ -205,28 +180,18 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                         onTap: () {
                                           if (selectedDayIndex == 0) {
                                           } else {
-                                            _pageController.jumpToPage(
-                                                selectedDayIndex - 1);
+                                            _pageController.jumpToPage(selectedDayIndex - 1);
                                           }
                                         },
-                                        child: arrowButton(
-                                                icon: AssetsUtils.arrowBack,
-                                                isDisable:
-                                                    selectedDayIndex == 0)
-                                            .paddingOnly(right: 8.w)),
+                                        child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
                                     GestureDetector(
                                         onTap: () {
-                                          if (selectedDayIndex ==
-                                              mealPlanList.length) {
+                                          if (selectedDayIndex == mealPlanList.length) {
                                           } else {
-                                            _pageController.jumpToPage(
-                                                selectedDayIndex + 1);
+                                            _pageController.jumpToPage(selectedDayIndex + 1);
                                           }
                                         },
-                                        child: arrowButton(
-                                            icon: AssetsUtils.arrowForward,
-                                            isDisable: selectedDayIndex ==
-                                                mealPlanList.length - 1)),
+                                        child: arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1)),
                                   ],
                                 )
                               ],
@@ -252,15 +217,11 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     itemCount: e.meals!.length,
                                     shrinkWrap: true,
                                     scrollDirection: Axis.vertical,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (BuildContext context, int index) {
                                       return mealPlanCard(
                                         onTap: () {
-                                          Get.toNamed('/MealDetailsScreen',
-                                              arguments: MealPlanArguments(
-                                                  mealData: e.meals![index]));
+                                          Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
                                         },
                                         mealData: e.meals![index],
                                         context: context,
@@ -280,10 +241,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                           showModalBottomSheet(
                                             context: context,
                                             builder: (context) {
-                                              return SwapMealBottomSheet(
-                                                  mealPlanBloc: mealPlanBloc,
-                                                  mealData: e.meals![index],
-                                                  day: e.day);
+                                              return SwapMealBottomSheet(mealPlanBloc: mealPlanBloc, mealData: e.meals![index], day: e.day);
                                             },
                                           );
                                         },

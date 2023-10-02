@@ -63,7 +63,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               isGroceryFetchLoadingState = false;
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -82,7 +82,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -102,7 +102,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -119,7 +119,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -136,7 +136,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -152,7 +152,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
               int count = 0;
               for (var i = 0; i < edgesList.length; i++) {
-                if (edgesList[i].isActive == true) {
+                if (edgesList[i].isAddedForViewCart == true) {
                   count = count + 1;
                 }
               }
@@ -174,7 +174,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
             }
             int count = 0;
             for (var i = 0; i < edgesList.length; i++) {
-              if (edgesList[i].isActive == true) {
+              if (edgesList[i].isAddedForViewCart == true) {
                 count = count + 1;
               }
             }
@@ -440,16 +440,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             MaterialTapTargetSize
                                                                 .shrinkWrap,
                                                         value: edgesList[index]
-                                                            .isActive,
+                                                            .isAddedForViewCart,
                                                         onChanged:
                                                             (bool? value) {
                                                           setState(() {
                                                             int count = 0;
                                                             edgesList[index]
-                                                                    .isActive =
+                                                                    .isAddedForViewCart =
                                                                 !edgesList[
                                                                         index]
-                                                                    .isActive!;
+                                                                    .isAddedForViewCart!;
 
                                                             for (var i = 0;
                                                                 i <
@@ -457,7 +457,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                         .length;
                                                                 i++) {
                                                               if (edgesList[i]
-                                                                      .isActive ==
+                                                                      .isAddedForViewCart ==
                                                                   true) {
                                                                 count =
                                                                     count + 1;
@@ -563,7 +563,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             isRemove: true,
                                                             isChecked: edgesList[
                                                                         index]
-                                                                    .isActive ??
+                                                                    .isAddedForViewCart ??
                                                                 false,
                                                           ));
                                                         },
@@ -690,7 +690,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                       isRemove: false,
                                                       isChecked:
                                                           edgesList[index]
-                                                                  .isActive ??
+                                                                  .isAddedForViewCart ??
                                                               false,
                                                     ));
                                                   },
@@ -750,7 +750,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         if (edgesList.isNotEmpty) {
                           List<GroceryShoppingData> edgesDummyList = [];
                           for (var i = 0; i < edgesList.length; i++) {
-                            if (edgesList[i].isActive == true) {
+                            if (edgesList[i].isAddedForViewCart == true) {
                               edgesDummyList.add(edgesList[i]);
                             }
                           }

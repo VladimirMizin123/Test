@@ -8,6 +8,11 @@ class MealPlanFetchEvent extends MealPlanEvent {
   MealPlanFetchEvent();
 }
 
+class GetMealLogByDateEvent extends MealPlanEvent {
+  final String? date;
+  GetMealLogByDateEvent({this.date});
+}
+
 class SkipMealPlanEvent extends MealPlanEvent {
   final String mealID;
   final String? mealName;
@@ -19,16 +24,7 @@ class SkipMealPlanEvent extends MealPlanEvent {
   final num? fat;
   final num? carbs;
 
-  SkipMealPlanEvent(
-      {required this.mealID,
-      this.mealName,
-      this.calorie,
-      this.mealType,
-      this.noOfServing,
-      this.recipeId,
-      this.protein,
-      this.fat,
-      this.carbs});
+  SkipMealPlanEvent({required this.mealID, this.mealName, this.calorie, this.mealType, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs});
 }
 
 class AddToGroceryListEvent extends MealPlanEvent {
@@ -98,10 +94,13 @@ class RestaurantSearchEvent extends MealPlanEvent {
   final String? maximumMiles;
   final bool? pickup;
 
-  RestaurantSearchEvent(
-      {this.name,
-      this.latitude,
-      this.longitude,
-      this.maximumMiles,
-      this.pickup});
+  RestaurantSearchEvent({this.name, this.latitude, this.longitude, this.maximumMiles, this.pickup});
+}
+
+class GetAllRestrictionEvent extends MealPlanEvent {}
+
+class AddUserRestrictionEvent extends MealPlanEvent {
+  final List<String>? edgeRestrictionList;
+
+  AddUserRestrictionEvent({this.edgeRestrictionList});
 }

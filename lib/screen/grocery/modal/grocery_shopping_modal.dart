@@ -55,6 +55,7 @@ class GroceryShoppingData {
   final dynamic updatedBy;
   final dynamic updatedOn;
   bool? isActive;
+  bool? isAddedForViewCart;
   final bool? isDeleted;
   bool? isAddItem;
   bool? isRemoveItem;
@@ -74,6 +75,7 @@ class GroceryShoppingData {
     this.recipeId,
     this.mealmeStoreId,
     this.isChecked,
+    this.isAddedForViewCart = false,
     this.id,
     this.createdBy,
     this.createdOn,

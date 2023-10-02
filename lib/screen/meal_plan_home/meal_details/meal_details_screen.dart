@@ -13,6 +13,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
@@ -266,7 +267,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Calories', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.calories.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text('${fetchModelData!.recipe!.nutritionalInfo!.calories}g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -276,7 +277,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Protein', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.protein.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text('${fetchModelData!.recipe!.nutritionalInfo!.protein}g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -286,7 +287,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Carbs', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.carbs.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text('${fetchModelData!.recipe!.nutritionalInfo!.carbs}g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -296,7 +297,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                                  Text(fetchModelData!.recipe!.nutritionalInfo!.fat.toString(), style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                                  Text('${fetchModelData!.recipe!.nutritionalInfo!.fat}g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -422,7 +423,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                       SizedBox(height: 14.h),
                                       GestureDetector(
                                         onTap: () {
-                                          Get.toNamed('/BestMatchRestaurantsScreen');
+                                          // Get.toNamed('/BestMatchRestaurantsScreen');
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                            return BestMatchRestaurantsScreen(productName: fetchModelData!.recipe!.name!);
+                                          }));
                                         },
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.center,
