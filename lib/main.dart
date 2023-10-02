@@ -61,6 +61,7 @@ import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_w
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_4.dart';
+import 'package:gymeats_mobile/screen/signup_presonalized_welcome/random_screen.dart';
 import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_screen.dart';
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
@@ -449,6 +450,9 @@ class _MyAppState extends State<MyApp> {
               name: '/GoogleMapScreen',
               page: () => const GetUserAddress(),
             ),
+
+            GetPage(
+                name: '/RandomLoginScreen', page: () => RandomLoadingScreen())
 
             // GetPage(
             //   name: '/JournalSearchScreen',

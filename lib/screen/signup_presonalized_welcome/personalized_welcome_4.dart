@@ -8,7 +8,8 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FourthPersonalizedWelcomeScreen extends StatelessWidget {
-  const FourthPersonalizedWelcomeScreen({super.key});
+  const FourthPersonalizedWelcomeScreen({super.key, this.gender = 'Male'});
+  final String gender;
 
   final routeName = '/FourthPersonalizedWelcome';
 
