@@ -228,8 +228,8 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {
         emit(RemoveWaterErrorState());
-        emit(RemoveWaterSuccessState(removeWater: true));
         emit(DailyRecapAnsSuccessState(recapData: false));
+        emit(RemoveWaterSuccessState(removeWater: true));
         showToast(isSuccess: false, message: right.message!);
       });
     } catch (e) {
