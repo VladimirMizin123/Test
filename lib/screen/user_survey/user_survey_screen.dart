@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
@@ -17,7 +18,6 @@ import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 import '../../widget/user_survey_item.dart';
-import '../user_photo_selection/user_photo_selection_screen.dart';
 
 class UserSurveyScreen extends StatefulWidget {
   const UserSurveyScreen({
@@ -36,6 +36,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   int optionIndex = 0;
   List<int> listIndex = [];
   List<CustomOptions> listOptions = [];
+  List<Edge>? edgesRestrictionList = [];
   String surveyId = '';
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
 
@@ -43,74 +44,62 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   void initState() {
     super.initState();
     debugPrint('widget.gender--> ${model.gender}');
+    // bloc.add(GetAllRestrictionEvent());
     bloc.add(GetSurveyData());
   }
 
   @override
   Widget build(BuildContext context) {
+    print('edgesRestrictionList!.length -- ${edgesRestrictionList!.length}');
     return SafeArea(
       child: Scaffold(
         body: BlocConsumer<UserSurveyBloc, UserSurveyState>(
-            bloc: bloc,
-            builder: (context, state) {
-              if (state is LoadSurveyData) {
-                return initView();
-              }
-              if (state is LoadingSurveyData) {
-                return const AppCenterLoader();
-              }
-              if (state is ErrorStateData) {
-                return Center(
-                    child: Text(
-                  state.errMessage,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: AppColors.primaryBlue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700),
-                ));
-              }
-              return Container();
-            },
-            listener: (context, state) {
-              if (state is LoadSurveyData) {
-                getSurveyData = state.surveyData;
-                if (state.isAPIData) {
-                  surveyId = getSurveyData!.surveyId!;
-                }
-                for (var e in getSurveyData!.options!) {
-                  if (e.isSelect) {
-                    listOptions.add(CustomOptions(
-                        optionColor: e.color ?? AppColors.primaryBlue,
-                        optionName: e.label!));
-                  }
-                }
-                debugPrint("listOptions--> ${listOptions.length}");
-              }
-              if (state is NextScreenState) {
-                UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
-                    firstName: model.firstName,
-                    lastName: model.lastName,
-                    email: model.email,
-                    password: model.password,
-                    userName: model.userName,
-                    confirmPassword: model.confirmPassword,
-                    gender: model.gender,
-                    age: model.age,
-                    height: model.height,
-                    weight: model.weight,
-                    dietId: state.dietId,
-                    surveyId: surveyId,
-                    options: listOptions);
+          bloc: bloc,
+          builder: (context, state) {
+            if (state is LoadSurveyData || state is NextScreenState) {
+              return initView();
+            }
+            if (state is LoadingSurveyData) {
+              return const AppCenterLoader();
+            }
+            if (state is ErrorStateData) {
+              return Center(
+                  child: Text(
+                state.errMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
+              ));
+            }
 
-                Get.toNamed('/UserPhotoSelectionScreen',
-                    arguments: userSignUpDataModel);
+            if (state is GetAllRestrictionSuccessState) {
+              edgesRestrictionList = state.edgesRestrictionList;
+            }
+            return Container();
+          },
+          listener: (context, state) {
+            if (state is LoadSurveyData) {
+              getSurveyData = state.surveyData;
+              if (state.isAPIData) {
+                surveyId = getSurveyData!.surveyId!;
               }
+              for (var e in getSurveyData!.options!) {
+                if (e.isSelect) {
+                  listOptions.add(CustomOptions(optionColor: e.color ?? AppColors.primaryBlue, optionName: e.label ?? ''));
+                }
+              }
+              debugPrint("listOptions--> ${listOptions.length}");
+            }
+            if (state is NextScreenState) {
+              UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(firstName: model.firstName, lastName: model.lastName, email: model.email, password: model.password, userName: model.userName, confirmPassword: model.confirmPassword, gender: model.gender, age: model.age, height: model.height, weight: model.weight, dietId: state.dietId, surveyId: surveyId, options: listOptions);
 
-              if (state is PreviousScreenState) {
-                Get.toNamed('/UserTypeScreen', arguments: model);
-              }
-            }),
+              Get.toNamed('/UserPhotoSelectionScreen', arguments: userSignUpDataModel);
+            }
+
+            if (state is PreviousScreenState) {
+              Get.toNamed('/UserTypeScreen', arguments: model);
+            }
+          },
+        ),
       ),
     );
   }
@@ -164,10 +153,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
             Text(
               getSurveyData!.label!,
               textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(
-                  color: setColor(gender: model.gender!),
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w500),
+              style: AppTextStyle.gymEatsStyle.copyWith(color: setColor(gender: model.gender!), fontSize: 18.sp, fontWeight: FontWeight.w500),
             ).paddingOnly(top: 10),
             SizedBox(
               height: 20.h,
@@ -229,8 +215,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                 optionIndex = listIndex[listIndex.length - 1];
                                 listIndex.removeLast();
                               }
-                              bloc.add(NextPrevSurveyClick(
-                                  index: optionIndex, isNext: false));
+                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: false));
                             },
                             textColor: setColor(gender: model.gender!),
                             borderColor: setColor(gender: model.gender!),
@@ -243,12 +228,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: buildButton(
                             context: context,
                             onPressed: () {
-                              optionIndex = getSurveyData!.options!
-                                  .indexWhere((value) => value.isSelect);
+                              optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
                               listIndex.add(optionIndex);
 
-                              bloc.add(NextPrevSurveyClick(
-                                  index: optionIndex, isNext: true));
+                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: true));
                             },
                             textColor: Colors.white,
                             bgColor: setColor(gender: model.gender!),

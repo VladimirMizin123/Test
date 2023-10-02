@@ -28,9 +28,10 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'API URL');
+      log(url, name: 'GET API URL');
+      log(headers.toString(), name: 'GET API HEADER');
       final response = await http.get(Uri.parse(url), headers: headers);
-      log("GET response--> ${response.body}");
+      log(response.body, name: 'GET API RESPONSE');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

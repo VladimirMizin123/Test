@@ -140,6 +140,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: controller,
+                            readOnly: true,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w400,

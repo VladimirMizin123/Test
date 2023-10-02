@@ -1,8 +1,9 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
-import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 
@@ -20,6 +21,14 @@ class FetchMealPlanSuccessState extends FetchMealPlanState {
 class FetchMealPlanLoadingState extends FetchMealPlanState {}
 
 class FetchMealPlanErrorState extends FetchMealPlanState {}
+
+
+class OnGetMealLogByDateLoadingState extends FetchMealPlanState {}
+class OnGetMealLogByDateSuccessState extends FetchMealPlanState {
+final List<MealDataByDate>? modelData;
+
+  OnGetMealLogByDateSuccessState({required this.modelData});
+}
 
 // SKIP MEAL PLAN
 class SkipMealPlanSuccessState extends FetchMealPlanState {
@@ -121,4 +130,14 @@ class GrocerySearchSuccessState extends FetchMealPlanState {
 
 class GrocerySearchErrorState extends FetchMealPlanState {
   GrocerySearchErrorState();
+}
+
+
+class GetAllRestrictionLoadingState extends FetchMealPlanState {}
+class GetAllRestrictionErrorState extends FetchMealPlanState {}
+
+class GetAllRestrictionSuccessState extends FetchMealPlanState {
+  final List<Edge>? edgesRestrictionList;
+
+  GetAllRestrictionSuccessState({this.edgesRestrictionList});
 }
