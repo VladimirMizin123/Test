@@ -8,7 +8,8 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
-  const ThirdPersonalizedWelcomeScreen({super.key});
+  const ThirdPersonalizedWelcomeScreen({super.key,this.gender = 'Male'});
+  final String gender;
 
   final routeName = '/ThirdPersonalizedWelcome';
 
@@ -64,8 +65,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                     context: context,
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
-                      Get.toNamed('/FourthPersonalizedWelcome',
-                          arguments: Gender);
+                      Get.toNamed('/AppManagerScreen',
+                          arguments: gender,
+                          preventDuplicates: false);
                     },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
@@ -107,8 +109,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                         context: context,
                         bgColor: AppColors.terracotta,
                         onPressed: () {
-                          Get.toNamed('/FourthPersonalizedWelcome',
-                              arguments: Gender);
+                          Get.toNamed('/AppManagerScreen',
+                              arguments: gender,
+                              preventDuplicates: false);
                         },
                         textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
@@ -151,8 +154,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                             context: context,
                             bgColor: AppColors.green,
                             onPressed: () {
-                              Get.toNamed('/FourthPersonalizedWelcome',
-                                  arguments: Gender);
+                              Get.toNamed('/AppManagerScreen',
+                                  arguments: gender,
+                                  preventDuplicates: false);
                             },
                             textColor: AppColors.mint,
                             title: StringUtils.iAmReady,

@@ -8,7 +8,8 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FirstPersonalizedWelcomeScreen extends StatelessWidget {
-  const FirstPersonalizedWelcomeScreen({super.key});
+  const FirstPersonalizedWelcomeScreen({super.key, this.gender = 'Male'});
+  final String gender;
 
   final routeName = '/FirstPersonalizedWelcome';
 
@@ -16,8 +17,7 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    final gender = Get.arguments;
-    print('gender : $gender');
+
     return Scaffold(
       body: Container(
         height: size.height.h,
@@ -64,8 +64,9 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                     context: context,
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
-                      Get.toNamed('/SecondPersonalizedWelcome',
-                          arguments: gender);
+                      Get.toNamed('/AppManagerScreen',
+                          arguments: gender,
+                          preventDuplicates: false);
                     },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
@@ -104,8 +105,9 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                         context: context,
                         bgColor: AppColors.terracotta,
                         onPressed: () {
-                          Get.toNamed('/SecondPersonalizedWelcome',
-                              arguments: gender);
+                          Get.toNamed('/AppManagerScreen',
+                              arguments: gender,
+                              preventDuplicates: false);
                         },
                         textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
@@ -148,8 +150,9 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                             context: context,
                             bgColor: AppColors.green,
                             onPressed: () {
-                              Get.toNamed('/SecondPersonalizedWelcome',
-                                  arguments: gender);
+                              Get.toNamed('/AppManagerScreen',
+                                  arguments: gender,
+                                  preventDuplicates: false);
                             },
                             textColor: AppColors.mint,
                             title: StringUtils.iAmReady,
