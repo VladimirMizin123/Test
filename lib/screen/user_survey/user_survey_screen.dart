@@ -35,7 +35,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   final searchController = TextEditingController();
   int optionIndex = 0;
   List<int> listIndex = [];
-  List<String> listOptions = [];
+  List<CustomOptions> listOptions = [];
   String surveyId = '';
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
 
@@ -80,7 +80,9 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 }
                 for (var e in getSurveyData!.options!) {
                   if (e.isSelect) {
-                    listOptions.add(e.label!);
+                    listOptions.add(CustomOptions(
+                        optionColor: e.color ?? AppColors.primaryBlue,
+                        optionName: e.label!));
                   }
                 }
                 debugPrint("listOptions--> ${listOptions.length}");
@@ -234,7 +236,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                             borderColor: setColor(gender: model.gender!),
                             bgColor: Colors.white,
                             title: StringUtils.previous)
-                        .paddingOnly(top: 25.h),
+                        .paddingOnly(top: 10.h),
                   ),
                   SizedBox(width: 10.w),
                   Expanded(
@@ -251,7 +253,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                             textColor: Colors.white,
                             bgColor: setColor(gender: model.gender!),
                             title: StringUtils.next)
-                        .paddingOnly(top: 25.h),
+                        .paddingOnly(top: 10.h),
                   ),
                 ],
               ),
@@ -259,4 +261,11 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
           ],
         ),
       );
+}
+
+class CustomOptions {
+  final String optionName;
+  final Color optionColor;
+
+  CustomOptions({required this.optionColor, required this.optionName});
 }
