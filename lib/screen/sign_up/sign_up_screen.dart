@@ -145,8 +145,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }),
                   Text(
                     StringUtils.or,
-                    style: textTheme.bodyLarge,
-                  ).paddingSymmetric(vertical: 15.h),
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontSize: 20.sp
+                    ),
+                  ).paddingSymmetric(vertical: 12.h),
                   kIsWeb
                       ? const SizedBox()
                       : Platform.isIOS
