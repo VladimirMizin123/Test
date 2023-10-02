@@ -33,7 +33,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   int selectedDayIndex = 0;
   final PageController _pageController = PageController();
   List<FetchMealPlanData> mealPlanList = [];
-  List<MealDataByDate>? mealDataByDate = [];
+  List<MealDataByDate> mealDataByDate = [];
   bool isLoadingData = false;
 
   MealPlanBloc mealPlanBloc = MealPlanBloc();
@@ -61,6 +61,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 mealPlanBloc.add(GetMealLogByDateEvent(date: "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
                 break;
               }
+
+              
             }
 
             if (state is FetchMealPlanLoadingState) {
@@ -69,7 +71,28 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
 
             if (state is OnGetMealLogByDateSuccessState) {
               // MAKE SKIP OBJECT FROM HERE,,,,,
-              mealDataByDate = state.modelData;
+              mealDataByDate = state.modelData ?? [];
+
+              for (var k = 0; k < mealDataByDate.length; k++) {
+                // print('K --- $k');
+                for (var i = 0; i < mealPlanList.length; i++) {
+                  for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
+                    // print('${mealPlanList[i].meals![j].id == mealDataByDate[k].mealId}');
+                    if (mealPlanList[i].meals![j].id == mealDataByDate[k].mealId) {
+                      mealPlanList[i].meals![j].isSkipped = true;
+                    }
+                  } // TWVhbDoxNTQ2NDM1NzY=
+                }
+              }
+
+              for (var i = 0; i < mealPlanList.length; i++) {
+                if (mealPlanList[i].date!.year == DateTime.now().year && mealPlanList[i].date!.month == DateTime.now().month && mealPlanList[i].date!.day == DateTime.now().day) {
+                  print('JUMP DAY :::: ${mealPlanList.length}');
+                  print('JUMP DAY :::: $i');
+                  _pageController.jumpToPage(i);
+                  break;
+                }
+              }
             }
 
             if (state is SwapMealDetailsState) {
