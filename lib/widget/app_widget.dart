@@ -75,6 +75,8 @@ Widget commonTextField({
   Widget? suffixIcon,
   TextEditingController? controller,
   required BuildContext context,
+  TextInputType? textInputType,
+  void Function(String)? onChanged,
 }) {
   return SizedBox(
     height: 48.h,
@@ -89,6 +91,9 @@ Widget commonTextField({
               ? false
               : true
           : false,
+          
+          keyboardType: textInputType,
+          onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hintText,
         isDense: true,
