@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_event.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
@@ -32,6 +34,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
   TextEditingController proteinController = TextEditingController();
 
   String pickedImageFilePath = '';
+  bool isButtonEnable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +50,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           style: textTheme.displayMedium?.copyWith(color: Colors.black),
         ),
         leading: IconButton(
-          icon:
-              Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
           onPressed: () => Navigator.pop(context),
         ).paddingOnly(left: 10.w),
       ),
@@ -58,8 +60,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             if (state is SelectedImagePathState) {
               pickedImageFilePath = state.imgPath ?? '';
               setState(() {});
-              print(
-                  'Picked Image File Path --------------- $pickedImageFilePath');
+              print('Picked Image File Path --------------- $pickedImageFilePath');
             }
           },
           builder: (context, state) {
@@ -91,10 +92,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     child: Container(
                                       height: 160.h,
                                       width: double.infinity.w,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                          color: AppColors.disable),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
                                       child: Image.file(
                                         File(pickedImageFilePath),
                                         fit: BoxFit.cover,
@@ -104,16 +102,11 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 : Container(
                                     height: 160.h,
                                     width: double.infinity.w,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(8.r),
-                                        color: AppColors.disable),
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
                                     child: Center(
                                       child: Text(
                                         StringUtils.addPhoto,
-                                        style: textTheme.headlineSmall
-                                            ?.copyWith(
-                                                color: AppColors.middleGray),
+                                        style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
                                       ),
                                     ),
                                   ),
@@ -128,67 +121,36 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             controller: nameController,
                             cursorColor: AppColors.darkGray,
                             keyboardType: TextInputType.text,
-                            style: const TextStyle(
-                                fontSize: 16, color: AppColors.darkGray),
+                            style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
                             decoration: InputDecoration(
                               hintText: 'Item Name',
-                              hintStyle: const TextStyle(
-                                  fontSize: 14, color: AppColors.grayColor),
+                              hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
                               isDense: true,
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.grayColor)),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryBlue)),
-                              disabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryBlue)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryBlue)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.grayColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
                             ),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(StringUtils.weight,
-                                  style: textTheme.bodyLarge
-                                      ?.copyWith(color: Colors.black)),
+                              Text(StringUtils.weight, style: textTheme.bodyLarge?.copyWith(color: Colors.black)),
                               SizedBox(
                                 width: 80.w,
                                 child: TextFormField(
                                   controller: weightController,
                                   cursorColor: AppColors.darkGray,
                                   keyboardType: TextInputType.number,
-                                  style: const TextStyle(
-                                      fontSize: 16, color: AppColors.darkGray),
+                                  style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
                                   decoration: InputDecoration(
                                     hintText: '00',
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.grayColor),
+                                    hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
                                     isDense: true,
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    disabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
+                                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                    disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
                                   ),
                                 ),
                               ),
@@ -237,51 +199,105 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              dashBoardCardView(
+                              Expanded(
+                                flex: 1,
+                                child: dashBoardCardView(
                                   margin: const EdgeInsets.only(right: 4),
                                   child: calciumDataView(
-                                      title: 'Cal',
-                                      percent: 0.16,
-                                      gramCount: '320',
-                                      progressColor: AppColors.primaryBlue,
-                                      textTheme: textTheme,
-                                      totalGram: '2000 cal',
-                                      controller: calController)),
-                              dashBoardCardView(
+                                    title: 'Cal',
+                                    percent: calController.text.isEmpty
+                                        ? 0
+                                        : (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))
+                                            ? 0
+                                            : (double.parse(calController.text) / double.parse(PreferenceUtils.getString(totalCalorie))),
+                                    gramCount: calController.text.isEmpty ? '0' : calController.text,
+                                    progressColor: AppColors.primaryBlue,
+                                    textTheme: textTheme,
+                                    totalGram: '${double.parse(PreferenceUtils.getString(totalCalorie)).toStringAsFixed(2)} cal',
+                                    controller: calController,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: dashBoardCardView(
                                   margin: const EdgeInsets.only(left: 4),
                                   child: calciumDataView(
-                                      title: 'Fat',
-                                      percent: 0.77,
-                                      gramCount: '100',
-                                      progressColor: AppColors.coral,
-                                      textTheme: textTheme,
-                                      totalGram: '177 g',
-                                      controller: fatController)),
+                                    title: 'Fat',
+                                    percent: fatController.text.isEmpty
+                                        ? 0
+                                        : (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))
+                                            ? 0
+                                            : (double.parse(fatController.text) / double.parse(PreferenceUtils.getString(totalFat))),
+                                    gramCount: fatController.text.isEmpty ? '0' : fatController.text,
+                                    progressColor: AppColors.primaryBlue,
+                                    textTheme: textTheme,
+                                    totalGram: '${double.parse(PreferenceUtils.getString(totalFat)).toStringAsFixed(2)} g',
+
+                                    // percent: 0.77,
+                                    // gramCount: fatController.text,
+                                    // progressColor: AppColors.coral,
+                                    // textTheme: textTheme,
+                                    // totalGram: '${double.parse(PreferenceUtils.getString(totalFat)).floor()} g',
+                                    controller: fatController,
+                                  ),
+                                ),
+                              ),
                             ],
                           ).paddingSymmetric(vertical: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              dashBoardCardView(
+                              Expanded(
+                                flex: 1,
+                                child: dashBoardCardView(
                                   margin: const EdgeInsets.only(right: 4),
                                   child: calciumDataView(
-                                      title: 'Carbs',
-                                      textTheme: textTheme,
-                                      gramCount: '100',
-                                      percent: 0.77,
-                                      totalGram: '177 g',
-                                      progressColor: AppColors.mint,
-                                      controller: carbsController)),
-                              dashBoardCardView(
+                                    title: 'Carbs',
+                                    percent: carbsController.text.isEmpty
+                                        ? 0
+                                        : (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))
+                                            ? 0
+                                            : (double.parse(carbsController.text) / double.parse(PreferenceUtils.getString(totalCarbs))),
+                                    gramCount: carbsController.text.isEmpty ? '0' : carbsController.text,
+                                    progressColor: AppColors.primaryBlue,
+                                    textTheme: textTheme,
+                                    totalGram: '${double.parse(PreferenceUtils.getString(totalCarbs)).toStringAsFixed(2)} g',
+
+                                    // textTheme: textTheme,
+                                    // gramCount: carbsController.text,
+                                    // percent: 0.77,
+                                    // totalGram: '${double.parse(PreferenceUtils.getString(totalCarbs)).floor()} g',
+                                    // progressColor: AppColors.mint,
+                                    controller: carbsController,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: dashBoardCardView(
                                   margin: const EdgeInsets.only(left: 4),
                                   child: calciumDataView(
-                                      title: 'Protein',
-                                      textTheme: textTheme,
-                                      gramCount: '32',
-                                      percent: 0.66,
-                                      totalGram: '48 g',
-                                      progressColor: AppColors.skyBlue,
-                                      controller: proteinController)),
+                                    title: 'Protein',
+                                    percent: proteinController.text.isEmpty
+                                        ? 0
+                                        : (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))
+                                            ? 0
+                                            : (double.parse(proteinController.text) / double.parse(PreferenceUtils.getString(totalProtein))),
+                                    gramCount: proteinController.text.isEmpty ? '0' : proteinController.text,
+                                    progressColor: AppColors.primaryBlue,
+                                    textTheme: textTheme,
+                                    totalGram: '${double.parse(PreferenceUtils.getString(totalProtein)).toStringAsFixed(2)} g',
+
+                                    // textTheme: textTheme,
+                                    // gramCount: proteinController.text,
+                                    // percent: 0.66,
+                                    // totalGram: '${double.parse(PreferenceUtils.getString(totalProtein)).floor()} g',
+                                    // progressColor: AppColors.skyBlue,
+                                    controller: proteinController,
+                                  ),
+                                ),
+                              ),
                             ],
                           ).paddingSymmetric(vertical: 4),
                         ],
@@ -291,21 +307,35 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                 ),
                 buildButton(
                   context: context,
-                  bgColor: AppColors.disable,
+                  bgColor: isButtonEnable ? AppColors.primaryBlue : AppColors.disable,
                   hasImage: false,
                   onPressed: () {
                     // ADD NEW ITEM API,
-                    getUserJournalBloc.add(AddNewDietEvent(
-                      dietName: 'milk',
-                      proteinPercentage: proteinController.text,
-                      carbsPercentage: carbsController.text,
-                      fatPercentage: fatController.text,
-                      surplusPercentage: '',
-                      deficitPercentage: '',
-                      mealSchedule: '',
-                      colorCode: '',
-                      isDefault: false,
-                    ));
+                    if (nameController.text.isEmpty) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Name value');
+                    } else if (weightController.text.isEmpty) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Weight value');
+                    } else if (calController.text.isEmpty || (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Cal value');
+                    } else if (fatController.text.isEmpty || (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Fat value');
+                    } else if (carbsController.text.isEmpty || (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Carbs value');
+                    } else if (proteinController.text.isEmpty || (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))) {
+                      Fluttertoast.showToast(msg: 'Please fill correct Protein value');
+                    } else {
+                      getUserJournalBloc.add(AddNewDietEvent(
+                        dietName: nameController.text,
+                        proteinPercentage: proteinController.text,
+                        carbsPercentage: carbsController.text,
+                        fatPercentage: fatController.text,
+                        surplusPercentage: '',
+                        deficitPercentage: '',
+                        mealSchedule: '',
+                        colorCode: '',
+                        isDefault: false,
+                      ));
+                    }
                   },
                   textColor: Colors.white,
                   title: StringUtils.saveNewItem,
@@ -326,38 +356,64 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     TextEditingController? controller,
   }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           title.toString(),
           style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
         ),
-        commonProgressbar(
-            progressColor: progressColor,
-            width: 70.w,
-            lineHeight: 8.0,
-            percent: percent ?? 0.5),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            commonProgressbar(progressColor: progressColor, width: 70.w, lineHeight: 8.0, percent: percent ?? 0.5),
+          ],
+        ),
         Text(
           '$gramCount / $totalGram',
-          style: textTheme?.bodyMedium
-              ?.copyWith(color: AppColors.darkGray, height: 1.7),
+          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray, height: 1.7),
         ),
         SizedBox(
-                width: 70,
-                child: commonTextField(
-                    context: context,
-                    hintText: "cal",
-                    isPassword: false,
-                    controller: controller))
-            .paddingSymmetric(vertical: 5),
+          width: 70,
+          child: commonTextField(
+              textInputType: TextInputType.number,
+              context: context,
+              hintText: "cal",
+              isPassword: false,
+              controller: controller,
+              onChanged: (String? value) {
+                if (value != null && value != '') {
+                  setState(() {
+                    // print(double.parse(value));
+                    List<String> myData = totalGram!.split(' ');
+                    // print(myData[0]);
+                    if (double.parse(value) > double.parse(myData[0])) {
+                      showToast(message: 'Value Can\'t be more than ${myData[0]}', isSuccess: false);
+                    }
+                    if (nameController.text.isEmpty) {
+                      isButtonEnable = false;
+                    } else if (weightController.text.isEmpty) {
+                      isButtonEnable = false;
+                    } else if (calController.text.isEmpty || (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))) {
+                      isButtonEnable = false;
+                    } else if (fatController.text.isEmpty || (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))) {
+                      isButtonEnable = false;
+                    } else if (carbsController.text.isEmpty || (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                      isButtonEnable = false;
+                    } else if (proteinController.text.isEmpty || (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))) {
+                      isButtonEnable = false;
+                    } else {
+                      isButtonEnable = true;
+                    }
+                  });
+                }
+              }),
+        ).paddingSymmetric(vertical: 5),
       ],
-    ).paddingSymmetric(horizontal: 33.w, vertical: 6.h);
+    );
   }
 
-  Widget commonProgressbar(
-      {Color? progressColor,
-      double? width,
-      double? lineHeight,
-      double? percent}) {
+  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: Radius.circular(10.r),
