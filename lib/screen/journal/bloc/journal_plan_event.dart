@@ -54,8 +54,6 @@ class JournalAddExerciseEvent extends JournalPlanEvent {
   JournalAddExerciseEvent({required this.dateTime});
 }
 
-
-
 class JournalScanBarcodeEvent extends JournalPlanEvent {
   final String barcode;
 
@@ -67,7 +65,6 @@ class JournalSearchEvent extends JournalPlanEvent {
 
   JournalSearchEvent({required this.journalSearchModelList});
 }
-
 
 class JournalAddToShoppingListEvent extends JournalPlanEvent {
   final String productID;
@@ -97,13 +94,16 @@ class JournalAddToShoppingListEvent extends JournalPlanEvent {
   });
 }
 
-
 class JournalAddToEatenEvent extends JournalPlanEvent {
-  final String mealID;
+    final String? mealId;
+    final String? mealName;
+    final num? calorie;
+    final String? mealType;
+    final num? noOfServing;
+    final String? recipeId;
+    final num? protein;
+    final num? fat;
+    final num? carbs;
 
-
-  JournalAddToEatenEvent({
-    required this.mealID,
-
-  });
+  JournalAddToEatenEvent({required this.mealId, required this.mealName, required this.calorie, required this.mealType, required this.noOfServing, required this.recipeId, required this.protein, required this.fat, required this.carbs});
 }
