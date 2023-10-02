@@ -142,6 +142,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 children: [
                   InkWell(
                     onTap: () {
+                      //Get.toNamed('ProfileScreen');
                       Get.toNamed('/GoogleMapScreen');
                     },
                     child: Image.asset(

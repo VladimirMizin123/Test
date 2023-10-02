@@ -23,6 +23,7 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    print("Model:- ${model.firstName}");
     return Scaffold(
       body: Container(
         height: size.height.h,
@@ -48,7 +49,7 @@ class _BuildMyProfileScreenState extends State<BuildMyProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      StringUtils.mindyPro,
+                      model.firstName,
                       style: textTheme.displayMedium
                           ?.copyWith(color: const Color(0xFF000000)),
                     ).paddingOnly(bottom: 3.h, left: 3.w, right: 3.w),

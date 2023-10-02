@@ -97,9 +97,10 @@ Widget commonTextField({
     height: 48.h,
     child: TextFormField(
       controller: controller,
-      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: const Color(0xFF5F5F5F),
-          ),
+      style: Theme.of(context)
+          .textTheme
+          .bodyLarge!
+          .copyWith(color: const Color(0xFF5F5F5F), fontSize: 16.sp),
       obscureText: eyeShow == true
           ? isPassword
               ? false
