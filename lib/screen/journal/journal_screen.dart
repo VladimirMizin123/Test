@@ -568,7 +568,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                             InkWell(
                                               onTap: () {
                                                 // REMOVE WATER
-                                                if (getDashboardModel!.data!.dailyWaterGoals == 0) {
+                                                if (getDashboardModel!.data!.totalIntakeWater == 0) {
                                                   Fluttertoast.showToast(msg: 'WalterGoal Can\'t be 0');
                                                 } else {
                                                   bloc.add(RemoveWaterEvent(quantity: waterML.toString()));
