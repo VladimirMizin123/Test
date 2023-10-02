@@ -169,13 +169,13 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
   }
 
   _onAddEaten(JournalAddToEatenEvent event, Emitter<JournalMealPlanState> emit) async {
-    emit(JournalAddEatenLoadingState(mealID: event.mealID));
+    emit(JournalAddEatenLoadingState(mealID: event.mealId!));
     try {
-      await _repository.addEaten(mealID: event.mealID).fold((left) {
+      await _repository.addEatenMeal(mealId: event.mealId!, calorie: event.calorie, carbs: event.carbs, fat: event.fat, mealName: event.mealName, mealType: event.mealType, noOfServing: event.noOfServing, protein: event.protein, recipeId: event.recipeId).fold((left) {
         emit(JournalSearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(JournalAddEatenSuccessState(isAdded: right.success, mealID: event.mealID));
+        emit(JournalAddEatenSuccessState(isAdded: right.success, mealID: event.mealId!));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

@@ -13,6 +13,10 @@ const String userMealPlanCountState = 'userMealPlanCountState';
 const String prefWaterML = 'waterML';
 const String prefExerciseCAl = 'exerciseCAl';
 const String forgetPassToken = 'forget_pass_token';
+const String totalCalorie = 'totalCalorie';
+const String totalProtein = 'totalProtein';
+const String totalFat = 'totalFat';
+const String totalCarbs = 'totalCarbs';
 
 class PreferenceUtils {
   static Future<SharedPreferences> get _instance async =>

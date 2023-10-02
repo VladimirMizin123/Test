@@ -12,14 +12,7 @@ import 'package:gymeats_mobile/widget/svg_image.dart';
 
 import '../constant/string_utils.dart';
 
-Widget buildButton(
-    {required BuildContext context,
-    String? title,
-    void Function()? onPressed,
-    Color? bgColor,
-    Color? textColor,
-    bool? hasImage = false,
-    String? imagePath}) {
+Widget buildButton({required BuildContext context, String? title, void Function()? onPressed, Color? bgColor, Color? textColor, bool? hasImage = false, String? imagePath}) {
   return SizedBox(
     width: double.infinity.w,
     height: 48.h,
@@ -45,11 +38,7 @@ Widget buildButton(
                   ),
                 )
               : const SizedBox(),
-          Text(title!,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .copyWith(color: textColor, fontSize: 19.sp)),
+          Text(title!, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: textColor, fontSize: 19.sp)),
         ],
       ),
     ),
@@ -71,15 +60,9 @@ Widget buildBorderButton({
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(color: borderColor)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: borderColor)),
       ),
-      child: Text(title!,
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall!
-              .copyWith(color: textColor)),
+      child: Text(title!, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: textColor)),
     ),
   );
 }
@@ -108,10 +91,7 @@ Widget commonTextField({
       decoration: InputDecoration(
         hintText: hintText,
         isDense: true,
-        hintStyle: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF5F5F5F)),
+        hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: const Color(0xFF5F5F5F)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -141,21 +121,7 @@ Widget commonTextField({
   );
 }
 
-Widget commonUserTypeTextField(
-    {required String hintText,
-    required TextEditingController controller,
-    required BuildContext context,
-    required double width,
-    required double fontSize,
-    required FontWeight? fontWeight,
-    required Color fontColor,
-    required Color valueColor,
-    Color? borderColor,
-    required Color cursorColor,
-    required TextInputType textInputType,
-    required Function(String value) onChange,
-    bool isSuffix = false,
-    bool isReadOnly = false}) {
+Widget commonUserTypeTextField({required String hintText, required TextEditingController controller, required BuildContext context, required double width, required double fontSize, required FontWeight? fontWeight, required Color fontColor, required Color valueColor, Color? borderColor, required Color cursorColor, required TextInputType textInputType, required Function(String value) onChange, bool isSuffix = false, bool isReadOnly = false}) {
   return Container(
     height: 48.h,
     width: width.w,
@@ -180,29 +146,22 @@ Widget commonUserTypeTextField(
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,
-              hintStyle: TextStyle(
-                  fontSize: fontSize.sp,
-                  fontWeight: FontWeight.w400,
-                  color: fontColor),
+              hintStyle: TextStyle(fontSize: fontSize.sp, fontWeight: FontWeight.w400, color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: borderColor ?? Colors.transparent),
+                borderSide: BorderSide(color: borderColor ?? Colors.transparent),
               ),
             ),
           ),
@@ -211,10 +170,7 @@ Widget commonUserTypeTextField(
             visible: isSuffix,
             child: const Text(
               StringUtils.lbs,
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: Colors.white),
             ).marginOnly(right: 5))
       ],
     ),
@@ -265,10 +221,7 @@ Widget commonSearchTextField({
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,
-              hintStyle: TextStyle(
-                  fontSize: fontSize.sp,
-                  fontWeight: FontWeight.w400,
-                  color: fontColor),
+              hintStyle: TextStyle(fontSize: fontSize.sp, fontWeight: FontWeight.w400, color: fontColor),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Colors.transparent),
@@ -306,21 +259,9 @@ Widget commonSearchTextField({
 
 showToast({required String message, required bool isSuccess}) {
   if (isSuccess) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0);
+    Fluttertoast.showToast(msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Colors.green, textColor: Colors.white, fontSize: 16.0);
   } else {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-        fontSize: 16.0);
+    Fluttertoast.showToast(msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, textColor: Colors.white, backgroundColor: Colors.red, fontSize: 16.0);
   }
 }
 
@@ -331,10 +272,7 @@ Widget arrowButton({String? icon, bool isDisable = false}) {
     decoration: BoxDecoration(
       color: Colors.white60,
       shape: BoxShape.circle,
-      border: Border.all(
-          style: BorderStyle.solid,
-          color: AppColors.disable,
-          width: 1.0), // Set border width
+      border: Border.all(style: BorderStyle.solid, color: AppColors.disable, width: 1.0), // Set border width
     ),
     child: Center(
       child: Image.asset(
@@ -359,11 +297,7 @@ Widget buildGymEatsHeader({Widget? child, Color? bgColor}) {
   );
 }
 
-Widget dashBoardCardView(
-    {Widget? child,
-    double? height,
-    double? width,
-    EdgeInsetsGeometry? margin}) {
+Widget dashBoardCardView({Widget? child, double? height, double? width, EdgeInsetsGeometry? margin}) {
   return Container(
     height: height,
     width: width,
@@ -387,37 +321,39 @@ Widget commonSliderView({
   String? icon,
   String? title,
   TextTheme? textTheme,
+  BuildContext? context,
 }) {
-  return Container(
-    height: 48.h,
-    width: 170.w,
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(0, 76, 99, 0.08),
-            spreadRadius: 0.5,
-            blurRadius: 0.5,
-            offset: Offset(0, 0),
-          ),
-        ]),
-    child: Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Image.asset(
-            icon.toString(),
-            height: 28.h,
-            width: 28.w,
-          ),
-          Text(
-            title.toString(),
-            style:
-                textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
-          ),
-          addIcon(),
-        ],
+  return GestureDetector(
+    onTap: () {
+      Get.toNamed("/AddNewItemScreen");
+    },
+    child: Container(
+      height: 48.h,
+      width: 170.w,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: Colors.white, boxShadow: const [
+        BoxShadow(
+          color: Color.fromRGBO(0, 76, 99, 0.08),
+          spreadRadius: 0.5,
+          blurRadius: 0.5,
+          offset: Offset(0, 0),
+        ),
+      ]),
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Image.asset(
+              icon.toString(),
+              height: 28.h,
+              width: 28.w,
+            ),
+            Text(
+              title.toString(),
+              style: textTheme?.headlineSmall?.copyWith(color: AppColors.darkGray),
+            ),
+            addIcon(),
+          ],
+        ),
       ),
     ),
   );
@@ -459,12 +395,7 @@ Widget mealPlanCard({
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
-            boxShadow: const [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 76, 99, 0.08),
-                  blurRadius: 5,
-                  spreadRadius: 2)
-            ],
+            boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
             borderRadius: BorderRadius.circular(14),
           ),
           child: mealData!.isSkipped == true
@@ -478,9 +409,7 @@ Widget mealPlanCard({
                             height: 80.h,
                             width: 90.w,
                             color: AppColors.lightGrey,
-                            child: Center(
-                                child: SvgPicture.asset(
-                                    AssetsUtils.icSkippedIcon)),
+                            child: Center(child: SvgPicture.asset(AssetsUtils.icSkippedIcon)),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -490,10 +419,7 @@ Widget mealPlanCard({
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(StringUtils.skipped,
-                                  style: FontUtils.h16(
-                                      fontColor: AppColors.darkGray,
-                                      fontWeight: FWT.regular)),
+                              Text(StringUtils.skipped, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
                             ],
                           ),
                         ),
@@ -518,8 +444,7 @@ Widget mealPlanCard({
                                   child: CircularProgressIndicator(
                                 color: AppColors.lightGrey,
                               )),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -531,27 +456,15 @@ Widget mealPlanCard({
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(mealData.meal ?? '',
-                                    style: FontUtils.h14(
-                                        fontColor: AppColors.darkGray,
-                                        fontWeight: FWT.lightMedium)),
-                                Text(mealData.recipe!.name ?? '',
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: FontUtils.h16(
-                                        fontColor: AppColors.darkGray,
-                                        fontWeight: FWT.regular)),
-                                Text(mealData.calories!.toStringAsFixed(2),
-                                    style: FontUtils.h14(
-                                        fontColor: AppColors.letsEatButton,
-                                        fontWeight: FWT.lightMedium)),
+                                Text(mealData.meal ?? '', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                Text(mealData.recipe!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
+                                Text(mealData.calories!.toStringAsFixed(2), style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Icon(Icons.arrow_forward_ios_outlined,
-                            size: 18, color: AppColors.middleGray)
+                        const Icon(Icons.arrow_forward_ios_outlined, size: 18, color: AppColors.middleGray)
                       ],
                     ),
                     SizedBox(height: 10.h),
@@ -559,14 +472,8 @@ Widget mealPlanCard({
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        simpleTextBorderButton(
-                            context: context,
-                            buttonLable: StringUtils.skipMeal,
-                            onTap: onSkipMealTap),
-                        simpleTextBorderButton(
-                            context: context,
-                            buttonLable: StringUtils.swapMeal,
-                            onTap: onSwapMealTap),
+                        simpleTextBorderButton(context: context, buttonLable: StringUtils.skipMeal, onTap: onSkipMealTap),
+                        simpleTextBorderButton(context: context, buttonLable: StringUtils.swapMeal, onTap: onSwapMealTap),
                       ],
                     ),
                   ],
@@ -595,30 +502,8 @@ Widget simpleTextBorderButton({
       child: Container(
         height: height ?? screenSize.height * 0.04,
         width: width ?? screenSize.width * 0.41,
-        decoration: isFillColor
-            ? BoxDecoration(
-                border: Border.all(
-                    color: color ?? AppColors.primaryBlue,
-                    width: isDarkColor ? 2 : 1),
-                color: color ?? AppColors.primaryBlue,
-                borderRadius: BorderRadius.circular(8))
-            : BoxDecoration(
-                border: Border.all(
-                    color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1),
-                borderRadius: BorderRadius.circular(10)),
-        child: Center(
-            child: isLoadingWidget
-                ? const CircularProgressIndicator(color: AppColors.whiteColor)
-                : Text(buttonLable!,
-                    style: isFillColor
-                        ? FontUtils.h16(
-                            fontColor: lableColor ?? AppColors.whiteColor,
-                            fontWeight:
-                                isDarkColor ? FWT.semiBold : FWT.regular)
-                        : FontUtils.h16(
-                            fontColor: lableColor ?? AppColors.primaryBlue,
-                            fontWeight:
-                                isDarkColor ? FWT.semiBold : FWT.regular))),
+        decoration: isFillColor ? BoxDecoration(border: Border.all(color: color ?? AppColors.primaryBlue, width: isDarkColor ? 2 : 1), color: color ?? AppColors.primaryBlue, borderRadius: BorderRadius.circular(8)) : BoxDecoration(border: Border.all(color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1), borderRadius: BorderRadius.circular(10)),
+        child: Center(child: isLoadingWidget ? const CircularProgressIndicator(color: AppColors.whiteColor) : Text(buttonLable!, style: isFillColor ? FontUtils.h16(fontColor: lableColor ?? AppColors.whiteColor, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular) : FontUtils.h16(fontColor: lableColor ?? AppColors.primaryBlue, fontWeight: isDarkColor ? FWT.semiBold : FWT.regular))),
       ),
     ),
   );

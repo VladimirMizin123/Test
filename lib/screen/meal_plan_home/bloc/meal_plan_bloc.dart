@@ -47,7 +47,6 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
 
   _onGetMealLogByDate(GetMealLogByDateEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(OnGetMealLogByDateLoadingState());
-
     try {
       await _repository.getMealLogByDate(event.date!).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
