@@ -61,6 +61,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Options:- ${model.options}");
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -77,16 +78,16 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                         height: 10,
                       ),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Center(
-                              child: Image.asset(
-                                AssetsUtils.gymEatsLogo,
-                                fit: BoxFit.cover,
-                                color: color,
-                                height: 60.h,
-                              ),
-                            ),
+                          SizedBox(
+                            width: 50.w,
+                          ),
+                          Image.asset(
+                            AssetsUtils.gymEatsLogo,
+                            fit: BoxFit.cover,
+                            color: color,
+                            height: 60.h,
                           ),
                           if (model.userProfileImage != null) ...{
                             ClipRRect(
@@ -97,6 +98,10 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                 model.userProfileImage!,
                                 fit: BoxFit.fill,
                               ),
+                            ),
+                          }else...{
+                            SizedBox(
+                              width: 50.w,
                             ),
                           }
                         ],
@@ -202,37 +207,37 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     final pageData = model.options!
                                         .sublist(startIndex, endIndex);
 
-                                    return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: pageData
-                                            .map((item) => Container(
-                                                  /*height: 80.h,
-                                              width: 80.h,*/
-                                                  padding:
-                                                      const EdgeInsets.all(18),
-                                                  margin: const EdgeInsets.only(
-                                                      right: 2.5, left: 2.5),
-                                                  alignment: Alignment.center,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color:
-                                                              Colors.black54),
-                                                  child: Text(
-                                                    item,
-                                                    style: const TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                                  ),
-                                                ))
-                                            .toList(),
-                                      ),
+                                    return Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      mainAxisAlignment:
+                                          pageData.length>3?MainAxisAlignment.spaceEvenly:MainAxisAlignment.start,
+                                      children: List.generate(pageData.length,
+                                          (index) {
+                                        return Container(
+                                          height: 70.h,
+                                          width: 70.w,
+                                          padding: const EdgeInsets.all(18),
+                                          margin: EdgeInsets.only(
+                                              right:
+                                                  index == (pageData.length - 1)
+                                                      ? 0
+                                                      : 2.5,
+                                              left: index == 0 ? 0 : 2.5),
+                                          alignment: Alignment.center,
+                                          decoration:  BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: pageData[index].optionColor),
+                                          child: Text(
+                                            pageData[index].optionName,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        );
+                                      }),
                                     );
                                   },
                                 ),
