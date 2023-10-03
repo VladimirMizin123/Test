@@ -274,7 +274,6 @@ class _JournalScreenState extends State<JournalScreen> {
                     }
                     if (state is RemoveWaterLoadingData) {
                       isRemoveWater = true;
-                    
                     }
                     if (state is RemoveWaterErrorState) {
                       isRemoveWater = false;
@@ -508,6 +507,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                         title: StringUtils.lunch,
                                         dataList: lunchDataList,
                                         cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(),
+                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.lunch
                                       ),
                                       commonFoodItemView(
                                         textTheme: textTheme,
@@ -515,6 +515,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                         title: StringUtils.dinner,
                                         dataList: dinnerDataList,
                                         cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(),
+                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.dinner
                                       ),
                                       commonFoodItemView(
                                         textTheme: textTheme,
@@ -522,6 +523,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                         title: StringUtils.snack,
                                         dataList: snackDataList,
                                         cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(),
+                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.snack
                                       ),
                                     ],
                                   ),
@@ -542,11 +544,12 @@ class _JournalScreenState extends State<JournalScreen> {
                                             InkWell(
                                               onTap: () {
                                                 Get.toNamed('/AddWaterScreen', arguments: AddWaterArguments(dailyGoal: getDashboardModel!.data!.dailyWaterGoals.toString()))?.then((value) {
-                                                  if (value != null) {
-                                                    setState(() {
-                                                      waterML = waterML + int.parse(value);
-                                                    });
-                                                  }
+                                                  bloc.add(GetWaterDetails(date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
+                                                  // if (value != null) {
+                                                  //   setState(() {
+                                                  //     waterML = waterML + int.parse(value);
+                                                  //   });
+                                                  // }
                                                 });
                                               },
                                               child: ListTile(
@@ -569,7 +572,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                               onTap: () {
                                                 // REMOVE WATER
                                                 if (getDashboardModel!.data!.totalIntakeWater == 0) {
-                                                  Fluttertoast.showToast(msg: 'WalterGoal Can\'t be 0');
+                                                  Fluttertoast.showToast(msg: 'Walter Goal Can\'t be 0');
                                                 } else {
                                                   bloc.add(RemoveWaterEvent(quantity: waterML.toString()));
                                                 }
@@ -911,7 +914,14 @@ class _JournalScreenState extends State<JournalScreen> {
     );
   }
 
-  Widget commonFoodItemView({String image = '', String title = '', String cal = '', TextTheme? textTheme, List<MealData>? dataList}) {
+  Widget commonFoodItemView({
+    String image = '',
+    String title = '',
+    String cal = '',
+    TextTheme? textTheme,
+    List<MealData>? dataList,
+    bool? isLoaderWidgetShow,
+  }) {
     bool isDone = false;
     for (var element in tmpMealTrackerDataList!) {
       if (dataList![0].meal == element.meal!.meal) {
@@ -964,10 +974,13 @@ class _JournalScreenState extends State<JournalScreen> {
               child: InkWell(
                 onTap: () {
                   if (!isDone) {
-                    bloc.add(AddEatenMealData(mealId: dataList[0].id!));
+                    bloc.add(AddEatenMealData(mealId: dataList[0].id!,
+                    title: title,
+                    
+                    ));
                   }
                 },
-                child: isDoneLoader
+                child: isLoaderWidgetShow ?? false
                     ? SizedBox(height: 25.h, width: 25.w, child: const AppCenterLoader())
                     : Container(
                         height: 25.h,

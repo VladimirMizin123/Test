@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -34,9 +35,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<GroceryShoppingData> edgesList = [];
   AskReceiveOrder? askReceiveOrder;
   bool isListClearByClick = false;
-
   bool isGroceryFetchLoadingState = true;
-
   List<GroceryShoppingData> searchEdgesList = [];
   bool isSearchOn = false;
 
@@ -107,6 +106,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                 }
               }
               selectedItemCount = count;
+            }
+            
+            if (state is GroceryAddToShoppingErrorState) {
+              for (var i = 0; i < edgesList.length; i++) {
+                  edgesList[i].isAddItem = false;
+                  edgesList[i].isRemoveItem = false;
+              }
             }
 
             // Grocery Delete STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -237,6 +243,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             //   groceryBloc.add(GroceryFetchEvent());
                             // });
                           },
+                          onChanged: (String? value) {
+                            setState(() {
+                              if (value != null || value != '') {
+                                isSearchOn = true;
+                                searchEdgesList = edgesList.where((item) => item.productName!.toLowerCase().contains(value!.toLowerCase())).toList();
+                              } else {
+                                isSearchOn = false;
+                              }
+                            });
+                          },
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.search),
                             hintText: 'Search for item',
@@ -349,7 +365,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                         itemBuilder: (BuildContext context, int index) {
                                           return GestureDetector(
                                             onTap: () {
-                                              Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: searchEdgesList[index].productName));
+                                              Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(groceryShoppingData: searchEdgesList[index]))!.then((value) {
+                                                groceryBloc.add(GroceryFetchEvent());
+                                              });
                                             },
                                             child: Container(
                                               color: Colors.transparent,
@@ -529,7 +547,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                     itemBuilder: (BuildContext context, int index) {
                                       return GestureDetector(
                                         onTap: () {
-                                          Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: edgesList[index].productName));
+                                          Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(groceryShoppingData: edgesList[index]))!.then((value) {
+                                            groceryBloc.add(GroceryFetchEvent());
+                                          });
                                         },
                                         child: Container(
                                           color: Colors.transparent,
@@ -713,14 +733,16 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     // ),
                     GroceryAddButtonWidget(
                       onTap: () {
+                        List<GroceryShoppingData> edgesDummyList = [];
                         if (edgesList.isNotEmpty) {
-                          List<GroceryShoppingData> edgesDummyList = [];
                           for (var i = 0; i < edgesList.length; i++) {
                             if (edgesList[i].isAddedForViewCart == true) {
                               edgesDummyList.add(edgesList[i]);
                             }
                           }
+                        }
 
+                        if (edgesDummyList.isNotEmpty) {
                           showModalBottomSheet(
                             context: context,
                             builder: (context) {
@@ -728,6 +750,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             },
                             isDismissible: false,
                           );
+                        } else {
+                          Fluttertoast.showToast(msg: 'Select atleast 1 item');
                         }
                       },
                       buttonLable: 'View Cart',

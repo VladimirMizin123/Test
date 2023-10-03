@@ -33,7 +33,6 @@ class GetSelectedImagePath extends GetUserJournalEvent {
 
 class AddEatenMealData extends GetUserJournalEvent {
   String? mealId;
-
   String? userId;
   String? mealName;
   String? mealType;
@@ -44,8 +43,9 @@ class AddEatenMealData extends GetUserJournalEvent {
   num? fat;
   num? carbs;
   num? value;
+  String? title;
 
-  AddEatenMealData({this.mealId, this.userId, this.mealName, this.mealType, this.calorie, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs, this.value});
+  AddEatenMealData({this.mealId, this.userId, this.mealName, this.mealType, this.calorie, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs, this.value, this.title});
 }
 
 class AddNewItemEvent extends GetUserJournalEvent {

@@ -272,7 +272,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
+                                                  // Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),

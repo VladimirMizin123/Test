@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -255,10 +253,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 shrinkWrap: true,
                                                 physics: const NeverScrollableScrollPhysics(),
                                                 children: [
-                                                  myProgressBarCardView('Cal', fetchModelData!.recipe!.nutrientsPerServing!.calories!, double.parse(PreferenceUtils.getString(totalCalorie)).floor().toDouble(), AppColors.primaryBlue),
-                                                  myProgressBarCardView('Fat', fetchModelData!.recipe!.nutrientsPerServing!.fat!, double.parse(PreferenceUtils.getString(totalFat)).floor().toDouble(), AppColors.coral),
-                                                  myProgressBarCardView('Carbs', fetchModelData!.recipe!.nutrientsPerServing!.carbs!, double.parse(PreferenceUtils.getString(totalCarbs)).floor().toDouble(), AppColors.mint),
-                                                  myProgressBarCardView('Protein', fetchModelData!.recipe!.nutrientsPerServing!.protein!, double.parse(PreferenceUtils.getString(totalProtein)).floor().toDouble(), AppColors.skyBlue),
+                                                  myProgressBarCardView('Cal', double.parse(fetchModelData!.recipe!.nutrientsPerServing!.calories!.toString()), double.parse(PreferenceUtils.getString(totalCalorie)).floor().toDouble(), AppColors.primaryBlue),
+                                                  myProgressBarCardView('Fat', double.parse(fetchModelData!.recipe!.nutrientsPerServing!.fat!.toString()), double.parse(PreferenceUtils.getString(totalFat)).floor().toDouble(), AppColors.coral),
+                                                  myProgressBarCardView('Carbs', double.parse(fetchModelData!.recipe!.nutrientsPerServing!.carbs!.toString()), double.parse(PreferenceUtils.getString(totalCarbs)).floor().toDouble(), AppColors.mint),
+                                                  myProgressBarCardView('Protein', double.parse(fetchModelData!.recipe!.nutrientsPerServing!.protein!.toString()), double.parse(PreferenceUtils.getString(totalProtein)).floor().toDouble(), AppColors.skyBlue),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
