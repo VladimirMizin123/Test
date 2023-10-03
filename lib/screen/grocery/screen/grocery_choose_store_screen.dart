@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +29,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   int selectedStoreCount = 0;
 
   List<Cart> productsList = [];
+  List<Cart> searchedProductsList = [];
+  bool isSearchOn = false;
   @override
   void initState() {
     super.initState();
@@ -89,11 +92,19 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextFormField(
-                        onTap: () {},
-                        readOnly: true,
+                        onChanged: (String? value) {
+                          setState(() {
+                            if (value!.isEmpty) {
+                              isSearchOn = false;
+                            } else {
+                              isSearchOn = true;
+                              searchedProductsList = productsList.where((item) => item.store!.name!.toLowerCase().contains(value.toLowerCase())).toList();
+                            }
+                          });
+                        },
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.search, color: AppColors.darkGray),
-                          hintText: 'Search',
+                          hintText: 'Search store here...',
                           hintStyle: FontUtils.h16(fontColor: AppColors.middleGray),
                           border: InputBorder.none,
                           enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
@@ -113,107 +124,233 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   style: FontUtils.h14(fontColor: AppColors.black),
                                 ),
                               )
-                        : SingleChildScrollView(
-                            child: ListView.builder(
-                              itemCount: productsList.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          boxShadow: boxShadowWidget,
-                                          color: AppColors.whiteColor,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                          child: Row(
+                        : isSearchOn
+                            ? searchedProductsList.isNotEmpty
+                                ? SingleChildScrollView(
+                                    child: ListView.builder(
+                                      itemCount: searchedProductsList.length,
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          child: Column(
                                             children: [
-                                              // const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
-                                              Expanded(
-                                                  flex: 4,
-                                                  child: Center(
-                                                    child: Image(
-                                                      image: NetworkImage(productsList[index].store!.logoPhotos![0]),
-                                                      height: 60.h,
-                                                      // width: 40.h,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  )),
-                                              const SizedBox(width: 10),
-                                              Expanded(
-                                                flex: 4,
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'The nearest time for pickup,',
-                                                      style: FontUtils.h14(fontColor: AppColors.black),
-                                                    ),
-                                                    Text(
-                                                      'tomorrow at 10am',
-                                                      style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
-                                                    ),
-                                                  ],
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  boxShadow: boxShadowWidget,
+                                                  color: AppColors.whiteColor,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                                  child: Row(
+                                                    children: [
+                                                      // const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
+                                                      Expanded(
+                                                          flex: 4,
+                                                          child: Center(
+                                                            child: CachedNetworkImage(
+                                                              imageUrl: productsList[index].store!.logoPhotos![0],
+                                                              height: 60.h,
+                                                              // width: 40.h,
+                                                              fit: BoxFit.cover,
+                                                              errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
+                                                              placeholder: (context, url) => const Center(
+                                                                  child: CircularProgressIndicator(
+                                                                color: AppColors.lightGrey,
+                                                              )),
+                                                            ),
+                                                            // Image(
+                                                            //   image: NetworkImage(searchedProductsList[index].store!.logoPhotos![0]),
+                                                            //   height: 60.h,
+                                                            //   // width: 40.h,
+                                                            //   fit: BoxFit.cover,
+                                                            // ),
+                                                          )),
+                                                      const SizedBox(width: 10),
+                                                      Expanded(
+                                                        flex: 4,
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              productsList[index].store!.name ?? '', // 'The nearest time for pickup,',
+                                                              style: FontUtils.h14(fontColor: AppColors.black),
+                                                            ),
+                                                            Text(
+                                                              'tomorrow at 10am',
+                                                              style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              if (searchedProductsList[index].store!.isSelected) {
+                                                                if (selectedStoreCount == 0) {
+                                                                } else {
+                                                                  searchedProductsList[index].store!.isSelected = false;
+                                                                  selectedStoreCount = selectedStoreCount - 1;
+                                                                }
+                                                              } else {
+                                                                if (selectedStoreCount == 3) {
+                                                                } else {
+                                                                  searchedProductsList[index].store!.isSelected = true;
+                                                                  selectedStoreCount = selectedStoreCount + 1;
+                                                                }
+                                                              }
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            height: 22.h,
+                                                            width: 22.w,
+                                                            decoration: BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                                            ),
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: [
+                                                                Visibility(
+                                                                  visible: searchedProductsList[index].store!.isSelected,
+                                                                  child: Container(
+                                                                    decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                                                                    height: 14.h,
+                                                                    width: 14.w,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (productsList[index].store!.isSelected) {
-                                                        if (selectedStoreCount == 0) {
-                                                        } else {
-                                                          productsList[index].store!.isSelected = false;
-                                                          selectedStoreCount = selectedStoreCount - 1;
-                                                        }
-                                                      } else {
-                                                        if (selectedStoreCount == 3) {
-                                                        } else {
-                                                          productsList[index].store!.isSelected = true;
-                                                          selectedStoreCount = selectedStoreCount + 1;
-                                                        }
-                                                      }
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    height: 22.h,
-                                                    width: 22.w,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(color: AppColors.primaryBlue, width: 2),
-                                                    ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : const Text('No Search Found!')
+                            : SingleChildScrollView(
+                                child: ListView.builder(
+                                  itemCount: productsList.length,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: boxShadowWidget,
+                                              color: AppColors.whiteColor,
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                              child: Row(
+                                                children: [
+                                                  // const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
+                                                  Expanded(
+                                                      flex: 4,
+                                                      child: Center(
+                                                        child: CachedNetworkImage(
+                                                          imageUrl: productsList[index].store!.logoPhotos![0],
+                                                          height: 60.h,
+                                                          // width: 40.h,
+                                                          fit: BoxFit.cover,
+                                                          errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
+                                                          placeholder: (context, url) => const Center(
+                                                              child: CircularProgressIndicator(
+                                                            color: AppColors.lightGrey,
+                                                          )),
+                                                        ),
+                                                        // Image(
+                                                        //   image: NetworkImage(productsList[index].store!.logoPhotos![0]),
+                                                        //   height: 60.h,
+                                                        //   // width: 40.h,
+                                                        //   fit: BoxFit.cover,
+                                                        // ),
+                                                      )),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    flex: 4,
                                                     child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Visibility(
-                                                          visible: productsList[index].store!.isSelected,
-                                                          child: Container(
-                                                            decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
-                                                            height: 14.h,
-                                                            width: 14.w,
-                                                          ),
+                                                        Text(
+                                                          productsList[index].store!.name ?? '', // 'The nearest time for pickup,',
+                                                          style: FontUtils.h14(fontColor: AppColors.black),
+                                                        ),
+                                                        Text(
+                                                          'tomorrow at 10am',
+                                                          style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
                                                         ),
                                                       ],
                                                     ),
                                                   ),
-                                                ),
-                                              )
-                                            ],
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          if (productsList[index].store!.isSelected) {
+                                                            if (selectedStoreCount == 0) {
+                                                            } else {
+                                                              productsList[index].store!.isSelected = false;
+                                                              selectedStoreCount = selectedStoreCount - 1;
+                                                            }
+                                                          } else {
+                                                            if (selectedStoreCount == 3) {
+                                                            } else {
+                                                              productsList[index].store!.isSelected = true;
+                                                              selectedStoreCount = selectedStoreCount + 1;
+                                                            }
+                                                          }
+                                                        });
+                                                      },
+                                                      child: Container(
+                                                        height: 22.h,
+                                                        width: 22.w,
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
+                                                          border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            Visibility(
+                                                              visible: productsList[index].store!.isSelected,
+                                                              child: Container(
+                                                                decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                                                                height: 14.h,
+                                                                width: 14.w,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                                    );
+                                  },
+                                ),
+                              ),
                   ),
                   const SizedBox(height: 30),
                   Padding(

@@ -35,6 +35,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   List<FetchMealPlanData> mealPlanList = [];
   List<MealDataByDate> mealDataByDate = [];
   bool isLoadingData = false;
+  bool isReadyToShowWidget = false;
 
   MealPlanBloc mealPlanBloc = MealPlanBloc();
 
@@ -61,8 +62,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 mealPlanBloc.add(GetMealLogByDateEvent(date: "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
                 break;
               }
-
-              
             }
 
             if (state is FetchMealPlanLoadingState) {
@@ -90,6 +89,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   print('JUMP DAY :::: ${mealPlanList.length}');
                   print('JUMP DAY :::: $i');
                   _pageController.jumpToPage(i);
+                  isReadyToShowWidget = true;
                   break;
                 }
               }
@@ -187,92 +187,125 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                         : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
                     mealPlanList.isEmpty
                         ? const SizedBox()
-                        : Container(
-                            color: Colors.grey.withOpacity(0.05),
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${StringUtils.day} ${mealPlanList[selectedDayIndex].day}',
-                                  style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
-                                ),
-                                Wrap(
+                        : isReadyToShowWidget
+                            ? Container(
+                                color: Colors.grey.withOpacity(0.05),
+                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          if (selectedDayIndex == 0) {
-                                          } else {
-                                            _pageController.jumpToPage(selectedDayIndex - 1);
-                                          }
-                                        },
-                                        child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
-                                    GestureDetector(
-                                        onTap: () {
-                                          if (selectedDayIndex == mealPlanList.length) {
-                                          } else {
-                                            _pageController.jumpToPage(selectedDayIndex + 1);
-                                          }
-                                        },
-                                        child: arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1)),
+                                    Text(
+                                      '${StringUtils.day} ${mealPlanList[selectedDayIndex].day}',
+                                      style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                    ),
+                                    Wrap(
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {
+                                              if (selectedDayIndex == 0) {
+                                              } else {
+                                                _pageController.jumpToPage(selectedDayIndex - 1);
+                                              }
+                                            },
+                                            child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
+                                        GestureDetector(
+                                            onTap: () {
+                                              if (selectedDayIndex == mealPlanList.length) {
+                                              } else {
+                                                _pageController.jumpToPage(selectedDayIndex + 1);
+                                              }
+                                            },
+                                            child: arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1)),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
-                            ),
-                          ),
+                                ),
+                              )
+                            : Opacity(
+                                opacity: 0,
+                                child: Container(
+                                  color: Colors.grey.withOpacity(0.05),
+                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '',
+                                        style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                      ),
+                                      Wrap(
+                                        children: [
+                                          arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w),
+                                          arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                     mealPlanList.isEmpty
                         ? isLoadingData
                             ? const Expanded(child: AppCenterLoader())
                             : const SizedBox()
                         : Expanded(
-                            child: PageView(
-                              controller: _pageController,
-                              physics: const NeverScrollableScrollPhysics(),
-                              onPageChanged: (int? value) {
-                                setState(() {
-                                  selectedDayIndex = value ?? 0;
-                                });
-                                debugPrint('CURRENT PAGE : $value');
-                              },
-                              children: mealPlanList.map((e) {
-                                return SingleChildScrollView(
-                                  child: ListView.builder(
-                                    itemCount: e.meals!.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (BuildContext context, int index) {
-                                      return mealPlanCard(
-                                        onTap: () {
-                                          Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
-                                        },
-                                        mealData: e.meals![index],
-                                        context: context,
-                                        onSkipMealTap: () {
-                                          showModalBottomSheet(
+                            child: Stack(
+                              children: [
+                                PageView(
+                                  controller: _pageController,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  onPageChanged: (int? value) {
+                                    setState(() {
+                                      selectedDayIndex = value ?? 0;
+                                    });
+                                    debugPrint('CURRENT PAGE : $value');
+                                  },
+                                  children: mealPlanList.map((e) {
+                                    return SingleChildScrollView(
+                                      child: ListView.builder(
+                                        itemCount: e.meals!.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return mealPlanCard(
+                                            onTap: () {
+                                              Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                                            },
+                                            mealData: e.meals![index],
                                             context: context,
-                                            builder: (context) {
-                                              return SkipMealBottomSheet(
-                                                bloc: mealPlanBloc,
-                                                mealData: e.meals![index],
+                                            onSkipMealTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  return SkipMealBottomSheet(
+                                                    bloc: mealPlanBloc,
+                                                    mealData: e.meals![index],
+                                                  );
+                                                },
+                                                isDismissible: false,
                                               );
                                             },
-                                            isDismissible: false,
-                                          );
-                                        },
-                                        onSwapMealTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return SwapMealBottomSheet(mealPlanBloc: mealPlanBloc, mealData: e.meals![index], day: e.day);
+                                            onSwapMealTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  return SwapMealBottomSheet(mealPlanBloc: mealPlanBloc, mealData: e.meals![index], day: e.day);
+                                                },
+                                              );
                                             },
                                           );
                                         },
-                                      );
-                                    },
-                                  ),
-                                );
-                              }).toList(),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                                isReadyToShowWidget
+                                    ? const SizedBox()
+                                    : Container(
+                                        color: Colors.white,
+                                        child: const AppCenterLoader(),
+                                      ),
+                              ],
                             ),
                           ),
                   ],

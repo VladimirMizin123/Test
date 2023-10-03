@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
@@ -45,6 +46,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       caloriesTextBurnedController.text = addEntryArguments.allExerciseData?.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
       minutesController.text = '1';
     }
+    setState(() {
+      isButtonEnable = true;
+    });
   }
 
   @override
@@ -69,9 +73,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   ),
                 ),
                 Text(
-                  addEntryArguments.isFromHistory
-                      ? 'Exercise'
-                      : StringUtils.addEntry,
+                  addEntryArguments.isFromHistory ? 'Exercise' : StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -88,6 +90,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     context: context,
                     width: double.infinity.w,
                     fontSize: 16.sp,
+                    isReadOnly: true,
                     borderColor: AppColors.primaryBlue,
                     fontWeight: FontWeight.w400,
                     isSuffix: false,
@@ -102,8 +105,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'minutes',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
                         hintText: '00',
@@ -140,8 +142,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'Calories Burned',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
                         hintText: '00cal',
@@ -193,9 +194,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                         context: context,
                                         buttonLable: 'Delete',
                                         onTap: () {
-                                          bloc.add(DeleteExerciseEvent(
-                                              exerciseName:
-                                                  entryController.text));
+                                          bloc.add(DeleteExerciseEvent(exerciseName: entryController.text));
                                         },
                                         isDarkColor: true,
                                       ),
@@ -208,11 +207,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                   context: context,
                                   buttonLable: 'Update',
                                   onTap: () {
-                                    bloc.add(UpdateExerciseEvent(
-                                        id: '',
-                                        calorieBurnedPerMinute:
-                                            minutesController.text,
-                                        exerciseName: entryController.text));
+                                    bloc.add(UpdateExerciseEvent(id: '', calorieBurnedPerMinute: minutesController.text, exerciseName: entryController.text));
                                   },
                                   isDarkColor: true,
                                   isFillColor: true,
@@ -226,7 +221,14 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             hasImage: false,
                             textColor: AppColors.skyBlue,
                             onPressed: () {
-                              bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                              if (minutesController.text == '0' || minutesController.text.isEmpty) {
+                                Fluttertoast.showToast(msg: 'Minutes can\'t be 0');
+                              } else if (caloriesTextBurnedController.text == '0' || caloriesTextBurnedController.text.isEmpty) {
+                                Fluttertoast.showToast(msg: 'Calories can\'t be 0');
+                              } else {
+                                FocusScope.of(context).unfocus();
+                                bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                              }
                             },
                             bgColor: isButtonEnable ? AppColors.primaryBlue : AppColors.gray,
                           ).paddingOnly(bottom: 20.h);
@@ -238,11 +240,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     );
   }
 
-  Widget waterDetailsView(
-      {String? waterIcon,
-      String? waterQuantity,
-      double? height,
-      void Function()? onTap}) {
+  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -253,10 +251,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,
@@ -286,6 +281,5 @@ class AddEntryArguments {
   final GetAllExerciseData? allExerciseData;
   final bool isFromHistory;
 
-  AddEntryArguments(
-      {this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
+  AddEntryArguments({this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
 }

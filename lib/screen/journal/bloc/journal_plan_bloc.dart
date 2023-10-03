@@ -31,6 +31,18 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   _onScanBarcode(JournalScanBarcodeEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalBarcodeScannerState(barcode: event.barcode));
+    emit(JournalBarcodeScannerLoadingState());
+    try {
+      await _repository.fetchBarcode(event.barcode).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(JournalBarcodeScannerErrorState());
+      }, (right) {
+        emit(JournalBarcodeScannerSuccessState(barcodeScannerData: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(JournalBarcodeScannerErrorState());
+    }
   }
 
   _onFetchMealPlan(JournalPlanFetchEvent event, Emitter<JournalMealPlanState> emit) async {

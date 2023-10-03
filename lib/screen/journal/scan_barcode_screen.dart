@@ -138,6 +138,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       // widget.onBarcodeFetched(scanData);
       _qrViewController.dispose();
       scanBarcodeArguments.journalPlanBloc.add(JournalScanBarcodeEvent(barcode: scanData.code!));
+      
       Navigator.of(context).pop();
     });
   }

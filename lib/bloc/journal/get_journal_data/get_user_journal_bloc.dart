@@ -133,10 +133,13 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
   _onAddEatenMeal(AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(LoadingDoneState());
+      emit(AddItemLoadingState(title: event.title));
       await _eatenMealRepository.addEatenMeal(userId: userId, mealId: event.mealId ?? '', recipeId: event.recipeId ?? '', noOfServing: event.noOfServing ?? 0, mealName: event.mealName ?? '', mealType: event.mealType ?? '', calorie: event.calorie ?? 0, protein: event.protein ?? 0, fat: event.fat ?? 0, carbs: event.carbs ?? 0, value: event.value ?? 0).fold((left) {
+        emit(AddItemErrorState(title: event.title));
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
+        emit(AddItemSuccessState(title: event.title));
         dataList.map((e) {
           if (e.id!.contains(event.mealId ?? '')) {
             e.isDone = true;
@@ -146,6 +149,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
         emit(LoadGenMealData(genMealDataList: dataList));
       });
     } catch (e) {
+      emit(AddItemErrorState(title: event.title));
       showToast(isSuccess: false, message: e.toString());
     }
   }
@@ -226,6 +230,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       emit(RemoveWaterLoadingData());
       await _eatenMealRepository.removeWater(quantity: event.quantity).fold((left) {
         showToast(isSuccess: false, message: left.errorMessage!);
+        emit(RemoveWaterErrorState());
       }, (right) {
         emit(RemoveWaterErrorState());
         emit(DailyRecapAnsSuccessState(recapData: false));
@@ -233,7 +238,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
         showToast(isSuccess: false, message: right.message!);
       });
     } catch (e) {
-        emit(RemoveWaterErrorState());
+      emit(RemoveWaterErrorState());
 
       showToast(isSuccess: false, message: e.toString());
     }

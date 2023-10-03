@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
@@ -30,6 +31,16 @@ class JournalPlanRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
+    final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      await PreferenceUtils.setInt(userMealPlanCountState, 1);
+      return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
