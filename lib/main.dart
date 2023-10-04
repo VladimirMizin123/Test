@@ -1,5 +1,7 @@
 // List<CameraDescription> cameras = [];
 
+import 'dart:html';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +25,8 @@ import 'package:gymeats_mobile/screen/gender_screen/gender_screen.dart';
 import 'package:gymeats_mobile/screen/gender_screen/second_gym_instruction.dart';
 import 'package:gymeats_mobile/screen/gender_screen/show_meal_plan_btn.dart';
 import 'package:gymeats_mobile/screen/gender_screen/third_gym_instruction.dart';
-import 'package:gymeats_mobile/screen/get_location.dart';
+import 'package:gymeats_mobile/screen/get_location/get_location.dart';
+import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/add_delivery_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/map_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/search_delivery_address_screen.dart';
@@ -154,7 +157,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     bloc.add(LatLogEvent());
     return ScreenUtilInit(
-      designSize: const Size(360, 690),
+      designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -449,6 +452,10 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/GoogleMapScreen',
               page: () => const GetUserAddress(),
+            ),
+            GetPage(
+              name: '/SearchGoogleMapLocation',
+              page: () => const SearchLocation(),
             ),
 
             GetPage(
