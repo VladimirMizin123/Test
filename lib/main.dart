@@ -241,10 +241,10 @@ class _MyAppState extends State<MyApp> {
               name: '/FoodPreferencesScreen',
               page: () => const FoodPreferencesScreen(),
             ),
-            GetPage(
-              name: '/BestMatchRestaurantsScreen',
-              page: () => const BestMatchRestaurantsScreen(),
-            ),
+            // GetPage(
+            //   name: '/BestMatchRestaurantsScreen',
+            //   page: () => const BestMatchRestaurantsScreen(),
+            // ),
             GetPage(
               name: '/CheckoutScreen',
               page: () => const CheckoutScreen(),

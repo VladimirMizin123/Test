@@ -58,9 +58,9 @@ class Recipe {
   final List<ParsedIngredientLine>? parsedIngredientLines;
   final String? databaseId;
   final String? totalTime;
-  final int? totalTimeInSeconds;
+  final num? totalTimeInSeconds;
   final String? name;
-  final int? serving;
+  final num? serving;
   final List<String>? ingredientLines;
   final List<Ingredient>? ingredients;
   final dynamic language;
@@ -68,9 +68,9 @@ class Recipe {
   final dynamic cuisines;
   final dynamic source;
   final String? mainImage;
-  final int? ingredientsCount;
-  final double? weightInGrams;
-  final double? servingWeight;
+  final num? ingredientsCount;
+  final num? weightInGrams;
+  final num? servingWeight;
   final List<String>? instructions;
    final Nutri? nutritionalInfo;
 
@@ -115,8 +115,8 @@ class Recipe {
         source: json["source"],
         mainImage: json["mainImage"],
         ingredientsCount: json["ingredientsCount"],
-        weightInGrams: json["weightInGrams"]?.toDouble(),
-        servingWeight: json["servingWeight"]?.toDouble(),
+        weightInGrams: json["weightInGrams"],
+        servingWeight: json["servingWeight"],
         instructions: json["instructions"] == null ? [] : List<String>.from(json["instructions"]!.map((x) => x)),
         nutritionalInfo: json["nutritionalInfo"] == null ? null : Nutri.fromJson(json["nutritionalInfo"]),
       );
@@ -146,10 +146,10 @@ class Recipe {
 }
 
 class Nutri {
-  final double? calories;
-  final double? fat;
-  final double? protein;
-  final double? carbs;
+  final num? calories;
+  final num? fat;
+  final num? protein;
+  final num? carbs;
 
   Nutri({
     this.calories,
@@ -159,10 +159,10 @@ class Nutri {
   });
 
   factory Nutri.fromJson(Map<String, dynamic> json) => Nutri(
-        calories: json["calories"]?.toDouble(),
-        fat: json["fat"]?.toDouble(),
-        protein: json["protein"]?.toDouble(),
-        carbs: json["carbs"]?.toDouble(),
+        calories: json["calories"],
+        fat: json["fat"],
+        protein: json["protein"],
+        carbs: json["carbs"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -192,10 +192,10 @@ class Ingredient {
 }
 
 class NutrientsPerServing {
-  final double? calories;
-  final double? fat;
-  final double? protein;
-  final double? carbs;
+  final num? calories;
+  final num? fat;
+  final num? protein;
+  final num? carbs;
 
   NutrientsPerServing({
     this.calories,
@@ -205,10 +205,10 @@ class NutrientsPerServing {
   });
 
   factory NutrientsPerServing.fromJson(Map<String, dynamic> json) => NutrientsPerServing(
-        calories: json["calories"]?.toDouble(),
-        fat: json["fat"]?.toDouble(),
-        protein: json["protein"]?.toDouble(),
-        carbs: json["carbs"]?.toDouble(),
+        calories: json["calories"],
+        fat: json["fat"],
+        protein: json["protein"],
+        carbs: json["carbs"],
       );
 
   Map<String, dynamic> toJson() => {

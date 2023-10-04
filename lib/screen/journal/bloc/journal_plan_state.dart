@@ -2,6 +2,7 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
@@ -87,6 +88,16 @@ class JournalBarcodeScannerState extends JournalMealPlanState {
   JournalBarcodeScannerState({required this.barcode});
 }
 
+class JournalBarcodeScannerLoadingState extends JournalMealPlanState {}
+
+class JournalBarcodeScannerSuccessState extends JournalMealPlanState {
+  final BarcodeScannerData? barcodeScannerData;
+
+  JournalBarcodeScannerSuccessState({this.barcodeScannerData});
+}
+
+class JournalBarcodeScannerErrorState extends JournalMealPlanState {}
+
 class JournalSearchLoadingState extends JournalMealPlanState {
   JournalSearchLoadingState();
 }
@@ -135,7 +146,6 @@ class JournalAddEatenSuccessState extends JournalMealPlanState {
   final String mealID;
 
   JournalAddEatenSuccessState({required this.isAdded, required this.mealID});
-
 }
 
 class JournalAddEatenErrorState extends JournalMealPlanState {

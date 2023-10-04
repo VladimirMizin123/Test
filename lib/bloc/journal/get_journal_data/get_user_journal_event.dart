@@ -33,7 +33,6 @@ class GetSelectedImagePath extends GetUserJournalEvent {
 
 class AddEatenMealData extends GetUserJournalEvent {
   String? mealId;
-
   String? userId;
   String? mealName;
   String? mealType;
@@ -44,19 +43,9 @@ class AddEatenMealData extends GetUserJournalEvent {
   num? fat;
   num? carbs;
   num? value;
+  String? title;
 
-  AddEatenMealData(
-      {this.mealId,
-      this.userId,
-      this.mealName,
-      this.mealType,
-      this.calorie,
-      this.noOfServing,
-      this.recipeId,
-      this.protein,
-      this.fat,
-      this.carbs,
-      this.value});
+  AddEatenMealData({this.mealId, this.userId, this.mealName, this.mealType, this.calorie, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs, this.value, this.title});
 }
 
 class AddNewItemEvent extends GetUserJournalEvent {
@@ -74,16 +63,7 @@ class AddNewDietEvent extends GetUserJournalEvent {
   final String? colorCode;
   final bool? isDefault;
 
-  AddNewDietEvent(
-      {required this.dietName,
-      required this.proteinPercentage,
-      required this.carbsPercentage,
-      required this.fatPercentage,
-      required this.surplusPercentage,
-      required this.deficitPercentage,
-      required this.mealSchedule,
-      required this.colorCode,
-      required this.isDefault});
+  AddNewDietEvent({required this.dietName, required this.proteinPercentage, required this.carbsPercentage, required this.fatPercentage, required this.surplusPercentage, required this.deficitPercentage, required this.mealSchedule, required this.colorCode, required this.isDefault});
 }
 
 class DailyRecapEvent extends GetUserJournalEvent {

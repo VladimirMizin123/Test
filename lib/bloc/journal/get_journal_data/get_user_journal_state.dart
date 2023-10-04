@@ -69,6 +69,21 @@ class GetUserJournalDataLoading extends GetUserJournalState {}
 
 class LoadingDoneState extends GetUserJournalState {}
 
+class AddItemLoadingState extends GetUserJournalState {
+  final String? title;
+  AddItemLoadingState({required this.title});
+}
+
+class AddItemSuccessState extends GetUserJournalState {
+  final String? title;
+  AddItemSuccessState({required this.title});
+}
+
+class AddItemErrorState extends GetUserJournalState {
+  final String? title;
+  AddItemErrorState({required this.title});
+}
+
 class SelectedImagePathState extends GetUserJournalState {
   final String? imgPath;
 
@@ -107,8 +122,9 @@ class DailyRecapAnsSuccessState extends GetUserJournalState {
   DailyRecapAnsSuccessState({required this.recapData});
 }
 
-
 class RemoveWaterLoadingData extends GetUserJournalState {}
+
+class RemoveWaterErrorState extends GetUserJournalState {}
 
 class RemoveWaterSuccessState extends GetUserJournalState {
   final bool removeWater;
