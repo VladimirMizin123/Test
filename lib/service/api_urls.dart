@@ -13,6 +13,7 @@ class ApiUrls {
   static const String addToShoppingList =
       '${baseUrl}api/Suggestic/AddToShoppingList';
   static const String byBarcodeScan = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
+  static const String addNewCustomMeal = '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
   static const String addItemsToShoppingList =
       '${baseUrl}api/ShoppingList/AddItemsToShoppingList';

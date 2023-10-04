@@ -205,7 +205,7 @@ class ApiServices {
       var response = await request.send().then((value) async {
         return await http.Response.fromStream(value);
       });
-      debugPrint("postMultipart response--> $response");
+      debugPrint("postMultipart response--> ${response.body}");
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

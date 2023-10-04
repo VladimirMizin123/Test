@@ -2,6 +2,7 @@ import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 
 abstract class GroceryState {}
@@ -174,3 +175,25 @@ class ClearShoppingListSuccessState extends GroceryState {
 
   ClearShoppingListSuccessState({required this.isClear});
 }
+
+
+class BarcodeScannerLoadingState extends GroceryState {}
+
+class BarcodeScannerSuccessState extends GroceryState {
+  final BarcodeScannerData? barcodeScannerData;
+
+  BarcodeScannerSuccessState({this.barcodeScannerData});
+}
+
+class BarcodeScannerErrorState extends GroceryState {}
+
+
+class AddNewCustomMealLoadingState extends GroceryState {}
+
+class AddNewCustomMealSuccessState extends GroceryState {
+  final bool? isAdded;
+
+  AddNewCustomMealSuccessState({this.isAdded});
+}
+
+class AddNewCustomMealErrorState extends GroceryState {}

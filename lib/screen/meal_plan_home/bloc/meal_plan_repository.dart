@@ -14,6 +14,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/add_user_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
@@ -86,14 +87,12 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, GetAllRestrictionModal>> addUserRestriction({List<String> restrictionList = const []}) async {
-    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', {
-    "": restrictionList,
-    });
+  Future<Either<ErrorModel, AddUserRestrictionModal>> addUserRestriction({List<String> restrictionList = const []}) async {
+    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
       // int count = getListCount(jsonDecode(response.body['data']));
       // debugPrint("count --> $count");
-      return Right(GetAllRestrictionModal.fromJson(jsonDecode(response.body)));
+      return Right(AddUserRestrictionModal.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -170,7 +169,7 @@ class MealPlanRepository {
     }
   }
 
-    Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>> groceryDetailsMealInfo({
+  Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>> groceryDetailsMealInfo({
     required String productName,
   }) async {
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
@@ -271,10 +270,10 @@ class MealPlanRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+
   Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
     final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

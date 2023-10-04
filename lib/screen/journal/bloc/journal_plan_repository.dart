@@ -39,7 +39,6 @@ class JournalPlanRepository {
   Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
     final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

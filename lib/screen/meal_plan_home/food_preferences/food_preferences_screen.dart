@@ -27,12 +27,12 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
   List<Edge> edgesRestrictionList = [];
   List<UserRestrictionData> userEdgesRestrictionList = [];
   List<String> restrictionIdList = [];
+  bool isReadyToShowData = false;
 
   @override
   void initState() {
     super.initState();
     mealPlanBloc.add(GetAllRestrictionEvent());
-    
   }
 
   int selectedIndex = 0;
@@ -43,8 +43,6 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
           bloc: mealPlanBloc,
           listener: (context, state) {
-            if (state is GetAllRestrictionLoadingState) {}
-
             if (state is GetAllRestrictionSuccessState) {
               edgesRestrictionList = state.edgesRestrictionList ?? [];
               mealPlanBloc.add(GetUserRestrictionEvent());
@@ -56,11 +54,23 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
               for (var i = 0; i < userEdgesRestrictionList.length; i++) {
                 for (var j = 0; j < edgesRestrictionList.length; j++) {
                   if (userEdgesRestrictionList[i].id == edgesRestrictionList[j].node.id) {
+                    restrictionIdList.add(edgesRestrictionList[j].node.id);
                     edgesRestrictionList[j].node.isRestricted = true;
                   }
                 }
               }
-              setState(() {});
+              setState(() {
+                isReadyToShowData = true;
+              });
+            }
+
+            if (state is GetUserRestrictionErrorState) {
+              setState(() {
+                isReadyToShowData = true;
+              });
+            }
+            if (state is AddRestrictionSuccessState) {
+              Navigator.pop(context);
             }
           },
           builder: (context, state) {
@@ -116,32 +126,36 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                                   )
                                 : edgesRestrictionList.isEmpty
                                     ? const Center(child: Text('No Data Found!'))
-                                    : SingleChildScrollView(
-                                        physics: const BouncingScrollPhysics(),
-                                        child: ListView.builder(
-                                          itemCount: edgesRestrictionList.length,
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemBuilder: (context, index) {
-                                            return myWidget(
-                                              edgesRestrictionList[index].node.name,
-                                              edgesRestrictionList[index].node.isRestricted ?? false,
-                                              (bool vale) {
-                                                setState(() {
-                                                  if (edgesRestrictionList[index].node.isRestricted == true) {
-                                                    edgesRestrictionList[index].node.isRestricted = false;
-                                                    restrictionIdList.removeWhere((element) => element == edgesRestrictionList[index].node.id);
-                                                  } else {
-                                                    edgesRestrictionList[index].node.isRestricted = true;
+                                    : !isReadyToShowData
+                                        ? const Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                        : SingleChildScrollView(
+                                            physics: const BouncingScrollPhysics(),
+                                            child: ListView.builder(
+                                              itemCount: edgesRestrictionList.length,
+                                              physics: const NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemBuilder: (context, index) {
+                                                return myWidget(
+                                                  edgesRestrictionList[index].node.name,
+                                                  edgesRestrictionList[index].node.isRestricted ?? false,
+                                                  (bool vale) {
+                                                    setState(() {
+                                                      if (edgesRestrictionList[index].node.isRestricted == true) {
+                                                        edgesRestrictionList[index].node.isRestricted = false;
+                                                        restrictionIdList.removeWhere((element) => element == edgesRestrictionList[index].node.id);
+                                                      } else {
+                                                        edgesRestrictionList[index].node.isRestricted = true;
 
-                                                    restrictionIdList.add(edgesRestrictionList[index].node.id);
-                                                  }
-                                                });
+                                                        restrictionIdList.add(edgesRestrictionList[index].node.id);
+                                                      }
+                                                    });
+                                                  },
+                                                );
                                               },
-                                            );
-                                          },
-                                        ),
-                                      ),
+                                            ),
+                                          ),
                           ),
                           // myWidget('Avoid fish', false),
                           // myWidget('Add more sweets', true),
@@ -155,9 +169,11 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                     simpleTextBorderButton(
                       context: context,
                       buttonLable: 'Save',
+                      isLoadingWidget: state is AddRestrictionLoadingState,
                       height: screenSize.height * 0.065,
                       width: screenSize.width,
                       onTap: () {
+                        // print(restrictionIdList.toList().toString());
                         mealPlanBloc.add(AddUserRestrictionEvent(edgeRestrictionList: restrictionIdList));
                       },
                       isDarkColor: true,

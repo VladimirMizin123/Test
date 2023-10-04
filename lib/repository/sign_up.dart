@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:either_dart/either.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -75,16 +76,16 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan(String userID) async {
+    // int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
-    if (mealPlanScreenCountState == 0) {
-      apiURL = '${ApiUrls.genMealPlan}/$userID';
-      print('genMealPlan apiURL : $apiURL');
-    } else {
-      apiURL = '${ApiUrls.getMealPlan}/$userID';
-      print('getMealPlan apiURL : $apiURL');
-    }
+    // if (mealPlanScreenCountState == 0) {
+    apiURL = '${ApiUrls.genMealPlan}/$userID';
+    print('genMealPlan apiURL : $apiURL');
+    // } else {
+    //   apiURL = '${ApiUrls.getMealPlan}/$userID';
+    //   print('getMealPlan apiURL : $apiURL');
+    // }
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
@@ -99,10 +100,10 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, GetAllRestrictionModal>> addUserRestriction({List<String> restrictionList = const []}) async {
+  Future<Either<ErrorModel, SuccessModel>> addUserRestriction({List<String> restrictionList = const []}) async {
     final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetAllRestrictionModal.fromJson(jsonDecode(response.body)));
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

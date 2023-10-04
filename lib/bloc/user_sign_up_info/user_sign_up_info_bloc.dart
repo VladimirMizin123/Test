@@ -73,17 +73,18 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         emit(SignUpErrorState());
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);
-        emit(SignUpSuccessState());
+        
         await PreferenceUtils.setString(prefUserData, right.data!.userId!);
 
         try {
-          await _repository.fetchMealPlan().fold((left) {
+          await _repository.fetchMealPlan(right.data!.userId!).fold((left) {
             showToast(isSuccess: false, message: left.message!);
           }, (right) async {});
         } catch (e) {
           debugPrint('CATCH ERROR WHILE FETCH MEAL PLAN');
         }
 
+        print('event.model.restrictionID.LENGTH ----- ${event.model.restrictionID.length}');
         if (event.model.restrictionID.isNotEmpty) {
           try {
             await _repository.addUserRestriction(restrictionList: event.model.restrictionID).fold((left) {
@@ -98,6 +99,7 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
           // Get.toNamed('/GenderScreen', arguments: event.model.gender);
         }
 
+        emit(SignUpSuccessState());
         Get.toNamed('/GenderScreen', arguments: event.model.gender);
       });
     } catch (e) {

@@ -77,3 +77,20 @@ class GroceryProductListEvent extends GroceryEvent {
 }
 
 class CleatGroceryEvent extends GroceryEvent {}
+
+class BarcodeScanEvent extends GroceryEvent {
+  final String barcode;
+
+  BarcodeScanEvent({required this.barcode});
+}
+
+class AddNewCustomMealEvent extends GroceryEvent {
+  final String? name;
+  final String? protein;
+  final String? fat;
+  final String? carbs;
+  final String? calorie;
+  final String? type;
+
+  AddNewCustomMealEvent({ this.name,  this.protein,  this.fat,  this.carbs,  this.calorie,  this.type});
+}

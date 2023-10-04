@@ -76,8 +76,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
-      emit(FetchMealPlanErrorState());
-
+        emit(FetchMealPlanErrorState());
       }, (right) {
         emit(FetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
       });
@@ -91,7 +90,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(OnGetMealLogByDateLoadingState());
     try {
       await _repository.getMealLogByDate(event.date!).fold((left) {
-      emit(FetchMealPlanErrorState());
+        emit(FetchMealPlanErrorState());
         // onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(OnGetMealLogByDateSuccessState(modelData: right.data));
@@ -107,6 +106,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       final response = await _repository.getAllRestriction();
       response.fold((left) {
+        emit(GetAllRestrictionErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(GetAllRestrictionSuccessState(edgesRestrictionList: right.data.restrictions.edgesRestrictionList));
@@ -117,12 +117,12 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-
   _onGetUserRestriction(GetUserRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(GetUserRestrictionLoadingState());
     try {
       final response = await _repository.getUserRestriction();
       response.fold((left) {
+        emit(GetUserRestrictionErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(GetUserRestrictionSuccessState(edgesRestrictionList: right.data));
@@ -134,17 +134,19 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   }
 
   _onAddUserRestriction(AddUserRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
-    emit(GetAllRestrictionLoadingState());
+    emit(AddRestrictionLoadingState());
     try {
-      final response = await _repository.addUserRestriction();
+      final response = await _repository.addUserRestriction(restrictionList: event.edgeRestrictionList ?? []);
       response.fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(AddRestrictionErrorState());
       }, (right) {
-        emit(GetAllRestrictionSuccessState(edgesRestrictionList: right.data.restrictions.edgesRestrictionList));
+        showToast(isSuccess: false, message: right.message);
+        emit(AddRestrictionSuccessState(data: right.data));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
-      emit(GetAllRestrictionErrorState());
+      emit(AddRestrictionErrorState());
     }
   }
 

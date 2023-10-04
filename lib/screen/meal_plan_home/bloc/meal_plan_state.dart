@@ -4,6 +4,7 @@ import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/add_user_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
@@ -138,6 +139,16 @@ class GetAllRestrictionSuccessState extends FetchMealPlanState {
   final List<Edge>? edgesRestrictionList;
 
   GetAllRestrictionSuccessState({this.edgesRestrictionList});
+}
+
+class AddRestrictionLoadingState extends FetchMealPlanState {}
+
+class AddRestrictionErrorState extends FetchMealPlanState {}
+
+class AddRestrictionSuccessState extends FetchMealPlanState {
+  final List<AddUserRestrictionDataModal> data;
+
+  AddRestrictionSuccessState({required this.data});
 }
 
 
