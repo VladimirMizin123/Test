@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_event.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_state.dart';
 import 'package:gymeats_mobile/repository/add_address.dart';
+import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -31,13 +32,21 @@ class AddAddressBloc extends Bloc<AddAddressEvent, AddAddressState> {
         isPrimary: event.isPrimary,
         userId: event.userId,
       )
-          .fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-      }, (right) {
-        showToast(isSuccess: true, message: right.message!);
-        emit(AddAddressSuccessfulState());
-        Get.back();
-      });
+          .fold(
+        (left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        },
+        (right) {
+          // showToast(isSuccess: true, message: right.message!);
+          emit(AddAddressSuccessfulState());
+
+          Get.to(
+            () => AddressConfirmation(
+              locationData: right.data,
+            ),
+          );
+        },
+      );
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(ErrorState());
