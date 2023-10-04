@@ -74,6 +74,11 @@ class AssetsUtils {
   static const productDemoImg = "assets/image/product_demo_img.png";
   static const productDemoImg1 = "assets/image/product_demo_img_1.png";
   static const paymentDoneBg = "assets/image/payment_done_bg.png";
+  static const searchIcon = "assets/image/location_icon.png";
+  static const markerFlag = "assets/image/marker_flag.png";
+  static const locationMarker = "assets/image/location_marker.png";
+  static const currentLocationMarker =
+      "assets/image/current_location_marker.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
