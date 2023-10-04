@@ -2,10 +2,13 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/product_restaurant_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/user_restriction_modal.dart';
 
 abstract class FetchMealPlanState {}
 
@@ -22,10 +25,10 @@ class FetchMealPlanLoadingState extends FetchMealPlanState {}
 
 class FetchMealPlanErrorState extends FetchMealPlanState {}
 
-
 class OnGetMealLogByDateLoadingState extends FetchMealPlanState {}
+
 class OnGetMealLogByDateSuccessState extends FetchMealPlanState {
-final List<MealDataByDate>? modelData;
+  final List<MealDataByDate>? modelData;
 
   OnGetMealLogByDateSuccessState({required this.modelData});
 }
@@ -35,8 +38,7 @@ class SkipMealPlanSuccessState extends FetchMealPlanState {
   final bool skipMealPlanData;
   final String mealID;
 
-  SkipMealPlanSuccessState(
-      {required this.skipMealPlanData, required this.mealID});
+  SkipMealPlanSuccessState({required this.skipMealPlanData, required this.mealID});
 }
 
 class SkipMealPlanLoadingState extends FetchMealPlanState {}
@@ -109,11 +111,7 @@ class GroceryAddToShoppingSuccessState extends FetchMealPlanState {
   final bool? isAdd;
   final bool? isRemove;
 
-  GroceryAddToShoppingSuccessState(
-      {required this.recipesAddToGroceryData,
-      required this.isAdd,
-      required this.isAdded,
-      required this.isRemove});
+  GroceryAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
 }
 
 class GroceryAddToShoppingErrorState extends FetchMealPlanState {}
@@ -132,12 +130,48 @@ class GrocerySearchErrorState extends FetchMealPlanState {
   GrocerySearchErrorState();
 }
 
-
 class GetAllRestrictionLoadingState extends FetchMealPlanState {}
+
 class GetAllRestrictionErrorState extends FetchMealPlanState {}
 
 class GetAllRestrictionSuccessState extends FetchMealPlanState {
   final List<Edge>? edgesRestrictionList;
 
   GetAllRestrictionSuccessState({this.edgesRestrictionList});
+}
+
+
+class GetUserRestrictionLoadingState extends FetchMealPlanState {}
+
+class GetUserRestrictionErrorState extends FetchMealPlanState {}
+
+class GetUserRestrictionSuccessState extends FetchMealPlanState {
+  final List<UserRestrictionData>? edgesRestrictionList;
+
+  GetUserRestrictionSuccessState({this.edgesRestrictionList});
+}
+
+class BarcodeScannerLoadingState extends FetchMealPlanState {}
+
+class BarcodeScannerSuccessState extends FetchMealPlanState {
+  final BarcodeScannerData? barcodeScannerData;
+
+  BarcodeScannerSuccessState({this.barcodeScannerData});
+}
+
+class BarcodeScannerErrorState extends FetchMealPlanState {}
+
+
+class NutritionixGetNxMealInfoByNameLoadingState extends FetchMealPlanState {
+  NutritionixGetNxMealInfoByNameLoadingState();
+}
+
+class NutritionixGetNxMealInfoByNameSuccessState extends FetchMealPlanState {
+  final NutritionixGetNxMealInfoByNameModelData nutritionixGetNxMealInfoByNameModelData;
+
+  NutritionixGetNxMealInfoByNameSuccessState({required this.nutritionixGetNxMealInfoByNameModelData});
+}
+
+class NutritionixGetNxMealInfoByNameErrorState extends FetchMealPlanState {
+  NutritionixGetNxMealInfoByNameErrorState();
 }

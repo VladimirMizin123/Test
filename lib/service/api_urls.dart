@@ -26,6 +26,7 @@ class ApiUrls {
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
   static const String getAllRestrictionList = '${baseUrl}api/Suggestic/GetAllRestrictionList';
+  static const String getUserRestrictionList = '${baseUrl}api/Suggestic/GetUserRestrictionList';
   static const String addRestrictionAndGetMealPlan = '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
 
 

@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/user_restriction_modal.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 // meal_plan branch code
@@ -24,12 +25,14 @@ class FoodPreferencesScreen extends StatefulWidget {
 class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
   MealPlanBloc mealPlanBloc = MealPlanBloc();
   List<Edge> edgesRestrictionList = [];
+  List<UserRestrictionData> userEdgesRestrictionList = [];
   List<String> restrictionIdList = [];
 
   @override
   void initState() {
     super.initState();
     mealPlanBloc.add(GetAllRestrictionEvent());
+    
   }
 
   int selectedIndex = 0;
@@ -44,6 +47,20 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
 
             if (state is GetAllRestrictionSuccessState) {
               edgesRestrictionList = state.edgesRestrictionList ?? [];
+              mealPlanBloc.add(GetUserRestrictionEvent());
+            }
+
+            if (state is GetUserRestrictionSuccessState) {
+              userEdgesRestrictionList = state.edgesRestrictionList ?? [];
+
+              for (var i = 0; i < userEdgesRestrictionList.length; i++) {
+                for (var j = 0; j < edgesRestrictionList.length; j++) {
+                  if (userEdgesRestrictionList[i].id == edgesRestrictionList[j].node.id) {
+                    edgesRestrictionList[j].node.isRestricted = true;
+                  }
+                }
+              }
+              setState(() {});
             }
           },
           builder: (context, state) {

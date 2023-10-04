@@ -483,7 +483,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                                 itemBuilder: (context, index) {
                                                   return InkWell(
                                                     onTap: () {
-                                                      Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList[index], currentSelectedData: selectedDateTime));
+                                                      Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList[index],isFromScanner: false, currentSelectedData: selectedDateTime));
                                                     },
                                                     child: commonJournalFoodData(
                                                       title: breakFastList[index].recipe!.name!,

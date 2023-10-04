@@ -20,8 +20,11 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
     on<GrocerySearchEvent>(_onSearchItem);
     on<GetMealLogByDateEvent>(_onGetMealLogByDate);
-    on<GetAllRestrictionEvent>(_onGetAllRestriction);
     on<AddUserRestrictionEvent>(_onAddUserRestriction);
+    on<BarcodeScanEvent>(_onScanBarcode);
+    on<FetchMealDetailsByNameEvent>(_onFetchMealDetailsById);
+    on<GetAllRestrictionEvent>(_onGetAllRestriction);
+    on<GetUserRestrictionEvent>(_onGetUserRestriction);
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
@@ -30,12 +33,51 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(SwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
   }
 
+  _onScanBarcode(BarcodeScanEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(BarcodeScannerLoadingState());
+    try {
+      await _repository.fetchBarcode(event.barcode).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(BarcodeScannerErrorState());
+      }, (right) {
+        emit(BarcodeScannerSuccessState(barcodeScannerData: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(BarcodeScannerErrorState());
+    }
+  }
+
+  _onFetchMealDetailsById(FetchMealDetailsByNameEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(NutritionixGetNxMealInfoByNameLoadingState());
+
+    try {
+      await _repository
+          .groceryDetailsMealInfo(
+        productName: event.recipeName!,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(NutritionixGetNxMealInfoByNameErrorState());
+      }, (right) {
+        log('RIGHT PART CALL - - - - - - - - - - - - ');
+
+        emit(NutritionixGetNxMealInfoByNameSuccessState(nutritionixGetNxMealInfoByNameModelData: right.data!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(NutritionixGetNxMealInfoByNameErrorState());
+    }
+  }
+
   _onFetchMealPlan(MealPlanFetchEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(FetchMealPlanLoadingState());
 
     try {
       await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+      emit(FetchMealPlanErrorState());
+
       }, (right) {
         emit(FetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
       });
@@ -49,12 +91,13 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     emit(OnGetMealLogByDateLoadingState());
     try {
       await _repository.getMealLogByDate(event.date!).fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
+      emit(FetchMealPlanErrorState());
+        // onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(OnGetMealLogByDateSuccessState(modelData: right.data));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
       emit(FetchMealPlanErrorState());
     }
   }
@@ -73,6 +116,23 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       emit(GetAllRestrictionErrorState());
     }
   }
+
+
+  _onGetUserRestriction(GetUserRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(GetUserRestrictionLoadingState());
+    try {
+      final response = await _repository.getUserRestriction();
+      response.fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetUserRestrictionSuccessState(edgesRestrictionList: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetUserRestrictionErrorState());
+    }
+  }
+
   _onAddUserRestriction(AddUserRestrictionEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(GetAllRestrictionLoadingState());
     try {

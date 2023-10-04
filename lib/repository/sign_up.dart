@@ -1,5 +1,12 @@
 import 'dart:convert';
+
 import 'package:either_dart/either.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 import '../app/sharedPrefrence.dart';
 import '../constant/string_utils.dart';
 import '../models/check_email_exist_model.dart';
@@ -8,11 +15,11 @@ import '../models/sign_up_data_navigate_model.dart';
 import '../models/sign_up_model.dart';
 import '../service/api_urls.dart';
 import '../service/apis.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 
 class SignUpRepository {
   final ApiServices apiServices = ApiServices();
+
+  String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, SignUpModel>> signUp({
     required UserSignUpDataModel model,
@@ -22,15 +29,7 @@ class SignUpRepository {
       var stream = http.ByteStream(model.userProfileImage!.openRead());
       stream.cast();
       var length = await model.userProfileImage!.length();
-      var multipartFileImage = http.MultipartFile(
-          'profileImage', stream, length,
-          filename: model.userProfileImage!.path,
-          contentType: MediaType(
-              'image',
-              model.userProfileImage!.path.split('/').last.split('.').last ==
-                      'png'
-                  ? 'png'
-                  : 'jpeg'));
+      var multipartFileImage = http.MultipartFile('profileImage', stream, length, filename: model.userProfileImage!.path, contentType: MediaType('image', model.userProfileImage!.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpeg'));
 
       profileImage.add(multipartFileImage);
     }
@@ -55,8 +54,7 @@ class SignUpRepository {
       "UserAddress.Latitude": model.latitude!,
       "UserAddress.Longitude": model.longitude!,
     };
-    final response = await apiServices.postMultipart(
-        url: ApiUrls.register, body: data, files: profileImage);
+    final response = await apiServices.postMultipart(url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -64,8 +62,7 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, CheckEmailExist>> checkIsEmailExist(
-      String email) async {
+  Future<Either<ErrorModel, CheckEmailExist>> checkIsEmailExist(String email) async {
     final response = await apiServices.get(
       '${ApiUrls.checkEmail}/$email',
     );
@@ -73,6 +70,39 @@ class SignUpRepository {
     print("responseCheckEmail statusCode: ${response.statusCode}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(CheckEmailExist.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
+    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+    String apiURL = '';
+    if (mealPlanScreenCountState == 0) {
+      apiURL = '${ApiUrls.genMealPlan}/$userID';
+      print('genMealPlan apiURL : $apiURL');
+    } else {
+      apiURL = '${ApiUrls.getMealPlan}/$userID';
+      print('getMealPlan apiURL : $apiURL');
+    }
+    final response = await apiServices.get(apiURL);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      await PreferenceUtils.setInt(userMealPlanCountState, 1);
+      return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 401) {
+      PreferenceUtils.clearPrefs();
+      Get.offAllNamed('/LoginScreen');
+
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, GetAllRestrictionModal>> addUserRestriction({List<String> restrictionList = const []}) async {
+    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetAllRestrictionModal.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

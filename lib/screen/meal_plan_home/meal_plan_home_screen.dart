@@ -95,6 +95,18 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
               }
             }
 
+            if (state is FetchMealPlanErrorState) {
+            for (var i = 0; i < mealPlanList.length; i++) {
+                if (mealPlanList[i].date!.year == DateTime.now().year && mealPlanList[i].date!.month == DateTime.now().month && mealPlanList[i].date!.day == DateTime.now().day) {
+                  print('JUMP DAY :::: ${mealPlanList.length}');
+                  print('JUMP DAY :::: $i');
+                  _pageController.jumpToPage(i);
+                  isReadyToShowWidget = true;
+                  break;
+                }
+              }
+            }
+
             if (state is SwapMealDetailsState) {
               Get.back();
               for (var i = 0; i < mealPlanList.length; i++) {
