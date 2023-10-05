@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +10,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
-import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/find_address_model.dart';
 import 'package:gymeats_mobile/models/find_latlng_model.dart';
 import 'package:gymeats_mobile/models/search_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
+import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -51,28 +50,44 @@ class _GetUserAddressState extends State<GetUserAddress> {
   );
   String? selectedLocationValue;
   List<Marker> markers = [];
+
   Future getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled =
-        await GeolocatorPlatform.instance.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return false;
-    }
-
-    permission = await GeolocatorPlatform.instance.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await GeolocatorPlatform.instance.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return false;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return false;
-    }
+    bool serviceEnabled = await _handleLocationPermission();
+    print('==serviceEnabled===>${serviceEnabled}');
+    if (!serviceEnabled) return;
+    // serviceEnabled =
+    //     await GeolocatorPlatform.instance.isLocationServiceEnabled();
+    //
+    // print("serviceEnabled>>>>${serviceEnabled}");
+    // if (!serviceEnabled) {
+    //   await AppSettings.openAppSettings(type: AppSettingsType.location);
+    //   print('---->>>>DEnied1111111111');
+    // }
+    //
+    // permission = await Geolocator.checkPermission();
+    //
+    // print('===permission==11=>${permission == LocationPermission.denied}');
+    //
+    // if (permission == LocationPermission.denied) {
+    //   await GeolocatorPlatform.instance.requestPermission();
+    //   permission = await Geolocator.checkPermission();
+    //   if (permission == LocationPermission.denied) {
+    //     await GeolocatorPlatform.instance.requestPermission();
+    //     showToast(message: 'Location permissions are denied', isSuccess: false);
+    //     return false;
+    //   }
+    //   print('===permission==33=>${permission == LocationPermission.denied}');
+    //   print('===permission==44=>${permission}');
+    // }
+    // print('===permission==22=>${permission}');
+    // if (permission == LocationPermission.deniedForever) {
+    //   showToast(
+    //     message:
+    //         'Location permissions are permanently denied, we cannot request permissions.',
+    //     isSuccess: false,
+    //   );
+    //   return false;
+    // }
 
     BitmapDescriptor? customIcon;
 
@@ -106,6 +121,170 @@ class _GetUserAddressState extends State<GetUserAddress> {
         .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
     setState(() {});
     return true;
+  }
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings().then((value) async {
+        permission = await Geolocator.checkPermission();
+        debugPrint('permission--> $permission');
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            Navigator.pop(context);
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
+            return false;
+          }
+        }
+        if (permission == LocationPermission.deniedForever) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.deniedForever) {
+            Get.back();
+            showToast(
+                message:
+                    'Location permissions are permanently denied, we cannot request permissions.',
+                isSuccess: false);
+            return false;
+          }
+        }
+      });
+      return false;
+    } else {
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          Navigator.pop(context);
+          showToast(
+              message: 'Location permissions are denied', isSuccess: false);
+          return false;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        await appSettingDialogBox();
+        permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.deniedForever) {
+          if (Get.arguments['string'] == 'isFromDashboard') {
+            Get.back();
+            showToast(
+                message:
+                    'Location permissions are permanently denied, we cannot request permissions.',
+                isSuccess: false);
+          } else {
+            Get.offNamed('/PremiumScreen');
+            showToast(
+                message:
+                    'Location permissions are permanently denied, we cannot request permissions.',
+                isSuccess: false);
+          }
+          showToast(
+              message:
+                  'Location permissions are permanently denied, we cannot request permissions.',
+              isSuccess: false);
+          return false;
+        }
+        if (permission == LocationPermission.denied) {
+          if (Get.arguments['string'] == 'isFromDashboard') {
+            Get.back();
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
+          } else {
+            Get.offNamed('/PremiumScreen');
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
+          }
+          showToast(
+              message: 'Location permissions are denied', isSuccess: false);
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  appSettingDialogBox() async {
+    bool value = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return SimpleDialog(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Text(
+                'Location permissions are permanently denied, Please Enable Location Permission.',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.back(result: false);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        margin: EdgeInsets.only(right: 10.w),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.8),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(5),
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Close',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        var permissionValue = await Geolocator.openAppSettings()
+                            .then((value) async {});
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        margin: EdgeInsets.only(right: 10.w),
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryBlue,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Setting',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    );
+
+    return value;
   }
 
   String ofcHomeValue = ofcHomeList.first;
@@ -302,6 +481,8 @@ class _GetUserAddressState extends State<GetUserAddress> {
   @override
   Widget build(BuildContext context) {
     var argumentsValue = Get.arguments;
+    print('---->>>>>>${argumentsValue}');
+
     return Scaffold(
       body: BlocBuilder(
         bloc: bloc,
@@ -606,23 +787,26 @@ class _GetUserAddressState extends State<GetUserAddress> {
                           String userID =
                               PreferenceUtils.getString(prefUserData);
 
-                          if (argumentsValue == 'isFromRegister') {
-                            AddAddressModel addAddressModel = AddAddressModel();
-                            addAddressModel.latitude = selectedLatLng?.latitude;
-                            addAddressModel.longitude =
-                                selectedLatLng?.longitude;
+                          Map<String, dynamic> addressData = {
+                            'latitude': selectedLatLng?.latitude,
+                            'longitude': selectedLatLng?.longitude,
+                            'street_Num': streetNum,
+                            'street_Name': streetName,
+                            'city': city,
+                            'state': state.toString(),
+                            'country': country,
+                            'addressType': ofcHomeValue.toLowerCase(),
+                            'zipcode': zipcode,
+                            'isPrimary': false,
+                          };
 
-                            addAddressModel.streetNum = streetNum;
-                            addAddressModel.streetName = streetName;
-                            addAddressModel.city = city;
-                            addAddressModel.state = state.toString();
-                            addAddressModel.country = country;
-                            addAddressModel.addressType =
-                                ofcHomeValue.toLowerCase();
-                            addAddressModel.zipcode = zipcode;
-                            addAddressModel.isPrimary = false;
-
-                            Get.back(result: addAddressModel);
+                          if (argumentsValue['string'] == 'isFromRegister') {
+                            Get.to(
+                              () => AddressConfirmation(
+                                locationData: addressData,
+                                arguments: argumentsValue,
+                              ),
+                            );
                           } else {
                             bloc.add(
                               SaveClickEvent(

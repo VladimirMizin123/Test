@@ -43,6 +43,7 @@ class AddAddressBloc extends Bloc<AddAddressEvent, AddAddressState> {
           Get.to(
             () => AddressConfirmation(
               locationData: right.data,
+              arguments: const {"string": 'isFromDashboard', "userData": ''},
             ),
           );
         },

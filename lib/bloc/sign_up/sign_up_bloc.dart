@@ -26,17 +26,15 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
           emit(IsEmailErrorState());
         } else {
           UserSignUpDataModel userData = UserSignUpDataModel(
-              firstName: event.fName,
-              lastName: event.lName,
-              email: event.email,
-              password: event.password,
-              userName: event.email,
-              confirmPassword: event.confirmPassword);
-          final value = await Get.toNamed('/GoogleMapScreen',
-              arguments: 'isFromRegister');
-
-          userData.addAddressModel = value;
-          Get.toNamed('/PremiumScreen', arguments: userData);
+            firstName: event.fName,
+            lastName: event.lName,
+            email: event.email,
+            password: event.password,
+            userName: event.email,
+            confirmPassword: event.confirmPassword,
+          );
+          await Get.toNamed('/GoogleMapScreen',
+              arguments: {"string": 'isFromRegister', "userData": userData});
         }
       });
     } catch (e) {
