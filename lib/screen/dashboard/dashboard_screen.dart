@@ -223,12 +223,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       // print(model.data!.totalFat);
                       // print(model.data!.totalCarbs);
 
-                      print('logData : $logData');
+                      // print('logData : $logData');
 
-                      for (var element in logData) {
-                        print('element : ${element.id}');
-                        print('element : ${element.recipeId}');
-                      }
+                      // for (var element in logData) {
+                      //   print('element : ${element.id}');
+                      //   print('element : ${element.recipeId}');
+                      // }
                     }
                     if (state is LoadMealData) {
                       isDoneLoader = false;

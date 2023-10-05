@@ -67,7 +67,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                             Get.back();
                           },
                           child: const Icon(Icons.keyboard_arrow_left_outlined, size: 30)),
-                      Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
+                      Text('Grocery Item Details', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                       Opacity(
                         opacity: 0,
                         child: Image.asset(

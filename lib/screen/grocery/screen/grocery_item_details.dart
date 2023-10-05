@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
@@ -28,11 +27,16 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   NutritionixGetNxMealInfoByNameModelData? nutritionixGetNxMealInfoByNameModelData;
+  int productCount = 0;
 
   @override
   void initState() {
     super.initState();
     groceryBloc.add(GroceryDetailsMealInfoEvent(groceryProductName: widget.arguments!.groceryShoppingData!.productName!));
+
+    setState(() {
+      productCount = widget.arguments!.groceryShoppingData!.quantity ?? 0;
+    });
   }
 
   @override
@@ -60,6 +64,11 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                 widget.arguments!.groceryShoppingData!.isRemoveItem = false;
                 widget.arguments!.groceryShoppingData!.quantity = state.recipesAddToGroceryData!.quantity;
               }
+            }
+
+            if (state is GroceryAddToShoppingErrorState) {
+              widget.arguments!.groceryShoppingData!.isAddItem = false;
+              widget.arguments!.groceryShoppingData!.isRemoveItem = false;
             }
 
             // Grocery Delete STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -141,47 +150,53 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                   const SizedBox(height: 10),
                                   Row(
                                     children: [
-                                      widget.arguments!.groceryShoppingData!.quantity! > 1
-                                          ? GestureDetector(
-                                              onTap: () {
-                                                groceryBloc.add(GroceryAddToShoppingListEvent(
-                                                  productID: widget.arguments!.groceryShoppingData!.productId!,
-                                                  mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
-                                                  price: widget.arguments!.groceryShoppingData!.price.toString(),
-                                                  productName: widget.arguments!.groceryShoppingData!.productName!,
-                                                  quantity: (widget.arguments!.groceryShoppingData!.quantity! - 1).toString(),
-                                                  recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
-                                                  unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
-                                                  unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
-                                                  isAdd: false,
-                                                  isRemove: true,
-                                                  isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
-                                                ));
-                                              },
-                                              child: Container(
-                                                height: size.height * 0.070,
-                                                width: size.height * 0.070,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(6),
-                                                  color: AppColors.skyBlue,
-                                                ),
-                                                child: Center(
-                                                  child: widget.arguments!.groceryShoppingData!.isRemoveItem ?? false ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : const Icon(Icons.remove, size: 27),
-                                                ),
-                                                // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                              ),
-                                            )
-                                          : GestureDetector(
-                                              onTap: () {
-                                                groceryBloc.add(RemoveGroceryEvent(productID: widget.arguments!.groceryShoppingData!.productId!));
-                                              },
-                                              child: Container(
-                                                height: size.height * 0.070,
-                                                width: size.height * 0.070,
-                                                decoration: BoxDecoration(border: Border.all(color: AppColors.skyBlue), borderRadius: BorderRadius.circular(6)),
-                                                child: Center(child: widget.arguments!.groceryShoppingData!.isDeleteLoading ?? false ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : SvgPicture.asset(AssetsUtils.icDelete)),
-                                              ),
-                                            ),
+                                      // widget.arguments!.groceryShoppingData!.quantity! > 1
+                                      //     ?
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (productCount != 1) {
+                                            setState(() {
+                                              productCount = productCount - 1;
+                                            });
+                                          }
+                                          // groceryBloc.add(GroceryAddToShoppingListEvent(
+                                          //   productID: widget.arguments!.groceryShoppingData!.productId!,
+                                          //   mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
+                                          //   price: widget.arguments!.groceryShoppingData!.price.toString(),
+                                          //   productName: widget.arguments!.groceryShoppingData!.productName!,
+                                          //   quantity: (widget.arguments!.groceryShoppingData!.quantity! - 1).toString(),
+                                          //   recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
+                                          //   unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
+                                          //   unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
+                                          //   isAdd: false,
+                                          //   isRemove: true,
+                                          //   isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
+                                          // ));
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.070,
+                                          width: size.height * 0.070,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(6),
+                                            color: AppColors.skyBlue,
+                                          ),
+                                          child: const Center(
+                                            child: Icon(Icons.remove, size: 27),
+                                          ),
+                                          // child: const Center(child: Icon(Icons.remove, size: 27)),
+                                        ),
+                                      ),
+                                      // : GestureDetector(
+                                      //     onTap: () {
+                                      //       groceryBloc.add(RemoveGroceryEvent(productID: widget.arguments!.groceryShoppingData!.productId!));
+                                      //     },
+                                      //     child: Container(
+                                      //       height: size.height * 0.070,
+                                      //       width: size.height * 0.070,
+                                      //       decoration: BoxDecoration(border: Border.all(color: AppColors.skyBlue), borderRadius: BorderRadius.circular(6)),
+                                      //       child: Center(child: widget.arguments!.groceryShoppingData!.isDeleteLoading ?? false ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : SvgPicture.asset(AssetsUtils.icDelete)),
+                                      //     ),
+                                      //   ),
                                       // Container(
                                       //   height: size.height * 0.070,
                                       //   width: size.height * 0.070,
@@ -195,7 +210,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                         decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(6)),
                                         child: Center(
                                             child: Text(
-                                          widget.arguments!.groceryShoppingData!.quantity.toString(),
+                                          productCount.toString(),
                                           style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
                                         )),
                                       ),
@@ -212,19 +227,22 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                       SizedBox(width: 8.w),
                                       GestureDetector(
                                         onTap: () {
-                                          groceryBloc.add(GroceryAddToShoppingListEvent(
-                                            productID: widget.arguments!.groceryShoppingData!.productId!,
-                                            mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
-                                            price: widget.arguments!.groceryShoppingData!.price.toString(),
-                                            productName: widget.arguments!.groceryShoppingData!.productName!,
-                                            quantity: (widget.arguments!.groceryShoppingData!.quantity! + 1).toString(),
-                                            recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
-                                            unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
-                                            unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
-                                            isAdd: true,
-                                            isRemove: false,
-                                            isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
-                                          ));
+                                          setState(() {
+                                            productCount = productCount + 1;
+                                          });
+                                          // groceryBloc.add(GroceryAddToShoppingListEvent(
+                                          //   productID: widget.arguments!.groceryShoppingData!.productId!,
+                                          //   mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
+                                          //   price: widget.arguments!.groceryShoppingData!.price.toString(),
+                                          //   productName: widget.arguments!.groceryShoppingData!.productName!,
+                                          //   quantity: (widget.arguments!.groceryShoppingData!.quantity! + 1).toString(),
+                                          //   recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
+                                          //   unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
+                                          //   unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
+                                          //   isAdd: true,
+                                          //   isRemove: false,
+                                          //   isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
+                                          // ));
                                         },
                                         child: Container(
                                           height: size.height * 0.070,
@@ -233,8 +251,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                             borderRadius: BorderRadius.circular(6),
                                             color: AppColors.skyBlue,
                                           ),
-                                          child: Center(
-                                            child: widget.arguments!.groceryShoppingData!.isAddItem ?? false ? Transform.scale(scale: 0.5, child: const CircularProgressIndicator()) : const Icon(Icons.add, size: 27),
+                                          child: const Center(
+                                            child: Icon(Icons.add, size: 27),
                                           ),
                                         ),
                                       ),
@@ -398,25 +416,22 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                     buttonLable: 'Add Item',
                                     height: size.height * 0.065,
                                     width: size.width,
-                                    isLoadingWidget: false,
+                                    isLoadingWidget: state is GroceryAddToShoppingLoadingState,
                                     onTap: () {
-                                      if (widget.arguments!.isFromGroceryScreen) {
-                                        groceryBloc.add(GroceryAddToShoppingListEvent(
-                                          productID: widget.arguments!.groceryShoppingData!.productId!,
-                                          mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
-                                          price: widget.arguments!.groceryShoppingData!.price.toString(),
-                                          productName: widget.arguments!.groceryShoppingData!.productName!,
-                                          quantity: (widget.arguments!.groceryShoppingData!.quantity! + 1).toString(),
-                                          recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
-                                          unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
-                                          unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
-                                          isAdd: true,
-                                          isRemove: false,
-                                          isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
-                                        ));
-                                      } else {
-                                      
-                                      }
+                                      print('object');
+                                      groceryBloc.add(GroceryAddToShoppingListEvent(
+                                        productID: widget.arguments!.groceryShoppingData!.productId!,
+                                        mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
+                                        price: widget.arguments!.groceryShoppingData!.price.toString(),
+                                        productName: widget.arguments!.groceryShoppingData!.productName!,
+                                        quantity: productCount.toString(),
+                                        recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
+                                        unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
+                                        unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
+                                        isAdd: true,
+                                        isRemove: false,
+                                        isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
+                                      ));
                                     },
                                     isDarkColor: true,
                                     isFillColor: true,

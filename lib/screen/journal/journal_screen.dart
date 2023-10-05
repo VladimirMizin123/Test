@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
+import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
@@ -60,12 +61,14 @@ class _JournalScreenState extends State<JournalScreen> {
   GetUserJournalBloc bloc = GetUserJournalBloc();
   bool isAllDataLoading = false;
   bool isRemoveWater = false;
+  List<MealDataByDate> logData = [];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToToday();
+      bloc.add(JournalGetDashboardDataEvent());
       bloc.add(GetUserJournalData(date: dateTimeNow()));
       if (dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString()) == dateTimeNow()) {
         PreferenceUtils.setInt(userMealPlanCountState, 0);
@@ -284,6 +287,15 @@ class _JournalScreenState extends State<JournalScreen> {
                       isRemoveWater = false;
                     }
 
+                    if (state is JournalLoadDashboardDataState) {
+                      print('JournalLoadDashboardDataState ---- - - - - - - - - - - - - ----- ${state.data!.length}');
+                      logData = state.data ?? [];
+                    }
+
+                    if (state is AddItemSuccessState) {
+                      bloc.add(JournalGetDashboardDataEvent());
+                    }
+
                     return isAllDataLoading
                         ? const AppCenterLoader()
                         : SingleChildScrollView(
@@ -437,94 +449,74 @@ class _JournalScreenState extends State<JournalScreen> {
                                           style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
                                         ).paddingOnly(top: 5.h),
                                       ),
-                                      dashBoardCardView(
-                                        width: double.infinity.w,
-                                        margin: EdgeInsets.symmetric(vertical: 10.h),
-                                        child: Column(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: breakFastList, mealType: breakFastList[0].meal!, dateTime: selectedDateTime));
-                                              },
-                                              child: ListTile(
-                                                leading: Image.asset(
-                                                  AssetsUtils.breakFastIcon,
-                                                  height: 25.h,
-                                                  width: 25.w,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                                title: Row(
-                                                  children: [
-                                                    const SizedBox(width: 10),
-                                                    Text(
-                                                      breakFastList[0].meal!,
-                                                      style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                    Text(
-                                                      '${int.parse(breakFastList[0].calories!.toString().split('.')[1]) >= 50 ? breakFastList[0].calories!.toDouble().ceil().toString() : breakFastList[0].calories!.toDouble().floor().toString()} cal',
-                                                      style: textTheme.bodyLarge?.copyWith(color: AppColors.terracotta),
-                                                    ),
-                                                  ],
-                                                ),
-                                                trailing: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 15.h,
-                                                  color: const Color(0xFF010101),
-                                                ),
-                                                horizontalTitleGap: 0.0,
-                                              ),
-                                            ),
-                                            Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
-                                            ListView.builder(
-                                                itemCount: breakFastList.length,
-                                                shrinkWrap: true,
-                                                physics: const NeverScrollableScrollPhysics(),
-                                                itemBuilder: (context, index) {
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList[index],isFromScanner: false, currentSelectedData: selectedDateTime));
-                                                    },
-                                                    child: commonJournalFoodData(
-                                                      title: breakFastList[index].recipe!.name!,
-                                                      subTitle: '${breakFastList[index].numOfServings} serving',
-                                                      child: Icon(
-                                                        Icons.arrow_forward_ios,
-                                                        size: 13.h,
-                                                        color: AppColors.darkGray,
-                                                      ),
-                                                      textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                                                      subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
-                                                    ).paddingOnly(top: 10.h, bottom: 10.h),
-                                                  );
-                                                }),
-                                          ],
-                                        ),
-                                      ),
-                                      commonFoodItemView(
-                                        textTheme: textTheme,
-                                        image: AssetsUtils.lunchIcon,
-                                        title: StringUtils.lunch,
-                                        dataList: lunchDataList,
-                                        cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(),
-                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.lunch
-                                      ),
-                                      commonFoodItemView(
-                                        textTheme: textTheme,
-                                        image: AssetsUtils.dinnerIcon,
-                                        title: StringUtils.dinner,
-                                        dataList: dinnerDataList,
-                                        cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(),
-                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.dinner
-                                      ),
-                                      commonFoodItemView(
-                                        textTheme: textTheme,
-                                        image: AssetsUtils.snackIcon,
-                                        title: StringUtils.snack,
-                                        dataList: snackDataList,
-                                        cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(),
-                                        isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.snack
-                                      ),
+                                      // dashBoardCardView(
+                                      //   width: double.infinity.w,
+                                      //   margin: EdgeInsets.symmetric(vertical: 10.h),
+                                      //   child: Column(
+                                      //     children: [
+                                      //       InkWell(
+                                      //         onTap: () {
+                                      //           Get.toNamed("/JournalMealScreen", arguments: JournalMealScreenArguments(breakFastList: breakFastList, mealType: breakFastList[0].meal!, dateTime: selectedDateTime));
+                                      //         },
+                                      //         child: ListTile(
+                                      //           leading: Image.asset(
+                                      //             AssetsUtils.breakFastIcon,
+                                      //             height: 25.h,
+                                      //             width: 25.w,
+                                      //             color: AppColors.darkGray,
+                                      //           ),
+                                      //           title: Row(
+                                      //             children: [
+                                      //               const SizedBox(width: 10),
+                                      //               Text(
+                                      //                 breakFastList[0].meal!,
+                                      //                 style: textTheme.headlineSmall?.copyWith(color: AppColors.darkGray),
+                                      //               ),
+                                      //               const SizedBox(width: 10),
+                                      //               Text(
+                                      //                 '${int.parse(breakFastList[0].calories!.toString().split('.')[1]) >= 50 ? breakFastList[0].calories!.toDouble().ceil().toString() : breakFastList[0].calories!.toDouble().floor().toString()} cal',
+                                      //                 style: textTheme.bodyLarge?.copyWith(color: AppColors.terracotta),
+                                      //               ),
+                                      //             ],
+                                      //           ),
+                                      //           trailing: Icon(
+                                      //             Icons.arrow_forward_ios,
+                                      //             size: 15.h,
+                                      //             color: const Color(0xFF010101),
+                                      //           ),
+                                      //           horizontalTitleGap: 0.0,
+                                      //         ),
+                                      //       ),
+                                      //       Divider(color: AppColors.middleGray, height: 1.h).paddingSymmetric(horizontal: 15.w),
+                                      //       ListView.builder(
+                                      //           itemCount: breakFastList.length,
+                                      //           shrinkWrap: true,
+                                      //           physics: const NeverScrollableScrollPhysics(),
+                                      //           itemBuilder: (context, index) {
+                                      //             return InkWell(
+                                      //               onTap: () {
+                                      //                 Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: breakFastList[index], isFromScanner: false, currentSelectedData: selectedDateTime));
+                                      //               },
+                                      //               child: commonJournalFoodData(
+                                      //                 title: breakFastList[index].recipe!.name!,
+                                      //                 subTitle: '${breakFastList[index].numOfServings} serving',
+                                      //                 child: Icon(
+                                      //                   Icons.arrow_forward_ios,
+                                      //                   size: 13.h,
+                                      //                   color: AppColors.darkGray,
+                                      //                 ),
+                                      //                 textTheme: textTheme.bodySmall?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                                      //                 subTextTheme: textTheme.bodySmall?.copyWith(color: AppColors.terracotta, fontWeight: FontWeight.w400),
+                                      //               ).paddingOnly(top: 10.h, bottom: 10.h),
+                                      //             );
+                                      //           }),
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.breakFastIcon, title: StringUtils.breakfast, dataList: breakFastList, cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.breakfast),
+                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.lunchIcon, title: StringUtils.lunch, dataList: lunchDataList, cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.lunch),
+                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.dinnerIcon, title: StringUtils.dinner, dataList: dinnerDataList, cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.dinner),
+                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.snackIcon, title: StringUtils.snack, dataList: snackDataList, cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.snack),
                                     ],
                                   ),
                                 },
@@ -922,12 +914,19 @@ class _JournalScreenState extends State<JournalScreen> {
     List<MealData>? dataList,
     bool? isLoaderWidgetShow,
   }) {
-    bool isDone = false;
-    for (var element in tmpMealTrackerDataList!) {
-      if (dataList![0].meal == element.meal!.meal) {
-        isDone = element.value == "ATE";
+    // bool isDone = false;
+    // for (var element in tmpMealTrackerDataList!) {
+    //   if (dataList![0].meal == element.meal!.meal) {
+    //     isDone = true; element.value == "ATE";
+    //   }
+    // }
+    bool isEaten = false;
+    logData.map((e) {
+      print('logData.map ${e.mealId} == ${dataList![0].id} ${e.mealId == dataList[0].id}');
+      if (e.mealId == dataList[0].id) {
+        isEaten = true;
       }
-    }
+    }).toList();
     // CONFLICT RESOLVED
     return Column(
       children: [
@@ -973,10 +972,10 @@ class _JournalScreenState extends State<JournalScreen> {
               subTitle: '$cal ${StringUtils.calCount}',
               child: InkWell(
                 onTap: () {
-                  if (!isDone) {
-                    bloc.add(AddEatenMealData(mealId: dataList[0].id!,
-                    title: title,
-                    
+                  if (!isEaten) {
+                    bloc.add(AddEatenMealData(
+                      mealId: dataList[0].id!,
+                      title: title,
                     ));
                   }
                 },
@@ -991,7 +990,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         ),
                         child: Center(
                           child: Icon(
-                            isDone ? Icons.check : Icons.add,
+                            isEaten ? Icons.check : Icons.add,
                             color: AppColors.primaryBlue,
                           ),
                         ),

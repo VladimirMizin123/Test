@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
+import 'package:intl/intl.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -21,9 +22,12 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     on<JournalSearchEvent>(_onSearchItem);
     on<JournalAddToShoppingListEvent>(_onAddToShoppingList);
     on<JournalAddToEatenEvent>(_onAddEaten);
+    
   }
 
   final JournalPlanRepository _repository = JournalPlanRepository();
+
+ 
 
   _onSwapMealDetails(JournalSwapMealDetailsEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalSwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
