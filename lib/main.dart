@@ -1,7 +1,3 @@
-// List<CameraDescription> cameras = [];
-
-import 'dart:html';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -150,12 +146,12 @@ class _MyAppState extends State<MyApp> {
         }
       });
     });
+    bloc.add(LatLogEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bloc.add(LatLogEvent());
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
@@ -473,3 +469,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+//location permission
