@@ -14,7 +14,9 @@ class PremiumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserSignUpDataModel userSignUpDataModel = Get.arguments as UserSignUpDataModel;
+    UserSignUpDataModel userSignUpDataModel =
+        Get.arguments ?? UserSignUpDataModel() as UserSignUpDataModel;
+
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
@@ -113,7 +115,8 @@ class PremiumScreen extends StatelessWidget {
                 bgColor: AppColors.appColor,
                 textColor: const Color(0xFFC1EACE),
                 onPressed: () {
-                  Get.toNamed('/BuildMyProfileScreen',arguments: userSignUpDataModel);
+                  Get.toNamed('/BuildMyProfileScreen',
+                      arguments: userSignUpDataModel);
                 },
               ).paddingOnly(bottom: 8.h, top: 23.h, right: 20.w, left: 20.w),
               Text('No commitment. Cancel any time.',
@@ -126,7 +129,10 @@ class PremiumScreen extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: 'Privacy Policy',
-                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
+                      style: textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.
@@ -134,7 +140,10 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     TextSpan(
                       text: '      Restore',
-                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
+                      style: textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.
@@ -142,7 +151,10 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     TextSpan(
                       text: '      Terms of Use',
-                      style: textTheme.bodySmall!.copyWith(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w800),
+                      style: textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w800),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Single tapped.
