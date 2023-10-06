@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
-import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_event.dart';
-import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
+import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_event.dart';
+import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -12,8 +14,8 @@ import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerBottomSheet extends StatefulWidget {
-  final GetUserJournalBloc? getUserJournalBloc;
-  const ImagePickerBottomSheet({super.key, this.getUserJournalBloc});
+  final AddNewMealBloc? addNewMealBloc;
+  const ImagePickerBottomSheet({super.key, this.addNewMealBloc});
 
   @override
   State<ImagePickerBottomSheet> createState() => _ImagePickerBottomSheetState();
@@ -27,8 +29,8 @@ class _ImagePickerBottomSheetState extends State<ImagePickerBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return BlocConsumer<GetUserJournalBloc, GetUserJournalState>(
-        bloc: widget.getUserJournalBloc,
+    return BlocConsumer<AddNewMealBloc, AddNewMealState>(
+        bloc: widget.addNewMealBloc,
         listener: (context, state) {
           if (state is SelectedImagePathState) {
             Get.back();
@@ -37,7 +39,8 @@ class _ImagePickerBottomSheetState extends State<ImagePickerBottomSheet> {
         builder: (context, state) {
           return Material(
             color: AppColors.whiteColor,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
@@ -49,14 +52,18 @@ class _ImagePickerBottomSheetState extends State<ImagePickerBottomSheet> {
                         child: Container(
                           height: 3.h,
                           width: 80.w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.disable),
                         )),
                     const SizedBox(height: 20),
                     Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Select ImageSource',
-                          style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                          style: FontUtils.h18(
+                              fontColor: AppColors.black,
+                              fontWeight: FWT.semiBold),
                         )),
                     const SizedBox(height: 10),
                     Row(
@@ -72,13 +79,22 @@ class _ImagePickerBottomSheetState extends State<ImagePickerBottomSheet> {
                               setState(() {
                                 imagePath = pickedFile.path;
                               });
-                              widget.getUserJournalBloc!.add(GetSelectedImagePath(imagePath: imagePath));
+                              File image = File(pickedFile.path);
+
+                              widget.addNewMealBloc!
+                                  .add(GetSelectedImagePath(imagePath: image));
                             }
                           },
                           child: Container(
                             height: screenSize.height * 0.20,
-                            decoration: BoxDecoration(boxShadow: boxShadowWidget, color: AppColors.whiteColor, borderRadius: BorderRadius.circular(8)),
-                            child: Center(child: Text('Take a Photo', style: FontUtils.h14(fontColor: AppColors.black))),
+                            decoration: BoxDecoration(
+                                boxShadow: boxShadowWidget,
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Center(
+                                child: Text('Take a Photo',
+                                    style: FontUtils.h14(
+                                        fontColor: AppColors.black))),
                           ),
                         )),
                         const SizedBox(width: 10),
@@ -93,13 +109,22 @@ class _ImagePickerBottomSheetState extends State<ImagePickerBottomSheet> {
                               setState(() {
                                 imagePath = pickedFile.path;
                               });
-                              widget.getUserJournalBloc!.add(GetSelectedImagePath(imagePath: imagePath));
+
+                              File image = File(pickedFile.path);
+                              widget.addNewMealBloc!
+                                  .add(GetSelectedImagePath(imagePath: image));
                             }
                           },
                           child: Container(
                             height: screenSize.height * 0.20,
-                            decoration: BoxDecoration(boxShadow: boxShadowWidget, color: AppColors.whiteColor, borderRadius: BorderRadius.circular(8)),
-                            child: Center(child: Text('Gallery', style: FontUtils.h14(fontColor: AppColors.black))),
+                            decoration: BoxDecoration(
+                                boxShadow: boxShadowWidget,
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Center(
+                                child: Text('Gallery',
+                                    style: FontUtils.h14(
+                                        fontColor: AppColors.black))),
                           ),
                         )),
                       ],

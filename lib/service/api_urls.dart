@@ -7,12 +7,14 @@ class ApiUrls {
   static const String checkEmail = '${baseUrl}api/Auth/CheckEmailExist';
   // static const String register = '${baseUrl}api/Auth/register';
   static const String genMealPlan = '${baseUrl}api/Suggestic/GenMealPlan';
-  static const String getMealTrackerData = '${baseUrl}api/Suggestic/GetMealTrackerData';
+  static const String getMealTrackerData =
+      '${baseUrl}api/Suggestic/GetMealTrackerData';
   static const String getMealPlan = '${baseUrl}api/Suggestic/GetMealPlan';
   static const String skipMeal = '${baseUrl}api/Suggestic/SkipMeal';
   static const String addToShoppingList =
       '${baseUrl}api/Suggestic/AddToShoppingList';
-  static const String byBarcodeScan = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
+  static const String byBarcodeScan =
+      '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
 
   static const String addItemsToShoppingList =
       '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
@@ -25,9 +27,10 @@ class ApiUrls {
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
-  static const String getAllRestrictionList = '${baseUrl}api/Suggestic/GetAllRestrictionList';
-  static const String addRestrictionAndGetMealPlan = '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
-
+  static const String getAllRestrictionList =
+      '${baseUrl}api/Suggestic/GetAllRestrictionList';
+  static const String addRestrictionAndGetMealPlan =
+      '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
 
   //Grocery Flow
   static const String addGroceryToShoppingListFromSuggestic =
@@ -83,7 +86,6 @@ class ApiUrls {
   //MealLog
   static const String getMealLogByDate =
       '${baseUrl}api/MealLog/GetMealLogByDate';
-      
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
 
@@ -113,4 +115,6 @@ class ApiUrls {
   }
 
   static const String addNewAddress = '${baseUrl}api/UserAddress/AddNewAddress';
+  static const String addNewMeal =
+      '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 }
