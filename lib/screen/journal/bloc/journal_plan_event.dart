@@ -107,3 +107,5 @@ class JournalAddToEatenEvent extends JournalPlanEvent {
 
   JournalAddToEatenEvent({required this.mealId, required this.mealName, required this.calorie, required this.mealType, required this.noOfServing, required this.recipeId, required this.protein, required this.fat, required this.carbs});
 }
+
+

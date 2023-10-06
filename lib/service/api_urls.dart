@@ -15,6 +15,7 @@ class ApiUrls {
       '${baseUrl}api/Suggestic/AddToShoppingList';
   static const String byBarcodeScan =
       '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
+  static const String addNewCustomMeal = '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
   static const String addItemsToShoppingList =
       '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
@@ -29,6 +30,7 @@ class ApiUrls {
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
   static const String getAllRestrictionList =
       '${baseUrl}api/Suggestic/GetAllRestrictionList';
+  static const String getUserRestrictionList = '${baseUrl}api/Suggestic/GetUserRestrictionList';
   static const String addRestrictionAndGetMealPlan =
       '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
 

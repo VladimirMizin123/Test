@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,8 +66,8 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
-import 'package:app_links/app_links.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
@@ -75,7 +76,7 @@ import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
 import 'screen/reset_password/reset_password_screen.dart';
 
-// import this all  file
+// LATTEST CODE. . .
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // cameras = await availableCameras();
@@ -153,7 +154,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      // designSize: const Size(375, 812),
+      //designSize: const Size(375, 812),
       designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
@@ -470,3 +471,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+/// DONE TASK
+// Add New Custom Meal Api

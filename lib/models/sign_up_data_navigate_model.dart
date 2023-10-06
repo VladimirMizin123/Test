@@ -20,6 +20,7 @@ class UserSignUpDataModel {
   String? longitude;
   File? userProfileImage;
   List<CustomOptions>? options;
+  List<String> restrictionID;
   AddAddressModel? addAddressModel;
 
 
@@ -39,5 +40,6 @@ class UserSignUpDataModel {
       this.userName,
       this.weight,
       this.userProfileImage,
+      this.restrictionID = const [],
       this.options});
 }

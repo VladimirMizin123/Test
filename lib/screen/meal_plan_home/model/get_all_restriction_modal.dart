@@ -89,7 +89,7 @@ class Node {
   final String subcategory;
   final String slugname;
   final bool isOnProgram;
-  bool? isRestricted;
+  bool isRestricted;
 
   Node({
     required this.id,
