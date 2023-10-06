@@ -31,7 +31,8 @@ class GetUserAddress extends StatefulWidget {
   State<GetUserAddress> createState() => _GetUserAddressState();
 }
 
-class _GetUserAddressState extends State<GetUserAddress> {
+class _GetUserAddressState extends State<GetUserAddress>
+    with WidgetsBindingObserver {
   final routeName = '/GoogleMapScreen';
 
   late GoogleMapController mapController;
@@ -53,41 +54,7 @@ class _GetUserAddressState extends State<GetUserAddress> {
 
   Future getCurrentLocation() async {
     bool serviceEnabled = await _handleLocationPermission();
-    print('==serviceEnabled===>${serviceEnabled}');
     if (!serviceEnabled) return;
-    // serviceEnabled =
-    //     await GeolocatorPlatform.instance.isLocationServiceEnabled();
-    //
-    // print("serviceEnabled>>>>${serviceEnabled}");
-    // if (!serviceEnabled) {
-    //   await AppSettings.openAppSettings(type: AppSettingsType.location);
-    //   print('---->>>>DEnied1111111111');
-    // }
-    //
-    // permission = await Geolocator.checkPermission();
-    //
-    // print('===permission==11=>${permission == LocationPermission.denied}');
-    //
-    // if (permission == LocationPermission.denied) {
-    //   await GeolocatorPlatform.instance.requestPermission();
-    //   permission = await Geolocator.checkPermission();
-    //   if (permission == LocationPermission.denied) {
-    //     await GeolocatorPlatform.instance.requestPermission();
-    //     showToast(message: 'Location permissions are denied', isSuccess: false);
-    //     return false;
-    //   }
-    //   print('===permission==33=>${permission == LocationPermission.denied}');
-    //   print('===permission==44=>${permission}');
-    // }
-    // print('===permission==22=>${permission}');
-    // if (permission == LocationPermission.deniedForever) {
-    //   showToast(
-    //     message:
-    //         'Location permissions are permanently denied, we cannot request permissions.',
-    //     isSuccess: false,
-    //   );
-    //   return false;
-    // }
 
     BitmapDescriptor? customIcon;
 
@@ -102,7 +69,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
     });
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
 
-    print('==aaa====>$position');
     selectedLatLng = LatLng(position.latitude, position.longitude);
 
     currentPosition = CameraPosition(
@@ -131,7 +97,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings().then((value) async {
         permission = await Geolocator.checkPermission();
-        debugPrint('permission--> $permission');
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied) {
@@ -167,6 +132,7 @@ class _GetUserAddressState extends State<GetUserAddress> {
       }
       if (permission == LocationPermission.deniedForever) {
         await appSettingDialogBox();
+
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.deniedForever) {
           if (Get.arguments['string'] == 'isFromDashboard') {
@@ -255,8 +221,14 @@ class _GetUserAddressState extends State<GetUserAddress> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
+                        // setState(() {
+                        //   lifeCycleCall = true;
+                        // });
                         var permissionValue = await Geolocator.openAppSettings()
                             .then((value) async {});
+                        // setState(() {
+                        //   lifeCycleCall = false;
+                        // });
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -399,13 +371,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
             zipcode = element.longName ?? "";
           }
         });
-
-        print('==streetNum=====>${streetNum}');
-        print('==city=====>${city}');
-        print('==streetName=====>${streetName}');
-        print('==state=====>${state}');
-        print('==country=====>${country}');
-        print('==zipcode=====>${zipcode}');
       }
 
       searchTextController.text = right.results?.first.formattedAddress ??
@@ -416,8 +381,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
   }
 
   Future<void> findLatLng(String value) async {
-    print('==value====>${value}');
-
     await _googleMapSearchRepository.findLatLng(value).fold((left) {
       showToast(isSuccess: false, message: left.errorMessage!);
     }, (right) async {
@@ -473,15 +436,45 @@ class _GetUserAddressState extends State<GetUserAddress> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getCurrentLocation();
+      // WidgetsBinding.instance.addObserver(this);
     });
   }
+
+  // @override
+  // Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+  //   switch (state) {
+  //     case AppLifecycleState.resumed:
+  //       log('HELLOOOO');
+  //
+  //       if (lifeCycleCall == true) {
+  //         getCurrentLocation();
+  //       }
+  //       break;
+  //     case AppLifecycleState.inactive:
+  //       break;
+  //     case AppLifecycleState.paused:
+  //       log('tata');
+  //       Get.back();
+  //       break;
+  //     case AppLifecycleState.detached:
+  //       break;
+  //   }
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   WidgetsBinding.instance.removeObserver(this);
+  //   super.dispose();
+  // }
+
+  bool lifeCycleCall = false;
 
   @override
   Widget build(BuildContext context) {
     var argumentsValue = Get.arguments;
-    print('---->>>>>>${argumentsValue}');
 
     return Scaffold(
       body: BlocBuilder(
@@ -604,7 +597,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
                                   blurRadius: 16)
                             ],
                           ),
-
                           child: Row(
                             children: [
                               Padding(
@@ -629,75 +621,6 @@ class _GetUserAddressState extends State<GetUserAddress> {
                               )
                             ],
                           ),
-
-                          // child: TextFormField(
-                          //   controller: searchTextController,
-                          //   focusNode: searchTextFocus,
-                          //   readOnly: true,
-                          //   decoration: InputDecoration(
-                          //       hintText: 'Search',
-                          //       hintStyle: TextStyle(
-                          //         color: const Color(0xff5F5F5F),
-                          //         fontWeight: FontWeight.w300,
-                          //         fontSize: 14.sp,
-                          //       ),
-                          //       enabledBorder: OutlineInputBorder(
-                          //         borderRadius: BorderRadius.circular(8.r),
-                          //         borderSide: const BorderSide(
-                          //             color: Colors.transparent),
-                          //       ),
-                          //       focusedBorder: OutlineInputBorder(
-                          //         borderRadius: BorderRadius.circular(8.r),
-                          //         borderSide: const BorderSide(
-                          //             color: Colors.transparent),
-                          //       ),
-                          //       prefixIcon: Padding(
-                          //         padding: EdgeInsets.all(14.h),
-                          //         child: Image.asset(
-                          //           AssetsUtils.locationIcon,
-                          //           height: 20.h,
-                          //           width: 20.w,
-                          //         ),
-                          //       )
-                          //       // suffixIcon: Container(
-                          //       //   decoration: BoxDecoration(
-                          //       //     color: Colors.grey.shade200,
-                          //       //     borderRadius: BorderRadius.circular(6.r),
-                          //       //   ),
-                          //       //   padding:
-                          //       //       const EdgeInsets.symmetric(horizontal: 10),
-                          //       //   margin: const EdgeInsets.only(right: 10),
-                          //       //   child: DropdownButton(
-                          //       //     underline: const SizedBox(),
-                          //       //     icon: const SizedBox(),
-                          //       //     value: ofcHomeValue,
-                          //       //     items: List.generate(
-                          //       //       ofcHomeList.length,
-                          //       //       (index) => DropdownMenuItem(
-                          //       //         value: ofcHomeList[index],
-                          //       //         child: Text(
-                          //       //           ofcHomeList[index],
-                          //       //         ),
-                          //       //       ),
-                          //       //     ),
-                          //       //     onChanged: (value) {
-                          //       //       ofcHomeValue = value.toString();
-                          //       //       setState(() {});
-                          //       //       print('value====>${value}');
-                          //       //     },
-                          //       //   ),
-                          //       // ),
-                          //       ),
-                          //   onChanged: (value) {
-                          //     if (_debounce?.isActive ?? false) {
-                          //       _debounce?.cancel();
-                          //     }
-                          //     _debounce =
-                          //         Timer(const Duration(milliseconds: 500), () {
-                          //       searchLocation(value);
-                          //     });
-                          //   },
-                          // ),
                         ),
                       ),
 

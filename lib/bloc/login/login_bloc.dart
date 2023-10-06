@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +43,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           if (right.data != null) {
             await PreferenceUtils.setString(
                 prefToken, right.data!.token!.accessToken!);
+
+            log('right.data!.token!.accessToken!---------->>>>>> ${right.data!.token!.accessToken!}');
+
             userId = right.data!.userId!;
             await PreferenceUtils.setString(prefUserData, right.data!.userId!);
             await PreferenceUtils.setBool(prefIsLogin, true);

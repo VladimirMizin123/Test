@@ -192,6 +192,7 @@ class ApiServices {
         };
       }
       debugPrint('post url--> $url');
+      debugPrint('token--> $token');
       final request = http.MultipartRequest(
         'POST',
         Uri.parse(url),

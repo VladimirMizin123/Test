@@ -222,11 +222,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       await PreferenceUtils.setString(
                           totalCarbs, model.data!.totalCarbs.toString());
 
-                      // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
-                      // print(model.data!.totalCalorie);
-                      // print(model.data!.totalProtein);
-                      // print(model.data!.totalFat);
-                      // print(model.data!.totalCarbs);
+                      print(
+                          '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+                      print(model.data!.totalCalorie);
+                      print(model.data!.totalProtein);
+                      print(model.data!.totalFat);
+                      print(model.data!.totalCarbs);
 
                       // print('logData : $logData');
 
