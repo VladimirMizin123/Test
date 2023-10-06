@@ -33,13 +33,12 @@ class JournalMealScreen extends StatefulWidget {
 
 class _JournalMealScreenState extends State<JournalMealScreen> {
   final routeName = '/JournalMealScreen';
-
   JournalPlanBloc journalPlanBloc = JournalPlanBloc();
   List<MealData> mealList = [];
   JournalMealScreenArguments? journalMealScreenArguments = Get.arguments;
   // List<FetchMealPlanData> mealPlanList = [];
   TextEditingController controller = TextEditingController();
-  BarcodeScannerData? barcodeScannerData;
+
 
   @override
   void initState() {
@@ -89,14 +88,6 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                 break;
               }
             }
-          }
-          if (state is JournalBarcodeScannerState) {
-            log(state.barcode!, name: 'BarCode - - - - - - - - - - - - - - - - - - - - - - - - ');
-            controller.text = state.barcode ?? '';
-          }
-
-          if (state is JournalBarcodeScannerSuccessState) {
-            barcodeScannerData = state.barcodeScannerData;
           }
         },
         builder: (BuildContext context, JournalMealPlanState state) {
@@ -193,7 +184,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                               // onClear();
                               Get.toNamed(
                                 "/ScanBarcodeScreen",
-                                arguments: ScanBarcodeArguments(journalPlanBloc: journalPlanBloc),
+                                arguments: ScanBarcodeArguments(journalPlanBloc: journalPlanBloc,selectedDateTime: journalMealScreenArguments!.dateTime),
                               );
                             },
                             child: const SvgImage(
@@ -216,84 +207,84 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                   ),
                 ),
                 Expanded(
-                  child: 
-                  // state is JournalBarcodeScannerLoadingState
-                  //     ? const AppCenterLoader()
-                  //     : barcodeScannerData == null
-                  //         ? const Text('No Data Found!')
-                  //         : mealPlanCard(
-                  //                       onTap: () {
-                  //                         // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: barcodeScannerData.metadata, currentSelectedData: journalMealScreenArguments!.dateTime));
-                  //                       },
-                  //                       mealData: MealData(
-                  //                       calories: barcodeScannerData!.nfCalories.toDouble(),
-                  //                       meal: barcodeScannerData!.brandName,
-                  //                       numOfServings: barcodeScannerData
-                  //                       ),
-                  //                       context: context,
-                  //                       onSkipMealTap: () {
-                  //                         showModalBottomSheet(
-                  //                           context: context,
-                  //                           builder: (context) {
-                  //                             return JournalSkipMealBottomSheet(
-                  //                               bloc: journalPlanBloc,
-                  //                               mealData: mealList[index],
-                  //                             );
-                  //                           },
-                  //                           isDismissible: false,
-                  //                         );
-                  //                       },
-                  //                       onSwapMealTap: () {
-                  //                         showModalBottomSheet(
-                  //                           context: context,
-                  //                           builder: (context) {
-                  //                             return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
-                  //                           },
-                  //                         );
-                  //                       },
-                  //                     ),),
-                          mealList.isEmpty
-                              ? state is JournalFetchMealPlanLoadingState
-                                  ? const AppCenterLoader()
-                                  : const SizedBox()
-                              : SingleChildScrollView(
-                                  child: ListView.builder(
-                                    itemCount: mealList.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (BuildContext context, int index) {
-                                      return mealPlanCard(
-                                        onTap: () {
-                                          // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
-                                          Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: mealList[index], currentSelectedData: journalMealScreenArguments!.dateTime));
-                                        },
-                                        mealData: mealList[index],
+                  child:
+                      // state is JournalBarcodeScannerLoadingState
+                      //     ? const AppCenterLoader()
+                      //     : barcodeScannerData == null
+                      //         ? const Text('No Data Found!')
+                      //         : mealPlanCard(
+                      //                       onTap: () {
+                      //                         // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: barcodeScannerData.metadata, currentSelectedData: journalMealScreenArguments!.dateTime));
+                      //                       },
+                      //                       mealData: MealData(
+                      //                       calories: barcodeScannerData!.nfCalories.toDouble(),
+                      //                       meal: barcodeScannerData!.brandName,
+                      //                       numOfServings: barcodeScannerData
+                      //                       ),
+                      //                       context: context,
+                      //                       onSkipMealTap: () {
+                      //                         showModalBottomSheet(
+                      //                           context: context,
+                      //                           builder: (context) {
+                      //                             return JournalSkipMealBottomSheet(
+                      //                               bloc: journalPlanBloc,
+                      //                               mealData: mealList[index],
+                      //                             );
+                      //                           },
+                      //                           isDismissible: false,
+                      //                         );
+                      //                       },
+                      //                       onSwapMealTap: () {
+                      //                         showModalBottomSheet(
+                      //                           context: context,
+                      //                           builder: (context) {
+                      //                             return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
+                      //                           },
+                      //                         );
+                      //                       },
+                      //                     ),),
+                      mealList.isEmpty
+                          ? state is JournalFetchMealPlanLoadingState
+                              ? const AppCenterLoader()
+                              : const SizedBox()
+                          : SingleChildScrollView(
+                              child: ListView.builder(
+                                itemCount: mealList.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (BuildContext context, int index) {
+                                  return mealPlanCard(
+                                    onTap: () {
+                                      // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                                      Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: mealList[index],isFromScanner: false, currentSelectedData: journalMealScreenArguments!.dateTime));
+                                    },
+                                    mealData: mealList[index],
+                                    context: context,
+                                    onSkipMealTap: () {
+                                      showModalBottomSheet(
                                         context: context,
-                                        onSkipMealTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return JournalSkipMealBottomSheet(
-                                                bloc: journalPlanBloc,
-                                                mealData: mealList[index],
-                                              );
-                                            },
-                                            isDismissible: false,
+                                        builder: (context) {
+                                          return JournalSkipMealBottomSheet(
+                                            bloc: journalPlanBloc,
+                                            mealData: mealList[index],
                                           );
                                         },
-                                        onSwapMealTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
-                                            },
-                                          );
+                                        isDismissible: false,
+                                      );
+                                    },
+                                    onSwapMealTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          return JournalSwapMealBottomSheet(journalPlanBloc: journalPlanBloc, mealData: mealList[index]);
                                         },
                                       );
                                     },
-                                  ),
-                                ),
+                                  );
+                                },
+                              ),
+                            ),
                 ),
                 buildButton(
                         context: context,
@@ -326,6 +317,8 @@ class JournalMealScreenArguments {
   final List<MealData>? breakFastList;
   final DateTime? dateTime;
   final String? mealType;
+  final bool? isFromBarcodeScan;
 
-  JournalMealScreenArguments({required this.breakFastList, required this.dateTime, this.mealType});
+  JournalMealScreenArguments({required this.breakFastList, required this.dateTime, this.mealType, this.isFromBarcodeScan,
+  });
 }

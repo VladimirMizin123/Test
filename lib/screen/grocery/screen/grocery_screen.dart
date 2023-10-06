@@ -44,7 +44,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       groceryBloc.add(AddGroceryToShoppingListFromSuggesticEvent(
-          latitude: '44718980.05717322', longitude: '44718980.05717322'));
+          latitude: '41.881832', longitude: '-87.623177'));
       groceryBloc.add(GroceryFetchEvent());
     });
   }

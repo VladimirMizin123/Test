@@ -4,10 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
+import 'package:gymeats_mobile/screen/journal/barcode_grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
-import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:torch_light/torch_light.dart';
 
@@ -137,9 +139,13 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       debugPrint('scanData: ${scanData.code}');
       // widget.onBarcodeFetched(scanData);
       _qrViewController.dispose();
-      scanBarcodeArguments.journalPlanBloc.add(JournalScanBarcodeEvent(barcode: scanData.code!));
-      
-      Navigator.of(context).pop();
+      // scanBarcodeArguments.journalPlanBloc.add(JournalScanBarcodeEvent(barcode: scanData.code!));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return BarCodeGroceryItemDetails(scanData: scanData.code);
+      }));
+      // Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(groceryShoppingData: GroceryShoppingData()));
+      // Get.offNamed('/MealDetailsScreen', arguments: MealPlanArguments(isFromScanner: true, productName: '', currentSelectedData: scanBarcodeArguments.selectedDateTime, barcodeNumber: scanData.code));
+      // Navigator.of(context).pop();
     });
   }
 
@@ -154,6 +160,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
 
 class ScanBarcodeArguments {
   final JournalPlanBloc journalPlanBloc;
+  final DateTime? selectedDateTime;
 
-  ScanBarcodeArguments({required this.journalPlanBloc});
+  ScanBarcodeArguments({this.selectedDateTime, required this.journalPlanBloc});
 }

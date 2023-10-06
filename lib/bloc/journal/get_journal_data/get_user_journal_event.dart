@@ -104,3 +104,5 @@ class RemoveWaterEvent extends GetUserJournalEvent {
 
   RemoveWaterEvent({this.quantity});
 }
+
+class JournalGetDashboardDataEvent extends GetUserJournalEvent {}

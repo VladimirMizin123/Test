@@ -36,21 +36,24 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   int optionIndex = 0;
   List<int> listIndex = [];
   List<CustomOptions> listOptions = [];
-  List<Edge>? edgesRestrictionList = [];
+  List<Edge> edgesRestrictionList = [];
+  List<Edge>? searchEdgesRestrictionList = [];
   String surveyId = '';
+  bool isSearchOn = false;
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
+  List<String> restrictionIDList = [];
 
   @override
   void initState() {
     super.initState();
     debugPrint('widget.gender--> ${model.gender}');
-    // bloc.add(GetAllRestrictionEvent());
+    bloc.add(GetAllRestrictionEvent());
     bloc.add(GetSurveyData());
   }
 
   @override
   Widget build(BuildContext context) {
-    print('edgesRestrictionList!.length -- ${edgesRestrictionList!.length}');
+    // print('edgesRestrictionList!.length -- ${edgesRestrictionList!.length}');
     return SafeArea(
       child: Scaffold(
         body: BlocConsumer<UserSurveyBloc, UserSurveyState>(
@@ -72,7 +75,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
             }
 
             if (state is GetAllRestrictionSuccessState) {
-              edgesRestrictionList = state.edgesRestrictionList;
+              edgesRestrictionList = state.edgesRestrictionList ?? [];
             }
             return Container();
           },
@@ -90,7 +93,22 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               debugPrint("listOptions--> ${listOptions.length}");
             }
             if (state is NextScreenState) {
-              UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(firstName: model.firstName, lastName: model.lastName, email: model.email, password: model.password, userName: model.userName, confirmPassword: model.confirmPassword, gender: model.gender, age: model.age, height: model.height, weight: model.weight, dietId: state.dietId, surveyId: surveyId, options: listOptions);
+              UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
+                firstName: model.firstName,
+                lastName: model.lastName,
+                email: model.email,
+                password: model.password,
+                userName: model.userName,
+                confirmPassword: model.confirmPassword,
+                gender: model.gender,
+                age: model.age,
+                height: model.height,
+                weight: model.weight,
+                dietId: state.dietId,
+                surveyId: surveyId,
+                options: listOptions,
+                restrictionID: restrictionIDList,
+              );
 
               Get.toNamed('/UserPhotoSelectionScreen', arguments: userSignUpDataModel);
             }
@@ -109,6 +127,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -119,6 +138,32 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: const SvgImage(
                       image: AssetsUtils.icBack,
                     ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: InkWell(
+                    onTap: () {
+                      UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
+                        firstName: model.firstName,
+                        lastName: model.lastName,
+                        email: model.email,
+                        password: model.password,
+                        userName: model.userName,
+                        confirmPassword: model.confirmPassword,
+                        gender: model.gender,
+                        age: model.age,
+                        height: model.height,
+                        weight: model.weight,
+                        dietId: '',
+                        surveyId: surveyId,
+                        options: listOptions,
+                        restrictionID: restrictionIDList,
+                      );
+
+                      Get.toNamed('/UserPhotoSelectionScreen', arguments: userSignUpDataModel);
+                    },
+                    child: const Text('SKIP'),
                   ),
                 ),
 /*
@@ -165,43 +210,99 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               hintText: StringUtils.required,
               textInputType: TextInputType.text,
               context: context,
-              onChange: (String value) {
-                bloc.add(SearchData(
-                  text: value,
-                ));
+              onChange: (String? value) {
+                // bloc.add(SearchData(
+                //   text: value,
+                // ));
+                setState(() {
+                  // if (value != null || value != '') {
+                  if (value!.isNotEmpty) {
+                    isSearchOn = true;
+                    searchEdgesRestrictionList = edgesRestrictionList.where((item) => item.node.name.toLowerCase().contains(value.toLowerCase())).toList();
+                  } else {
+                    isSearchOn = false;
+                  }
+                });
               },
               onClear: () {
-                searchController.clear();
-                bloc.add(SearchData(
-                  text: searchController.text,
-                ));
+                setState(() {
+                  searchController.clear();
+                  isSearchOn = false;
+                  FocusScope.of(context).unfocus();
+                });
+                // bloc.add(SearchData(
+                //   text: searchController.text,
+                // ));
               },
             ),
             SizedBox(height: 30.h),
             Expanded(
-              child: SingleChildScrollView(
-                child: GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 6.0,
-                  mainAxisSpacing: 8.0,
-                  children: List.generate(
-                    getSurveyData!.options!.length,
-                    (index) {
-                      return UserSurveyItems(
-                        data: getSurveyData!.options![index],
-                        onClick: () {
-                          optionIndex = index;
-                          bloc.add(CheckSurveyData(
-                            index: index,
-                          ));
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
+              child: isSearchOn
+                  ? searchEdgesRestrictionList!.isEmpty
+                      ? const Text('No Search Found!')
+                      : SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 6.0,
+                            mainAxisSpacing: 8.0,
+                            children: List.generate(
+                              searchEdgesRestrictionList!.length,
+                              (index) {
+                                return UserSurveySearchItems(
+                                  data: searchEdgesRestrictionList![index],
+                                  index: index,
+                                  onTap: () {
+                                    setState(() {
+                                      searchEdgesRestrictionList![index].node.isRestricted = !searchEdgesRestrictionList![index].node.isRestricted;
+                                      if (restrictionIDList.contains(searchEdgesRestrictionList![index].node.id)) {
+                                        restrictionIDList.remove(searchEdgesRestrictionList![index].node.id);
+                                      } else {
+                                        restrictionIDList.add(searchEdgesRestrictionList![index].node.id);
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        )
+                  : SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 6.0,
+                        mainAxisSpacing: 8.0,
+                        children: List.generate(
+                          getSurveyData!.options!.length,
+                          (index) {
+                            return UserSurveyItems(
+                              data: getSurveyData!.options![index],
+                              onClick: () {
+                                optionIndex = index;
+                                bloc.add(CheckSurveyData(
+                                  index: index,
+                                ));
+
+                                setState(() {
+                                  if (getSurveyData!.options![index].restrictionId != null) {
+                                    if (restrictionIDList.contains(getSurveyData!.options![index].restrictionId)) {
+                                      restrictionIDList.remove(getSurveyData!.options![index].restrictionId);
+                                    } else {
+                                      restrictionIDList.add(getSurveyData!.options![index].restrictionId!);
+                                    }
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
             ),
             Visibility(
               visible: !(MediaQuery.of(context).viewInsets.bottom != 0),
@@ -228,6 +329,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: buildButton(
                             context: context,
                             onPressed: () {
+                              // print(restrictionIDList.toList().toString());
                               optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
                               listIndex.add(optionIndex);
 

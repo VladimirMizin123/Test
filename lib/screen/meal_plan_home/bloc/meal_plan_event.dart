@@ -73,6 +73,12 @@ class FetchMealDetailsEvent extends MealPlanEvent {
   FetchMealDetailsEvent({this.recipeID});
 }
 
+class FetchMealDetailsByNameEvent extends MealPlanEvent {
+  final String? recipeName;
+
+  FetchMealDetailsByNameEvent({this.recipeName});
+}
+
 class GrocerySearchEvent extends MealPlanEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
 
@@ -98,9 +104,16 @@ class RestaurantSearchEvent extends MealPlanEvent {
 }
 
 class GetAllRestrictionEvent extends MealPlanEvent {}
+class GetUserRestrictionEvent extends MealPlanEvent {}
 
 class AddUserRestrictionEvent extends MealPlanEvent {
   final List<String>? edgeRestrictionList;
 
   AddUserRestrictionEvent({this.edgeRestrictionList});
+}
+
+class BarcodeScanEvent extends MealPlanEvent {
+  final String barcode;
+
+  BarcodeScanEvent({required this.barcode});
 }

@@ -1,5 +1,6 @@
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
+import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 
 import '../../../models/exercise_log_details_model.dart';
 import '../../../models/fetch_meal_plan_model.dart';
@@ -131,3 +132,9 @@ class RemoveWaterSuccessState extends GetUserJournalState {
 
   RemoveWaterSuccessState({required this.removeWater});
 }
+
+class JournalLoadDashboardDataState extends GetUserJournalState {
+  List<MealDataByDate>? data;
+  JournalLoadDashboardDataState({this.data});
+}
+

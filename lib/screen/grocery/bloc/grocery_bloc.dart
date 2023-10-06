@@ -18,12 +18,45 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<GrocerySelectedStoreEvent>(_onGrocerySelectedStoreEvent);
     on<GroceryProductListEvent>(_onGroceryProductList);
     on<CleatGroceryEvent>(_onClearShoppingList);
+    on<BarcodeScanEvent>(_onScanBarcode);
+    on<AddNewCustomMealEvent>(_onAddCustomMeal);
   }
 
   final GroceryRepository _repository = GroceryRepository();
 
   _onGroceryProductList(GroceryProductListEvent event, Emitter<GroceryState> emit) async {
     emit(GroceryProductListState(productList: event.productList, productID: event.productID));
+  }
+
+  _onScanBarcode(BarcodeScanEvent event, Emitter<GroceryState> emit) async {
+    emit(BarcodeScannerLoadingState());
+    try {
+      await _repository.fetchBarcode(event.barcode).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(BarcodeScannerErrorState());
+      }, (right) {
+        emit(BarcodeScannerSuccessState(barcodeScannerData: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(BarcodeScannerErrorState());
+    }
+  }
+
+  _onAddCustomMeal(AddNewCustomMealEvent event, Emitter<GroceryState> emit) async {
+    emit(AddNewCustomMealLoadingState());
+    try {
+      await _repository.addNewCustomMeal(calorie: event.calorie, carbs: event.carbs, fat: event.fat, name: event.name, protein: event.protein, type: event.type).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(AddNewCustomMealErrorState());
+      }, (right) {
+        emit(AddNewCustomMealSuccessState(isAdded: right.success));
+        showToast(isSuccess: false, message: right.message!);
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(AddNewCustomMealErrorState());
+    }
   }
 
   _onAddGroceryToShoppingListFromSuggestic(AddGroceryToShoppingListFromSuggesticEvent event, Emitter<GroceryState> emit) async {

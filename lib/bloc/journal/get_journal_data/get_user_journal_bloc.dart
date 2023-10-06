@@ -1,6 +1,8 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
@@ -30,6 +32,7 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     on<DailyRecapEvent>(_onDailyRecap);
     on<DailyRecapAnsEvent>(_onDailyRecapAns);
     on<RemoveWaterEvent>(_onRemoveWater);
+    on<JournalGetDashboardDataEvent>(_onGetSurveyData);
   }
 
   final GetUserJournalDataRepository _journalDataRepository = GetUserJournalDataRepository();
@@ -38,6 +41,25 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
   final AddEatenMealRepository _eatenMealRepository = AddEatenMealRepository();
   final GetWaterDetailsRepository _waterDetailsRepository = GetWaterDetailsRepository();
   final GetExerciseDetailsRepository _exerciseDetailsRepository = GetExerciseDetailsRepository();
+
+  _onGetSurveyData(event, Emitter<GetUserJournalState> emit) async {
+    try {
+      // final response = await _journalDataRepository.getDashboardData();
+      final data = await _journalDataRepository.getMealLogByDate(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
+      // response.fold((left) {}, (right) {
+      data.fold(
+          (left) => {
+                // emit(JournalLoadDashboardDataState(model: right, data: [])),
+              }, (r) {
+        emit(JournalLoadDashboardDataState(data: r.data));
+      });
+      // emit(LoadDashboardData(model: right));
+      // });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+    }
+  }
 
   _onGetUserJournalData(GetUserJournalData event, Emitter<GetUserJournalState> emit) async {
     try {
@@ -140,12 +162,12 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
         emit(AddItemSuccessState(title: event.title));
+
         dataList.map((e) {
           if (e.id!.contains(event.mealId ?? '')) {
             e.isDone = true;
           }
         }).toList();
-
         emit(LoadGenMealData(genMealDataList: dataList));
       });
     } catch (e) {
