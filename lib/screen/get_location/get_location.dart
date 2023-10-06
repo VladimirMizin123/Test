@@ -548,16 +548,15 @@ class _GetUserAddressState extends State<GetUserAddress>
                 ),
 
                 Container(
-                  height: 342,
                   width: Get.width,
                   color: Colors.white,
                   padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.h),
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: 22.h,
+                        height: 5.h,
                       ),
                       Text(
                         'Add delivery address',
@@ -582,9 +581,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                           }
                         },
                         child: Container(
-                          height: 48.h,
                           width: 335.w,
-                          margin: EdgeInsets.only(top: 22.h, bottom: 22.h),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          margin: EdgeInsets.only(top: 18.h, bottom: 18.h),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8.r),
@@ -653,7 +652,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                       ),
 
                       SizedBox(
-                        height: 12.h,
+                        height: 10.h,
                       ),
 
                       ///OFFICE======================================================
@@ -661,7 +660,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                       ...List.generate(
                         2,
                         (index) => Padding(
-                          padding: EdgeInsets.only(bottom: 12.h),
+                          padding: EdgeInsets.only(bottom: 10.h),
                           child: GestureDetector(
                             onTap: () {
                               setState(() {

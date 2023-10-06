@@ -15,7 +15,7 @@ class PremiumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserSignUpDataModel userSignUpDataModel =
-        Get.arguments ?? UserSignUpDataModel() as UserSignUpDataModel;
+        Get.arguments ?? UserSignUpDataModel();
 
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(

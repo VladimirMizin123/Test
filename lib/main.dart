@@ -153,7 +153,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      // designSize: const Size(375, 812),
+      designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -469,6 +470,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-/// DONE TASK
-// Add New Custom Meal Api

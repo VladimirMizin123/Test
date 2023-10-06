@@ -11,9 +11,11 @@ import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_event.dart
 import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:http/http.dart' as http;
+import 'package:percent_indicator/linear_percent_indicator.dart';
+
 import '../../constant/color_utils.dart';
 
 class AddNewItemScreen extends StatefulWidget {
@@ -60,14 +62,41 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           listener: (context, state) {
             if (state is SelectedImagePathState) {
               pickedImageFilePath = state.imgPath!.path ?? '';
+              setState(() {
+                if (pickedImageFilePath.isEmpty) {
+                  isButtonEnable = false;
+                } else if (nameController.text.isEmpty) {
+                  isButtonEnable = false;
+                } else if (weightController.text.isEmpty) {
+                  isButtonEnable = false;
+                } else if (calController.text.isEmpty ||
+                    (double.parse(calController.text) >
+                        double.parse(
+                            PreferenceUtils.getString(totalCalorie)))) {
+                  isButtonEnable = false;
+                } else if (fatController.text.isEmpty ||
+                    (double.parse(fatController.text) >
+                        double.parse(PreferenceUtils.getString(totalFat)))) {
+                  isButtonEnable = false;
+                } else if (carbsController.text.isEmpty ||
+                    (double.parse(carbsController.text) >
+                        double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                  isButtonEnable = false;
+                } else if (proteinController.text.isEmpty ||
+                    (double.parse(proteinController.text) >
+                        double.parse(
+                            PreferenceUtils.getString(totalProtein)))) {
+                  isButtonEnable = false;
+                } else {
+                  isButtonEnable = true;
+                }
+              });
               setState(() {});
               print(
                   'Picked Image File Path --------------- $pickedImageFilePath');
             }
           },
           builder: (context, state) {
-            print('---===>>>${PreferenceUtils.getString(totalCalorie)}');
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -157,6 +186,40 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   borderSide: const BorderSide(
                                       color: AppColors.primaryBlue)),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                if (pickedImageFilePath.isEmpty) {
+                                  isButtonEnable = false;
+                                } else if (nameController.text.isEmpty) {
+                                  isButtonEnable = false;
+                                } else if (weightController.text.isEmpty) {
+                                  isButtonEnable = false;
+                                } else if (calController.text.isEmpty ||
+                                    (double.parse(calController.text) >
+                                        double.parse(PreferenceUtils.getString(
+                                            totalCalorie)))) {
+                                  isButtonEnable = false;
+                                } else if (fatController.text.isEmpty ||
+                                    (double.parse(fatController.text) >
+                                        double.parse(PreferenceUtils.getString(
+                                            totalFat)))) {
+                                  isButtonEnable = false;
+                                } else if (carbsController.text.isEmpty ||
+                                    (double.parse(carbsController.text) >
+                                        double.parse(PreferenceUtils.getString(
+                                            totalCarbs)))) {
+                                  isButtonEnable = false;
+                                } else if (proteinController.text.isEmpty ||
+                                    (double.parse(proteinController.text) >
+                                        double.parse(PreferenceUtils.getString(
+                                            totalProtein)))) {
+                                  isButtonEnable = false;
+                                } else {
+                                  isButtonEnable = true;
+                                }
+                              });
+                              setState(() {});
+                            },
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,6 +258,49 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                         borderSide: const BorderSide(
                                             color: AppColors.primaryBlue)),
                                   ),
+                                  onChanged: (value) {
+                                    setState(
+                                      () {
+                                        if (pickedImageFilePath.isEmpty) {
+                                          isButtonEnable = false;
+                                        } else if (nameController
+                                            .text.isEmpty) {
+                                          isButtonEnable = false;
+                                        } else if (weightController
+                                            .text.isEmpty) {
+                                          isButtonEnable = false;
+                                        } else if (calController.text.isEmpty ||
+                                            (double.parse(calController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCalorie)))) {
+                                          isButtonEnable = false;
+                                        } else if (fatController.text.isEmpty ||
+                                            (double.parse(fatController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalFat)))) {
+                                          isButtonEnable = false;
+                                        } else if (carbsController.text.isEmpty ||
+                                            (double.parse(carbsController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCarbs)))) {
+                                          isButtonEnable = false;
+                                        } else if (proteinController
+                                                .text.isEmpty ||
+                                            (double.parse(proteinController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalProtein)))) {
+                                          isButtonEnable = false;
+                                        } else {
+                                          isButtonEnable = true;
+                                        }
+                                      },
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                               ),
                               // Container(
@@ -247,6 +353,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 child: dashBoardCardView(
                                   margin: const EdgeInsets.only(right: 4),
                                   child: calciumDataView(
+                                    label: 'cal',
                                     title: 'Cal',
                                     percent: calController.text.isEmpty
                                         ? 0
@@ -276,6 +383,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 child: dashBoardCardView(
                                   margin: const EdgeInsets.only(left: 4),
                                   child: calciumDataView(
+                                    label: 'fat',
                                     title: 'Fat',
                                     percent: fatController.text.isEmpty
                                         ? 0
@@ -317,6 +425,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   margin: const EdgeInsets.only(right: 4),
                                   child: calciumDataView(
                                     title: 'Carbs',
+                                    label: 'carbs',
                                     percent: carbsController.text.isEmpty
                                         ? 0
                                         : (double.parse(carbsController.text) >
@@ -352,6 +461,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   margin: const EdgeInsets.only(left: 4),
                                   child: calciumDataView(
                                     title: 'Protein',
+                                    label: 'protein',
+
                                     percent: proteinController.text.isEmpty
                                         ? 0
                                         : (double.parse(
@@ -389,73 +500,73 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                     ),
                   ),
                 ),
-                buildButton(
-                  context: context,
-                  bgColor: isButtonEnable
-                      ? AppColors.primaryBlue
-                      : AppColors.disable,
-                  hasImage: false,
-                  onPressed: () {
-                    // ADD NEW ITEM API,
-                    if (pickedImageFilePath.isEmpty) {
-                      Fluttertoast.showToast(msg: 'Please Select Image');
-                    } else if (nameController.text.isEmpty) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Name value');
-                    } else if (weightController.text.isEmpty) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Weight value');
-                    } else if (calController.text.isEmpty ||
-                        (double.parse(calController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalCalorie)))) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Cal value');
-                    } else if (fatController.text.isEmpty ||
-                        (double.parse(fatController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalFat)))) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Fat value');
-                    } else if (carbsController.text.isEmpty ||
-                        (double.parse(carbsController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalCarbs)))) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Carbs value');
-                    } else if (proteinController.text.isEmpty ||
-                        (double.parse(proteinController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalProtein)))) {
-                      Fluttertoast.showToast(
-                          msg: 'Please fill correct Protein value');
+                BlocBuilder(
+                  bloc: getAddNewMealBloc,
+                  builder: (context, state) {
+                    if (state is LoadingState) {
+                      return const AppCenterLoader().paddingOnly(bottom: 10.h);
                     } else {
-                      print('------->>>>>>${{
-                        'name': nameController.text,
-                        'imageUrl': File(pickedImageFilePath),
-                        'protein': proteinController.text,
-                        'fat': fatController.text,
-                        'carbs': carbsController.text,
-                        'calorie': calController.text,
-                        'type': Get.arguments,
-                        'userId': userId,
-                      }}');
-
-                      getAddNewMealBloc.add(AddNewMeal(
-                        name: nameController.text,
-                        imageUrl: File(pickedImageFilePath),
-                        protein: proteinController.text,
-                        fat: fatController.text,
-                        carbs: carbsController.text,
-                        calorie: calController.text,
-                        type: Get.arguments,
-                        userId: userId,
-                      ));
+                      return buildButton(
+                        context: context,
+                        bgColor: isButtonEnable
+                            ? AppColors.primaryBlue
+                            : AppColors.disable,
+                        hasImage: false,
+                        onPressed: () {
+                          // ADD NEW ITEM API,
+                          if (pickedImageFilePath.isEmpty) {
+                            Fluttertoast.showToast(msg: 'Please Select Image');
+                          } else if (nameController.text.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Name value');
+                          } else if (weightController.text.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Weight value');
+                          } else if (calController.text.isEmpty ||
+                              (double.parse(calController.text) >
+                                  double.parse(PreferenceUtils.getString(
+                                      totalCalorie)))) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Cal value');
+                          } else if (fatController.text.isEmpty ||
+                              (double.parse(fatController.text) >
+                                  double.parse(
+                                      PreferenceUtils.getString(totalFat)))) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Fat value');
+                          } else if (carbsController.text.isEmpty ||
+                              (double.parse(carbsController.text) >
+                                  double.parse(
+                                      PreferenceUtils.getString(totalCarbs)))) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Carbs value');
+                          } else if (proteinController.text.isEmpty ||
+                              (double.parse(proteinController.text) >
+                                  double.parse(PreferenceUtils.getString(
+                                      totalProtein)))) {
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Protein value');
+                          } else {
+                            getAddNewMealBloc.add(
+                              AddNewMeal(
+                                name: nameController.text,
+                                imageUrl: File(pickedImageFilePath),
+                                protein: proteinController.text,
+                                fat: fatController.text,
+                                carbs: carbsController.text,
+                                calorie: calController.text,
+                                type: Get.arguments,
+                                userId: userId,
+                              ),
+                            );
+                          }
+                        },
+                        textColor: Colors.white,
+                        title: StringUtils.saveNewItem,
+                      ).paddingOnly(bottom: 30.h, top: 10.h);
                     }
                   },
-                  textColor: Colors.white,
-                  title: StringUtils.saveNewItem,
-                ).paddingOnly(bottom: 30.h, top: 10.h)
+                )
               ],
             ).paddingSymmetric(horizontal: 20.w);
           }),
@@ -469,6 +580,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     String? totalGram,
     double? percent,
     Color? progressColor,
+    String? label,
     TextEditingController? controller,
   }) {
     return Column(
@@ -497,52 +609,86 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
         SizedBox(
           width: 70,
           child: commonTextField(
-              textInputType: TextInputType.number,
-              context: context,
-              hintText: "cal",
-              isPassword: false,
-              controller: controller,
-              onChanged: (String? value) {
-                if (value != null && value != '') {
-                  setState(() {
-                    // print(double.parse(value));
-                    List<String> myData = totalGram!.split(' ');
-                    // print(myData[0]);
-                    if (double.parse(value) > double.parse(myData[0])) {
-                      showToast(
-                          message: 'Value Can\'t be more than ${myData[0]}',
-                          isSuccess: false);
-                    }
-                    if (nameController.text.isEmpty) {
-                      isButtonEnable = false;
-                    } else if (weightController.text.isEmpty) {
-                      isButtonEnable = false;
-                    } else if (calController.text.isEmpty ||
-                        (double.parse(calController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalCalorie)))) {
-                      isButtonEnable = false;
-                    } else if (fatController.text.isEmpty ||
-                        (double.parse(fatController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalFat)))) {
-                      isButtonEnable = false;
-                    } else if (carbsController.text.isEmpty ||
-                        (double.parse(carbsController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalCarbs)))) {
-                      isButtonEnable = false;
-                    } else if (proteinController.text.isEmpty ||
-                        (double.parse(proteinController.text) >
-                            double.parse(
-                                PreferenceUtils.getString(totalProtein)))) {
-                      isButtonEnable = false;
-                    } else {
-                      isButtonEnable = true;
-                    }
-                  });
-                }
-              }),
+            textInputType: TextInputType.number,
+            context: context,
+            hintText: label,
+            isPassword: false,
+            controller: controller,
+            onChanged: (String? value) {
+              if (value != null && value != '') {
+                setState(() {
+                  List<String> myData = totalGram!.split(' ');
+
+                  if (double.parse(value) > double.parse(myData[0])) {
+                    showToast(
+                        message: 'Value Can\'t be more than ${myData[0]}',
+                        isSuccess: false);
+                  }
+
+                  if (pickedImageFilePath.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (nameController.text.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (weightController.text.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (calController.text.isEmpty ||
+                      (double.parse(calController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCalorie)))) {
+                    isButtonEnable = false;
+                  } else if (fatController.text.isEmpty ||
+                      (double.parse(fatController.text) >
+                          double.parse(PreferenceUtils.getString(totalFat)))) {
+                    isButtonEnable = false;
+                  } else if (carbsController.text.isEmpty ||
+                      (double.parse(carbsController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCarbs)))) {
+                    isButtonEnable = false;
+                  } else if (proteinController.text.isEmpty ||
+                      (double.parse(proteinController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalProtein)))) {
+                    isButtonEnable = false;
+                  } else {
+                    isButtonEnable = true;
+                  }
+                });
+              } else {
+                setState(() {
+                  if (pickedImageFilePath.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (nameController.text.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (weightController.text.isEmpty) {
+                    isButtonEnable = false;
+                  } else if (calController.text.isEmpty ||
+                      (double.parse(calController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCalorie)))) {
+                    isButtonEnable = false;
+                  } else if (fatController.text.isEmpty ||
+                      (double.parse(fatController.text) >
+                          double.parse(PreferenceUtils.getString(totalFat)))) {
+                    isButtonEnable = false;
+                  } else if (carbsController.text.isEmpty ||
+                      (double.parse(carbsController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCarbs)))) {
+                    isButtonEnable = false;
+                  } else if (proteinController.text.isEmpty ||
+                      (double.parse(proteinController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalProtein)))) {
+                    isButtonEnable = false;
+                  } else {
+                    isButtonEnable = true;
+                  }
+                });
+              }
+              setState(() {});
+            },
+          ),
         ).paddingSymmetric(vertical: 5),
       ],
     );

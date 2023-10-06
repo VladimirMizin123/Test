@@ -1,11 +1,9 @@
-import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
@@ -17,7 +15,6 @@ import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart'
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-
 import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_event.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_state.dart';
@@ -266,7 +263,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             dashBoardCardView(
-              height: 235.h,
               width: 315.w,
               margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
               child: Column(
@@ -276,7 +272,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: 145.h,
                         width: 140.w,
                         child: CircularPercentIndicator(
                           radius: 68.0,
@@ -325,7 +320,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         ),
                       ).paddingOnly(left: 5.w),
                       SizedBox(
-                        height: 140.h,
                         width: 140.w,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -613,7 +607,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               width: 25.w,
                               child: const AppCenterLoader())
                           : Container(
-                              height: 25.h,
                               width: 25.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -649,7 +642,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   );
                 }),
             SizedBox(
-              height: 75.h,
               child: CarouselSlider(
                 items: carouselList,
                 options: CarouselOptions(
@@ -691,7 +683,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   ),
                 )
               ],
-            ).paddingOnly(bottom: 20.w, top: 5.h),
+            ).paddingOnly(bottom: 20.w, top: 0.h),
           ],
         ),
       );

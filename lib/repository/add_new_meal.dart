@@ -55,15 +55,19 @@ class AddNewMealRepository {
     };
     print('---Image-->>>>>$mealItemImage');
     print('---data-->>>>>$data');
-    final response = await apiServices
-        .postMultipart(url: ApiUrls.addNewMeal, body: data, files: []);
+    final response = await apiServices.postMultipart(
+        url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('SUCESSBODYYY--${response.body}');
 
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       print('FailBODYYY--${response.body}');
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      return Left(
+        ErrorModel.fromJson(
+          jsonDecode(response.body),
+        ),
+      );
     }
   }
 }

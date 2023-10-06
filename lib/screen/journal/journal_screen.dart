@@ -270,6 +270,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       isDoneLoader = false;
                       mealTrackerDataList = state.genMealDataList;
 
+                      breakFastList.clear();
                       mealTrackerDataList!.map((e) {
                         if (e.meal == 'breakfast') {
                           breakFastList.add(e);
@@ -319,6 +320,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     return isAllDataLoading
                         ? const AppCenterLoader()
                         : SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -601,6 +603,8 @@ class _JournalScreenState extends State<JournalScreen> {
                                                 physics:
                                                     const NeverScrollableScrollPhysics(),
                                                 itemBuilder: (context, index) {
+                                                  print(
+                                                      '-----?>>>>${breakFastList.length}');
                                                   return InkWell(
                                                     onTap: () {
                                                       Get.toNamed(
@@ -991,8 +995,8 @@ class _JournalScreenState extends State<JournalScreen> {
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, index) {
                                               return Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 10),
+                                                padding: EdgeInsets.only(
+                                                    right: 10, bottom: 10.h),
                                                 child: commonSliderView(
                                                   image: recapDataList[index]
                                                               .isSelected ==
@@ -1016,11 +1020,14 @@ class _JournalScreenState extends State<JournalScreen> {
                                                     setState(() {});
                                                     recapDataList[index]
                                                         .isSelected = 0;
-                                                    bloc.add(DailyRecapAnsEvent(
+                                                    bloc.add(
+                                                      DailyRecapAnsEvent(
                                                         queID:
                                                             recapDataList[index]
                                                                 .id,
-                                                        recapAns: true));
+                                                        recapAns: true,
+                                                      ),
+                                                    );
                                                   },
                                                   onNoTap: () {
                                                     setState(() {});
