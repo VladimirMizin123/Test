@@ -41,7 +41,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
     List<GrocerySearchModel> edgesDummyList = [];
     for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
       edgesDummyList.add(GrocerySearchModel(
-        groceryName: widget.arguments!.edgesList[i].productName,
+        groceryName: widget.arguments!.edgesList[i].itemName,
         quantity: 0,
       ));
     }
@@ -74,13 +74,16 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                         height: 35.h,
                         color: AppColors.green,
                       ),
-                      Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101)),
+                      Text('Edit',
+                          style:
+                              FontUtils.h16(fontColor: AppColors.oxFF010101)),
                     ],
                   ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                   const SizedBox(height: 10),
                   Text(
                     'Choose a Store',
-                    style: FontUtils.h24(fontColor: AppColors.green, fontWeight: FWT.semiBold),
+                    style: FontUtils.h24(
+                        fontColor: AppColors.green, fontWeight: FWT.semiBold),
                   ),
                   SizedBox(height: 15.h),
                   Padding(
@@ -88,7 +91,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextFormField(
@@ -98,17 +102,25 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                               isSearchOn = false;
                             } else {
                               isSearchOn = true;
-                              searchedProductsList = productsList.where((item) => item.store!.name!.toLowerCase().contains(value.toLowerCase())).toList();
+                              searchedProductsList = productsList
+                                  .where((item) => item.store!.name!
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()))
+                                  .toList();
                             }
                           });
                         },
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search, color: AppColors.darkGray),
+                          prefixIcon: const Icon(Icons.search,
+                              color: AppColors.darkGray),
                           hintText: 'Search store here...',
-                          hintStyle: FontUtils.h16(fontColor: AppColors.middleGray),
+                          hintStyle:
+                              FontUtils.h16(fontColor: AppColors.middleGray),
                           border: InputBorder.none,
-                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
+                          focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -121,7 +133,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                             : Center(
                                 child: Text(
                                   'No Data Found!',
-                                  style: FontUtils.h14(fontColor: AppColors.black),
+                                  style:
+                                      FontUtils.h14(fontColor: AppColors.black),
                                 ),
                               )
                         : isSearchOn
@@ -130,10 +143,12 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                     child: ListView.builder(
                                       itemCount: searchedProductsList.length,
                                       shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 6),
                                           child: Column(
                                             children: [
                                               Container(
@@ -142,22 +157,40 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                   color: AppColors.whiteColor,
                                                 ),
                                                 child: Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 12),
                                                   child: Row(
                                                     children: [
                                                       // const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
                                                       Expanded(
                                                           flex: 4,
                                                           child: Center(
-                                                            child: CachedNetworkImage(
-                                                              imageUrl: productsList[index].store!.logoPhotos![0],
+                                                            child:
+                                                                CachedNetworkImage(
+                                                              imageUrl:
+                                                                  productsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .logoPhotos![0],
                                                               height: 60.h,
                                                               // width: 40.h,
                                                               fit: BoxFit.cover,
-                                                              errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
-                                                              placeholder: (context, url) => const Center(
-                                                                  child: CircularProgressIndicator(
-                                                                color: AppColors.lightGrey,
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  const Center(
+                                                                      child: Icon(
+                                                                          Icons
+                                                                              .error)),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  const Center(
+                                                                      child:
+                                                                          CircularProgressIndicator(
+                                                                color: AppColors
+                                                                    .lightGrey,
                                                               )),
                                                             ),
                                                             // Image(
@@ -171,15 +204,29 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                       Expanded(
                                                         flex: 4,
                                                         child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
                                                           children: [
                                                             Text(
-                                                              productsList[index].store!.name ?? '', // 'The nearest time for pickup,',
-                                                              style: FontUtils.h14(fontColor: AppColors.black),
+                                                              productsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .name ??
+                                                                  '', // 'The nearest time for pickup,',
+                                                              style: FontUtils.h14(
+                                                                  fontColor:
+                                                                      AppColors
+                                                                          .black),
                                                             ),
                                                             Text(
                                                               'tomorrow at 10am',
-                                                              style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                              style: FontUtils.h12(
+                                                                  fontColor:
+                                                                      AppColors
+                                                                          .black,
+                                                                  fontWeight: FWT
+                                                                      .semiBold),
                                                             ),
                                                           ],
                                                         ),
@@ -189,17 +236,32 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                         child: GestureDetector(
                                                           onTap: () {
                                                             setState(() {
-                                                              if (searchedProductsList[index].store!.isSelected) {
-                                                                if (selectedStoreCount == 0) {
+                                                              if (searchedProductsList[
+                                                                      index]
+                                                                  .store!
+                                                                  .isSelected) {
+                                                                if (selectedStoreCount ==
+                                                                    0) {
                                                                 } else {
-                                                                  searchedProductsList[index].store!.isSelected = false;
-                                                                  selectedStoreCount = selectedStoreCount - 1;
+                                                                  searchedProductsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected = false;
+                                                                  selectedStoreCount =
+                                                                      selectedStoreCount -
+                                                                          1;
                                                                 }
                                                               } else {
-                                                                if (selectedStoreCount == 3) {
+                                                                if (selectedStoreCount ==
+                                                                    3) {
                                                                 } else {
-                                                                  searchedProductsList[index].store!.isSelected = true;
-                                                                  selectedStoreCount = selectedStoreCount + 1;
+                                                                  searchedProductsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected = true;
+                                                                  selectedStoreCount =
+                                                                      selectedStoreCount +
+                                                                          1;
                                                                 }
                                                               }
                                                             });
@@ -207,19 +269,37 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                           child: Container(
                                                             height: 22.h,
                                                             width: 22.w,
-                                                            decoration: BoxDecoration(
-                                                              shape: BoxShape.circle,
-                                                              border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              border: Border.all(
+                                                                  color: AppColors
+                                                                      .primaryBlue,
+                                                                  width: 2),
                                                             ),
                                                             child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
                                                               children: [
                                                                 Visibility(
-                                                                  visible: searchedProductsList[index].store!.isSelected,
-                                                                  child: Container(
-                                                                    decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
-                                                                    height: 14.h,
+                                                                  visible: searchedProductsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected,
+                                                                  child:
+                                                                      Container(
+                                                                    decoration: const BoxDecoration(
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                        color: AppColors
+                                                                            .primaryBlue),
+                                                                    height:
+                                                                        14.h,
                                                                     width: 14.w,
                                                                   ),
                                                                 ),
@@ -246,7 +326,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
                                       child: Column(
                                         children: [
                                           Container(
@@ -255,22 +336,37 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                               color: AppColors.whiteColor,
                                             ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 12),
                                               child: Row(
                                                 children: [
                                                   // const Expanded(flex: 4, child: Center(child: Image(image: AssetImage(AssetsUtils.icDemoIcon)))),
                                                   Expanded(
                                                       flex: 4,
                                                       child: Center(
-                                                        child: CachedNetworkImage(
-                                                          imageUrl: productsList[index].store!.logoPhotos![0],
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: productsList[
+                                                                  index]
+                                                              .store!
+                                                              .logoPhotos![0],
                                                           height: 60.h,
                                                           // width: 40.h,
                                                           fit: BoxFit.cover,
-                                                          errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
-                                                          placeholder: (context, url) => const Center(
-                                                              child: CircularProgressIndicator(
-                                                            color: AppColors.lightGrey,
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              const Center(
+                                                                  child: Icon(Icons
+                                                                      .error)),
+                                                          placeholder: (context,
+                                                                  url) =>
+                                                              const Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                            color: AppColors
+                                                                .lightGrey,
                                                           )),
                                                         ),
                                                         // Image(
@@ -284,15 +380,28 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                   Expanded(
                                                     flex: 4,
                                                     child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Text(
-                                                          productsList[index].store!.name ?? '', // 'The nearest time for pickup,',
-                                                          style: FontUtils.h14(fontColor: AppColors.black),
+                                                          productsList[index]
+                                                                  .store!
+                                                                  .name ??
+                                                              '', // 'The nearest time for pickup,',
+                                                          style: FontUtils.h14(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .black),
                                                         ),
                                                         Text(
                                                           'tomorrow at 10am',
-                                                          style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                                                          style: FontUtils.h12(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .black,
+                                                              fontWeight:
+                                                                  FWT.semiBold),
                                                         ),
                                                       ],
                                                     ),
@@ -302,17 +411,34 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                     child: GestureDetector(
                                                       onTap: () {
                                                         setState(() {
-                                                          if (productsList[index].store!.isSelected) {
-                                                            if (selectedStoreCount == 0) {
+                                                          if (productsList[
+                                                                  index]
+                                                              .store!
+                                                              .isSelected) {
+                                                            if (selectedStoreCount ==
+                                                                0) {
                                                             } else {
-                                                              productsList[index].store!.isSelected = false;
-                                                              selectedStoreCount = selectedStoreCount - 1;
+                                                              productsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected =
+                                                                  false;
+                                                              selectedStoreCount =
+                                                                  selectedStoreCount -
+                                                                      1;
                                                             }
                                                           } else {
-                                                            if (selectedStoreCount == 3) {
+                                                            if (selectedStoreCount ==
+                                                                3) {
                                                             } else {
-                                                              productsList[index].store!.isSelected = true;
-                                                              selectedStoreCount = selectedStoreCount + 1;
+                                                              productsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected =
+                                                                  true;
+                                                              selectedStoreCount =
+                                                                  selectedStoreCount +
+                                                                      1;
                                                             }
                                                           }
                                                         });
@@ -320,18 +446,35 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                       child: Container(
                                                         height: 22.h,
                                                         width: 22.w,
-                                                        decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          border: Border.all(
+                                                              color: AppColors
+                                                                  .primaryBlue,
+                                                              width: 2),
                                                         ),
                                                         child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
                                                           children: [
                                                             Visibility(
-                                                              visible: productsList[index].store!.isSelected,
+                                                              visible:
+                                                                  productsList[
+                                                                          index]
+                                                                      .store!
+                                                                      .isSelected,
                                                               child: Container(
-                                                                decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                                                                decoration: const BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    color: AppColors
+                                                                        .primaryBlue),
                                                                 height: 14.h,
                                                                 width: 14.w,
                                                               ),
@@ -369,7 +512,9 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                             selectedProductStore.add(productsList[i]);
                           }
                         }
-                        widget.arguments!.groceryBloc!.add(GrocerySelectedStoreEvent(productsList: selectedProductStore));
+                        widget.arguments!.groceryBloc!.add(
+                            GrocerySelectedStoreEvent(
+                                productsList: selectedProductStore));
                         Navigator.pop(context);
                       },
                       isDarkColor: true,

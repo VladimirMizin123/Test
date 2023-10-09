@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
@@ -16,15 +18,26 @@ import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 enum AskReceiveOrder { bringTheOrder, pickMySelf }
 
 class ReceiveOrderAskBottomSheet extends StatefulWidget {
+  // final GroceryBloc groceryBloc;
+  // final List<GroceryShoppingData> selectedEdgesList;
+  // const ReceiveOrderAskBottomSheet(
+  //     {super.key, required this.groceryBloc, required this.selectedEdgesList});
+  final AddNewGroceryItemBloc addNewGroceryItemBloc;
   final GroceryBloc groceryBloc;
-  final List<GroceryShoppingData> selectedEdgesList;
-  const ReceiveOrderAskBottomSheet({super.key, required this.groceryBloc, required this.selectedEdgesList});
+  final List<GroceryDetails> selectedEdgesList;
+  const ReceiveOrderAskBottomSheet(
+      {super.key,
+      required this.addNewGroceryItemBloc,
+      required this.selectedEdgesList,
+      required this.groceryBloc});
 
   @override
-  State<ReceiveOrderAskBottomSheet> createState() => _ReceiveOrderAskBottomSheetState();
+  State<ReceiveOrderAskBottomSheet> createState() =>
+      _ReceiveOrderAskBottomSheetState();
 }
 
-class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet> {
+class _ReceiveOrderAskBottomSheetState
+    extends State<ReceiveOrderAskBottomSheet> {
   int selectedIndex = -1;
 
   @override
@@ -38,7 +51,8 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
         builder: (context, state) {
           return Material(
             color: AppColors.whiteColor,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
@@ -50,14 +64,18 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
                         child: Container(
                           height: 3.h,
                           width: 80.w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.disable),
                         )),
                     const SizedBox(height: 10),
                     SvgPicture.asset(AssetsUtils.icQuestionMarkGreenIcon),
                     const SizedBox(height: 15),
                     Text(
                       'How would you like to receive your order?',
-                      style: FontUtils.h20(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                      style: FontUtils.h20(
+                          fontColor: AppColors.darkGray,
+                          fontWeight: FWT.semiBold),
                     ),
                     const SizedBox(height: 15),
                     myWidget(
@@ -96,10 +114,15 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
                           //   }
                           // }
                           // if (edgesDummyList.isNotEmpty) {
-                          Get.toNamed('/GroceryCartScreen', arguments: GroceryCartScreenArguments(edgesList: widget.selectedEdgesList, askReceiveOrder: selectedIndex == 0 ? AskReceiveOrder.bringTheOrder : AskReceiveOrder.pickMySelf))!.then((value) {
-                          Get.back();
+                          Get.toNamed('/GroceryCartScreen',
+                                  arguments: GroceryCartScreenArguments(
+                                      edgesList: widget.selectedEdgesList,
+                                      askReceiveOrder: selectedIndex == 0
+                                          ? AskReceiveOrder.bringTheOrder
+                                          : AskReceiveOrder.pickMySelf))!
+                              .then((value) {
+                            Get.back();
                           });
-                          // }
                         }
                       },
                       isDarkColor: true,
@@ -114,13 +137,15 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
         });
   }
 
-  Widget myWidget({bool isSelected = false, VoidCallback? onTap, String? title}) {
+  Widget myWidget(
+      {bool isSelected = false, VoidCallback? onTap, String? title}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? AppColors.primaryBlue : Colors.transparent),
+          border: Border.all(
+              color: isSelected ? AppColors.primaryBlue : Colors.transparent),
           color: AppColors.whiteColor,
           boxShadow: boxShadowWidget,
         ),
@@ -131,7 +156,8 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
             children: [
               Text(
                 title!,
-                style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium),
+                style: FontUtils.h16(
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium),
               ),
               Container(
                 height: 22.h,
@@ -147,7 +173,9 @@ class _ReceiveOrderAskBottomSheetState extends State<ReceiveOrderAskBottomSheet>
                     Visibility(
                       visible: isSelected,
                       child: Container(
-                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primaryBlue),
                         height: 14.h,
                         width: 14.w,
                       ),

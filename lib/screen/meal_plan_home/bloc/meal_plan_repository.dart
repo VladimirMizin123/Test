@@ -29,7 +29,8 @@ class MealPlanRepository {
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
+    int mealPlanScreenCountState =
+        PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
     if (mealPlanScreenCountState == 0) {
       apiURL = '${ApiUrls.genMealPlan}/$userID';
@@ -55,7 +56,8 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(String date) async {
+  Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
+      String date) async {
     String apiURL = '${ApiUrls.getMealLogByDate}/$userId?date=$date';
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -76,8 +78,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, GetUserRestrictionModal>> getUserRestriction() async {
-    final response = await apiServices.get('${ApiUrls.getUserRestrictionList}/$userID');
+  Future<Either<ErrorModel, GetUserRestrictionModal>>
+      getUserRestriction() async {
+    final response =
+        await apiServices.get('${ApiUrls.getUserRestrictionList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       // int count = getListCount(jsonDecode(response.body['data']));
       // debugPrint("count --> $count");
@@ -87,8 +91,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, AddUserRestrictionModal>> addUserRestriction({List<String> restrictionList = const []}) async {
-    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
+  Future<Either<ErrorModel, AddUserRestrictionModal>> addUserRestriction(
+      {List<String> restrictionList = const []}) async {
+    final response = await apiServices.post(
+        '${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
       // int count = getListCount(jsonDecode(response.body['data']));
       // debugPrint("count --> $count");
@@ -107,7 +113,9 @@ class MealPlanRepository {
   //   }
   // }
 
-  Future<Either<ErrorModel, SuccessModel>> recipeAddToGrocery({required List<AddItemsToShoppingListModal> addItemsToShoppingList}) async {
+  Future<Either<ErrorModel, SuccessModel>> recipeAddToGrocery(
+      {required List<AddItemsToShoppingListModal>
+          addItemsToShoppingList}) async {
     final response = await apiServices.post(
       ApiUrls.addItemsToShoppingList,
       {"userId": userID, "itemList": addItemsToShoppingList},
@@ -119,8 +127,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem({required String recipeID, required int serving}) async {
-    final response = await apiServices.get('${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
+  Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem(
+      {required String recipeID, required int serving}) async {
+    final response = await apiServices.get(
+        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -160,8 +170,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails({required String recipeID}) async {
-    final response = await apiServices.get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
+  Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
+      {required String recipeID}) async {
+    final response = await apiServices
+        .get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -169,7 +181,8 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>> groceryDetailsMealInfo({
+  Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>>
+      groceryDetailsMealInfo({
     required String productName,
   }) async {
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
@@ -179,7 +192,8 @@ class MealPlanRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(jsonDecode(response.body)));
+      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
+          jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -192,7 +206,9 @@ class MealPlanRepository {
     required String maximumMiles,
     required bool pickup,
   }) async {
-    final response = await apiServices.post('${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude', {}
+    final response = await apiServices.post(
+        '${ApiUrls.productRestaurantSearch}?name=$name&latitude=$latitude&longitude=$longitude',
+        {}
         // {
         //   "name": name,
         //   "latitude": latitude,
@@ -240,7 +256,8 @@ class MealPlanRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -271,8 +288,10 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
-    final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
+  Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(
+      String barcodeID) async {
+    final response =
+        await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
     } else {

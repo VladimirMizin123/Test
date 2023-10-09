@@ -321,7 +321,8 @@ class _JournalScreenState extends State<JournalScreen> {
                     }
 
                     if (state is JournalLoadDashboardDataState) {
-                      print('JournalLoadDashboardDataState ---- - - - - - - - - - - - - ----- ${state.data!.length}');
+                      print(
+                          'JournalLoadDashboardDataState ---- - - - - - - - - - - - - ----- ${state.data!.length}');
                       logData = state.data ?? [];
                     }
 
@@ -611,10 +612,100 @@ class _JournalScreenState extends State<JournalScreen> {
                                       //     ],
                                       //   ),
                                       // ),
-                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.breakFastIcon, title: StringUtils.breakfast, dataList: breakFastList, cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.breakfast),
-                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.lunchIcon, title: StringUtils.lunch, dataList: lunchDataList, cal: int.parse(lunchDataList![0].calories!.toString().split('.')[1]) >= 50 ? lunchDataList![0].calories!.toDouble().ceil().toString() : lunchDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.lunch),
-                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.dinnerIcon, title: StringUtils.dinner, dataList: dinnerDataList, cal: int.parse(dinnerDataList![0].calories!.toString().split('.')[1]) >= 50 ? dinnerDataList![0].calories!.toDouble().ceil().toString() : dinnerDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.dinner),
-                                      commonFoodItemView(textTheme: textTheme, image: AssetsUtils.snackIcon, title: StringUtils.snack, dataList: snackDataList, cal: int.parse(snackDataList![0].calories!.toString().split('.')[1]) >= 50 ? snackDataList![0].calories!.toDouble().ceil().toString() : snackDataList![0].calories!.toDouble().floor().toString(), isLoaderWidgetShow: state is AddItemLoadingState && state.title == StringUtils.snack),
+                                      commonFoodItemView(
+                                          textTheme: textTheme,
+                                          image: AssetsUtils.breakFastIcon,
+                                          title: StringUtils.breakfast,
+                                          dataList: breakFastList,
+                                          cal: int.parse(lunchDataList![0]
+                                                      .calories!
+                                                      .toString()
+                                                      .split('.')[1]) >=
+                                                  50
+                                              ? lunchDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .ceil()
+                                                  .toString()
+                                              : lunchDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .floor()
+                                                  .toString(),
+                                          isLoaderWidgetShow:
+                                              state is AddItemLoadingState &&
+                                                  state.title ==
+                                                      StringUtils.breakfast),
+                                      commonFoodItemView(
+                                          textTheme: textTheme,
+                                          image: AssetsUtils.lunchIcon,
+                                          title: StringUtils.lunch,
+                                          dataList: lunchDataList,
+                                          cal: int.parse(lunchDataList![0]
+                                                      .calories!
+                                                      .toString()
+                                                      .split('.')[1]) >=
+                                                  50
+                                              ? lunchDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .ceil()
+                                                  .toString()
+                                              : lunchDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .floor()
+                                                  .toString(),
+                                          isLoaderWidgetShow: state
+                                                  is AddItemLoadingState &&
+                                              state.title == StringUtils.lunch),
+                                      commonFoodItemView(
+                                          textTheme: textTheme,
+                                          image: AssetsUtils.dinnerIcon,
+                                          title: StringUtils.dinner,
+                                          dataList: dinnerDataList,
+                                          cal: int.parse(dinnerDataList![0]
+                                                      .calories!
+                                                      .toString()
+                                                      .split('.')[1]) >=
+                                                  50
+                                              ? dinnerDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .ceil()
+                                                  .toString()
+                                              : dinnerDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .floor()
+                                                  .toString(),
+                                          isLoaderWidgetShow:
+                                              state is AddItemLoadingState &&
+                                                  state.title ==
+                                                      StringUtils.dinner),
+                                      commonFoodItemView(
+                                          textTheme: textTheme,
+                                          image: AssetsUtils.snackIcon,
+                                          title: StringUtils.snack,
+                                          dataList: snackDataList,
+                                          cal: int.parse(snackDataList![0]
+                                                      .calories!
+                                                      .toString()
+                                                      .split('.')[1]) >=
+                                                  50
+                                              ? snackDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .ceil()
+                                                  .toString()
+                                              : snackDataList![0]
+                                                  .calories!
+                                                  .toDouble()
+                                                  .floor()
+                                                  .toString(),
+                                          isLoaderWidgetShow: state
+                                                  is AddItemLoadingState &&
+                                              state.title == StringUtils.snack),
                                     ],
                                   ),
                                 },
@@ -1186,7 +1277,8 @@ class _JournalScreenState extends State<JournalScreen> {
     // }
     bool isEaten = false;
     logData.map((e) {
-      print('logData.map ${e.mealId} == ${dataList![0].id} ${e.mealId == dataList[0].id}');
+      print(
+          'logData.map ${e.mealId} == ${dataList![0].id} ${e.mealId == dataList[0].id}');
       if (e.mealId == dataList[0].id) {
         isEaten = true;
       }

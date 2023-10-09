@@ -30,16 +30,13 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
       )
           .fold(
         (left) {
-          print('------FAIL!!1');
           onFailError(emit: emit, text: left.errorMessage!);
         },
         (right) {
-          print('------SUCESSS!!1');
-
           showToast(isSuccess: true, message: right.message!);
-          emit(AddAddressSuccessfulState());
+          emit(AddNewMealSuccessfulState());
 
-          Get.offAllNamed('/JournalScreen');
+          // Get.offAllNamed('/JournalScreen');
         },
       );
     } catch (e) {

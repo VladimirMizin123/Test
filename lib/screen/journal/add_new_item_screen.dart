@@ -221,6 +221,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                               setState(() {});
                             },
                           ),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

@@ -12,23 +12,28 @@ import '../service/apis.dart';
 class GetUserJournalDataRepository {
   final ApiServices apiServices = ApiServices();
 
-  Future<Either<ErrorModel , GetDashboardModel>> getUserJournalData({required String date}) async {
+  Future<Either<ErrorModel, GetDashboardModel>> getUserJournalData(
+      {required String date}) async {
     final response = await apiServices.get(
       '${ApiUrls.getUserJournalData}/$userId?date=$date',
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetDashboardModel.fromJson(jsonDecode(response.body)) );
+      return Right(GetDashboardModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(String date) async {
-    final response = await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
+  Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
+      String date) async {
+    final response =
+        await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
     print('getMealLogByDate response : ${response.body}');
     print('getMealLogByDate response statusCode : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
+      return Right(
+        GetMealLogByDate.fromJson(jsonDecode(response.body)),
+      );
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -46,6 +51,4 @@ class GetUserJournalDataRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
-  
-  
 }

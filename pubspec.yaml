@@ -53,6 +53,7 @@ dependencies:
   firebase_core:
   carousel_slider: ^4.2.1
   qr_code_scanner: ^1.0.1
+
 #  camera:
   firebase_auth:
   torch_light: ^1.0.0
