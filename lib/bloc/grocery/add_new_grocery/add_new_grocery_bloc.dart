@@ -13,16 +13,19 @@ class AddNewGroceryItemBloc
     on<AddNewGroceryItem>(_onAddNewGroceryItem);
     on<GetGroceryItemEvent>(_onGetGroceryDetails);
     on<RemoveGroceryItemEvent>(_onRemoveGroceryItem);
+    on<ClearGroceryEvent>(_onClearGroceryList);
+    on<UpdateAddNewGroceryItem>(_onAddUpdateGroceryItem);
+    on<UpdateRemoveNewGroceryItem>(_onRemoveUpdateGroceryItem);
   }
 
   final AddNewGroceryItemRepository _repository = AddNewGroceryItemRepository();
+
+  /// Add Grocery Item Bloc =================================================================
 
   _onAddNewGroceryItem(
       AddNewGroceryItem event, Emitter<AddNewGroceryItemState> emit) async {
     emit(LoadingState());
     try {
-      print('---EDE_E_E${event.groceryItems}');
-
       await _repository
           .addGroceryItem(
               //itemName: event.itemName,
@@ -47,6 +50,7 @@ class AddNewGroceryItemBloc
     }
   }
 
+  /// Get Grocery Item Bloc =================================================================
   _onGetGroceryDetails(
       GetGroceryItemEvent event, Emitter<AddNewGroceryItemState> emit) async {
     emit(GetGroceryListLoadingState());
@@ -55,16 +59,16 @@ class AddNewGroceryItemBloc
       await _repository.getGroceryListData().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        log('RIGHT PART CALL - - - - - - wdwe- - - - - -${right.data![0].itemName} ');
-
         emit(GetGroceryListSuccessState(groceryDetails: right.data));
       });
     } catch (e) {
+      print('--dw-->>>${e.toString()}');
       showToast(isSuccess: false, message: e.toString());
       emit(GetGroceryListErrorState());
     }
   }
 
+  /// Remove Grocery Item Bloc =================================================================
   _onRemoveGroceryItem(RemoveGroceryItemEvent event,
       Emitter<AddNewGroceryItemState> emit) async {
     emit(RemoveGroceryItemLoadingState(
@@ -91,6 +95,104 @@ class AddNewGroceryItemBloc
       showToast(isSuccess: false, message: e.toString());
       emit(RemoveGroceryItemErrorState(
           userGroceryListId: event.userGroceryListId));
+    }
+  }
+
+  /// Update Add Grocery Item Bloc =================================================================
+
+  _onAddUpdateGroceryItem(UpdateAddNewGroceryItem event,
+      Emitter<AddNewGroceryItemState> emit) async {
+    emit(UpdateAddGroceryListLoadingState(userGroceryListId: event.id));
+    try {
+      log('event.id---------->>>>>> ${event.id.runtimeType}');
+      log('event.id---------->>>>>> ${event.itemName.runtimeType}');
+      log('event.id---------->>>>>> ${event.userId.runtimeType}');
+      log('event.id---------->>>>>> ${event.measurementType.runtimeType}');
+      log('event.id---------->>>>>> ${event.measurementValue.runtimeType}');
+      log('event.id---------->>>>>> ${event.quantity.runtimeType}');
+
+      await _repository
+          .updateGroceryItem(
+        id: event.id,
+        itemName: event.itemName,
+        userId: event.userId,
+        measurementType: event.measurementType,
+        quantity: event.quantity,
+        measurementValue: event.measurementValue,
+      )
+          .fold(
+        (left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        },
+        (right) {
+          showToast(isSuccess: true, message: right.message!);
+          emit(UpdateAddGroceryListSuccessState(userGroceryListId: event.id));
+        },
+      );
+    } catch (e) {
+      print('------->>>${e.toString()}');
+
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateAddGroceryListErrorState(userGroceryListId: event.id));
+    }
+  }
+
+  /// Update Remove Grocery Item Bloc =================================================================
+
+  _onRemoveUpdateGroceryItem(UpdateRemoveNewGroceryItem event,
+      Emitter<AddNewGroceryItemState> emit) async {
+    emit(UpdateRemoveGroceryListLoadingState(userGroceryListId: event.id));
+    try {
+      log('event.id---------->>>>>> ${event.id.runtimeType}');
+      log('event.id---------->>>>>> ${event.itemName.runtimeType}');
+      log('event.id---------->>>>>> ${event.userId.runtimeType}');
+      log('event.id---------->>>>>> ${event.measurementType.runtimeType}');
+      log('event.id---------->>>>>> ${event.measurementValue.runtimeType}');
+      log('event.id---------->>>>>> ${event.quantity.runtimeType}');
+
+      await _repository
+          .updateGroceryItem(
+        id: event.id,
+        itemName: event.itemName,
+        userId: event.userId,
+        measurementType: event.measurementType,
+        quantity: event.quantity,
+        measurementValue: event.measurementValue,
+      )
+          .fold(
+        (left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        },
+        (right) {
+          showToast(isSuccess: true, message: right.message!);
+          emit(
+              UpdateRemoveGroceryListSuccessState(userGroceryListId: event.id));
+        },
+      );
+    } catch (e) {
+      print('------->>>${e.toString()}');
+
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateRemoveGroceryListErrorState(userGroceryListId: event.id));
+    }
+  }
+
+  /// Clear Grocery List Bloc =================================================================
+  _onClearGroceryList(
+      ClearGroceryEvent event, Emitter<AddNewGroceryItemState> emit) async {
+    emit(ClearGroceryListLoadingState());
+
+    try {
+      await _repository.clearGroceryList().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(ClearGroceryListErrorState());
+      }, (right) {
+        emit(ClearGroceryListSuccessState(isClear: right.success ?? true));
+        showToast(isSuccess: true, message: right.message ?? 'Added!');
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(ClearGroceryListErrorState());
     }
   }
 

@@ -66,6 +66,7 @@ class ApiUrls {
       '${baseUrl}api/ExerciseList/UpdateExercise';
   static const String removeExercise = '${baseUrl}api/Dashboard/RemoveExercise';
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
+  static const String updateWater = '${baseUrl}api/Dashboard/UpdateWater';
   static const String removeWater = '${baseUrl}api/Dashboard/RemoveWater';
   static const String addEatenMeal = '${baseUrl}api/Suggestic/AddEatenMeal';
 
@@ -132,4 +133,9 @@ class ApiUrls {
 
   static const String removeUserGroceryItem =
       '${baseUrl}api/UserGroceryList/RemoveUserGrocery';
+  static const String updateUserGroceryItem =
+      '${baseUrl}api/UserGroceryList/UpdateUserGroceryList';
+
+  static const String clearUserGroceryList =
+      '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
 }

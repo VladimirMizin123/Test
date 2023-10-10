@@ -61,12 +61,15 @@ class AddNewGroceryItemRepository {
     print("response statusCode: ${response.statusCode}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      print('----_STORED');
+      return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  /// Delete User Grocery List ====================================================================
+  /// Delete User Grocery Item ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> deleteGroceryItem({
     required String userGroceryListId,
@@ -79,6 +82,56 @@ class AddNewGroceryItemRepository {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Update New User Grocery ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> updateGroceryItem({
+    required String id,
+    required String itemName,
+    required int quantity,
+    required String measurementType,
+    required String measurementValue,
+    required String userId,
+  }) async {
+    Map<String, dynamic> data = {
+      "id": id,
+      "itemName": itemName,
+      "quantity": quantity,
+      "measurementType": measurementType,
+      "measurementValue": measurementValue,
+      "userId": userId,
+    };
+
+    print('---data-->>>>>$data');
+    final response = await apiServices.put(
+      ApiUrls.updateUserGroceryItem,
+      data,
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('SUCESSBODYYY--${response.body}');
+
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      print('FailBODYYY--${response.body}');
+      return Left(
+        ErrorModel.fromJson(
+          jsonDecode(response.body),
+        ),
+      );
+    }
+  }
+
+  /// Clear User Grocery List ====================================================================
+
+  Future<Either<ErrorModel, GetUserGroceryListModel>> clearGroceryList() async {
+    final response =
+        await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

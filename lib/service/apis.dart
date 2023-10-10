@@ -101,8 +101,10 @@ class ApiServices {
         };
       }
       debugPrint('post url--> $url');
+
+      final jsonBody = jsonEncode(body);
       final response =
-          await http.put(Uri.parse(url), body: body, headers: headers);
+          await http.put(Uri.parse(url), body: jsonBody, headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
