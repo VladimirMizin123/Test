@@ -109,7 +109,7 @@ class AddNewGroceryItemRepository {
     print('---data-->>>>>$data');
     final response = await apiServices.put(
       ApiUrls.updateUserGroceryItem,
-      jsonEncode(data),
+      data,
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('SUCESSBODYYY--${response.body}');

@@ -54,8 +54,11 @@ class GroceryAddButtonWidget extends StatelessWidget {
                   selectedItemCount == 0
                       ? SizedBox()
                       : Container(
-                          height: screenSize.height * 0.04,
-                          width: screenSize.height * 0.04,
+                          // height: screenSize.height * 0.04,
+                          // width: screenSize.height * 0.04,
+                          margin: EdgeInsets.symmetric(vertical: 10.h),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 2.h, horizontal: 5.w),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             color: AppColors.blueFocusedColor,

@@ -396,7 +396,8 @@ Widget commonSliderView({
 }) {
   return GestureDetector(
     onTap: () {
-      Get.toNamed("/AddNewItemScreen");
+      print('----->>>>${title}');
+      Get.toNamed("/AddNewItemScreen", arguments: title);
     },
     child: Container(
       height: 48.h,
