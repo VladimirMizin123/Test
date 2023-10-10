@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   bool isPassword = false;
 
-  // final emailController = TextEditingController(text: 'parth.elision@gmail.com');
+  // final emailController = TextEditingController(text: 'mailto:parth.elision@gmail.com');
   // final passwordController = TextEditingController(text: '123456789');
 
   LoginBloc bloc = LoginBloc();
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     if (kDebugMode) {
-      emailController.text = 'sojitratest01@mailinator.com';
+      emailController.text = 'mailto:sojitratest01@mailinator.com';
       passwordController.text = 'Sojitra@321';
     }
   }
@@ -87,7 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 commonTextField(
                         context: context,
                         controller: passwordController,
-                        hintText: StringUtils.password)
+                        hintText: StringUtils.password,
+                        isPassword: true)
                     .paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
@@ -218,27 +219,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: const Color(0XFF336633),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400),
-                  style: textTheme.displayLarge?.copyWith(
-                      letterSpacing: -0.8,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black),
-                  style: textTheme.bodyLarge
-                      ?.copyWith(color: AppColors.middleGray),
-                commonTextField(
-                        context: context,
-                        controller: emailController,
-                        hintText: StringUtils.email)
-                    .paddingOnly(top: 20.h),
-                commonTextField(
-                        context: context,
-                        controller: passwordController,
-                        hintText: StringUtils.password)
-                    .paddingOnly(top: 16.h),
-                      style: textTheme.headlineSmall
-                          ?.copyWith(color: AppColors.darkGray),
-                                bloc.add(LoginClickEvent(
-                                    email: emailController.text,
-                                    password: passwordController.text));
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             // Single tapped.
