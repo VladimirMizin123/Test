@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
@@ -45,7 +46,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<GroceryShoppingData> searchEdgesList = [];
   bool isSearchOn = false;
   List<Map<String, dynamic>> checkbox = [];
-  bool delete = false;
 
   @override
   void initState() {
@@ -64,60 +64,266 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
     return Scaffold(
       body: BlocConsumer<AddNewGroceryItemBloc, AddNewGroceryItemState>(
           bloc: addNewGroceryItemBloc,
-          listener: (context, state) {
+          listener: (context, state) async {
+            /// Get Item Stat ==============================================
+
             if (state is GetGroceryListLoadingState) {
               isGroceryFetchLoadingState = true;
             }
 
             if (state is GetGroceryListSuccessState) {
               groceryDetails = state.groceryDetails ?? [];
-              isGroceryFetchLoadingState = false;
 
+              isGroceryFetchLoadingState = false;
               if (groceryDetails.isNotEmpty) {
                 for (var i = 0; i < groceryDetails.length; i++) {
-                  checkbox.add({'value': true});
+                  checkbox.add({
+                    'value': true,
+                    'onDelete': false,
+                    'onUpdateRemove': false,
+                    'onUpdateAdd': false,
+                  });
                 }
 
                 selectedItemCount = groceryDetails.length;
               }
             }
 
+            if (state is GetGroceryListErrorState) {
+              isGroceryFetchLoadingState = false;
+            }
+
+            /// Remove Item Stat ==============================================
             if (state is RemoveGroceryItemLoadingState) {
-              for (var i = 0; i < groceryDetails.length; i++) {
-                if (groceryDetails[i].id! == state.userGroceryListId) {
-                  delete = true;
-                  break;
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onDelete'] = true;
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onDelete'] = true;
+                    break;
+                  }
                 }
               }
             }
 
             if (state is RemoveGroceryItemSuccessState) {
-              for (var i = 0; i < groceryDetails.length; i++) {
-                if (groceryDetails[i].id == state.userGroceryListId) {
-                  groceryDetails
-                      .removeWhere((e) => e.id == state.userGroceryListId);
-                  if (groceryDetails.isNotEmpty) {
-                    for (var i = 0; i < groceryDetails.length; i++) {
-                      checkbox.add({'value': true});
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id == state.userGroceryListId) {
+                    searchGroceryDetails
+                        .removeWhere((e) => e.id == state.userGroceryListId);
+
+                    checkbox[i]['onDelete'] = false;
+
+                    if (groceryDetails.isNotEmpty) {
+                      checkbox.clear();
+                      for (var i = 0; i < groceryDetails.length; i++) {
+                        checkbox.add({
+                          'value': true,
+                          'onDelete': false,
+                          'onUpdateRemove': false,
+                          'onUpdateAdd': false,
+                        });
+                      }
+                      selectedItemCount = groceryDetails.length;
                     }
 
-                    selectedItemCount = groceryDetails.length;
+                    break;
                   }
-                  delete = false;
+                }
 
-                  break;
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id == state.userGroceryListId) {
+                    groceryDetails
+                        .removeWhere((e) => e.id == state.userGroceryListId);
+
+                    checkbox[i]['onDelete'] = false;
+
+                    if (groceryDetails.isNotEmpty) {
+                      checkbox.clear();
+                      for (var i = 0; i < groceryDetails.length; i++) {
+                        checkbox.add({
+                          'value': true,
+                          'onDelete': false,
+                          'onUpdateRemove': false,
+                          'onUpdateAdd': false,
+                        });
+                      }
+                      selectedItemCount = groceryDetails.length;
+                    }
+
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id == state.userGroceryListId) {
+                    groceryDetails
+                        .removeWhere((e) => e.id == state.userGroceryListId);
+
+                    checkbox[i]['onDelete'] = false;
+
+                    if (groceryDetails.isNotEmpty) {
+                      checkbox.clear();
+                      for (var i = 0; i < groceryDetails.length; i++) {
+                        checkbox.add({
+                          'value': true,
+                          'onDelete': false,
+                          'onUpdateRemove': false,
+                          'onUpdateAdd': false,
+                        });
+                      }
+                      selectedItemCount = groceryDetails.length;
+                    }
+
+                    break;
+                  }
                 }
               }
             }
             if (state is RemoveGroceryItemErrorState) {
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onDelete'] = false;
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onDelete'] = false;
+                    break;
+                  }
+                }
+              }
+            }
+
+            /// Clear Grocery List Stat=====================================================
+            if (state is ClearGroceryListSuccessState) {
+              groceryDetails.clear();
+              checkbox.clear();
+              selectedItemCount = 0;
+            }
+
+            /// Update Add Stat=====================================================
+            if (state is UpdateAddGroceryListLoadingState) {
               for (var i = 0; i < groceryDetails.length; i++) {
                 if (groceryDetails[i].id! == state.userGroceryListId) {
-                  delete = false;
+                  checkbox[i]['onUpdateAdd'] = true;
+                  break;
+                }
+                if (isSearchOn == true) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateAdd'] = true;
+                  }
                   break;
                 }
               }
             }
+
+            if (state is UpdateAddGroceryListErrorState) {
+              for (var i = 0; i < groceryDetails.length; i++) {
+                if (groceryDetails[i].id! == state.userGroceryListId) {
+                  checkbox[i]['onUpdateAdd'] = false;
+                  break;
+                }
+                if (isSearchOn == true) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateAdd'] = false;
+                  }
+                  break;
+                }
+              }
+            }
+
+            if (state is UpdateAddGroceryListSuccessState) {
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    searchGroceryDetails[i].quantity =
+                        searchGroceryDetails[i].quantity + 1;
+                    checkbox[i]['onUpdateAdd'] = false;
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    groceryDetails[i].quantity = groceryDetails[i].quantity + 1;
+                    checkbox[i]['onUpdateAdd'] = false;
+                    break;
+                  }
+                }
+              }
+            }
+
+            /// Update Remove Stat=====================================================
+
+            if (state is UpdateRemoveGroceryListLoadingState) {
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateRemove'] = true;
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateRemove'] = true;
+                    break;
+                  }
+                }
+              }
+            }
+
+            if (state is UpdateRemoveGroceryListErrorState) {
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateRemove'] = false;
+                    break;
+                  }
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    checkbox[i]['onUpdateRemove'] = false;
+                    break;
+                  }
+                }
+              }
+            }
+
+            if (state is UpdateRemoveGroceryListSuccessState) {
+              if (isSearchOn == true) {
+                for (var i = 0; i < searchGroceryDetails.length; i++) {
+                  if (searchGroceryDetails[i].id! == state.userGroceryListId) {
+                    searchGroceryDetails[i].quantity =
+                        searchGroceryDetails[i].quantity - 1;
+                    checkbox[i]['onUpdateRemove'] = false;
+                  }
+                  break;
+                }
+              } else {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  if (groceryDetails[i].id! == state.userGroceryListId) {
+                    groceryDetails[i].quantity = groceryDetails[i].quantity - 1;
+                    checkbox[i]['onUpdateRemove'] = false;
+                    break;
+                  }
+                }
+              }
+            }
           },
+
           // listener: (context, state) {
           //   // FETCH STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           //   if (state is GroceryFetchLoadingState) {
@@ -298,7 +504,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                     context: context,
                                     builder: (context) {
                                       return ClearAllItemBottomSheet(
-                                        bloc: groceryBloc,
+                                        bloc: addNewGroceryItemBloc,
                                       );
                                     },
                                     isDismissible: false,
@@ -326,25 +532,31 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             // });
                           },
                           onChanged: (String? value) {
-                            setState(() {
-                              if (value != null || value != '') {
+                            print('-----VALUEE$value');
+                            if (value!.isNotEmpty) {
+                              setState(() {
                                 isSearchOn = true;
-
+                                print('---');
                                 // searchEdgesList = groceryDetails
                                 //     .where((item) => item.productName!
                                 //         .toLowerCase()
                                 //         .contains(value!.toLowerCase()))
                                 //     .toList();
 
-                                searchGroceryDetails = groceryDetails
-                                    .where((item) => item.itemName!
-                                        .toLowerCase()
-                                        .contains(value!.toLowerCase()))
-                                    .toList();
-                              } else {
+                                searchGroceryDetails =
+                                    groceryDetails.where((item) {
+                                  return item.itemName!
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase());
+                                }).toList();
+                              });
+                            } else {
+                              setState(() {
                                 isSearchOn = false;
-                              }
-                            });
+                              });
+                              print(
+                                  '--searchGroceryDetails-->>>>${searchGroceryDetails}');
+                            }
                           },
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.search),
@@ -491,7 +703,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                     ),
                                   ],
                                 )
-                          : isSearchOn
+                          : isSearchOn == true
                               ? searchGroceryDetails.isNotEmpty
 
                                   ///Searched Data Display ===================================================
@@ -580,31 +792,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                                                                     selectedItemCount =
                                                                         count;
-
-                                                                    // int count = 0;
-                                                                    // edgesList[index]
-                                                                    //         .isAddedForViewCart =
-                                                                    //     !edgesList[
-                                                                    //             index]
-                                                                    //         .isAddedForViewCart!;
-                                                                    //
-                                                                    // for (var i = 0;
-                                                                    //     i <
-                                                                    //         edgesList
-                                                                    //             .length;
-                                                                    //     i++) {
-                                                                    //   if (edgesList[
-                                                                    //               i]
-                                                                    //           .isAddedForViewCart ==
-                                                                    //       true) {
-                                                                    //     count =
-                                                                    //         count +
-                                                                    //             1;
-                                                                    //   }
-                                                                    // }
-                                                                    //
-                                                                    // selectedItemCount =
-                                                                    //     count;
                                                                   });
                                                                 },
                                                               ),
@@ -674,113 +861,115 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                   }),
                                                         ),
                                                         SizedBox(width: 8.w),
-                                                        // searchGroceryDetails[
-                                                        //                 index]
-                                                        //             .quantity! >
-                                                        //         1
-                                                        //     ? GestureDetector(
-                                                        //         onTap: () {
-                                                        //           groceryBloc.add(
-                                                        //               GroceryAddToShoppingListEvent(
-                                                        //             productID: searchEdgesList[
-                                                        //                     index]
-                                                        //                 .productId!,
-                                                        //             mealmeStoreId:
-                                                        //                 searchEdgesList[index]
-                                                        //                     .mealmeStoreId!,
-                                                        //             price: searchEdgesList[
-                                                        //                     index]
-                                                        //                 .price
-                                                        //                 .toString(),
-                                                        //             productName:
-                                                        //                 searchEdgesList[index]
-                                                        //                     .productName!,
-                                                        //             quantity: (searchEdgesList[index].quantity! -
-                                                        //                     1)
-                                                        //                 .toString(),
-                                                        //             recipeId: searchEdgesList[
-                                                        //                     index]
-                                                        //                 .recipeId!,
-                                                        //             unitOfMeasurement:
-                                                        //                 searchEdgesList[index]
-                                                        //                     .unitOfMeasurement!,
-                                                        //             unitSize: searchEdgesList[
-                                                        //                     index]
-                                                        //                 .unitSize
-                                                        //                 .toString(),
-                                                        //             isAdd:
-                                                        //                 false,
-                                                        //             isRemove:
-                                                        //                 true,
-                                                        //             isChecked:
-                                                        //                 searchEdgesList[index].isAddedForViewCart ??
-                                                        //                     false,
-                                                        //           ));
-                                                        //         },
-                                                        //         child:
-                                                        //             Container(
-                                                        //           height:
-                                                        //               size.height *
-                                                        //                   0.070,
-                                                        //           width:
-                                                        //               size.height *
-                                                        //                   0.070,
-                                                        //           decoration:
-                                                        //               BoxDecoration(
-                                                        //             borderRadius:
-                                                        //                 BorderRadius
-                                                        //                     .circular(6),
-                                                        //             color: AppColors
-                                                        //                 .skyBlue,
-                                                        //           ),
-                                                        //           child: Center(
-                                                        //             child: searchEdgesList[index].isRemoveItem ??
-                                                        //                     false
-                                                        //                 ? Transform.scale(
-                                                        //                     scale:
-                                                        //                         0.5,
-                                                        //                     child:
-                                                        //                         const CircularProgressIndicator())
-                                                        //                 : const Icon(
-                                                        //                     Icons
-                                                        //                         .remove,
-                                                        //                     size:
-                                                        //                         27),
-                                                        //           ),
-                                                        //           // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                                        //         ),
-                                                        //       )
-                                                        //     : GestureDetector(
-                                                        //         onTap: () {
-                                                        //           groceryBloc.add(
-                                                        //               RemoveGroceryEvent(
-                                                        //                   productID:
-                                                        //                       searchEdgesList[index].productId!));
-                                                        //         },
-                                                        //         child:
-                                                        //             Container(
-                                                        //           height:
-                                                        //               size.height *
-                                                        //                   0.070,
-                                                        //           width:
-                                                        //               size.height *
-                                                        //                   0.070,
-                                                        //           decoration: BoxDecoration(
-                                                        //               border: Border.all(
-                                                        //                   color: AppColors
-                                                        //                       .skyBlue),
-                                                        //               borderRadius:
-                                                        //                   BorderRadius.circular(
-                                                        //                       6)),
-                                                        //           child: Center(
-                                                        //               child: searchEdgesList[index].isDeleteLoading ??
-                                                        //                       false
-                                                        //                   ? Transform.scale(
-                                                        //                       scale: 0.5,
-                                                        //                       child: const CircularProgressIndicator())
-                                                        //                   : SvgPicture.asset(AssetsUtils.icDelete)),
-                                                        //         ),
-                                                        //       ),
+                                                        SizedBox(width: 8.w),
+                                                        searchGroceryDetails[
+                                                                        index]
+                                                                    .quantity! >
+                                                                1
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  addNewGroceryItemBloc
+                                                                      .add(
+                                                                    UpdateRemoveNewGroceryItem(
+                                                                      userId:
+                                                                          userId,
+                                                                      id: searchGroceryDetails[
+                                                                              index]
+                                                                          .id!
+                                                                          .toString(),
+                                                                      itemName: searchGroceryDetails[
+                                                                              index]
+                                                                          .itemName!
+                                                                          .toString(),
+                                                                      quantity:
+                                                                          searchGroceryDetails[index].quantity -
+                                                                              1,
+                                                                      measurementType: searchGroceryDetails[
+                                                                              index]
+                                                                          .measurementType!
+                                                                          .toString(),
+                                                                      measurementValue: searchGroceryDetails[
+                                                                              index]
+                                                                          .measurementValue!
+                                                                          .toString(),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.070,
+                                                                  width:
+                                                                      size.height *
+                                                                          0.070,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(6),
+                                                                    color: AppColors
+                                                                        .skyBlue,
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: checkbox[index]['onUpdateRemove'] ==
+                                                                            true
+                                                                        ? Transform.scale(
+                                                                            scale:
+                                                                                0.5,
+                                                                            child:
+                                                                                const CircularProgressIndicator())
+                                                                        : const Icon(
+                                                                            Icons
+                                                                                .remove,
+                                                                            size:
+                                                                                27),
+                                                                  ),
+                                                                  // child: const Center(child: Icon(Icons.remove, size: 27)),
+                                                                ),
+                                                              )
+                                                            : GestureDetector(
+                                                                onTap:
+                                                                    () async {
+                                                                  // groceryBloc.add(
+                                                                  //     RemoveGroceryEvent(
+                                                                  //         productID:
+                                                                  //             edgesList[index]
+                                                                  //                 .productId!));
+
+                                                                  addNewGroceryItemBloc
+                                                                      .add(
+                                                                    RemoveGroceryItemEvent(
+                                                                      userGroceryListId:
+                                                                          searchGroceryDetails[index]
+                                                                              .id!,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  height:
+                                                                      size.height *
+                                                                          0.070,
+                                                                  width:
+                                                                      size.height *
+                                                                          0.070,
+                                                                  decoration: BoxDecoration(
+                                                                      border: Border.all(
+                                                                          color: AppColors
+                                                                              .skyBlue),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              6)),
+                                                                  child: Center(
+                                                                      child: checkbox[index]['onDelete'] ==
+                                                                              true
+                                                                          ? Transform.scale(
+                                                                              scale: 0.5,
+                                                                              child: const CircularProgressIndicator())
+                                                                          : SvgPicture.asset(AssetsUtils.icDelete)),
+                                                                ),
+                                                              ),
                                                         SizedBox(width: 8.w),
                                                         Container(
                                                           height: size.height *
@@ -810,84 +999,68 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                           )),
                                                         ),
                                                         SizedBox(width: 8.w),
-                                                        // GestureDetector(
-                                                        //   onTap: () {
-                                                        //     groceryBloc.add(
-                                                        //         GroceryAddToShoppingListEvent(
-                                                        //       productID:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .productId!,
-                                                        //       mealmeStoreId:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .mealmeStoreId!,
-                                                        //       price:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .price
-                                                        //               .toString(),
-                                                        //       productName:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .productName!,
-                                                        //       quantity: (searchEdgesList[
-                                                        //                       index]
-                                                        //                   .quantity! +
-                                                        //               1)
-                                                        //           .toString(),
-                                                        //       recipeId:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .recipeId!,
-                                                        //       unitOfMeasurement:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .unitOfMeasurement!,
-                                                        //       unitSize:
-                                                        //           searchEdgesList[
-                                                        //                   index]
-                                                        //               .unitSize
-                                                        //               .toString(),
-                                                        //       isAdd: true,
-                                                        //       isRemove: false,
-                                                        //       isChecked: searchEdgesList[
-                                                        //                   index]
-                                                        //               .isAddedForViewCart ??
-                                                        //           false,
-                                                        //     ));
-                                                        //   },
-                                                        //   child: Container(
-                                                        //     height:
-                                                        //         size.height *
-                                                        //             0.070,
-                                                        //     width: size.height *
-                                                        //         0.070,
-                                                        //     decoration:
-                                                        //         BoxDecoration(
-                                                        //       borderRadius:
-                                                        //           BorderRadius
-                                                        //               .circular(
-                                                        //                   6),
-                                                        //       color: AppColors
-                                                        //           .skyBlue,
-                                                        //     ),
-                                                        //     child: Center(
-                                                        //       child: searchEdgesList[
-                                                        //                       index]
-                                                        //                   .isAddItem ??
-                                                        //               false
-                                                        //           ? Transform.scale(
-                                                        //               scale:
-                                                        //                   0.5,
-                                                        //               child:
-                                                        //                   const CircularProgressIndicator())
-                                                        //           : const Icon(
-                                                        //               Icons.add,
-                                                        //               size: 27),
-                                                        //     ),
-                                                        //   ),
-                                                        // ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            addNewGroceryItemBloc
+                                                                .add(
+                                                              UpdateAddNewGroceryItem(
+                                                                userId: userId,
+                                                                id: searchGroceryDetails[
+                                                                        index]
+                                                                    .id!
+                                                                    .toString(),
+                                                                itemName: searchGroceryDetails[
+                                                                        index]
+                                                                    .itemName!
+                                                                    .toString(),
+                                                                quantity: searchGroceryDetails[
+                                                                            index]
+                                                                        .quantity +
+                                                                    1,
+                                                                measurementType:
+                                                                    searchGroceryDetails[
+                                                                            index]
+                                                                        .measurementType!
+                                                                        .toString(),
+                                                                measurementValue:
+                                                                    searchGroceryDetails[
+                                                                            index]
+                                                                        .measurementValue!
+                                                                        .toString(),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Container(
+                                                            height:
+                                                                size.height *
+                                                                    0.070,
+                                                            width: size.height *
+                                                                0.070,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          6),
+                                                              color: AppColors
+                                                                  .skyBlue,
+                                                            ),
+                                                            child: Center(
+                                                              child: checkbox[index]
+                                                                          [
+                                                                          'onUpdateAdd'] ==
+                                                                      true
+                                                                  ? Transform.scale(
+                                                                      scale:
+                                                                          0.5,
+                                                                      child:
+                                                                          const CircularProgressIndicator())
+                                                                  : const Icon(
+                                                                      Icons.add,
+                                                                      size: 27),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
                                                     SizedBox(height: 10.h),
@@ -988,31 +1161,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                                                                 selectedItemCount =
                                                                     count;
-
-                                                                // int count = 0;
-                                                                // edgesList[index]
-                                                                //         .isAddedForViewCart =
-                                                                //     !edgesList[
-                                                                //             index]
-                                                                //         .isAddedForViewCart!;
-                                                                //
-                                                                // for (var i = 0;
-                                                                //     i <
-                                                                //         edgesList
-                                                                //             .length;
-                                                                //     i++) {
-                                                                //   if (edgesList[
-                                                                //               i]
-                                                                //           .isAddedForViewCart ==
-                                                                //       true) {
-                                                                //     count =
-                                                                //         count +
-                                                                //             1;
-                                                                //   }
-                                                                // }
-                                                                //
-                                                                // selectedItemCount =
-                                                                //     count;
                                                               });
                                                             },
                                                           ),
@@ -1085,45 +1233,33 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                             1
                                                         ? GestureDetector(
                                                             onTap: () {
-                                                              // groceryBloc.add(
-                                                              //     GroceryAddToShoppingListEvent(
-                                                              //   productID: edgesList[
-                                                              //           index]
-                                                              //       .productId!,
-                                                              //   mealmeStoreId:
-                                                              //       edgesList[
-                                                              //               index]
-                                                              //           .mealmeStoreId!,
-                                                              //   price: edgesList[
-                                                              //           index]
-                                                              //       .price
-                                                              //       .toString(),
-                                                              //   productName:
-                                                              //       edgesList[
-                                                              //               index]
-                                                              //           .productName!,
-                                                              //   quantity: (edgesList[index]
-                                                              //               .quantity! -
-                                                              //           1)
-                                                              //       .toString(),
-                                                              //   recipeId: edgesList[
-                                                              //           index]
-                                                              //       .recipeId!,
-                                                              //   unitOfMeasurement:
-                                                              //       edgesList[
-                                                              //               index]
-                                                              //           .unitOfMeasurement!,
-                                                              //   unitSize: edgesList[
-                                                              //           index]
-                                                              //       .unitSize
-                                                              //       .toString(),
-                                                              //   isAdd: false,
-                                                              //   isRemove: true,
-                                                              //   isChecked: edgesList[
-                                                              //               index]
-                                                              //           .isAddedForViewCart ??
-                                                              //       false,
-                                                              // ));
+                                                              addNewGroceryItemBloc
+                                                                  .add(
+                                                                UpdateRemoveNewGroceryItem(
+                                                                  userId:
+                                                                      userId,
+                                                                  id: groceryDetails[
+                                                                          index]
+                                                                      .id!
+                                                                      .toString(),
+                                                                  itemName: groceryDetails[
+                                                                          index]
+                                                                      .itemName!
+                                                                      .toString(),
+                                                                  quantity:
+                                                                      groceryDetails[index]
+                                                                              .quantity -
+                                                                          1,
+                                                                  measurementType: groceryDetails[
+                                                                          index]
+                                                                      .measurementType!
+                                                                      .toString(),
+                                                                  measurementValue: groceryDetails[
+                                                                          index]
+                                                                      .measurementValue!
+                                                                      .toString(),
+                                                                ),
+                                                              );
                                                             },
                                                             child: Container(
                                                               height:
@@ -1141,21 +1277,17 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                 color: AppColors
                                                                     .skyBlue,
                                                               ),
-                                                              child:
-                                                                  const Center(
-                                                                child:
-
-                                                                    // edgesList[index]
-                                                                    //             .isRemoveItem ??
-                                                                    //         false
-                                                                    //     ? Transform.scale(
-                                                                    //         scale:
-                                                                    //             0.5,
-                                                                    //         child:
-                                                                    //             const CircularProgressIndicator())
-                                                                    //     :
-
-                                                                    Icon(
+                                                              child: Center(
+                                                                child: checkbox[index]
+                                                                            [
+                                                                            'onUpdateRemove'] ==
+                                                                        true
+                                                                    ? Transform.scale(
+                                                                        scale:
+                                                                            0.5,
+                                                                        child:
+                                                                            const CircularProgressIndicator())
+                                                                    : const Icon(
                                                                         Icons
                                                                             .remove,
                                                                         size:
@@ -1198,7 +1330,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                           .circular(
                                                                               6)),
                                                               child: Center(
-                                                                  child: delete ==
+                                                                  child: checkbox[index]
+                                                                              [
+                                                                              'onDelete'] ==
                                                                           true
                                                                       ? Transform.scale(
                                                                           scale:
@@ -1238,43 +1372,35 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                     SizedBox(width: 8.w),
                                                     GestureDetector(
                                                       onTap: () {
-                                                        // groceryBloc.add(
-                                                        //     GroceryAddToShoppingListEvent(
-                                                        //   productID:
-                                                        //       edgesList[index]
-                                                        //           .productId!,
-                                                        //   mealmeStoreId:
-                                                        //       edgesList[index]
-                                                        //           .mealmeStoreId!,
-                                                        //   price:
-                                                        //       edgesList[index]
-                                                        //           .price
-                                                        //           .toString(),
-                                                        //   productName:
-                                                        //       edgesList[index]
-                                                        //           .productName!,
-                                                        //   quantity: (edgesList[
-                                                        //                   index]
-                                                        //               .quantity! +
-                                                        //           1)
-                                                        //       .toString(),
-                                                        //   recipeId:
-                                                        //       edgesList[index]
-                                                        //           .recipeId!,
-                                                        //   unitOfMeasurement:
-                                                        //       edgesList[index]
-                                                        //           .unitOfMeasurement!,
-                                                        //   unitSize:
-                                                        //       edgesList[index]
-                                                        //           .unitSize
-                                                        //           .toString(),
-                                                        //   isAdd: true,
-                                                        //   isRemove: false,
-                                                        //   isChecked: edgesList[
-                                                        //               index]
-                                                        //           .isAddedForViewCart ??
-                                                        //       false,
-                                                        // ));
+                                                        addNewGroceryItemBloc
+                                                            .add(
+                                                          UpdateAddNewGroceryItem(
+                                                            userId: userId,
+                                                            id: groceryDetails[
+                                                                    index]
+                                                                .id!
+                                                                .toString(),
+                                                            itemName:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .itemName!
+                                                                    .toString(),
+                                                            quantity: groceryDetails[
+                                                                        index]
+                                                                    .quantity +
+                                                                1,
+                                                            measurementType:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .measurementType!
+                                                                    .toString(),
+                                                            measurementValue:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .measurementValue!
+                                                                    .toString(),
+                                                          ),
+                                                        );
                                                       },
                                                       child: Container(
                                                         height:
@@ -1289,9 +1415,18 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                           color:
                                                               AppColors.skyBlue,
                                                         ),
-                                                        child: const Center(
-                                                          child: Icon(Icons.add,
-                                                              size: 27),
+                                                        child: Center(
+                                                          child: checkbox[index]
+                                                                      [
+                                                                      'onUpdateAdd'] ==
+                                                                  true
+                                                              ? Transform.scale(
+                                                                  scale: 0.5,
+                                                                  child:
+                                                                      const CircularProgressIndicator())
+                                                              : const Icon(
+                                                                  Icons.add,
+                                                                  size: 27),
                                                         ),
                                                       ),
                                                     ),

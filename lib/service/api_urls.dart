@@ -132,4 +132,9 @@ class ApiUrls {
 
   static const String removeUserGroceryItem =
       '${baseUrl}api/UserGroceryList/RemoveUserGrocery';
+  static const String updateUserGroceryItem =
+      '${baseUrl}api/UserGroceryList/UpdateUserGroceryList';
+
+  static const String clearUserGroceryList =
+      '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
 }

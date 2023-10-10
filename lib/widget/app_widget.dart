@@ -618,7 +618,11 @@ Widget simpleTextBorderButton({
                 borderRadius: BorderRadius.circular(10)),
         child: Center(
             child: isLoadingWidget
-                ? const CircularProgressIndicator(color: AppColors.whiteColor)
+                ? Transform.scale(
+                    scale: 0.5,
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ))
                 : Text(buttonLable!,
                     style: isFillColor
                         ? FontUtils.h16(

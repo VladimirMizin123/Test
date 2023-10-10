@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -43,6 +44,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   List<GrocerySearchModel> grocerySearchList = [];
   List<Cart> searchCartList = [];
   bool isCircularLoading = false;
+  bool addData = false;
   BarcodeScannerData? barcodeScannerData;
   NutritionixGetNxMealInfoByNameModelData?
       nutritionixGetNxMealInfoByNameModelData;
@@ -1198,18 +1200,14 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                 .circular(8),
                                                       ),
                                                 child: Center(
-                                                    child: isCircularLoading
-                                                        ? const CircularProgressIndicator(
-                                                            color: AppColors
-                                                                .whiteColor)
-                                                        : Text(
-                                                            StringUtils
-                                                                .addToGroceryList,
-                                                            style: FontUtils.h16(
-                                                                fontColor: AppColors
-                                                                    .whiteColor,
-                                                                fontWeight: FWT
-                                                                    .semiBold))),
+                                                    child: Text(
+                                                        StringUtils
+                                                            .addToGroceryList,
+                                                        style: FontUtils.h16(
+                                                            fontColor: AppColors
+                                                                .whiteColor,
+                                                            fontWeight:
+                                                                FWT.semiBold))),
                                               ),
                                             ),
                                           ),
@@ -1480,7 +1478,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     );
   }
 
-  Widget commonProgressBar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
+  Widget commonProgressBar(
+      {Color? progressColor,
+      double? width,
+      double? lineHeight,
+      double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: const Radius.circular(10),
@@ -1493,7 +1495,6 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
       progressColor: progressColor,
     ).paddingAll(5);
   }
-
 
   Widget myProgressBarCardView(
       String title, double value, double totalValue, Color progressBarColor) {
@@ -1519,11 +1520,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 commonProgressBar(
-                  progressColor: progressBarColor,
-                  width: screenSize.width * 0.27,
-                  lineHeight: 12,
-                  percent: value/totalValue
-                ),
+                    progressColor: progressBarColor,
+                    width: screenSize.width * 0.27,
+                    lineHeight: 12,
+                    percent: value / totalValue),
               ],
             ),
             Text('$value / $totalValue cal',
