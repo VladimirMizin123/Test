@@ -90,8 +90,9 @@ class SwapMealDetailsState extends FetchMealPlanState {
   final SimilarMealData? similarMealData;
   final String? mealId;
   final int? day;
+  final DateTime? dateTime;
 
-  SwapMealDetailsState({this.similarMealData, this.mealId, this.day});
+  SwapMealDetailsState({this.similarMealData, this.mealId, this.day,this.dateTime});
 }
 
 class GroceryAddToShoppingLoadingState extends FetchMealPlanState {

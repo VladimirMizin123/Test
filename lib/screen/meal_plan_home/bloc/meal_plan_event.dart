@@ -88,9 +88,10 @@ class GrocerySearchEvent extends MealPlanEvent {
 class SwapMealDetailsEvent extends MealPlanEvent {
   final SimilarMealData? similarMealData;
   final int? day;
+  final DateTime? dateTime;
   final String? mealId;
 
-  SwapMealDetailsEvent({this.similarMealData, this.day, this.mealId});
+  SwapMealDetailsEvent({this.similarMealData,this.dateTime, this.day, this.mealId});
 }
 
 class RestaurantSearchEvent extends MealPlanEvent {

@@ -17,7 +17,8 @@ class SwapMealBottomSheet extends StatefulWidget {
   final MealPlanBloc mealPlanBloc;
   final MealData? mealData;
   final int? day;
-  const SwapMealBottomSheet({super.key, required this.mealPlanBloc, this.mealData, this.day});
+  final DateTime? dateTime;
+  const SwapMealBottomSheet({super.key, required this.mealPlanBloc, this.mealData, this.day,this.dateTime});
 
   @override
   State<SwapMealBottomSheet> createState() => _SwapMealBottomSheetState();
@@ -121,7 +122,7 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                             } else {
                               for (var i = 0; i < similarMealDataList.length; i++) {
                                 if (similarMealDataList[i].isSelectedForSwap) {
-                                  widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day, mealId: widget.mealData!.id!));
+                                  widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day,dateTime: widget.dateTime, mealId: widget.mealData!.id!));
                                   break;
                                 }
                               }

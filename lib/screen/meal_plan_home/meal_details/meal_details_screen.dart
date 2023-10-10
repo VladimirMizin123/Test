@@ -195,6 +195,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
+
                                                   /// UnComment this when you get the response of below data...
                                                   // SizedBox(height: 12.h),
                                                   // Row(
@@ -560,7 +561,6 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                   //   ),
                                                   // ),
                                                   // SizedBox(height: 20.h),
-                                                
                                                 ],
                                               ),
                                             )
@@ -1015,41 +1015,20 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     );
   }
 
-  Widget commonProgressBar({Color? progressColor, double? width, double? lineHeight}) {
+  Widget commonProgressBar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: const Radius.circular(10),
       animation: true,
       lineHeight: lineHeight!,
       animationDuration: 2000,
-      percent: 0.7,
+      percent: percent!,
       center: const Text(""),
       linearStrokeCap: LinearStrokeCap.round,
       progressColor: progressColor,
     ).paddingAll(5);
   }
 
-  Widget calciumDataView({
-    String? title,
-    String? gramCount,
-    TextTheme? textTheme,
-    String? totalGram,
-    Color? progressColor,
-  }) {
-    return Column(
-      children: [
-        Text(
-          title.toString(),
-          style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
-        ),
-        commonProgressBar(progressColor: progressColor, width: 76.w, lineHeight: 10.0),
-        Text(
-          '$gramCount / $totalGram g',
-          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
-        )
-      ],
-    );
-  }
 
   Widget myProgressBarCardView(String title, double value, double totalValue, Color progressBarColor) {
     final screenSize = MediaQuery.of(context).size;
@@ -1070,7 +1049,12 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                commonProgressBar(progressColor: progressBarColor, width: screenSize.width * 0.27, lineHeight: 12),
+                commonProgressBar(
+                  progressColor: progressBarColor,
+                  width: screenSize.width * 0.27,
+                  lineHeight: 12,
+                  percent: value/totalValue
+                ),
               ],
             ),
             Text('$value / $totalValue cal', style: FontUtils.h15(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),

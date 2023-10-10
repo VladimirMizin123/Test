@@ -96,7 +96,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             }
 
             if (state is FetchMealPlanErrorState) {
-            for (var i = 0; i < mealPlanList.length; i++) {
+              for (var i = 0; i < mealPlanList.length; i++) {
                 if (mealPlanList[i].date!.year == DateTime.now().year && mealPlanList[i].date!.month == DateTime.now().month && mealPlanList[i].date!.day == DateTime.now().day) {
                   print('JUMP DAY :::: ${mealPlanList.length}');
                   print('JUMP DAY :::: $i');
@@ -110,8 +110,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             if (state is SwapMealDetailsState) {
               Get.back();
               for (var i = 0; i < mealPlanList.length; i++) {
-                if (mealPlanList[i].day == state.day) {
+                // print("${mealPlanList[i].day} == ${state.day}");
+                if (mealPlanList[i].date == state.dateTime) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
+                    print("${mealPlanList[i].meals![j].id} == ${state.mealId}");
                     if (mealPlanList[i].meals![j].id == state.mealId) {
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].meal = state.similarMealData!.mealTags![0]; //
@@ -298,10 +300,25 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                               );
                                             },
                                             onSwapMealTap: () {
+                                              // print(e.meals![index].id);
+
+                                              // for (var i = 0; i < mealPlanList.length; i++) {
+                                              //   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
+                                              //     if (mealPlanList[i].meals![j].id == e.meals![index].id) {
+                                              //       print("${mealPlanList[i].meals![j].id} == ${e.meals![index].id}");
+                                              //     }
+                                              //     break;
+                                              //   }
+                                              // }
                                               showModalBottomSheet(
                                                 context: context,
                                                 builder: (context) {
-                                                  return SwapMealBottomSheet(mealPlanBloc: mealPlanBloc, mealData: e.meals![index], day: e.day);
+                                                  return SwapMealBottomSheet(
+                                                    mealPlanBloc: mealPlanBloc,
+                                                    mealData: e.meals![index],
+                                                    day: e.day,
+                                                    dateTime: e.date,
+                                                  );
                                                 },
                                               );
                                             },

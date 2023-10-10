@@ -57,6 +57,7 @@ class SignUpRepository {
     };
     final response = await apiServices.postMultipart(url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
+    print('SIGNUP RESPOSNE :::::::::  ${jsonDecode(response.body)}');
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
@@ -100,8 +101,8 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> addUserRestriction({List<String> restrictionList = const []}) async {
-    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userID', restrictionList);
+  Future<Either<ErrorModel, SuccessModel>> addUserRestriction({List<String> restrictionList = const [],String? userid}) async {
+    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
