@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +9,6 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
-
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
@@ -42,6 +43,25 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   bool isSearchOn = false;
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
   List<String> restrictionIDList = [];
+
+  List<Color> colorList = [
+    Colors.indigoAccent.withOpacity(0.8),
+    Colors.redAccent.withOpacity(0.8),
+    Colors.purpleAccent.withOpacity(0.8),
+    Colors.deepPurpleAccent.withOpacity(0.8),
+    Colors.tealAccent.withOpacity(0.8),
+    Colors.pinkAccent.withOpacity(0.8),
+    Colors.blueAccent.withOpacity(0.8),
+    Colors.lightBlueAccent.withOpacity(0.8),
+    Colors.cyanAccent.withOpacity(0.8),
+    Colors.lightGreenAccent.withOpacity(0.8),
+    Colors.greenAccent.withOpacity(0.8),
+    Colors.yellowAccent.withOpacity(0.8),
+    Colors.deepOrangeAccent.withOpacity(0.8),
+    Colors.amberAccent.withOpacity(0.8),
+    Colors.orangeAccent.withOpacity(0.8),
+    Colors.limeAccent.withOpacity(0.8),
+  ];
 
   @override
   void initState() {
@@ -259,8 +279,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                       searchEdgesRestrictionList![index].node.isRestricted = !searchEdgesRestrictionList![index].node.isRestricted;
                                       if (restrictionIDList.contains(searchEdgesRestrictionList![index].node.id)) {
                                         restrictionIDList.remove(searchEdgesRestrictionList![index].node.id);
+                                        listOptions.removeWhere((element) => element.optionName == searchEdgesRestrictionList![index].node.name);
                                       } else {
                                         restrictionIDList.add(searchEdgesRestrictionList![index].node.id);
+                                        listOptions.add(CustomOptions(optionColor: colorList[index % colorList.length], optionName: searchEdgesRestrictionList![index].node.name));
                                       }
                                     });
                                   },

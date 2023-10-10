@@ -45,19 +45,7 @@ class AddEatenMealData extends GetUserJournalEvent {
   num? value;
   String? title;
 
-  AddEatenMealData(
-      {this.mealId,
-      this.userId,
-      this.mealName,
-      this.mealType,
-      this.calorie,
-      this.noOfServing,
-      this.recipeId,
-      this.protein,
-      this.fat,
-      this.carbs,
-      this.value,
-      this.title});
+  AddEatenMealData({this.mealId, this.userId, this.mealName, this.mealType, this.calorie, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs, this.value, this.title});
 }
 
 class AddNewItemEvent extends GetUserJournalEvent {
@@ -105,4 +93,8 @@ class RemoveWaterEvent extends GetUserJournalEvent {
   RemoveWaterEvent({this.quantity});
 }
 
-class JournalGetDashboardDataEvent extends GetUserJournalEvent {}
+class JournalGetDashboardDataEvent extends GetUserJournalEvent {
+  final DateTime? dateTime;
+
+  JournalGetDashboardDataEvent({required this.dateTime});
+}

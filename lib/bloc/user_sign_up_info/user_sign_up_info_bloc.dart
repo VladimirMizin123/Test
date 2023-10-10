@@ -64,7 +64,7 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
   }
 
   final SignUpRepository _repository = SignUpRepository();
-
+  String userID = '';
   _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
     try {
       emit(SignUpLoadingState());
@@ -73,7 +73,11 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         emit(SignUpErrorState());
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);
-        
+
+        userID = right.data!.userId!;
+
+        print("USER ID IN SIGNUP FLOW ------- $userID");
+
         await PreferenceUtils.setString(prefUserData, right.data!.userId!);
 
         try {
@@ -87,7 +91,12 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         print('event.model.restrictionID.LENGTH ----- ${event.model.restrictionID.length}');
         if (event.model.restrictionID.isNotEmpty) {
           try {
-            await _repository.addUserRestriction(restrictionList: event.model.restrictionID).fold((left) {
+            await _repository
+                .addUserRestriction(
+              restrictionList: event.model.restrictionID,
+              userid: userID,
+            )
+                .fold((left) {
               showToast(isSuccess: false, message: left.message!);
             }, (right) {
               // Get.toNamed('/GenderScreen', arguments: event.model.gender);

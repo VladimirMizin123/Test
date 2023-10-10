@@ -30,7 +30,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   final MealPlanRepository _repository = MealPlanRepository();
 
   _onSwapMealDetails(SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
-    emit(SwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
+    emit(SwapMealDetailsState(similarMealData: event.similarMealData,dateTime: event.dateTime, day: event.day, mealId: event.mealId));
   }
 
   _onScanBarcode(BarcodeScanEvent event, Emitter<FetchMealPlanState> emit) async {

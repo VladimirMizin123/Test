@@ -77,12 +77,14 @@ class AddItemLoadingState extends GetUserJournalState {
 
 class AddItemSuccessState extends GetUserJournalState {
   final String? title;
-  AddItemSuccessState({required this.title});
+  final String? mealID;
+  AddItemSuccessState({required this.title, this.mealID});
 }
 
 class AddItemErrorState extends GetUserJournalState {
   final String? title;
-  AddItemErrorState({required this.title});
+  final String? mealID;
+  AddItemErrorState({required this.title, this.mealID});
 }
 
 class SelectedImagePathState extends GetUserJournalState {

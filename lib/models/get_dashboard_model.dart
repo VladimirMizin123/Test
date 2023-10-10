@@ -42,10 +42,10 @@ class Data {
   num? totalIntakeCarbs;
 
   Data({
-    this.totalCalorie,
-    this.totalProtein,
-    this.totalFat,
-    this.totalCarbs,
+    this.totalCalorie = 0,
+    this.totalProtein = 0,
+    this.totalFat = 0,
+    this.totalCarbs = 0,
     this.dailyWaterGoals,
     this.dailyExerciseGoals,
     this.totalIntakeWater,
