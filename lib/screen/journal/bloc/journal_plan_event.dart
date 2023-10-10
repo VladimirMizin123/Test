@@ -7,6 +7,11 @@ class JournalPlanFetchEvent extends JournalPlanEvent {
   JournalPlanFetchEvent();
 }
 
+class GetMealLogByDateEvent extends JournalPlanEvent {
+  final String? date;
+  GetMealLogByDateEvent({this.date});
+}
+
 class JournalSkipMealPlanEvent extends JournalPlanEvent {
   final String mealID;
   JournalSkipMealPlanEvent({required this.mealID});

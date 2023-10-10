@@ -154,3 +154,12 @@ class JournalAddEatenErrorState extends JournalMealPlanState {
   JournalAddEatenErrorState();
 }
 
+
+class OnGetMealLogByDateLoadingState extends JournalMealPlanState {}
+class OnGetMealLogByDateErrorState extends JournalMealPlanState {}
+
+class OnGetMealLogByDateSuccessState extends JournalMealPlanState {
+  final List<MealDataByDate>? modelData;
+
+  OnGetMealLogByDateSuccessState({required this.modelData});
+}

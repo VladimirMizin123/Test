@@ -38,6 +38,16 @@ class JournalPlanRepository {
     }
   }
 
+  Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(String date) async {
+    String apiURL = '${ApiUrls.getMealLogByDate}/$userId?date=$date';
+    final response = await apiServices.get(apiURL);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
     final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {

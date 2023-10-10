@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
-import 'package:intl/intl.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -22,12 +21,10 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     on<JournalSearchEvent>(_onSearchItem);
     on<JournalAddToShoppingListEvent>(_onAddToShoppingList);
     on<JournalAddToEatenEvent>(_onAddEaten);
-    
+    on<GetMealLogByDateEvent>(_onGetMealLogByDate);
   }
 
   final JournalPlanRepository _repository = JournalPlanRepository();
-
- 
 
   _onSwapMealDetails(JournalSwapMealDetailsEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalSwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
@@ -61,6 +58,21 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(JournalFetchMealPlanErrorState());
+    }
+  }
+
+  _onGetMealLogByDate(GetMealLogByDateEvent event, Emitter<JournalMealPlanState> emit) async {
+    emit(OnGetMealLogByDateLoadingState());
+    try {
+      await _repository.getMealLogByDate(event.date!).fold((left) {
+        emit(OnGetMealLogByDateErrorState());
+        // onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(OnGetMealLogByDateSuccessState(modelData: right.data));
+      });
+    } catch (e) {
+      // showToast(isSuccess: false, message: e.toString());
+      emit(OnGetMealLogByDateErrorState());
     }
   }
 
