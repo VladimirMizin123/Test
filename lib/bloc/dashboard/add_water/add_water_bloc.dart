@@ -13,6 +13,7 @@ import 'add_water_state.dart';
 class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
   AddWaterBloc() : super(InitialState()) {
     on<SaveClickEvent>(_onAddWater);
+    on<UpdateWaterEvent>(_onUpdateWater);
   }
 
   final AddWaterRepository _repository = AddWaterRepository();
@@ -23,9 +24,9 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
     if (isTextFill) {
       emit(LoadingState());
       try {
-        await _repository.addWater(
-            waterML: event.waterML, userId: userId, createdDate: '').fold((
-            left) {
+        await _repository
+            .addWater(waterML: event.waterML, userId: userId, createdDate: '')
+            .fold((left) {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           showToast(isSuccess: true, message: right.message!);
@@ -44,6 +45,35 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
     }
   }
 
+  _onUpdateWater(UpdateWaterEvent event, Emitter<AddWaterState> emit) async {
+    bool isTextFill = addWaterValid(event.waterML);
+
+    if (isTextFill) {
+      emit(UpdateWaterLoadingState());
+      try {
+        await _repository
+            .updateWater(
+                waterML: event.waterML, userId: userId, createdDate: '')
+            .fold((left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        }, (right) {
+          showToast(isSuccess: true, message: right.message!);
+          // int waterML = PreferenceUtils.getInt(prefWaterML);
+          // waterML = waterML + int.parse(event.waterML);
+          int waterML = int.parse(event.waterML);
+          PreferenceUtils.setInt(prefWaterML, waterML);
+          emit(UpdateWaterSuccessfulState());
+          Get.back(result: event.waterML);
+        });
+      } catch (e) {
+        showToast(isSuccess: false, message: e.toString());
+        emit(UpdateWaterErrorState());
+      }
+    } else {
+      onFailError(emit: emit, text: StringUtils.pleaseEnterEmail);
+    }
+  }
+
   onFailError({required String text, required Emitter<AddWaterState> emit}) {
     showToast(isSuccess: false, message: text);
     emit(ErrorState());
@@ -56,5 +86,4 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
       return true;
     }
   }
-
 }

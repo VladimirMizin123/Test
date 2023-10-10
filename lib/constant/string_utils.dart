@@ -165,6 +165,7 @@ class StringUtils {
   static const dinner = 'Dinner ';
   static const subDinner = 'Eggs With Tomato';
   static const addWater = 'Add Water';
+  static const editWater = 'EditWater';
   static const addEntry = 'Add Entry';
   static const orderHistory = 'Order History';
   static const orderDetails = 'Order details';

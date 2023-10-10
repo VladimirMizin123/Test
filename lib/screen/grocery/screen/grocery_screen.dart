@@ -322,6 +322,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                 }
               }
             }
+
+            print('-------->>>>>>${selectedItemCount}');
           },
 
           // listener: (context, state) {
