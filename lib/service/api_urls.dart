@@ -15,7 +15,8 @@ class ApiUrls {
       '${baseUrl}api/Suggestic/AddToShoppingList';
   static const String byBarcodeScan =
       '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
-  static const String addNewCustomMeal = '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
+  static const String addNewCustomMeal =
+      '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
   static const String addItemsToShoppingList =
       '${baseUrl}api/ShoppingList/AddItemsToShoppingList';
@@ -30,7 +31,8 @@ class ApiUrls {
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
   static const String getAllRestrictionList =
       '${baseUrl}api/Suggestic/GetAllRestrictionList';
-  static const String getUserRestrictionList = '${baseUrl}api/Suggestic/GetUserRestrictionList';
+  static const String getUserRestrictionList =
+      '${baseUrl}api/Suggestic/GetUserRestrictionList';
   static const String addRestrictionAndGetMealPlan =
       '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
 
@@ -119,4 +121,15 @@ class ApiUrls {
   static const String addNewAddress = '${baseUrl}api/UserAddress/AddNewAddress';
   static const String addNewMeal =
       '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
+
+  /// UserGroceryList
+
+  static const String addNewGroceryItem =
+      '${baseUrl}api/UserGroceryList/AddNewMultipleUserGrocery';
+
+  static const String getGroceryItemList =
+      '${baseUrl}api/UserGroceryList/GetUserGroceryList';
+
+  static const String removeUserGroceryItem =
+      '${baseUrl}api/UserGroceryList/RemoveUserGrocery';
 }

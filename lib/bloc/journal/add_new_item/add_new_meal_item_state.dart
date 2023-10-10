@@ -4,7 +4,7 @@ abstract class AddNewMealState {}
 
 class InitialState extends AddNewMealState {}
 
-class AddAddressSuccessfulState extends AddNewMealState {}
+class AddNewMealSuccessfulState extends AddNewMealState {}
 
 class LoadingState extends AddNewMealState {}
 

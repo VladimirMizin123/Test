@@ -17,7 +17,8 @@ import '../../../widget/app_widget.dart';
 import 'get_user_journal_event.dart';
 import 'get_user_journal_state.dart';
 
-class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> {
+class GetUserJournalBloc
+    extends Bloc<GetUserJournalEvent, GetUserJournalState> {
   GetUserJournalBloc() : super(InitialState()) {
     on<GetUserJournalData>(_onGetUserJournalData);
     on<GenMealData>(_onGenMealTrackerData);
@@ -35,12 +36,16 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     on<JournalGetDashboardDataEvent>(_onGetSurveyData);
   }
 
-  final GetUserJournalDataRepository _journalDataRepository = GetUserJournalDataRepository();
-  final GetMealTrackerDataRepository _trackerDataRepository = GetMealTrackerDataRepository();
+  final GetUserJournalDataRepository _journalDataRepository =
+      GetUserJournalDataRepository();
+  final GetMealTrackerDataRepository _trackerDataRepository =
+      GetMealTrackerDataRepository();
   final MealPlanRepository _planRepository = MealPlanRepository();
   final AddEatenMealRepository _eatenMealRepository = AddEatenMealRepository();
-  final GetWaterDetailsRepository _waterDetailsRepository = GetWaterDetailsRepository();
-  final GetExerciseDetailsRepository _exerciseDetailsRepository = GetExerciseDetailsRepository();
+  final GetWaterDetailsRepository _waterDetailsRepository =
+      GetWaterDetailsRepository();
+  final GetExerciseDetailsRepository _exerciseDetailsRepository =
+      GetExerciseDetailsRepository();
 
   _onGetSurveyData(JournalGetDashboardDataEvent event, Emitter<GetUserJournalState> emit) async {
     try {
@@ -61,10 +66,12 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onGetUserJournalData(GetUserJournalData event, Emitter<GetUserJournalState> emit) async {
+  _onGetUserJournalData(
+      GetUserJournalData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(GetUserJournalDataLoading());
-      final response = await _journalDataRepository.getUserJournalData(date: event.date);
+      final response =
+          await _journalDataRepository.getUserJournalData(date: event.date);
       response.fold((left) {
         emit(ErrorJournalState());
       }, (right) {
@@ -78,14 +85,16 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
   List<MealData> dataList = [];
   List<TrackerData> mealTrackerList = [];
 
-  _onGenMealTrackerData(GenMealData event, Emitter<GetUserJournalState> emit) async {
+  _onGenMealTrackerData(
+      GenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
       await _planRepository.fetchMealPlan().fold((left) {
         emit(ErrorGenTrackState());
       }, (right) {
         dataList.clear();
         right.data!.map((e) {
-          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == dateTimeNow()) {
+          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
+              dateTimeNow()) {
             dataList.addAll(e.meals!);
           }
         }).toList();
@@ -96,9 +105,11 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onMealTrackerData(MealTrackerData event, Emitter<GetUserJournalState> emit) async {
+  _onMealTrackerData(
+      MealTrackerData event, Emitter<GetUserJournalState> emit) async {
     try {
-      await _trackerDataRepository.getMealTrackerData(date: event.date).fold((left) {
+      await _trackerDataRepository.getMealTrackerData(date: event.date).fold(
+          (left) {
         emit(ErrorGenTrackState());
       }, (right) {
         mealTrackerList.clear();
@@ -114,9 +125,11 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onGetWaterDetails(GetWaterDetails event, Emitter<GetUserJournalState> emit) async {
+  _onGetWaterDetails(
+      GetWaterDetails event, Emitter<GetUserJournalState> emit) async {
     try {
-      await _waterDetailsRepository.getWaterDetails(date: event.date).fold((left) {
+      await _waterDetailsRepository.getWaterDetails(date: event.date).fold(
+          (left) {
         emit(ErrorWaterDataState());
       }, (right) {
         emit(LoadWaterData(data: right.data!));
@@ -126,7 +139,8 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onGetAllExerciseDetails(GetAllExerciseDetails event, Emitter<GetUserJournalState> emit) async {
+  _onGetAllExerciseDetails(
+      GetAllExerciseDetails event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(AllExerciseLoadingState());
       await _exerciseDetailsRepository.getAllExerciseDetails().fold((left) {
@@ -139,10 +153,13 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onGetExerciseDetails(GetExerciseDetails event, Emitter<GetUserJournalState> emit) async {
+  _onGetExerciseDetails(
+      GetExerciseDetails event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(AllExerciseLogLoadingState());
-      await _exerciseDetailsRepository.getExerciseDetails(date: event.date).fold((left) {
+      await _exerciseDetailsRepository
+          .getExerciseDetails(date: event.date)
+          .fold((left) {
         emit(ErrorExerciseState());
       }, (right) {
         emit(AllExerciseLogSuccessState(data: right.data!));
@@ -152,7 +169,8 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onAddEatenMeal(AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
+  _onAddEatenMeal(
+      AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(LoadingDoneState());
       emit(AddItemLoadingState(title: event.title));
@@ -177,14 +195,17 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onGetSelectedImagePath(GetSelectedImagePath event, Emitter<GetUserJournalState> emit) async {
+  _onGetSelectedImagePath(
+      GetSelectedImagePath event, Emitter<GetUserJournalState> emit) async {
     emit(SelectedImagePathState(imgPath: event.imagePath));
   }
 
-  _onAddNewItemData(AddNewItemEvent event, Emitter<GetUserJournalState> emit) async {
+  _onAddNewItemData(
+      AddNewItemEvent event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(AddNewItemLoadingData());
-      await _eatenMealRepository.addNewItem(userId: userId, mealId: '').fold((left) {
+      await _eatenMealRepository.addNewItem(userId: userId, mealId: '').fold(
+          (left) {
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
@@ -195,7 +216,8 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onAddNewDietData(AddNewDietEvent event, Emitter<GetUserJournalState> emit) async {
+  _onAddNewDietData(
+      AddNewDietEvent event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(AddNewDietLoadingData());
       await _eatenMealRepository
@@ -221,7 +243,8 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onDailyRecap(DailyRecapEvent event, Emitter<GetUserJournalState> emit) async {
+  _onDailyRecap(
+      DailyRecapEvent event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(DailyRecapLoadingData());
       await _eatenMealRepository.dailyRecap().fold((left) {
@@ -235,10 +258,13 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onDailyRecapAns(DailyRecapAnsEvent event, Emitter<GetUserJournalState> emit) async {
+  _onDailyRecapAns(
+      DailyRecapAnsEvent event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(DailyRecapAnsLoadingData());
-      await _eatenMealRepository.dailyRecapAns(queID: event.queID, recapAns: event.recapAns).fold((left) {
+      await _eatenMealRepository
+          .dailyRecapAns(queID: event.queID, recapAns: event.recapAns)
+          .fold((left) {
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {
         emit(DailyRecapAnsSuccessState(recapData: false));
@@ -248,10 +274,12 @@ class GetUserJournalBloc extends Bloc<GetUserJournalEvent, GetUserJournalState> 
     }
   }
 
-  _onRemoveWater(RemoveWaterEvent event, Emitter<GetUserJournalState> emit) async {
+  _onRemoveWater(
+      RemoveWaterEvent event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(RemoveWaterLoadingData());
-      await _eatenMealRepository.removeWater(quantity: event.quantity).fold((left) {
+      await _eatenMealRepository.removeWater(quantity: event.quantity).fold(
+          (left) {
         showToast(isSuccess: false, message: left.errorMessage!);
         emit(RemoveWaterErrorState());
       }, (right) {
