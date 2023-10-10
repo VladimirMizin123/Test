@@ -17,8 +17,8 @@ class StringUtils {
       'The steps ahead will build your personal profile and the customization of your meal plan.';
   static const welcomeCommunitySub =
       'We are proud of you for taking this step in choosing to eat better. Thank you for entrusting us with your nutrition–we are humbled to be on this journey with you.';
-  static const maleHeader = 'Mike, you did it! ';
-  static const femaleHeader = 'Michelle, you did it! ';
+  static const maleHeader = 'you did it! ';
+  static const femaleHeader = 'you did it! ';
   static const lestItBetter = 'Let\'s Eat Better';
   static const next = 'Next';
   static const or = 'or';

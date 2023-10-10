@@ -988,7 +988,9 @@ class _JournalScreenState extends State<JournalScreen> {
       print(
           'logData.map ${e.mealId} == ${dataList![0].id} ${e.mealId == dataList[0].id}');
       if (e.mealId == dataList[0].id) {
-        isEaten = true;
+        if(e.value.toString() =='ATE') {
+          isEaten = true;
+        }
       }
     }).toList();
 

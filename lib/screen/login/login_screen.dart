@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: textTheme.bodyLarge?.copyWith(color: AppColors.middleGray),
                 ),
                 commonTextField(context: context, controller: emailController, hintText: StringUtils.email).paddingOnly(top: 20.h),
-                commonTextField(context: context, controller: passwordController, hintText: StringUtils.password).paddingOnly(top: 16.h),
+                commonTextField(context: context, controller: passwordController, hintText: StringUtils.password,isPassword: true).paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {
                     Get.toNamed('/ResetPasswordScreen');
