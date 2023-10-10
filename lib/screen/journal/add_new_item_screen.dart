@@ -40,6 +40,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('------->>>${Get.arguments}');
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -92,8 +93,6 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                 }
               });
               setState(() {});
-              print(
-                  'Picked Image File Path --------------- $pickedImageFilePath');
             }
           },
           builder: (context, state) {
@@ -505,7 +504,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                   bloc: getAddNewMealBloc,
                   builder: (context, state) {
                     if (state is LoadingState) {
-                      return const AppCenterLoader().paddingOnly(bottom: 10.h);
+                      return const AppCenterLoader().paddingOnly(bottom: 25.h);
                     } else {
                       return buildButton(
                         context: context,

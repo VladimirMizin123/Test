@@ -178,12 +178,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   builder: (context, state) {
                     print('state : $state');
                     if (state is LoadDashboardData) {
+                      print("logData:- $logData");
                       return initView();
                     }
                     if (state is LoadMealData) {
                       return const AppCenterLoader();
                     }
                     if (state is LoadingDoneState) {
+                      print("logData:- $logData");
                       return initView();
                     }
                     if (state is LoadingData) {
@@ -557,7 +559,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
                   logData.map((e) {
                     if (e.mealId == trackerDataList[index].id) {
-                      isEaten = true;
+                      if(e.value.toString() =='ATE') {
+                        isEaten = true;
+                      }
                     }
                   }).toList();
 
@@ -572,7 +576,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           : () {
                               if (!trackerDataList[index].isDone) {
                                 bloc.add(AddEatenMealData(
-                                    value: 0,
+                                    value: 1,
                                     mealName:
                                         trackerDataList[index].recipe!.name,
                                     mealType: trackerDataList[index].meal,

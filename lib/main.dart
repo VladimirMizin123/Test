@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/screen/build_my_profile/build_my_profile_screen.d
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/edit_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
@@ -354,6 +355,10 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/AddWaterScreen',
               page: () => const AddWaterScreen(),
+            ),
+            GetPage(
+              name: '/EditWaterScreen',
+              page: () => const EditWaterScreen(),
             ),
             GetPage(
               name: '/AddEntryScreen',

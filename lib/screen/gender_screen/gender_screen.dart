@@ -15,7 +15,7 @@ class GenderScreen extends StatefulWidget {
 
 class _GenderScreenState extends State<GenderScreen> {
   final routeName = '/GenderScreen';
-  String gender = Get.arguments.toString();
+  String gender = Get.arguments.gender.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +36,10 @@ class _GenderScreenState extends State<GenderScreen> {
           ),
         ),
         child: gender == StringUtils.male
-            ? ListView(
-                shrinkWrap: true,
+            ? Column(
                 children: [
                   Text(
-                    StringUtils.maleHeader,
+                    '${Get.arguments.name} you did it!',
                     textAlign: TextAlign.center,
                     style: textTheme.displayLarge!.copyWith(
                         color: const Color(0xFF004C63),
@@ -70,11 +69,11 @@ class _GenderScreenState extends State<GenderScreen> {
                 ],
               )
             : gender == StringUtils.female
-                ? ListView(
-                    shrinkWrap: true,
+                ? Column(
+                    //shrinkWrap: true,
                     children: [
                       Text(
-                        StringUtils.femaleHeader,
+                        '${Get.arguments.name} you did it!',
                         textAlign: TextAlign.center,
                         style: textTheme.displayLarge!.copyWith(
                             color: const Color(0xFFCE6B53),
@@ -104,11 +103,11 @@ class _GenderScreenState extends State<GenderScreen> {
                           bottom: 10.h, right: 20.w, left: 20.w, top: 365.h),
                     ],
                   )
-                : ListView(
-                    shrinkWrap: true,
+                : Column(
+
                     children: [
                       Text(
-                        StringUtils.mindy,
+                        '${Get.arguments.name} you did it!',
                         textAlign: TextAlign.center,
                         style: textTheme.displayLarge!.copyWith(
                             color: const Color(0xFF336633),

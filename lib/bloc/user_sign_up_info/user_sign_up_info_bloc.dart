@@ -109,7 +109,7 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         }
 
         emit(SignUpSuccessState());
-        Get.toNamed('/GenderScreen', arguments: event.model.gender);
+        Get.offAllNamed('/GenderScreen', arguments: event.model);
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
