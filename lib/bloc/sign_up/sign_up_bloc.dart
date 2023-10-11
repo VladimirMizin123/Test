@@ -16,6 +16,8 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
   final SignUpRepository _repository = SignUpRepository();
 
   _onCheckEmailExist(CheckEmailEvent event, Emitter<SignUpState> emit) async {
+    emit(LoggingState());
+
     try {
       await _repository.checkIsEmailExist(event.email).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
@@ -33,6 +35,7 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
             userName: event.email,
             confirmPassword: event.confirmPassword,
           );
+          emit(InitialState());
           await Get.toNamed('/GoogleMapScreen',
               arguments: {"string": 'isFromRegister', "userData": userData});
         }

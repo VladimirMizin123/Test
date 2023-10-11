@@ -90,7 +90,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   child: Text(
                 state.errMessage,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.primaryBlue, fontSize: 20, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                    color: AppColors.primaryBlue,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700),
               ));
             }
 
@@ -107,7 +110,9 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               }
               for (var e in getSurveyData!.options!) {
                 if (e.isSelect) {
-                  listOptions.add(CustomOptions(optionColor: e.color ?? AppColors.primaryBlue, optionName: e.label ?? ''));
+                  listOptions.add(CustomOptions(
+                      optionColor: e.color ?? AppColors.primaryBlue,
+                      optionName: e.label ?? ''));
                 }
               }
               debugPrint("listOptions--> ${listOptions.length}");
@@ -130,7 +135,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 restrictionID: restrictionIDList,
               );
 
-              Get.toNamed('/UserPhotoSelectionScreen', arguments: userSignUpDataModel);
+              Get.toNamed('/UserPhotoSelectionScreen',
+                  arguments: userSignUpDataModel);
             }
 
             if (state is PreviousScreenState) {
@@ -164,7 +170,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: InkWell(
                     onTap: () {
-                      UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
+                      UserSignUpDataModel userSignUpDataModel =
+                          UserSignUpDataModel(
                         firstName: model.firstName,
                         lastName: model.lastName,
                         email: model.email,
@@ -181,7 +188,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                         restrictionID: restrictionIDList,
                       );
 
-                      Get.toNamed('/UserPhotoSelectionScreen', arguments: userSignUpDataModel);
+                      Get.toNamed('/UserPhotoSelectionScreen',
+                          arguments: userSignUpDataModel);
                     },
                     child: const Text('SKIP'),
                   ),
@@ -218,7 +226,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
             Text(
               getSurveyData!.label!,
               textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(color: setColor(gender: model.gender!), fontSize: 18.sp, fontWeight: FontWeight.w500),
+              style: AppTextStyle.gymEatsStyle.copyWith(
+                  color: setColor(gender: model.gender!),
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w500),
             ).paddingOnly(top: 10),
             SizedBox(
               height: 20.h,
@@ -238,7 +249,11 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   // if (value != null || value != '') {
                   if (value!.isNotEmpty) {
                     isSearchOn = true;
-                    searchEdgesRestrictionList = edgesRestrictionList.where((item) => item.node.name.toLowerCase().contains(value.toLowerCase())).toList();
+                    searchEdgesRestrictionList = edgesRestrictionList
+                        .where((item) => item.node.name
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
                   } else {
                     isSearchOn = false;
                   }
@@ -276,13 +291,38 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                   index: index,
                                   onTap: () {
                                     setState(() {
-                                      searchEdgesRestrictionList![index].node.isRestricted = !searchEdgesRestrictionList![index].node.isRestricted;
-                                      if (restrictionIDList.contains(searchEdgesRestrictionList![index].node.id)) {
-                                        restrictionIDList.remove(searchEdgesRestrictionList![index].node.id);
-                                        listOptions.removeWhere((element) => element.optionName == searchEdgesRestrictionList![index].node.name);
+                                      searchEdgesRestrictionList![index]
+                                              .node
+                                              .isRestricted =
+                                          !searchEdgesRestrictionList![index]
+                                              .node
+                                              .isRestricted;
+                                      if (restrictionIDList.contains(
+                                          searchEdgesRestrictionList![index]
+                                              .node
+                                              .id)) {
+                                        restrictionIDList.remove(
+                                            searchEdgesRestrictionList![index]
+                                                .node
+                                                .id);
+                                        listOptions.removeWhere((element) =>
+                                            element.optionName ==
+                                            searchEdgesRestrictionList![index]
+                                                .node
+                                                .name);
                                       } else {
-                                        restrictionIDList.add(searchEdgesRestrictionList![index].node.id);
-                                        listOptions.add(CustomOptions(optionColor: colorList[index % colorList.length], optionName: searchEdgesRestrictionList![index].node.name));
+                                        restrictionIDList.add(
+                                            searchEdgesRestrictionList![index]
+                                                .node
+                                                .id);
+                                        listOptions.add(CustomOptions(
+                                            optionColor: colorList[
+                                                index % colorList.length],
+                                            optionName:
+                                                searchEdgesRestrictionList![
+                                                        index]
+                                                    .node
+                                                    .name));
                                       }
                                     });
                                   },
@@ -306,16 +346,29 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                               data: getSurveyData!.options![index],
                               onClick: () {
                                 optionIndex = index;
+
+                                if (getSurveyData!.options![index].isSelect) {
+                                  listOptions.removeWhere((element) =>
+                                      element.optionName ==
+                                      getSurveyData!.options![index].label);
+                                }
+
                                 bloc.add(CheckSurveyData(
                                   index: index,
                                 ));
 
                                 setState(() {
-                                  if (getSurveyData!.options![index].restrictionId != null) {
-                                    if (restrictionIDList.contains(getSurveyData!.options![index].restrictionId)) {
-                                      restrictionIDList.remove(getSurveyData!.options![index].restrictionId);
+                                  if (getSurveyData!
+                                          .options![index].restrictionId !=
+                                      null) {
+                                    if (restrictionIDList.contains(
+                                        getSurveyData!
+                                            .options![index].restrictionId)) {
+                                      restrictionIDList.remove(getSurveyData!
+                                          .options![index].restrictionId);
                                     } else {
-                                      restrictionIDList.add(getSurveyData!.options![index].restrictionId!);
+                                      restrictionIDList.add(getSurveyData!
+                                          .options![index].restrictionId!);
                                     }
                                   }
                                 });
@@ -338,7 +391,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                 optionIndex = listIndex[listIndex.length - 1];
                                 listIndex.removeLast();
                               }
-                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: false));
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: false));
                             },
                             textColor: setColor(gender: model.gender!),
                             borderColor: setColor(gender: model.gender!),
@@ -352,10 +406,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                             context: context,
                             onPressed: () {
                               // print(restrictionIDList.toList().toString());
-                              optionIndex = getSurveyData!.options!.indexWhere((value) => value.isSelect);
+                              optionIndex = getSurveyData!.options!
+                                  .indexWhere((value) => value.isSelect);
                               listIndex.add(optionIndex);
 
-                              bloc.add(NextPrevSurveyClick(index: optionIndex, isNext: true));
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex, isNext: true));
                             },
                             textColor: Colors.white,
                             bgColor: setColor(gender: model.gender!),
