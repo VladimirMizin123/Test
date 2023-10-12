@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-BarcodeScannerModal barcodeScannerModalFromJson(String str) => BarcodeScannerModal.fromJson(json.decode(str));
+BarcodeScannerModal barcodeScannerModalFromJson(String str) =>
+    BarcodeScannerModal.fromJson(json.decode(str));
 
-String barcodeScannerModalToJson(BarcodeScannerModal data) => json.encode(data.toJson());
+String barcodeScannerModalToJson(BarcodeScannerModal data) =>
+    json.encode(data.toJson());
 
 class BarcodeScannerModal {
   final bool success;
@@ -21,7 +23,8 @@ class BarcodeScannerModal {
     required this.data,
   });
 
-  factory BarcodeScannerModal.fromJson(Map<String, dynamic> json) => BarcodeScannerModal(
+  factory BarcodeScannerModal.fromJson(Map<String, dynamic> json) =>
+      BarcodeScannerModal(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
@@ -41,19 +44,19 @@ class BarcodeScannerData {
   final String brandName;
   final double servingQty;
   final String servingUnit;
-  final int servingWeightGrams;
+  final dynamic servingWeightGrams;
   final dynamic nfMetricQty;
   final dynamic nfMetricUom;
-  final int nfCalories;
-  final int nfTotalFat;
-  final int nfSaturatedFat;
-  final int nfCholesterol;
-  final int nfSodium;
-  final int nfTotalCarbohydrate;
-  final int nfDietaryFiber;
-  final int nfSugars;
-  final int nfProtein;
-  final int nfPotassium;
+  final dynamic nfCalories;
+  final dynamic nfTotalFat;
+  final dynamic nfSaturatedFat;
+  final dynamic nfCholesterol;
+  final dynamic nfSodium;
+  final dynamic nfTotalCarbohydrate;
+  final dynamic nfDietaryFiber;
+  final dynamic nfSugars;
+  final dynamic nfProtein;
+  final dynamic nfPotassium;
   final dynamic nfP;
   final List<FullNutrient> fullNutrients;
   final String nixBrandName;
@@ -61,7 +64,7 @@ class BarcodeScannerData {
   final String nixItemName;
   final String nixItemId;
   final Metadata metadata;
-  final int source;
+  final dynamic source;
   final dynamic ndbNo;
   final dynamic tags;
   final dynamic altMeasures;
@@ -115,7 +118,8 @@ class BarcodeScannerData {
     required this.nfIngredientStatement,
   });
 
-  factory BarcodeScannerData.fromJson(Map<String, dynamic> json) => BarcodeScannerData(
+  factory BarcodeScannerData.fromJson(Map<String, dynamic> json) =>
+      BarcodeScannerData(
         foodName: json["food_name"],
         brandName: json["brand_name"],
         servingQty: json["serving_qty"]?.toDouble(),
@@ -134,7 +138,8 @@ class BarcodeScannerData {
         nfProtein: json["nf_protein"],
         nfPotassium: json["nf_potassium"],
         nfP: json["nf_p"],
-        fullNutrients: List<FullNutrient>.from(json["full_nutrients"].map((x) => FullNutrient.fromJson(x))),
+        fullNutrients: List<FullNutrient>.from(
+            json["full_nutrients"].map((x) => FullNutrient.fromJson(x))),
         nixBrandName: json["nix_brand_name"],
         nixBrandId: json["nix_brand_id"],
         nixItemName: json["nix_item_name"],
@@ -174,7 +179,8 @@ class BarcodeScannerData {
         "nf_protein": nfProtein,
         "nf_potassium": nfPotassium,
         "nf_p": nfP,
-        "full_nutrients": List<dynamic>.from(fullNutrients.map((x) => x.toJson())),
+        "full_nutrients":
+            List<dynamic>.from(fullNutrients.map((x) => x.toJson())),
         "nix_brand_name": nixBrandName,
         "nix_brand_id": nixBrandId,
         "nix_item_name": nixItemName,
@@ -197,7 +203,7 @@ class BarcodeScannerData {
 }
 
 class FullNutrient {
-  final int attrId;
+  final dynamic attrId;
   final double value;
 
   FullNutrient({

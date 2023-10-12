@@ -6,6 +6,8 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -30,6 +32,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
+  AddNewMealBloc addNewMealBloc = AddNewMealBloc();
   NutritionixGetNxMealInfoByNameModelData?
       nutritionixGetNxMealInfoByNameModelData;
   int productCount = 0;
@@ -47,13 +50,29 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
       setState(() {
         productCount = 1;
       });
-    } else {
+    } else if (widget.arguments!.isFromJournalScreen == true) {
       groceryBloc.add(GroceryDetailsMealInfoEvent(
-          groceryProductName:
-              widget.arguments!.groceryShoppingData!.itemName!));
+          groceryProductName: widget.arguments!.productName!));
       setState(() {
-        productCount = widget.arguments!.groceryShoppingData!.quantity ?? 0;
+        productCount = 1;
       });
+    } else {
+      if (widget.arguments!.isFromCustomMealScreen == true) {
+        groceryBloc.add(GroceryDetailsMealInfoEvent(
+            groceryProductName: widget.arguments!.productName!));
+        setState(() {
+          productCount = 1;
+        });
+      } else {
+        groceryBloc.add(
+          GroceryDetailsMealInfoEvent(
+            groceryProductName: widget.arguments!.groceryShoppingData!.itemName,
+          ),
+        );
+        setState(() {
+          productCount = widget.arguments!.groceryShoppingData!.quantity ?? 0;
+        });
+      }
     }
   }
 
@@ -88,7 +107,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                           },
                           child: const Icon(Icons.keyboard_arrow_left_outlined,
                               size: 30)),
-                      Text('Grocery List',
+                      Text('Item Details',
                           style: FontUtils.h20(
                               fontColor: AppColors.oxFF010101,
                               fontWeight: FWT.semiBold)),
@@ -104,622 +123,699 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                     ],
                   ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                   Expanded(
-                    child: nutritionixGetNxMealInfoByNameModelData == null
-                        ? state is GroceryNutritionixGetNxMealInfoByNameLoadingState
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : const SizedBox()
-                        : BlocConsumer(
-                            bloc: addNewGroceryItemBloc,
-                            listener: (context, state) {
-                              /// Remove Update State=========================================================
+                      child: nutritionixGetNxMealInfoByNameModelData == null
+                          ? state
+                                  is GroceryNutritionixGetNxMealInfoByNameLoadingState
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : const SizedBox()
+                          : BlocConsumer(
+                              bloc: addNewGroceryItemBloc,
+                              listener: (context, state) {
+                                /// Remove Update State=========================================================
 
-                              ///----------Loading State
-                              if (state
-                                  is UpdateRemoveGroceryListLoadingState) {
-                                remove = true;
-                              }
+                                ///----------Loading State
+                                if (state
+                                    is UpdateRemoveGroceryListLoadingState) {
+                                  remove = true;
+                                }
 
-                              ///----------Error State
-                              if (state is UpdateRemoveGroceryListErrorState) {
-                                remove = false;
-                              }
+                                ///----------Error State
+                                if (state
+                                    is UpdateRemoveGroceryListErrorState) {
+                                  remove = false;
+                                }
 
-                              ///----------Success State
-                              if (state
-                                  is UpdateRemoveGroceryListSuccessState) {
-                                remove = false;
-                                productCount = productCount - 1;
-                                widget.arguments!.groceryShoppingData!
-                                    .quantity = widget.arguments!
-                                        .groceryShoppingData!.quantity -
-                                    1;
-                              }
+                                ///----------Success State
+                                if (state
+                                    is UpdateRemoveGroceryListSuccessState) {
+                                  remove = false;
+                                  productCount = productCount - 1;
+                                  widget.arguments!.groceryShoppingData!
+                                      .quantity = widget.arguments!
+                                          .groceryShoppingData!.quantity -
+                                      1;
+                                }
 
-                              /// Add Update State=========================================================
-                              ///----------Loading State
-                              if (state is UpdateAddGroceryListLoadingState) {
-                                add = true;
-                              }
+                                /// Add Update State=========================================================
+                                ///----------Loading State
+                                if (state is UpdateAddGroceryListLoadingState) {
+                                  add = true;
+                                }
 
-                              ///----------Error State
-                              if (state is UpdateAddGroceryListErrorState) {
-                                add = false;
-                              }
+                                ///----------Error State
+                                if (state is UpdateAddGroceryListErrorState) {
+                                  add = false;
+                                }
 
-                              ///----------Success State
-                              if (state is UpdateAddGroceryListSuccessState) {
-                                add = false;
-                                productCount = productCount + 1;
-                                widget.arguments!.groceryShoppingData!
-                                    .quantity = widget.arguments!
-                                        .groceryShoppingData!.quantity +
-                                    1;
-                              }
+                                ///----------Success State
+                                if (state is UpdateAddGroceryListSuccessState) {
+                                  add = false;
+                                  productCount = productCount + 1;
+                                  widget.arguments!.groceryShoppingData!
+                                      .quantity = widget.arguments!
+                                          .groceryShoppingData!.quantity +
+                                      1;
+                                }
 
-                              /// Remove Item Stat ===========================================================
+                                /// Remove Item Stat ===========================================================
 
-                              ///----------Loading State
-                              if (state is RemoveGroceryItemLoadingState) {
-                                delete = true;
-                              }
+                                ///----------Loading State
+                                if (state is RemoveGroceryItemLoadingState) {
+                                  delete = true;
+                                }
 
-                              ///----------Success State
-                              if (state is RemoveGroceryItemSuccessState) {
-                                delete = false;
-                                Get.back();
-                              }
+                                ///----------Success State
+                                if (state is RemoveGroceryItemSuccessState) {
+                                  delete = false;
+                                  Get.back();
+                                }
 
-                              ///----------Error State
-                              if (state is RemoveGroceryItemErrorState) {
-                                delete = false;
-                              }
+                                ///----------Error State
+                                if (state is RemoveGroceryItemErrorState) {
+                                  delete = false;
+                                }
 
-                              if (state is LoadingState) {
-                                addItem = true;
-                              }
-                              if (state is ErrorState) {
-                                addItem = false;
-                              }
-                              if (state is AddGroceryItemSuccessfulState) {
-                                addItem = false;
-                              }
-                            },
-                            builder: (context, state) => SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            nutritionixGetNxMealInfoByNameModelData!
-                                                    .foodName ??
-                                                '',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.black,
-                                                fontWeight: FWT.medium),
+                                if (state is LoadingState) {
+                                  addItem = true;
+                                }
+                                if (state is ErrorState) {
+                                  addItem = false;
+                                }
+                                if (state is AddGroceryItemSuccessfulState) {
+                                  addItem = false;
+                                }
+                              },
+                              builder: (context, state) =>
+                                  SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  nutritionixGetNxMealInfoByNameModelData!
+                                                          .foodName ??
+                                                      '',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.black,
+                                                      fontWeight: FWT.medium),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 7),
+                                              const Icon(Icons.info_outline,
+                                                  color: AppColors.primaryBlue)
+                                            ],
                                           ),
-                                        ),
-                                        const SizedBox(width: 7),
-                                        const Icon(Icons.info_outline,
-                                            color: AppColors.primaryBlue)
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        // widget.arguments!.groceryShoppingData!
-                                        //             .quantity! >
-                                        //         1
-                                        //     ?
-                                        GestureDetector(
-                                          onTap: () {
-                                            if (productCount != 1) {
-                                              setState(
-                                                () {
-                                                  if (remove == false) {
-                                                    if (widget.arguments!
-                                                            .isFromGroceryScreen ==
-                                                        true) {
-                                                    } else {
-                                                      addNewGroceryItemBloc.add(
-                                                        UpdateRemoveNewGroceryItem(
-                                                          userId: userId,
-                                                          id: widget
-                                                              .arguments!
-                                                              .groceryShoppingData!
-                                                              .id!,
-                                                          itemName: widget
-                                                              .arguments!
-                                                              .groceryShoppingData!
-                                                              .itemName!
-                                                              .toString(),
-                                                          quantity: widget
-                                                                  .arguments!
-                                                                  .groceryShoppingData!
-                                                                  .quantity -
-                                                              1,
-                                                          measurementType: widget
-                                                              .arguments!
-                                                              .groceryShoppingData!
-                                                              .measurementType!
-                                                              .toString(),
-                                                          measurementValue: widget
-                                                              .arguments!
-                                                              .groceryShoppingData!
-                                                              .measurementValue!
-                                                              .toString(),
-                                                        ),
-                                                      );
-                                                    }
-                                                  }
-                                                },
-                                              );
-                                            }
-                                          },
-                                          child: Container(
-                                            height: size.height * 0.070,
-                                            width: size.height * 0.070,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              color: AppColors.skyBlue,
-                                            ),
-                                            child: Center(
-                                              child: remove == true
-                                                  ? Transform.scale(
-                                                      scale: 0.5,
-                                                      child:
-                                                          const CircularProgressIndicator())
-                                                  : const Icon(
-                                                      Icons.remove,
-                                                      size: 27,
-                                                    ),
-                                            ),
-                                            // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                          ),
-                                        ),
-                                        // : GestureDetector(
-                                        //     onTap: () {
-                                        //       // groceryBloc.add(
-                                        //       //     RemoveGroceryEvent(
-                                        //       //         productID: widget
-                                        //       //             .arguments!
-                                        //       //             .groceryShoppingData!
-                                        //       //             .itemName!));
-                                        //       addNewGroceryItemBloc.add(
-                                        //         RemoveGroceryItemEvent(
-                                        //           userGroceryListId: widget
-                                        //               .arguments!
-                                        //               .groceryShoppingData!
-                                        //               .id!,
-                                        //         ),
-                                        //       );
-                                        //     },
-                                        //     child: Container(
-                                        //       height: size.height * 0.070,
-                                        //       width: size.height * 0.070,
-                                        //       decoration: BoxDecoration(
-                                        //           border: Border.all(
-                                        //               color: AppColors
-                                        //                   .skyBlue),
-                                        //           borderRadius:
-                                        //               BorderRadius.circular(
-                                        //                   6)),
-                                        //       child: Center(
-                                        //           child: delete == true
-                                        //               ? Transform.scale(
-                                        //                   scale: 0.5,
-                                        //                   child:
-                                        //                       const CircularProgressIndicator())
-                                        //               : SvgPicture.asset(
-                                        //                   AssetsUtils
-                                        //                       .icDelete)),
-                                        //     ),
-                                        //   ),
-                                        // Container(
-                                        //   height: size.height * 0.070,
-                                        //   width: size.height * 0.070,
-                                        //   decoration: BoxDecoration(
-                                        //       border: Border.all(
-                                        //           color: AppColors.skyBlue),
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(6)),
-                                        //   child: Center(
-                                        //       child: SvgPicture.asset(
-                                        //           AssetsUtils.icDelete)),
-                                        // ),
-                                        SizedBox(width: 8.w),
-                                        Container(
-                                          height: size.height * 0.070,
-                                          width: size.height * 0.070,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: AppColors.disable),
-                                              borderRadius:
-                                                  BorderRadius.circular(6)),
-                                          child: Center(
-                                              child: Text(
-                                            productCount.toString(),
-                                            style: FontUtils.h18(
-                                                fontWeight: FWT.semiBold,
-                                                fontColor: AppColors.darkGray),
-                                          )),
-                                        ),
-
-                                        SizedBox(width: 8.w),
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(
-                                              () {
-                                                if (add == false) {
-                                                  if (widget.arguments!
-                                                          .isFromGroceryScreen ==
-                                                      true) {
-                                                  } else {
-                                                    addNewGroceryItemBloc.add(
-                                                      UpdateAddNewGroceryItem(
-                                                        userId: userId,
-                                                        id: widget
-                                                            .arguments!
-                                                            .groceryShoppingData!
-                                                            .id!,
-                                                        itemName: widget
-                                                            .arguments!
-                                                            .groceryShoppingData!
-                                                            .itemName!
-                                                            .toString(),
-                                                        quantity: widget
-                                                                .arguments!
-                                                                .groceryShoppingData!
-                                                                .quantity +
-                                                            1,
-                                                        measurementType: widget
-                                                            .arguments!
-                                                            .groceryShoppingData!
-                                                            .measurementType!
-                                                            .toString(),
-                                                        measurementValue: widget
-                                                            .arguments!
-                                                            .groceryShoppingData!
-                                                            .measurementValue!
-                                                            .toString(),
-                                                      ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              // widget.arguments!.groceryShoppingData!
+                                              //             .quantity! >
+                                              //         1
+                                              //     ?
+                                              GestureDetector(
+                                                onTap: () {
+                                                  if (productCount != 1) {
+                                                    setState(
+                                                      () {
+                                                        if (remove == false) {
+                                                          if (widget.arguments!
+                                                                  .isFromGroceryScreen ==
+                                                              true) {
+                                                          } else {
+                                                            addNewGroceryItemBloc
+                                                                .add(
+                                                              UpdateRemoveNewGroceryItem(
+                                                                userId: userId,
+                                                                id: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .id!,
+                                                                itemName: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .itemName!
+                                                                    .toString(),
+                                                                quantity: widget
+                                                                        .arguments!
+                                                                        .groceryShoppingData!
+                                                                        .quantity -
+                                                                    1,
+                                                                measurementType: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .measurementType!
+                                                                    .toString(),
+                                                                measurementValue: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .measurementValue!
+                                                                    .toString(),
+                                                              ),
+                                                            );
+                                                          }
+                                                        }
+                                                      },
                                                     );
                                                   }
-                                                }
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            height: size.height * 0.070,
-                                            width: size.height * 0.070,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              color: AppColors.skyBlue,
-                                            ),
-                                            child: Center(
-                                              child: add == true
-                                                  ? Transform.scale(
-                                                      scale: 0.5,
-                                                      child:
-                                                          const CircularProgressIndicator())
-                                                  : const Icon(Icons.add,
-                                                      size: 27),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 8.w),
-                                        Expanded(
-                                          flex: 2,
-                                          child: DropdownButtonFormField(
-                                              decoration: const InputDecoration(
-                                                  border: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color:
-                                                              Colors.black))),
-                                              padding: EdgeInsets.zero,
-                                              value: _selectProduct,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              items: productList
-                                                  .map((e) => DropdownMenuItem(
-                                                        value: e,
-                                                        child: Text(e),
-                                                      ))
-                                                  .toList(),
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  _selectProduct = val!;
-                                                });
-                                              }),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-                                    GridView(
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 2,
-                                              crossAxisSpacing: 6.w,
-                                              mainAxisSpacing: 6.h),
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      children: [
-                                        myProgressBarCardView(
-                                            'Cal',
-                                            nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfCalories ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfCalories
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCalorie))
-                                                .toStringAsFixed(2)),
-                                            AppColors.primaryBlue),
-                                        myProgressBarCardView(
-                                            'Fat',
-                                            nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalFat ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalFat
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalFat))
-                                                .toStringAsFixed(2)),
-                                            AppColors.coral),
-                                        myProgressBarCardView(
-                                            'Carbs',
-                                            nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalCarbohydrate ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalCarbohydrate
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCarbs))
-                                                .toStringAsFixed(2)),
-                                            AppColors.mint),
-                                        myProgressBarCardView(
-                                            'Protein',
-                                            nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalFat ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    nutritionixGetNxMealInfoByNameModelData!
-                                                        .nfTotalFat
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalProtein))
-                                                .toStringAsFixed(2)),
-                                            AppColors.skyBlue),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text('Nutritional Information',
-                                            style: FontUtils.h24(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.semiBold))),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Calories',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                        Text('2g',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Divider(
-                                        color: AppColors.disabledColor,
-                                        height: 2.h),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Protein',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                        Text('2g',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Divider(
-                                        color: AppColors.disabledColor,
-                                        height: 2.h),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Carbs',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                        Text('2g',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Divider(
-                                        color: AppColors.disabledColor,
-                                        height: 2.h),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Fat',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                        Text('2g',
-                                            style: FontUtils.h16(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.medium)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Divider(
-                                        color: AppColors.disabledColor,
-                                        height: 2.h),
-
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Divider(color: AppColors.disabledColor, height: 2.h),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Divider(color: AppColors.disabledColor, height: 2.h),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    const SizedBox(height: 15),
-                                    addItem == true
-                                        ? const CircularProgressIndicator()
-                                        : simpleTextBorderButton(
-                                            context: context,
-                                            buttonLable: 'Add Item',
-                                            height: size.height * 0.065,
-                                            width: size.width,
-                                            isLoadingWidget: state
-                                                is GroceryAddToShoppingLoadingState,
-                                            onTap: () {
-                                              if (widget.arguments!
-                                                      .isFromGroceryScreen ==
-                                                  true) {
-                                                addNewGroceryItemBloc.add(
-                                                  AddNewGroceryItem(
-                                                    userId: userId,
-                                                    groceryItems: [
-                                                      widget.arguments!
-                                                          .groceryDetails!
-                                                    ],
+                                                },
+                                                child: Container(
+                                                  height: size.height * 0.070,
+                                                  width: size.height * 0.070,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    color: AppColors.skyBlue,
                                                   ),
-                                                );
-                                              } else {}
+                                                  child: Center(
+                                                    child: remove == true
+                                                        ? Transform.scale(
+                                                            scale: 0.5,
+                                                            child:
+                                                                const CircularProgressIndicator())
+                                                        : const Icon(
+                                                            Icons.remove,
+                                                            size: 27,
+                                                          ),
+                                                  ),
+                                                  // child: const Center(child: Icon(Icons.remove, size: 27)),
+                                                ),
+                                              ),
+                                              // : GestureDetector(
+                                              //     onTap: () {
+                                              //       // groceryBloc.add(
+                                              //       //     RemoveGroceryEvent(
+                                              //       //         productID: widget
+                                              //       //             .arguments!
+                                              //       //             .groceryShoppingData!
+                                              //       //             .itemName!));
+                                              //       addNewGroceryItemBloc.add(
+                                              //         RemoveGroceryItemEvent(
+                                              //           userGroceryListId: widget
+                                              //               .arguments!
+                                              //               .groceryShoppingData!
+                                              //               .id!,
+                                              //         ),
+                                              //       );
+                                              //     },
+                                              //     child: Container(
+                                              //       height: size.height * 0.070,
+                                              //       width: size.height * 0.070,
+                                              //       decoration: BoxDecoration(
+                                              //           border: Border.all(
+                                              //               color: AppColors
+                                              //                   .skyBlue),
+                                              //           borderRadius:
+                                              //               BorderRadius.circular(
+                                              //                   6)),
+                                              //       child: Center(
+                                              //           child: delete == true
+                                              //               ? Transform.scale(
+                                              //                   scale: 0.5,
+                                              //                   child:
+                                              //                       const CircularProgressIndicator())
+                                              //               : SvgPicture.asset(
+                                              //                   AssetsUtils
+                                              //                       .icDelete)),
+                                              //     ),
+                                              //   ),
+                                              // Container(
+                                              //   height: size.height * 0.070,
+                                              //   width: size.height * 0.070,
+                                              //   decoration: BoxDecoration(
+                                              //       border: Border.all(
+                                              //           color: AppColors.skyBlue),
+                                              //       borderRadius:
+                                              //           BorderRadius.circular(6)),
+                                              //   child: Center(
+                                              //       child: SvgPicture.asset(
+                                              //           AssetsUtils.icDelete)),
+                                              // ),
+                                              SizedBox(width: 8.w),
+                                              Container(
+                                                height: size.height * 0.070,
+                                                width: size.height * 0.070,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            AppColors.disable),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6)),
+                                                child: Center(
+                                                    child: Text(
+                                                  productCount.toString(),
+                                                  style: FontUtils.h18(
+                                                      fontWeight: FWT.semiBold,
+                                                      fontColor:
+                                                          AppColors.darkGray),
+                                                )),
+                                              ),
 
-                                              // groceryBloc.add(GroceryAddToShoppingListEvent(
-                                              //   productID: widget.arguments!.groceryShoppingData!.productId!,
-                                              //   mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
-                                              //   price: widget.arguments!.groceryShoppingData!.price.toString(),
-                                              //   productName: widget.arguments!.groceryShoppingData!.productName!,
-                                              //   quantity: productCount.toString(),
-                                              //   recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
-                                              //   unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
-                                              //   unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
-                                              //   isAdd: true,
-                                              //   isRemove: false,
-                                              //   isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
-                                              // ));
-                                            },
-                                            isDarkColor: true,
-                                            isFillColor: true,
+                                              SizedBox(width: 8.w),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(
+                                                    () {
+                                                      if (add == false) {
+                                                        if (widget.arguments!
+                                                                .isFromGroceryScreen ==
+                                                            true) {
+                                                        } else {
+                                                          addNewGroceryItemBloc
+                                                              .add(
+                                                            UpdateAddNewGroceryItem(
+                                                              userId: userId,
+                                                              id: widget
+                                                                  .arguments!
+                                                                  .groceryShoppingData!
+                                                                  .id!,
+                                                              itemName: widget
+                                                                  .arguments!
+                                                                  .groceryShoppingData!
+                                                                  .itemName!
+                                                                  .toString(),
+                                                              quantity: widget
+                                                                      .arguments!
+                                                                      .groceryShoppingData!
+                                                                      .quantity +
+                                                                  1,
+                                                              measurementType: widget
+                                                                  .arguments!
+                                                                  .groceryShoppingData!
+                                                                  .measurementType!
+                                                                  .toString(),
+                                                              measurementValue: widget
+                                                                  .arguments!
+                                                                  .groceryShoppingData!
+                                                                  .measurementValue!
+                                                                  .toString(),
+                                                            ),
+                                                          );
+                                                        }
+                                                      }
+                                                    },
+                                                  );
+                                                },
+                                                child: Container(
+                                                  height: size.height * 0.070,
+                                                  width: size.height * 0.070,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    color: AppColors.skyBlue,
+                                                  ),
+                                                  child: Center(
+                                                    child: add == true
+                                                        ? Transform.scale(
+                                                            scale: 0.5,
+                                                            child:
+                                                                const CircularProgressIndicator())
+                                                        : const Icon(Icons.add,
+                                                            size: 27),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 8.w),
+                                              Expanded(
+                                                flex: 2,
+                                                child: DropdownButtonFormField(
+                                                    decoration: const InputDecoration(
+                                                        border: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color: Colors
+                                                                    .black))),
+                                                    padding: EdgeInsets.zero,
+                                                    value: _selectProduct,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    items: productList
+                                                        .map((e) =>
+                                                            DropdownMenuItem(
+                                                              value: e,
+                                                              child: Text(e),
+                                                            ))
+                                                        .toList(),
+                                                    onChanged: (val) {
+                                                      setState(() {
+                                                        _selectProduct = val!;
+                                                      });
+                                                    }),
+                                              ),
+                                            ],
                                           ),
-                                    SizedBox(height: 14.h),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                  ),
+
+                                          const SizedBox(height: 10),
+                                          GridView(
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    childAspectRatio: 2,
+                                                    crossAxisSpacing: 6.w,
+                                                    mainAxisSpacing: 6.h),
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            children: [
+                                              myProgressBarCardView(
+                                                  'Cal',
+                                                  nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfCalories ==
+                                                          null
+                                                      ? 0
+                                                      : double.parse(
+                                                          nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfCalories
+                                                              .toString()),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCalorie))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.primaryBlue),
+                                              myProgressBarCardView(
+                                                  'Fat',
+                                                  nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalFat ==
+                                                          null
+                                                      ? 0
+                                                      : double.parse(
+                                                          nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalFat
+                                                              .toString()),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalFat))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.coral),
+                                              myProgressBarCardView(
+                                                  'Carbs',
+                                                  nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalCarbohydrate ==
+                                                          null
+                                                      ? 0
+                                                      : double.parse(
+                                                          nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalCarbohydrate
+                                                              .toString()),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCarbs))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.mint),
+                                              myProgressBarCardView(
+                                                  'Protein',
+                                                  nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalFat ==
+                                                          null
+                                                      ? 0
+                                                      : double.parse(
+                                                          nutritionixGetNxMealInfoByNameModelData!
+                                                              .nfTotalFat
+                                                              .toString()),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalProtein))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.skyBlue),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                  'Nutritional Information',
+                                                  style: FontUtils.h24(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight:
+                                                          FWT.semiBold))),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Calories',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text('2g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Divider(
+                                              color: AppColors.disabledColor,
+                                              height: 2.h),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Protein',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text('2g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Divider(
+                                              color: AppColors.disabledColor,
+                                              height: 2.h),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Carbs',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text('2g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Divider(
+                                              color: AppColors.disabledColor,
+                                              height: 2.h),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Fat',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text('2g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Divider(
+                                              color: AppColors.disabledColor,
+                                              height: 2.h),
+
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Divider(color: AppColors.disabledColor, height: 2.h),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                          //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Divider(color: AppColors.disabledColor, height: 2.h),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                          //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          // const SizedBox(height: 10),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
+                                          //   ],
+                                          // ),
+                                          const SizedBox(height: 15),
+                                          addItem == true
+                                              ? const CircularProgressIndicator()
+                                              : widget.arguments!
+                                                          .isFromCustomMealScreen ==
+                                                      true
+                                                  ? simpleTextBorderButton(
+                                                      context: context,
+                                                      buttonLable: 'Back',
+                                                      height:
+                                                          size.height * 0.065,
+                                                      width: size.width,
+                                                      onTap: () {
+                                                        Get.back();
+                                                      },
+                                                      isDarkColor: true,
+                                                      isFillColor: true,
+                                                    )
+                                                  : simpleTextBorderButton(
+                                                      context: context,
+                                                      buttonLable: 'Add Item',
+                                                      height:
+                                                          size.height * 0.065,
+                                                      width: size.width,
+                                                      onTap: () {
+                                                        if (widget.arguments!
+                                                                .isFromGroceryScreen ==
+                                                            true) {
+                                                          addNewGroceryItemBloc
+                                                              .add(
+                                                            AddNewGroceryItem(
+                                                              userId: userId,
+                                                              groceryItems: [
+                                                                widget
+                                                                    .arguments!
+                                                                    .groceryDetails!
+                                                              ],
+                                                            ),
+                                                          );
+                                                        } else if (widget
+                                                                .arguments!
+                                                                .isFromJournalScreen ==
+                                                            true) {
+                                                          addNewMealBloc.add(
+                                                            AddNewMeal(
+                                                              name: nutritionixGetNxMealInfoByNameModelData!
+                                                                      .foodName ??
+                                                                  '',
+                                                              protein: nutritionixGetNxMealInfoByNameModelData
+                                                                      ?.nfProtein
+                                                                      .toString() ??
+                                                                  '0',
+                                                              fat: nutritionixGetNxMealInfoByNameModelData
+                                                                      ?.nfTotalFat
+                                                                      .toString() ??
+                                                                  '0',
+                                                              carbs: nutritionixGetNxMealInfoByNameModelData
+                                                                      ?.nfTotalCarbohydrate
+                                                                      .toString() ??
+                                                                  '0',
+                                                              calorie: nutritionixGetNxMealInfoByNameModelData
+                                                                      ?.nfCalories
+                                                                      .toString() ??
+                                                                  '0',
+                                                              type: widget
+                                                                  .arguments!
+                                                                  .type
+                                                                  .toString()
+                                                                  .removeAllWhitespace,
+                                                              userId: userId
+                                                                  .toString(),
+                                                              quantity: '1',
+                                                            ),
+                                                          );
+                                                        } else {}
+
+                                                        // groceryBloc.add(GroceryAddToShoppingListEvent(
+                                                        //   productID: widget.arguments!.groceryShoppingData!.productId!,
+                                                        //   mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,
+                                                        //   price: widget.arguments!.groceryShoppingData!.price.toString(),
+                                                        //   productName: widget.arguments!.groceryShoppingData!.productName!,
+                                                        //   quantity: productCount.toString(),
+                                                        //   recipeId: widget.arguments!.groceryShoppingData!.recipeId!,
+                                                        //   unitOfMeasurement: widget.arguments!.groceryShoppingData!.unitOfMeasurement!,
+                                                        //   unitSize: widget.arguments!.groceryShoppingData!.unitSize.toString(),
+                                                        //   isAdd: true,
+                                                        //   isRemove: false,
+                                                        //   isChecked: widget.arguments!.groceryShoppingData!.isAddedForViewCart ?? false,
+                                                        // ));
+                                                      },
+                                                      isDarkColor: true,
+                                                      isFillColor: true,
+                                                    ),
+                                          SizedBox(height: 14.h),
+                                        ],
+                                      ),
+                                    ),
+                                  ))),
                 ],
               ),
             );
@@ -789,15 +885,21 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
 class GroceryItemDetailsArguments {
   final GroceryDetails? groceryShoppingData;
   final bool isFromGroceryScreen;
+  final bool isFromCustomMealScreen;
+  final bool isFromJournalScreen;
   final String? productName;
   final String? productID;
+  final String? type;
   final Map<String, dynamic>? groceryDetails;
 
   GroceryItemDetailsArguments({
     this.groceryShoppingData,
     this.isFromGroceryScreen = false,
+    this.isFromCustomMealScreen = false,
+    this.isFromJournalScreen = false,
     this.productName,
     this.productID,
+    this.type,
     this.groceryDetails,
   });
 }

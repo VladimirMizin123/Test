@@ -9,6 +9,9 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -38,7 +41,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
   TextEditingController searchController = TextEditingController();
   JournalPlanBloc journalPlanBloc = JournalPlanBloc();
   AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
-
+  AddNewMealBloc getAddNewMealBloc = AddNewMealBloc();
   List<Cart> groceryMultiSearchModelDataList = [];
   List<MealData> mealList = [];
 
@@ -185,10 +188,12 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                           },
                           child: const Icon(Icons.keyboard_arrow_left_outlined,
                               size: 30)),
-                      Text('Breakfast',
-                          style: FontUtils.h20(
-                              fontColor: AppColors.oxFF010101,
-                              fontWeight: FWT.semiBold)),
+                      widget.isFrom == 'Grocery'
+                          ? const SizedBox()
+                          : Text(widget.journalMealScreenArguments!.mealType!,
+                              style: FontUtils.h20(
+                                  fontColor: AppColors.oxFF010101,
+                                  fontWeight: FWT.semiBold)),
                       Opacity(
                         opacity: 0,
                         child: Image.asset(
@@ -342,246 +347,431 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                     add = false;
                                   }
                                 },
-                                builder: (context, state) => Column(
-                                  children: [
-                                    Expanded(
-                                      child: SingleChildScrollView(
-                                        physics: const BouncingScrollPhysics(),
-                                        child: ListView.builder(
-                                          itemCount:
-                                              groceryMultiSearchModelDataList
-                                                  .length,
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, i) {
-                                            return ListView.builder(
-                                              itemCount:
+                                builder: (context, state) => BlocConsumer(
+                                  bloc: getAddNewMealBloc,
+                                  listener: (context, state) {
+                                    if (state is AddNewMealLoadingState) {
+                                      setState(() {
+                                        for (var i = 0;
+                                            i <
+                                                groceryMultiSearchModelDataList
+                                                    .length;
+                                            i++) {
+                                          for (var j = 0;
+                                              j <
                                                   groceryMultiSearchModelDataList[
                                                           i]
                                                       .groceryResult!
-                                                      .length,
-                                              shrinkWrap: true,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              itemBuilder: (context, ind) {
-                                                return ListView.builder(
-                                                  itemCount:
-                                                      groceryMultiSearchModelDataList[
-                                                              i]
-                                                          .groceryResult![ind]
-                                                          .products!
-                                                          .length,
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      const NeverScrollableScrollPhysics(),
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          Get.toNamed(
-                                                            '/GroceryItemDetails',
-                                                            arguments:
-                                                                GroceryItemDetailsArguments(
-                                                              isFromGroceryScreen:
-                                                                  true,
-                                                              productName:
-                                                                  groceryMultiSearchModelDataList[
+                                                      .length;
+                                              j++) {
+                                            for (var k = 0;
+                                                k <
+                                                    groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult![j]
+                                                        .products!
+                                                        .length;
+                                                k++) {
+                                              print(
+                                                  'Condition>>>${groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.productId}');
+
+                                              if (groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult![j]
+                                                      .products![k]
+                                                      .productId ==
+                                                  state.productId) {
+                                                groceryMultiSearchModelDataList[
+                                                        i]
+                                                    .groceryResult![j]
+                                                    .products![k]
+                                                    .isLoading = true;
+                                              }
+                                            }
+                                          }
+                                        }
+                                        // for (var i = 0; i < mealList.length; i++) {
+                                        //   if (mealList[i].id == state.mealID) {
+                                        //     mealList[i].isLoadingAddedForEatenMeal = true;
+                                        //   }
+                                        // }
+                                      });
+                                    }
+                                    if (state is AddNewMealSuccessfulState) {
+                                      setState(() {
+                                        for (var i = 0;
+                                            i <
+                                                groceryMultiSearchModelDataList
+                                                    .length;
+                                            i++) {
+                                          for (var j = 0;
+                                              j <
+                                                  groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult!
+                                                      .length;
+                                              j++) {
+                                            for (var k = 0;
+                                                k <
+                                                    groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult![j]
+                                                        .products!
+                                                        .length;
+                                                k++) {
+                                              if (groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult![j]
+                                                      .products![k]
+                                                      .productId ==
+                                                  state.productId) {
+                                                groceryMultiSearchModelDataList[
+                                                        i]
+                                                    .groceryResult![j]
+                                                    .products![k]
+                                                    .isLoading = false;
+                                                groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult![j]
+                                                        .products![k]
+                                                        .isAddedToShoppingList =
+                                                    true;
+                                              }
+                                            }
+                                          }
+                                        }
+                                        // for (var i = 0; i < mealList.length; i++) {
+                                        //   if (mealList[i].id == state.mealID) {
+                                        //     mealList[i].isLoadingAddedForEatenMeal = false;
+                                        //     mealList[i].isAddedForEatenMeal = true;
+                                        //   }
+                                        // }
+                                      });
+                                    }
+                                    if (state is AddNewMealErrorState) {
+                                      setState(() {
+                                        for (var i = 0;
+                                            i <
+                                                groceryMultiSearchModelDataList
+                                                    .length;
+                                            i++) {
+                                          for (var j = 0;
+                                              j <
+                                                  groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult!
+                                                      .length;
+                                              j++) {
+                                            for (var k = 0;
+                                                k <
+                                                    groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult![j]
+                                                        .products!
+                                                        .length;
+                                                k++) {
+                                              if (groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult![j]
+                                                      .products![k]
+                                                      .productId ==
+                                                  state.productId) {
+                                                groceryMultiSearchModelDataList[
+                                                        i]
+                                                    .groceryResult![j]
+                                                    .products![k]
+                                                    .isLoading = false;
+                                                groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult![j]
+                                                        .products![k]
+                                                        .isAddedToShoppingList =
+                                                    true;
+                                              }
+                                            }
+                                          }
+                                        }
+                                        // for (var i = 0; i < mealList.length; i++) {
+                                        //   if (mealList[i].id == state.mealID) {
+                                        //     mealList[i].isLoadingAddedForEatenMeal = false;
+                                        //     mealList[i].isAddedForEatenMeal = true;
+                                        //   }
+                                        // }
+                                      });
+                                    }
+                                  },
+                                  builder: (context, state) => Column(
+                                    children: [
+                                      Expanded(
+                                        child: SingleChildScrollView(
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          child: ListView.builder(
+                                            itemCount:
+                                                groceryMultiSearchModelDataList
+                                                    .length,
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemBuilder: (context, i) {
+                                              return ListView.builder(
+                                                itemCount:
+                                                    groceryMultiSearchModelDataList[
+                                                            i]
+                                                        .groceryResult!
+                                                        .length,
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                itemBuilder: (context, ind) {
+                                                  return ListView.builder(
+                                                    itemCount:
+                                                        groceryMultiSearchModelDataList[
+                                                                i]
+                                                            .groceryResult![ind]
+                                                            .products!
+                                                            .length,
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        const NeverScrollableScrollPhysics(),
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 12,
+                                                                vertical: 6),
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            if (widget.isFrom ==
+                                                                'Journal') {
+                                                              Get.toNamed(
+                                                                '/GroceryItemDetails',
+                                                                arguments: GroceryItemDetailsArguments(
+                                                                    productName: groceryMultiSearchModelDataList[
+                                                                            i]
+                                                                        .groceryResult![
+                                                                            ind]
+                                                                        .products![
+                                                                            index]
+                                                                        .itemName,
+                                                                    isFromJournalScreen:
+                                                                        true,
+                                                                    type: widget
+                                                                        .journalMealScreenArguments!
+                                                                        .mealType!),
+                                                              );
+                                                            } else {
+                                                              Get.toNamed(
+                                                                '/GroceryItemDetails',
+                                                                arguments:
+                                                                    GroceryItemDetailsArguments(
+                                                                  isFromGroceryScreen:
+                                                                      true,
+                                                                  productName: groceryMultiSearchModelDataList[
                                                                           i]
                                                                       .groceryResult![
                                                                           ind]
                                                                       .products![
                                                                           index]
                                                                       .itemName,
-                                                              groceryDetails: {
-                                                                "itemName": groceryMultiSearchModelDataList[
-                                                                        i]
-                                                                    .groceryResult![
-                                                                        ind]
-                                                                    .products![
-                                                                        index]
-                                                                    .itemName
-                                                                    .toString(),
-                                                                "quantity": 1,
-                                                                "measurementType": groceryMultiSearchModelDataList[
-                                                                        i]
-                                                                    .groceryResult![
-                                                                        ind]
-                                                                    .products![
-                                                                        index]
-                                                                    .unitOfMeasurement
-                                                                    .toString(),
-                                                                "measurementValue": groceryMultiSearchModelDataList[
-                                                                        i]
-                                                                    .groceryResult![
-                                                                        ind]
-                                                                    .products![
-                                                                        index]
-                                                                    .unitSize
-                                                                    .toString()
-                                                              },
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              color:
-                                                                  Colors.white,
-                                                              boxShadow:
-                                                                  boxShadowWidget,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8)),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(12),
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      width:
-                                                                          270.w,
-                                                                      child:
-                                                                          Text(
-                                                                        groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ??
-                                                                            '',
-                                                                        style: FontUtils.h16(
-                                                                            fontColor:
-                                                                                AppColors.black,
-                                                                            fontWeight: FWT.medium),
-                                                                      ),
-                                                                    ),
-                                                                    Row(
-                                                                      children: [
-                                                                        Text(
-                                                                          '1 slice, Dave’s Killer Bread - ',
-                                                                          style: FontUtils.h12(
-                                                                              fontColor: AppColors.middleGray,
-                                                                              fontWeight: FWT.medium),
-                                                                        ),
-                                                                        Text(
-                                                                          '110 cal',
-                                                                          style: FontUtils.h12(
-                                                                              fontColor: AppColors.black,
-                                                                              fontWeight: FWT.medium),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                groceryMultiSearchModelDataList[
+                                                                  groceryDetails: {
+                                                                    "itemName": groceryMultiSearchModelDataList[
                                                                             i]
                                                                         .groceryResult![
                                                                             ind]
                                                                         .products![
                                                                             index]
-                                                                        .isAddedToShoppingList
-                                                                    ? SvgPicture.asset(
-                                                                        AssetsUtils
-                                                                            .icAddCircle,
-                                                                        height:
-                                                                            30)
-                                                                    : groceryMultiSearchModelDataList[i]
-                                                                            .groceryResult![
-                                                                                ind]
-                                                                            .products![
-                                                                                index]
-                                                                            .isLoading
-                                                                        ? const Center(
-                                                                            child:
-                                                                                CircularProgressIndicator())
-                                                                        : GestureDetector(
-                                                                            onTap:
-                                                                                () {
-                                                                              if (widget.isFrom == 'Journal') {
-                                                                                journalPlanBloc.add(
-                                                                                  JournalAddToEatenEvent(
-                                                                                    mealId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                                                                                    calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie,
-                                                                                    carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs,
-                                                                                    fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat,
-                                                                                    protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein,
-                                                                                    mealType: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].mealType,
-                                                                                    noOfServing: 1,
-                                                                                    recipeId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                                                                                    mealName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName,
-                                                                                  ),
-                                                                                );
-                                                                              } else {
-                                                                                if (groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList == false) {
-                                                                                  groceryDetails.add({
-                                                                                    "itemName": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName.toString(),
-                                                                                    "quantity": 1,
-                                                                                    "measurementType": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
-                                                                                    "measurementValue": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString()
-                                                                                  });
-                                                                                  groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList = true;
-                                                                                  isButtonEnable = true;
-                                                                                }
+                                                                        .itemName
+                                                                        .toString(),
+                                                                    "quantity":
+                                                                        1,
+                                                                    "measurementType": groceryMultiSearchModelDataList[
+                                                                            i]
+                                                                        .groceryResult![
+                                                                            ind]
+                                                                        .products![
+                                                                            index]
+                                                                        .unitOfMeasurement
+                                                                        .toString(),
+                                                                    "measurementValue": groceryMultiSearchModelDataList[
+                                                                            i]
+                                                                        .groceryResult![
+                                                                            ind]
+                                                                        .products![
+                                                                            index]
+                                                                        .unitSize
+                                                                        .toString()
+                                                                  },
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                          child: Container(
+                                                            decoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                                boxShadow:
+                                                                    boxShadowWidget,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8)),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(12),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      SizedBox(
+                                                                        width:
+                                                                            270.w,
+                                                                        child:
+                                                                            Text(
+                                                                          groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ??
+                                                                              '',
+                                                                          style: FontUtils.h16(
+                                                                              fontColor: AppColors.black,
+                                                                              fontWeight: FWT.medium),
+                                                                        ),
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            '1 slice, Dave’s Killer Bread - ',
+                                                                            style:
+                                                                                FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                                                          ),
+                                                                          Text(
+                                                                            '110 cal',
+                                                                            style:
+                                                                                FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  groceryMultiSearchModelDataList[i]
+                                                                          .groceryResult![
+                                                                              ind]
+                                                                          .products![
+                                                                              index]
+                                                                          .isAddedToShoppingList
+                                                                      ? SvgPicture.asset(
+                                                                          AssetsUtils
+                                                                              .icAddCircle,
+                                                                          height:
+                                                                              30)
+                                                                      : groceryMultiSearchModelDataList[i]
+                                                                              .groceryResult![ind]
+                                                                              .products![index]
+                                                                              .isLoading
+                                                                          ? const Center(child: CircularProgressIndicator())
+                                                                          : GestureDetector(
+                                                                              onTap: () {
+                                                                                if (widget.isFrom == 'Journal') {
+                                                                                  getAddNewMealBloc.add(
+                                                                                    AddNewMeal(
+                                                                                      name: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
+                                                                                      protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein ?? '0',
+                                                                                      fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat ?? '0',
+                                                                                      carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs ?? '0',
+                                                                                      calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie ?? '0',
+                                                                                      type: widget.journalMealScreenArguments!.mealType.toString().removeAllWhitespace ?? '',
+                                                                                      userId: userId.toString(),
+                                                                                      quantity: '1',
+                                                                                      id: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId,
+                                                                                    ),
+                                                                                  );
 
-                                                                                setState(() {});
-                                                                              }
-                                                                            },
-                                                                            child:
-                                                                                SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
-                                                              ],
+                                                                                  // journalPlanBloc.add(
+                                                                                  //   JournalAddToEatenEvent(
+                                                                                  //     mealId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                                  //     calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie,
+                                                                                  //     carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs,
+                                                                                  //     fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat,
+                                                                                  //     protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein,
+                                                                                  //     mealType: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].mealType,
+                                                                                  //     noOfServing: 1,
+                                                                                  //     recipeId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                                  //     mealName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName,
+                                                                                  //   ),
+                                                                                  // );
+                                                                                } else {
+                                                                                  if (groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList == false) {
+                                                                                    groceryDetails.add({
+                                                                                      "itemName": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName.toString(),
+                                                                                      "quantity": 1,
+                                                                                      "measurementType": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
+                                                                                      "measurementValue": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString()
+                                                                                    });
+                                                                                    groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList = true;
+                                                                                    isButtonEnable = true;
+                                                                                  }
+
+                                                                                  setState(() {});
+                                                                                }
+                                                                              },
+                                                                              child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
+                                                                ],
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    widget.isFrom == 'Grocery'
-                                        ? Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 15.w),
-                                            child: add == true
-                                                ? const CircularProgressIndicator()
-                                                    .paddingOnly(
-                                                        bottom: 30.h, top: 10.h)
-                                                : buildButton(
-                                                    context: context,
-                                                    bgColor: isButtonEnable
-                                                        ? AppColors.primaryBlue
-                                                        : AppColors.disable,
-                                                    hasImage: false,
-                                                    onPressed: () {
-                                                      // ADD NEW ITEM API,
-                                                      addNewGroceryItemBloc.add(
-                                                        AddNewGroceryItem(
-                                                            userId: userId,
-                                                            groceryItems:
-                                                                groceryDetails),
                                                       );
                                                     },
-                                                    textColor: Colors.white,
-                                                    title: StringUtils.addItem,
-                                                  ).paddingOnly(
-                                                    bottom: 30.h, top: 10.h),
-                                          )
-                                        : const SizedBox()
-                                  ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      widget.isFrom == 'Grocery'
+                                          ? Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15.w),
+                                              child: add == true
+                                                  ? const CircularProgressIndicator()
+                                                      .paddingOnly(
+                                                          bottom: 30.h,
+                                                          top: 10.h)
+                                                  : buildButton(
+                                                      context: context,
+                                                      bgColor: isButtonEnable
+                                                          ? AppColors
+                                                              .primaryBlue
+                                                          : AppColors.disable,
+                                                      hasImage: false,
+                                                      onPressed: () {
+                                                        // ADD NEW ITEM API,
+                                                        addNewGroceryItemBloc
+                                                            .add(
+                                                          AddNewGroceryItem(
+                                                            userId: userId,
+                                                            groceryItems:
+                                                                groceryDetails,
+                                                          ),
+                                                        );
+                                                      },
+                                                      textColor: Colors.white,
+                                                      title:
+                                                          StringUtils.addItem,
+                                                    ).paddingOnly(
+                                                      bottom: 30.h, top: 10.h),
+                                            )
+                                          : const SizedBox()
+                                    ],
+                                  ),
                                 ),
                               ),
                   )

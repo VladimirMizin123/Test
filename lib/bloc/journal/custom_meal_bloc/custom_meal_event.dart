@@ -9,7 +9,7 @@ class GetSelectedImagePath extends AddNewMealEvent {
 
 class AddNewMeal extends AddNewMealEvent {
   final String name;
-  final File imageUrl;
+  final File? imageUrl;
   final String protein;
   final String fat;
   final String carbs;
@@ -17,10 +17,11 @@ class AddNewMeal extends AddNewMealEvent {
   final String type;
   final String userId;
   final String quantity;
+  final String? id;
 
   AddNewMeal({
     required this.name,
-    required this.imageUrl,
+    this.imageUrl,
     required this.protein,
     required this.fat,
     required this.carbs,
@@ -28,5 +29,9 @@ class AddNewMeal extends AddNewMealEvent {
     required this.type,
     required this.userId,
     required this.quantity,
+    this.id,
   });
 }
+
+/// Get Grocery Event ===============================================================
+class GetCustomListEvent extends AddNewMealEvent {}

@@ -1,21 +1,25 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_event.dart';
-import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_item_state.dart';
-import 'package:gymeats_mobile/repository/add_new_meal.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
+
+import 'package:gymeats_mobile/repository/get_new_meal_details.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
   AddNewMealBloc() : super(InitialState()) {
     on<AddNewMeal>(_onAddNewMeal);
     on<GetSelectedImagePath>(_onGetSelectedImagePath);
+    on<GetCustomListEvent>(_onGetCustomMealListDetails);
   }
 
   final AddNewMealRepository _repository = AddNewMealRepository();
 
   _onAddNewMeal(AddNewMeal event, Emitter<AddNewMealState> emit) async {
-    emit(LoadingState());
+    emit(AddNewMealLoadingState(productId: event.id));
     try {
       await _repository
           .addMeal(
@@ -34,24 +38,44 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
         },
         (right) {
           showToast(isSuccess: true, message: right.message!);
-          emit(AddNewMealSuccessfulState());
+          emit(AddNewMealSuccessfulState(productId: event.id));
 
           // Get.offAllNamed('/JournalScreen');
         },
       );
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
-      emit(ErrorState());
+      emit(AddNewMealErrorState(productId: event.id));
     }
   }
 
   onFailError({required String text, required Emitter<AddNewMealState> emit}) {
     showToast(isSuccess: false, message: text);
-    emit(ErrorState());
+    emit(AddNewMealErrorState());
   }
 
   _onGetSelectedImagePath(
       GetSelectedImagePath event, Emitter<AddNewMealState> emit) async {
     emit(SelectedImagePathState(imgPath: event.imagePath));
+  }
+
+  /// Get Grocery Item Bloc =================================================================
+  _onGetCustomMealListDetails(
+      GetCustomListEvent event, Emitter<AddNewMealState> emit) async {
+    emit(GetCustomMealListLoadingState());
+
+    try {
+      await _repository.getCustomMealListData().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        log('right.data---------->>>>>> ${right.data}');
+
+        emit(GetCustomMealListSuccessState(customMealDetails: right.data));
+      });
+    } catch (e) {
+      print('--dw-->>>${e.toString()}');
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetCustomMealListErrorState());
+    }
   }
 }

@@ -79,6 +79,7 @@ class AssetsUtils {
   static const locationMarker = "assets/image/location_marker.png";
   static const currentLocationMarker =
       "assets/image/current_location_marker.png";
+  static const menuIcon = "assets/image/menu_icon.png";
 
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';

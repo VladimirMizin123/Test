@@ -62,7 +62,6 @@ class AddNewGroceryItemBloc
         emit(GetGroceryListSuccessState(groceryDetails: right.data));
       });
     } catch (e) {
-      print('--dw-->>>${e.toString()}');
       showToast(isSuccess: false, message: e.toString());
       emit(GetGroceryListErrorState());
     }

@@ -29,6 +29,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
   final routeName = '/ScanBarcodeScreen';
   bool isFlashlightOn = false;
   bool isSearchFieldOn = false;
+  TextEditingController upcNumberController = TextEditingController();
+  String upcNumber = '';
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController _qrViewController;
   ScanBarcodeArguments scanBarcodeArguments = Get.arguments;
@@ -78,7 +80,9 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
               child: TextField(
                 autofocus: true,
                 keyboardType: TextInputType.number,
+                controller: upcNumberController,
                 decoration: InputDecoration(
+                  hintText: 'Enter UPC Number',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 14.h, horizontal: 15.w),
                   enabledBorder: OutlineInputBorder(
@@ -91,15 +95,34 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                       Radius.circular(6.r),
                     ),
                   ),
-                  suffix: Text(
-                    'Search',
-                    style: TextStyle(
-                      color: Color(0xffCE6B53),
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w500,
+                  suffix: GestureDetector(
+                    onTap: () {
+                      if (upcNumber.isNotEmpty) {
+                        Get.to(
+                          () => BarCodeGroceryItemDetails(
+                            scanData: upcNumber.toString(),
+                            type: scanBarcodeArguments.type,
+                          ),
+                          transition: Transition.fadeIn,
+                        );
+                      }
+                    },
+                    child: Text(
+                      'Search',
+                      style: TextStyle(
+                        color: upcNumber.isNotEmpty
+                            ? const Color(0xffCE6B53)
+                            : AppColors.disable,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
+                onChanged: (value) {
+                  upcNumber = value;
+                  setState(() {});
+                },
               ),
             )
           : Column(
@@ -201,6 +224,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
 class ScanBarcodeArguments {
   final JournalPlanBloc journalPlanBloc;
   final DateTime? selectedDateTime;
+  final String type;
 
-  ScanBarcodeArguments({this.selectedDateTime, required this.journalPlanBloc});
+  ScanBarcodeArguments(
+      {this.selectedDateTime,
+      required this.journalPlanBloc,
+      required this.type});
 }

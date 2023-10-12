@@ -6,9 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
-import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_bloc.dart';
-import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_event.dart';
-import 'package:gymeats_mobile/bloc/journal/add_new_item/add_new_meal_item_state.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
@@ -503,7 +503,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                 BlocBuilder(
                   bloc: getAddNewMealBloc,
                   builder: (context, state) {
-                    if (state is LoadingState) {
+                    if (state is AddNewMealLoadingState) {
                       return const AppCenterLoader().paddingOnly(bottom: 25.h);
                     } else {
                       return buildButton(
@@ -555,7 +555,9 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   fat: fatController.text,
                                   carbs: carbsController.text,
                                   calorie: calController.text,
-                                  type: Get.arguments,
+                                  type: Get.arguments
+                                      .toString()
+                                      .removeAllWhitespace,
                                   userId: userId,
                                   quantity: '1'),
                             );

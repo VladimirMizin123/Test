@@ -366,7 +366,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Grocery List',
+                        Text('Custom List',
                             style: FontUtils.h20(
                                 fontColor: AppColors.oxFF010101,
                                 fontWeight: FWT.semiBold)),
