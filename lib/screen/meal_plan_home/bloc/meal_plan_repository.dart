@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
@@ -319,6 +320,27 @@ class MealPlanRepository {
         await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> clearGroceryList() async {
+    final response = await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, GetUserGroceryListModel>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
+    String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
+    // log(apiURL, name: 'API URL :');
+    final response = await apiServices.get(apiURL);
+    // log(response.body, name: 'API RESPONSE :');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

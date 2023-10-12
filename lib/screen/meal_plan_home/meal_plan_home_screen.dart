@@ -148,8 +148,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 } // TWVhbDoxNTQ2NDM1NzY=
               }
             }
-
-            
           },
           builder: (context, state) {
             return SafeArea(
@@ -193,15 +191,45 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    state is FetchMealPlanSuccessState
-                        ? GestureDetector(
+                    // state is FetchMealPlanSuccessState
+                    //     ? GestureDetector(
+                    //         onTap: () {
+                    //           mealPlanList.clear();
+                    //           // mealPlanBloc.add(MealPlanFetchEvent());
+                    //         },
+                    //         child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
+                    //     : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+
+                    state is ClearGroceryListLoadingState
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                            child: const Center(child: CircularProgressIndicator()),
+                          )
+                        : GestureDetector(
                             onTap: () {
-                              mealPlanList.clear();
-                              mealPlanBloc.add(MealPlanFetchEvent());
+                              mealPlanBloc.add(ClearUserGroceryMealPlanEvent());
                             },
-                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
-                        : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
-                    
+                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                          ),
+
+                    // state is ClearGroceryListLoadingState
+                    //     ? const Center(
+                    //         child: Padding(
+                    //           padding: EdgeInsets.symmetric(vertical: 20),
+                    //           child: CircularProgressIndicator(),
+                    //         ),
+                    //       )
+                    //     : GestureDetector(
+                    //         onTap: () {
+                    //           setState(() {
+                    //             // searchGroceryDetails.clear();
+                    //             // checkbox.clear();
+                    //           });
+                    //           addNewGroceryItemBloc.add(ClearUserGroceryEvent());
+                    //         },
+                    //         child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    //       ),
+
                     mealPlanList.isEmpty
                         ? const SizedBox()
                         : isReadyToShowWidget

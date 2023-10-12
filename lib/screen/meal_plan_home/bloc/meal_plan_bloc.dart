@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
@@ -26,6 +27,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     on<FetchMealDetailsByNameEvent>(_onFetchMealDetailsById);
     on<GetAllRestrictionEvent>(_onGetAllRestriction);
     on<GetUserRestrictionEvent>(_onGetUserRestriction);
+    on<ClearUserGroceryMealPlanEvent>(_onClearGroceryList);
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
@@ -33,6 +35,27 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   // _onSwapMealDetails(SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
   //   emit(SwapMealDetailsState(similarMealData: event.similarMealData,dateTime: event.dateTime, day: event.day, mealId: event.mealId));
   // }
+
+  _onClearGroceryList(ClearUserGroceryMealPlanEvent event, Emitter<FetchMealPlanState> emit) async {
+    emit(ClearGroceryListLoadingState());
+
+    try {
+      await _repository.clearGroceryList().fold((left) async {
+        // onFailError(emit: emit, text: left.errorMessage!);
+        emit(ClearGroceryListErrorState());
+        Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+        _repository.addGroceryToShoppingListFromSuggestic(latitude: position.latitude.toString(), longitude: position.longitude.toString()).fold((left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        }, (right) {});
+      }, (right) {
+        emit(ClearGroceryListSuccessState());
+        // showToast(isSuccess: true, message: right.message ?? 'Added!');
+      });
+    } catch (e) {
+      // showToast(isSuccess: false, message: e.toString());
+      emit(ClearGroceryListErrorState());
+    }
+  }
 
   _onScanBarcode(BarcodeScanEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(BarcodeScannerLoadingState());
@@ -180,7 +203,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     }
   }
 
-    _onSwapMealPlan(AddSwapMealEvent event, Emitter<FetchMealPlanState> emit) async {
+  _onSwapMealPlan(AddSwapMealEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(SwapMealPlanLoadingState());
 
     try {
@@ -202,7 +225,6 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       emit(SwapMealPlanErrorState());
     }
   }
-
 
   _onAddToGroceryList(AddToGroceryListEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(AddToGroceryLoadingState());
@@ -306,8 +328,6 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       emit(GroceryAddToShoppingErrorState());
     }
   }
-
- 
 
   /// ON FAIL
 

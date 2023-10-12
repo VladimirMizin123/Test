@@ -20,6 +20,7 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/clear_all_item_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
@@ -515,59 +516,58 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    state is ClearGroceryListLoadingState
-                        ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 20),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                // searchGroceryDetails.clear();
-                                // checkbox.clear();
-                              });
-
-                              addNewGroceryItemBloc.add(ClearUserGroceryEvent());
-                            },
-                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
-                          ),
-                    // groceryDetails.isEmpty && isListClearByClick
-                    //     ? Text('Clear My Grocery List',
-                    //             style: FontUtils.h18(
-                    //                 fontColor: AppColors.grayColor,
-                    //                 fontWeight: FWT.medium))
-                    //         .paddingSymmetric(vertical: 10.h)
-                    //     : groceryDetails.isEmpty
-                    //         ? GestureDetector(
-                    //             onTap: () {
-                    //               // groceryBloc.add(GroceryFetchEvent());
-                    //             },
-                    //             child: Text(StringUtils.regenerateGroceryList,
-                    //                     style: FontUtils.h18(
-                    //                         fontColor: AppColors.primaryBlue,
-                    //                         fontWeight: FWT.medium))
-                    //                 .paddingSymmetric(vertical: 10.h),
-                    //           )
-                    //         : GestureDetector(
-                    //             onTap: () {
-                    //               showModalBottomSheet(
-                    //                 context: context,
-                    //                 builder: (context) {
-                    //                   return ClearAllItemBottomSheet(
-                    //                     bloc: addNewGroceryItemBloc,
-                    //                   );
-                    //                 },
-                    //                 isDismissible: false,
-                    //               );
-                    //             },
-                    //             child: Text('Clear My Grocery List',
-                    //                     style: FontUtils.h18(
-                    //                         fontColor: AppColors.primaryBlue,
-                    //                         fontWeight: FWT.medium))
-                    //                 .paddingSymmetric(vertical: 10.h),
-                    //           ),
+                    // state is ClearGroceryListLoadingState
+                    //     ? const Center(
+                    //         child: Padding(
+                    //           padding: EdgeInsets.symmetric(vertical: 20),
+                    //           child: CircularProgressIndicator(),
+                    //         ),
+                    //       )
+                    //     : GestureDetector(
+                    //         onTap: () {
+                    //           setState(() {
+                    //             // searchGroceryDetails.clear();
+                    //             // checkbox.clear();
+                    //           });
+                    //           addNewGroceryItemBloc.add(ClearUserGroceryEvent());
+                    //         },
+                    //         child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    //       ),
+                    groceryDetails.isEmpty && isListClearByClick
+                        ? Text('Clear My Grocery List',
+                                style: FontUtils.h18(
+                                    fontColor: AppColors.grayColor,
+                                    fontWeight: FWT.medium))
+                            .paddingSymmetric(vertical: 10.h)
+                        : groceryDetails.isEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  groceryBloc.add(GroceryFetchEvent());
+                                },
+                                child: Text(StringUtils.regenerateGroceryList,
+                                        style: FontUtils.h18(
+                                            fontColor: AppColors.primaryBlue,
+                                            fontWeight: FWT.medium))
+                                    .paddingSymmetric(vertical: 10.h),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return ClearAllItemBottomSheet(
+                                        bloc: addNewGroceryItemBloc,
+                                      );
+                                    },
+                                    isDismissible: false,
+                                  );
+                                },
+                                child: Text('Clear My Grocery List',
+                                        style: FontUtils.h18(
+                                            fontColor: AppColors.primaryBlue,
+                                            fontWeight: FWT.medium))
+                                    .paddingSymmetric(vertical: 10.h),
+                              ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Container(

@@ -129,5 +129,4 @@ class BarcodeScanEvent extends MealPlanEvent {
   BarcodeScanEvent({required this.barcode});
 }
 
-
-
+class ClearUserGroceryMealPlanEvent extends MealPlanEvent {}
