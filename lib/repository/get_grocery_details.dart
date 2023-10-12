@@ -4,6 +4,7 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/add_grocery_to_shopping_list_from_suggestic_modal.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 
@@ -136,4 +137,16 @@ class AddNewGroceryItemRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+Future<Either<ErrorModel, GetUserGroceryListModel>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
+    String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
+    // log(apiURL, name: 'API URL :');
+    final response = await apiServices.get(apiURL);
+    // log(response.body, name: 'API RESPONSE :');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
 }

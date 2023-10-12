@@ -134,9 +134,9 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'POST API URL :');
+      log(url, name: 'DELETE API URL :');
       final response = await http.delete(Uri.parse(url), headers: headers);
-      log(response.body, name: 'POST API RESPONSE :');
+      log(response.body, name: 'DELETE API RESPONSE :');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
