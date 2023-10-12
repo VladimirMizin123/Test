@@ -14,7 +14,6 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -41,8 +40,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
   List<GrocerySearchModel> grocerySearchModalDataList = [];
   List<Product>? groceryMultiSearchStoreProductListList = [];
   List<Cart> selectedStoreProductList = [];
-  List<GroceryShoppingData> edgesList = [];
-  List<GroceryShoppingData> onlyProductList = [];
+  List<GroceryDetails> edgesList = [];
+  List<GroceryDetails> onlyProductList = [];
   // List<GroceryDetails> onlyProductList = [];
   int selectedIndex = 0;
 
@@ -70,16 +69,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             if (state is GroceryProductListState) {
               for (var i = 0; i < state.productList!.length; i++) {
                 for (var j = 0; j < edgesList.length; j++) {
-                  if (edgesList[j].productId == state.productID) {
-                    edgesList[j].cartData = state.productList![i];
+                  if (edgesList[j].id == state.productID) {
+                    edgesList[j].product = state.productList![i];
                   }
                 }
               }
 
               for (var i = 0; i < state.productList!.length; i++) {
                 for (var j = 0; j < onlyProductList.length; j++) {
-                  if (onlyProductList[j].productId == state.productID) {
-                    onlyProductList[j].cartData = state.productList![i];
+                  if (onlyProductList[j].id == state.productID) {
+                    onlyProductList[j].product = state.productList![i];
                   }
                 }
               }
@@ -693,7 +692,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                      return edgesList[index].cartData != null
+                                      return edgesList[index].product != null
                                           ? Column(
                                               children: [
                                                 Row(
@@ -704,7 +703,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       height: 130,
                                                       width: 130,
                                                       imageUrl: edgesList[index]
-                                                          .cartData!
+                                                          .product!
                                                           .image!,
                                                       fit: BoxFit.cover,
                                                       placeholder: (context,
@@ -734,7 +733,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         children: [
                                                           Text(
                                                             edgesList[index]
-                                                                    .cartData!
+                                                                    .product!
                                                                     .itemName ??
                                                                 '', // 'Milk Almond Breeze 500ml, 1.5% fat',
                                                             textAlign:
@@ -768,14 +767,20 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                                     fontWeight:
                                                                         FWT.semiBold),
                                                               ),
-                                                              Text(
-                                                                'Wallmart',
-                                                                style: FontUtils.h12(
-                                                                    fontColor:
-                                                                        AppColors
-                                                                            .black,
-                                                                    fontWeight:
-                                                                        FWT.semiBold),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  selectedStoreProductList[
+                                                                              0]
+                                                                          .store!
+                                                                          .name ??
+                                                                      '',
+                                                                  style: FontUtils.h12(
+                                                                      fontColor:
+                                                                          AppColors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FWT.semiBold),
+                                                                ),
                                                               ),
                                                             ],
                                                           ),
@@ -785,7 +790,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     const SizedBox(width: 10),
                                                     Text(
                                                       edgesList[index]
-                                                              .cartData!
+                                                              .product!
                                                               .formattedPrice ??
                                                           '', // '\$ 5.99',
                                                       style: FontUtils.h17(
@@ -818,7 +823,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                      .symmetric(
+                                                                  .symmetric(
                                                                   horizontal:
                                                                       12),
                                                           child: Row(
@@ -847,14 +852,14 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     SizedBox(width: 8.w),
                                                     Expanded(
                                                       child: edgesList[index]
-                                                                  .cartData!
+                                                                  .product!
                                                                   .cartItemCount ==
                                                               1
                                                           ? GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
                                                                   edgesList[index]
-                                                                          .cartData =
+                                                                          .product =
                                                                       null;
                                                                 });
                                                               },
@@ -883,20 +888,20 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                                 setState(() {
                                                                   if (edgesList[
                                                                               index]
-                                                                          .cartData!
+                                                                          .product!
                                                                           .cartItemCount ==
                                                                       1) {
                                                                     edgesList[
                                                                             index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .isAddedToShoppingList = false;
                                                                     // isProductSelect = false;
                                                                   } else {
                                                                     edgesList[
                                                                             index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .cartItemCount = edgesList[index]
-                                                                            .cartData!
+                                                                            .product!
                                                                             .cartItemCount -
                                                                         1;
                                                                   }
@@ -945,7 +950,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Center(
                                                             child: Text(
                                                           edgesList[index]
-                                                              .cartData!
+                                                              .product!
                                                               .cartItemCount
                                                               .toString(),
                                                           style: FontUtils.h18(
@@ -963,10 +968,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         onTap: () {
                                                           setState(() {
                                                             edgesList[index]
-                                                                    .cartData!
+                                                                    .product!
                                                                     .cartItemCount =
                                                                 edgesList[index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .cartItemCount +
                                                                     1;
                                                           });
@@ -1002,10 +1007,9 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 const Divider(thickness: 1.2),
                                               ],
                                             )
-                                          : myItemChooseWidget(
-                                              screenSize,
-                                              edgesList[index].productName ??
-                                                  '', () {
+                                          : myItemChooseWidget(screenSize,
+                                              edgesList[index].itemName ?? '',
+                                              () {
                                               // Get.toNamed('/ItemCatalogScreen');
                                               if (selectedStoreProductList
                                                   .isNotEmpty) {
@@ -1016,8 +1020,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     selectedStoreProductList:
                                                         selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId: edgesList[index]
-                                                        .productId!,
+                                                    productId:
+                                                        edgesList[index].id!,
                                                   );
                                                 }));
                                               } else {
@@ -1033,7 +1037,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                      return onlyProductList[index].cartData !=
+                                      return onlyProductList[index].product !=
                                               null
                                           ? Column(
                                               children: [
@@ -1046,7 +1050,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       width: 130,
                                                       imageUrl:
                                                           onlyProductList[index]
-                                                              .cartData!
+                                                              .product!
                                                               .image!,
                                                       fit: BoxFit.cover,
                                                       placeholder: (context,
@@ -1078,7 +1082,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                           Text(
                                                             onlyProductList[
                                                                         index]
-                                                                    .cartData!
+                                                                    .product!
                                                                     .itemName ??
                                                                 '', // 'Milk Almond Breeze 500ml, 1.5% fat',
                                                             textAlign:
@@ -1129,7 +1133,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     const SizedBox(width: 10),
                                                     Text(
                                                       onlyProductList[index]
-                                                              .cartData!
+                                                              .product!
                                                               .formattedPrice ??
                                                           '', // '\$ 5.99',
                                                       style: FontUtils.h17(
@@ -1162,7 +1166,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                      .symmetric(
+                                                                  .symmetric(
                                                                   horizontal:
                                                                       12),
                                                           child: Row(
@@ -1191,14 +1195,14 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     SizedBox(width: 8.w),
                                                     Expanded(
                                                       child: edgesList[index]
-                                                                  .cartData!
+                                                                  .product!
                                                                   .cartItemCount ==
                                                               1
                                                           ? GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
                                                                   edgesList[index]
-                                                                          .cartData =
+                                                                          .product =
                                                                       null;
                                                                 });
                                                               },
@@ -1227,20 +1231,20 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                                 setState(() {
                                                                   if (edgesList[
                                                                               index]
-                                                                          .cartData!
+                                                                          .product!
                                                                           .cartItemCount ==
                                                                       1) {
                                                                     edgesList[
                                                                             index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .isAddedToShoppingList = false;
                                                                     // isProductSelect = false;
                                                                   } else {
                                                                     edgesList[
                                                                             index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .cartItemCount = edgesList[index]
-                                                                            .cartData!
+                                                                            .product!
                                                                             .cartItemCount -
                                                                         1;
                                                                   }
@@ -1289,7 +1293,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Center(
                                                             child: Text(
                                                           edgesList[index]
-                                                              .cartData!
+                                                              .product!
                                                               .cartItemCount
                                                               .toString(),
                                                           style: FontUtils.h18(
@@ -1307,10 +1311,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         onTap: () {
                                                           setState(() {
                                                             edgesList[index]
-                                                                    .cartData!
+                                                                    .product!
                                                                     .cartItemCount =
                                                                 edgesList[index]
-                                                                        .cartData!
+                                                                        .product!
                                                                         .cartItemCount +
                                                                     1;
                                                           });
@@ -1348,8 +1352,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             )
                                           : myItemChooseWidget(
                                               screenSize,
-                                              onlyProductList[index]
-                                                      .productName ??
+                                              onlyProductList[index].itemName ??
                                                   '', () {
                                               // Get.toNamed('/ItemCatalogScreen');
                                               if (selectedStoreProductList
@@ -1361,8 +1364,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     selectedStoreProductList:
                                                         selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId: edgesList[index]
-                                                        .productId!,
+                                                    productId:
+                                                        edgesList[index].id!,
                                                   );
                                                 }));
                                               } else {
@@ -1390,7 +1393,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     fontWeight: FWT.semiBold),
                               ),
                               Text(
-                                '\$ 0.00',
+                                '\$ ${totalAmount(edgesList)}',
                                 style: FontUtils.h22(
                                     fontColor: AppColors.black,
                                     fontWeight: FWT.semiBold),
@@ -1463,6 +1466,18 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
         ],
       ),
     );
+  }
+
+// Total Amount
+
+  double totalAmount(List<GroceryDetails> edgesList) {
+    double total = 0;
+    for (var i = 0; i < edgesList.length; i++) {
+      if (edgesList[i].product != null) {
+        total = total + edgesList[i].product!.price!;
+      }
+    }
+    return total;
   }
 }
 

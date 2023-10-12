@@ -10,9 +10,6 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ClearAllItemBottomSheet extends StatefulWidget {
@@ -96,7 +93,7 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
                               : false,
                           buttonLable: 'Clear',
                           onTap: () {
-                            widget.bloc.add(ClearGroceryEvent());
+                            widget.bloc.add(ClearUserGroceryEvent());
                           },
                           isDarkColor: true,
                           isFillColor: true,

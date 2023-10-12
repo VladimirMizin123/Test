@@ -59,7 +59,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
               isLoadingData = false;
 
               for (var i = 0; i < mealPlanList.length; i++) {
-                mealPlanBloc.add(GetMealLogByDateEvent(date: "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
+                mealPlanBloc.add(GetMealLogByDateEvent(
+                    date:
+                        "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
                 break;
               }
             }
@@ -77,7 +79,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 for (var i = 0; i < mealPlanList.length; i++) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
                     // print('${mealPlanList[i].meals![j].id == mealDataByDate[k].mealId}');
-                    if (mealPlanList[i].meals![j].id == mealDataByDate[k].mealId) {
+                    if (mealPlanList[i].meals![j].id ==
+                            mealDataByDate[k].mealId &&
+                        mealDataByDate[k].value == 'SKIPPED') {
                       mealPlanList[i].meals![j].isSkipped = true;
                     }
                   } // TWVhbDoxNTQ2NDM1NzY=
@@ -85,7 +89,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
               }
 
               for (var i = 0; i < mealPlanList.length; i++) {
-                if (mealPlanList[i].date!.year == DateTime.now().year && mealPlanList[i].date!.month == DateTime.now().month && mealPlanList[i].date!.day == DateTime.now().day) {
+                if (mealPlanList[i].date!.year == DateTime.now().year &&
+                    mealPlanList[i].date!.month == DateTime.now().month &&
+                    mealPlanList[i].date!.day == DateTime.now().day) {
                   print('JUMP DAY :::: ${mealPlanList.length}');
                   print('JUMP DAY :::: $i');
                   _pageController.jumpToPage(i);
@@ -97,7 +103,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
 
             if (state is FetchMealPlanErrorState) {
               for (var i = 0; i < mealPlanList.length; i++) {
-                if (mealPlanList[i].date!.year == DateTime.now().year && mealPlanList[i].date!.month == DateTime.now().month && mealPlanList[i].date!.day == DateTime.now().day) {
+                if (mealPlanList[i].date!.year == DateTime.now().year &&
+                    mealPlanList[i].date!.month == DateTime.now().month &&
+                    mealPlanList[i].date!.day == DateTime.now().day) {
                   print('JUMP DAY :::: ${mealPlanList.length}');
                   print('JUMP DAY :::: $i');
                   _pageController.jumpToPage(i);
@@ -116,21 +124,52 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                     print("${mealPlanList[i].meals![j].id} == ${state.mealId}");
                     if (mealPlanList[i].meals![j].id == state.mealId) {
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
-                      mealPlanList[i].meals![j].meal = state.similarMealData!.mealTags![0]; //
-                      mealPlanList[i].meals![j].recipe!.name = state.similarMealData!.name; //
-                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].recipe!.id = state.similarMealData!.id;
-                      mealPlanList[i].meals![j].calories = state.similarMealData!.nutrientsPerServing!.calories; //
-                      mealPlanList[i].meals![j].recipe!.mainImage = state.similarMealData!.mainImage;
-                      mealPlanList[i].meals![j].recipe!.databaseId = state.similarMealData!.databaseId;
-                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].numOfServings = state.similarMealData!.numberOfServings;
-                      mealPlanList[i].meals![j].recipe!.serving = state.similarMealData!.serving;
-                      mealPlanList[i].meals![j].recipe!.instructions = state.similarMealData!.instructions;
-                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.calories = state.similarMealData!.nutrientsPerServing!.calories;
-                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.carbs = state.similarMealData!.nutrientsPerServing!.carbs;
-                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.fat = state.similarMealData!.nutrientsPerServing!.fat;
-                      mealPlanList[i].meals![j].recipe!.nutrientsPerServing!.protein = state.similarMealData!.nutrientsPerServing!.protein;
+                      mealPlanList[i].meals![j].meal =
+                          state.similarMealData!.mealTags![0]; //
+                      mealPlanList[i].meals![j].recipe!.name =
+                          state.similarMealData!.name; //
+                      mealPlanList[i].meals![j].numOfServings =
+                          state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.id =
+                          state.similarMealData!.id;
+                      mealPlanList[i].meals![j].calories = state
+                          .similarMealData!.nutrientsPerServing!.calories; //
+                      mealPlanList[i].meals![j].recipe!.mainImage =
+                          state.similarMealData!.mainImage;
+                      mealPlanList[i].meals![j].recipe!.databaseId =
+                          state.similarMealData!.databaseId;
+                      mealPlanList[i].meals![j].recipe!.serving =
+                          state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].numOfServings =
+                          state.similarMealData!.numberOfServings;
+                      mealPlanList[i].meals![j].recipe!.serving =
+                          state.similarMealData!.serving;
+                      mealPlanList[i].meals![j].recipe!.instructions =
+                          state.similarMealData!.instructions;
+                      mealPlanList[i]
+                              .meals![j]
+                              .recipe!
+                              .nutrientsPerServing!
+                              .calories =
+                          state.similarMealData!.nutrientsPerServing!.calories;
+                      mealPlanList[i]
+                              .meals![j]
+                              .recipe!
+                              .nutrientsPerServing!
+                              .carbs =
+                          state.similarMealData!.nutrientsPerServing!.carbs;
+                      mealPlanList[i]
+                              .meals![j]
+                              .recipe!
+                              .nutrientsPerServing!
+                              .fat =
+                          state.similarMealData!.nutrientsPerServing!.fat;
+                      mealPlanList[i]
+                              .meals![j]
+                              .recipe!
+                              .nutrientsPerServing!
+                              .protein =
+                          state.similarMealData!.nutrientsPerServing!.protein;
                       break;
                     }
                   }
@@ -171,11 +210,14 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           width: 25.w,
                           color: AppColors.darkGray,
                         ),
-                        Text(StringUtils.mealPlan, style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                        Text(StringUtils.mealPlan,
+                            style:
+                                FontUtils.h20(fontColor: AppColors.oxFF010101)),
                         GestureDetector(
                           onTap: () {
                             // Get.toNamed('/FoodPreferencesScreen');
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
                               return const FoodPreferencesScreen();
                             })).then((value) {
                               mealPlanBloc.add(MealPlanFetchEvent());
@@ -203,13 +245,18 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                     state is ClearGroceryListLoadingState
                         ? Padding(
                             padding: EdgeInsets.symmetric(vertical: 10.h),
-                            child: const Center(child: CircularProgressIndicator()),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           )
                         : GestureDetector(
                             onTap: () {
                               mealPlanBloc.add(ClearUserGroceryMealPlanEvent());
                             },
-                            child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                            child: Text(StringUtils.regenerateGroceryList,
+                                    style: FontUtils.h18(
+                                        fontColor: AppColors.primaryBlue,
+                                        fontWeight: FWT.medium))
+                                .paddingSymmetric(vertical: 10.h),
                           ),
 
                     // state is ClearGroceryListLoadingState
@@ -235,13 +282,17 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                         : isReadyToShowWidget
                             ? Container(
                                 color: Colors.grey.withOpacity(0.05),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 8.h),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       '${StringUtils.day} ${mealPlanList[selectedDayIndex].day}',
-                                      style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                      style: FontUtils.h20(
+                                          fontColor: AppColors.middleGray,
+                                          fontWeight: FWT.medium),
                                     ),
                                     Wrap(
                                       children: [
@@ -249,18 +300,28 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                             onTap: () {
                                               if (selectedDayIndex == 0) {
                                               } else {
-                                                _pageController.jumpToPage(selectedDayIndex - 1);
+                                                _pageController.jumpToPage(
+                                                    selectedDayIndex - 1);
                                               }
                                             },
-                                            child: arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w)),
+                                            child: arrowButton(
+                                                    icon: AssetsUtils.arrowBack,
+                                                    isDisable:
+                                                        selectedDayIndex == 0)
+                                                .paddingOnly(right: 8.w)),
                                         GestureDetector(
                                             onTap: () {
-                                              if (selectedDayIndex == mealPlanList.length) {
+                                              if (selectedDayIndex ==
+                                                  mealPlanList.length) {
                                               } else {
-                                                _pageController.jumpToPage(selectedDayIndex + 1);
+                                                _pageController.jumpToPage(
+                                                    selectedDayIndex + 1);
                                               }
                                             },
-                                            child: arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1)),
+                                            child: arrowButton(
+                                                icon: AssetsUtils.arrowForward,
+                                                isDisable: selectedDayIndex ==
+                                                    mealPlanList.length - 1)),
                                       ],
                                     )
                                   ],
@@ -270,18 +331,29 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                 opacity: 0,
                                 child: Container(
                                   color: Colors.grey.withOpacity(0.05),
-                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w, vertical: 8.h),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         '',
-                                        style: FontUtils.h20(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                        style: FontUtils.h20(
+                                            fontColor: AppColors.middleGray,
+                                            fontWeight: FWT.medium),
                                       ),
                                       Wrap(
                                         children: [
-                                          arrowButton(icon: AssetsUtils.arrowBack, isDisable: selectedDayIndex == 0).paddingOnly(right: 8.w),
-                                          arrowButton(icon: AssetsUtils.arrowForward, isDisable: selectedDayIndex == mealPlanList.length - 1),
+                                          arrowButton(
+                                                  icon: AssetsUtils.arrowBack,
+                                                  isDisable:
+                                                      selectedDayIndex == 0)
+                                              .paddingOnly(right: 8.w),
+                                          arrowButton(
+                                              icon: AssetsUtils.arrowForward,
+                                              isDisable: selectedDayIndex ==
+                                                  mealPlanList.length - 1),
                                         ],
                                       )
                                     ],
@@ -310,11 +382,16 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                         itemCount: e.meals!.length,
                                         shrinkWrap: true,
                                         scrollDirection: Axis.vertical,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (BuildContext context, int index) {
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           return mealPlanCard(
                                             onTap: () {
-                                              Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                                              Get.toNamed('/MealDetailsScreen',
+                                                  arguments: MealPlanArguments(
+                                                      mealData:
+                                                          e.meals![index]));
                                             },
                                             mealData: e.meals![index],
                                             context: context,
