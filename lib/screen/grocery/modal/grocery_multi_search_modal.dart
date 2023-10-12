@@ -208,6 +208,9 @@ class Product {
         "day": day,
         "eatableType": eatableType,
       };
+
+  @override
+  String toString() => toJson().toString();
 }
 
 class Store {

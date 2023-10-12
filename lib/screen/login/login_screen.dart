@@ -84,11 +84,44 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: emailController,
                         hintText: StringUtils.email)
                     .paddingOnly(top: 20.h),
-                commonTextField(
-                        context: context,
-                        controller: passwordController,
-                        hintText: StringUtils.password,
-                        isPassword: true)
+            SizedBox(
+              height: 48.h,
+              child: TextFormField(
+                controller: passwordController,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: const Color(0xFF5F5F5F), fontSize: 16.sp),
+                obscureText: true,
+                keyboardType: TextInputType.text,
+
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  isDense: true,
+                  hintStyle: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF5F5F5F)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+
+                ),
+              ),
+            )
                     .paddingOnly(top: 16.h),
                 GestureDetector(
                   onTap: () {

@@ -7,3 +7,5 @@ class IsEmailSuccessState extends SignUpState {}
 class IsEmailLoadingState extends SignUpState {}
 
 class IsEmailErrorState extends SignUpState {}
+
+class LoggingState extends SignUpState {}

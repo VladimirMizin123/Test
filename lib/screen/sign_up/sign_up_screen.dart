@@ -112,7 +112,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         if (state is IsEmailSuccessState) {}
                       },
                       builder: (context, state) {
-                        if (state is IsEmailLoadingState) {}
+                        if (state is LoggingState) {
+                          return SizedBox(
+                            height: 35.w,
+                            width: 35.w,
+                            child: const CircularProgressIndicator(
+                              color: Colors.black,
+                            ),
+                          ).paddingOnly(top: 10);
+                        }
                         return buildButton(
                                 context: context,
                                 onPressed: () async {
@@ -145,9 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }),
                   Text(
                     StringUtils.or,
-                    style: textTheme.bodyLarge?.copyWith(
-                      fontSize: 20.sp
-                    ),
+                    style: textTheme.bodyLarge?.copyWith(fontSize: 20.sp),
                   ).paddingSymmetric(vertical: 12.h),
                   kIsWeb
                       ? const SizedBox()

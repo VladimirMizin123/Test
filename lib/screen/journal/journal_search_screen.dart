@@ -65,9 +65,9 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                         state.mealPlanList[i].date!.month,
                         state.mealPlanList[i].date!.day) ==
                     DateTime(
-                        widget.journalMealScreenArguments!.dateTime!.year,
-                        widget.journalMealScreenArguments!.dateTime!.month,
-                        widget.journalMealScreenArguments!.dateTime!.day)) {
+                        widget.journalMealScreenArguments.dateTime!.year,
+                        widget.journalMealScreenArguments.dateTime!.month,
+                        widget.journalMealScreenArguments.dateTime!.day)) {
                   mealList = state.mealPlanList[i].meals ?? [];
                   break;
                 }
@@ -76,31 +76,11 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
 
             if (state is JournalAddEatenLoadingState) {
               setState(() {
-                for (var i = 0;
-                    i < groceryMultiSearchModelDataList.length;
-                    i++) {
-                  for (var j = 0;
-                      j <
-                          groceryMultiSearchModelDataList[i]
-                              .groceryResult!
-                              .length;
-                      j++) {
-                    for (var k = 0;
-                        k <
-                            groceryMultiSearchModelDataList[i]
-                                .groceryResult![j]
-                                .products!
-                                .length;
-                        k++) {
-                      if (groceryMultiSearchModelDataList[i]
-                              .groceryResult![j]
-                              .products![k]
-                              .productId ==
-                          state.mealID) {
-                        groceryMultiSearchModelDataList[i]
-                            .groceryResult![j]
-                            .products![k]
-                            .isLoading = true;
+                for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
+                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
+                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
+                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.mealID) {
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = true;
                       }
                     }
                   }
@@ -115,35 +95,12 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
 
             if (state is JournalAddEatenSuccessState) {
               setState(() {
-                for (var i = 0;
-                    i < groceryMultiSearchModelDataList.length;
-                    i++) {
-                  for (var j = 0;
-                      j <
-                          groceryMultiSearchModelDataList[i]
-                              .groceryResult!
-                              .length;
-                      j++) {
-                    for (var k = 0;
-                        k <
-                            groceryMultiSearchModelDataList[i]
-                                .groceryResult![j]
-                                .products!
-                                .length;
-                        k++) {
-                      if (groceryMultiSearchModelDataList[i]
-                              .groceryResult![j]
-                              .products![k]
-                              .productId ==
-                          state.mealID) {
-                        groceryMultiSearchModelDataList[i]
-                            .groceryResult![j]
-                            .products![k]
-                            .isLoading = false;
-                        groceryMultiSearchModelDataList[i]
-                            .groceryResult![j]
-                            .products![k]
-                            .isAddedToShoppingList = true;
+              for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
+                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
+                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
+                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.mealID) {
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = false;
+                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isAddedToShoppingList = true;
                       }
                     }
                   }
