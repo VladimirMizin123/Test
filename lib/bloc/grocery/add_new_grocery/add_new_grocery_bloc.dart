@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
@@ -13,9 +12,10 @@ class AddNewGroceryItemBloc
     on<AddNewGroceryItem>(_onAddNewGroceryItem);
     on<GetGroceryItemEvent>(_onGetGroceryDetails);
     on<RemoveGroceryItemEvent>(_onRemoveGroceryItem);
-    on<ClearGroceryEvent>(_onClearGroceryList);
     on<UpdateAddNewGroceryItem>(_onAddUpdateGroceryItem);
     on<UpdateRemoveNewGroceryItem>(_onRemoveUpdateGroceryItem);
+    on<ClearUserGroceryEvent>(_onClearGroceryList);
+    on<AddGroceryToShoppingListFromSuggesticEvent>(_onAddGroceryToShoppingListFromSuggestic);
   }
 
   final AddNewGroceryItemRepository _repository = AddNewGroceryItemRepository();
@@ -177,9 +177,27 @@ class AddNewGroceryItemBloc
     }
   }
 
+   _onAddGroceryToShoppingListFromSuggestic(AddGroceryToShoppingListFromSuggesticEvent event, Emitter<AddNewGroceryItemState> emit) async {
+    emit(AddGroceryToShoppingListFromSuggesticLoadingState());
+
+    try {
+      await _repository.addGroceryToShoppingListFromSuggestic(latitude: event.latitude, longitude: event.longitude).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(AddGroceryToShoppingListFromSuggesticErrorState());
+      }, (right) {
+        emit(AddGroceryToShoppingListFromSuggesticSuccessState(groceryDetails:right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(AddGroceryToShoppingListFromSuggesticErrorState());
+    }
+  }
+
+  
+
   /// Clear Grocery List Bloc =================================================================
   _onClearGroceryList(
-      ClearGroceryEvent event, Emitter<AddNewGroceryItemState> emit) async {
+      ClearUserGroceryEvent event, Emitter<AddNewGroceryItemState> emit) async {
     emit(ClearGroceryListLoadingState());
 
     try {

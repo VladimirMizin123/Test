@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import '../screen/grocery/modal/grocery_multi_search_modal.dart';
+
 GetUserGroceryListModel getUserGroceryListModelFromJson(String str) =>
     GetUserGroceryListModel.fromJson(json.decode(str));
 
@@ -51,15 +53,16 @@ class GroceryDetails {
   String? measurementType;
   dynamic measurementValue;
   String? userId;
+  Product? product;
 
-  GroceryDetails({
-    this.id,
-    this.itemName,
-    this.quantity,
-    this.measurementType,
-    this.measurementValue,
-    this.userId,
-  });
+  GroceryDetails(
+      {this.id,
+      this.itemName,
+      this.quantity,
+      this.measurementType,
+      this.measurementValue,
+      this.userId,
+      this.product});
 
   factory GroceryDetails.fromJson(Map<String, dynamic> json) => GroceryDetails(
         id: json["id"],

@@ -18,7 +18,7 @@ class SwapMealBottomSheet extends StatefulWidget {
   final MealData? mealData;
   final int? day;
   final DateTime? dateTime;
-  const SwapMealBottomSheet({super.key, required this.mealPlanBloc, this.mealData, this.day,this.dateTime});
+  const SwapMealBottomSheet({super.key, required this.mealPlanBloc, this.mealData, this.day, this.dateTime});
 
   @override
   State<SwapMealBottomSheet> createState() => _SwapMealBottomSheetState();
@@ -112,6 +112,7 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                       alignment: Alignment.center,
                       child: simpleTextBorderButton(
                           context: context,
+                          isLoadingWidget: state is SwapMealPlanLoadingState,
                           buttonLable: isSelectAnyOneMeal ? 'Confirm New Meal' : StringUtils.back,
                           height: screenSize.height * 0.055,
                           width: screenSize.width * 0.85,
@@ -122,7 +123,14 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                             } else {
                               for (var i = 0; i < similarMealDataList.length; i++) {
                                 if (similarMealDataList[i].isSelectedForSwap) {
-                                  widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day,dateTime: widget.dateTime, mealId: widget.mealData!.id!));
+                                  widget.mealPlanBloc.add(AddSwapMealEvent(
+                                    mealId: widget.mealData!.id,
+                                    recipeId: similarMealDataList[i].id,
+                                    similarMealData: similarMealDataList[i],
+                                    day: widget.day,
+                                    dateTime: widget.dateTime,
+                                  ));
+                                  // widget.mealPlanBloc.add(SwapMealDetailsEvent(similarMealData: similarMealDataList[i], day: widget.day,dateTime: widget.dateTime, mealId: widget.mealData!.id!));
                                   break;
                                 }
                               }

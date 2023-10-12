@@ -46,6 +46,25 @@ class SkipMealPlanLoadingState extends FetchMealPlanState {}
 
 class SkipMealPlanErrorState extends FetchMealPlanState {}
 
+class SwapMealPlanSuccessState extends FetchMealPlanState {
+  final bool swapMealPlanData;
+  final String mealID;
+
+  SwapMealPlanSuccessState({required this.swapMealPlanData, required this.mealID});
+}
+
+class SwapMealPlanLoadingState extends FetchMealPlanState {}
+
+class SwapMealPlanErrorState extends FetchMealPlanState {}
+
+
+class ClearGroceryListSuccessState extends FetchMealPlanState {
+}
+
+class ClearGroceryListLoadingState extends FetchMealPlanState {}
+
+class ClearGroceryListErrorState extends FetchMealPlanState {}
+
 class AddToGrocerySuccessState extends FetchMealPlanState {
   final bool isAdded;
 
@@ -187,3 +206,5 @@ class NutritionixGetNxMealInfoByNameSuccessState extends FetchMealPlanState {
 class NutritionixGetNxMealInfoByNameErrorState extends FetchMealPlanState {
   NutritionixGetNxMealInfoByNameErrorState();
 }
+
+

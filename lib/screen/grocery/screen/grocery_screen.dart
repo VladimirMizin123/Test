@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
@@ -54,7 +55,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
       // groceryBloc.add(AddGroceryToShoppingListFromSuggesticEvent(
       //     latitude: '41.881832', longitude: '-87.623177'));
       // groceryBloc.add(GroceryFetchEvent());
-
       addNewGroceryItemBloc.add(GetGroceryItemEvent());
     });
   }
@@ -125,8 +125,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id == state.userGroceryListId) {
-                    searchGroceryDetails
-                        .removeWhere((e) => e.id == state.userGroceryListId);
+                    searchGroceryDetails.removeWhere((e) => e.id == state.userGroceryListId);
 
                     checkbox[i]['onDelete'] = false;
 
@@ -141,8 +140,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         });
                       }
                       selectedItemCount = groceryDetails.length;
-                    } else {
-                      selectedItemCount = 0;
                     }
 
                     break;
@@ -227,7 +224,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
             ///----------Success State
             if (state is ClearGroceryListSuccessState) {
               groceryDetails.clear();
-              searchGroceryDetails.clear();
               checkbox.clear();
               selectedItemCount = 0;
             }
@@ -271,8 +267,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id! == state.userGroceryListId) {
-                    searchGroceryDetails[i].quantity =
-                        searchGroceryDetails[i].quantity + 1;
+                    searchGroceryDetails[i].quantity = searchGroceryDetails[i].quantity + 1;
                     checkbox[i]['onUpdateAdd'] = false;
                     break;
                   }
@@ -328,13 +323,11 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               }
             }
 
-            ///----------Success State
             if (state is UpdateRemoveGroceryListSuccessState) {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id! == state.userGroceryListId) {
-                    searchGroceryDetails[i].quantity =
-                        searchGroceryDetails[i].quantity - 1;
+                    searchGroceryDetails[i].quantity = searchGroceryDetails[i].quantity - 1;
                     checkbox[i]['onUpdateRemove'] = false;
                     break;
                   }
@@ -349,7 +342,182 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                 }
               }
             }
+
+            if (state is ClearGroceryListSuccessState) {
+              log('CLEAR GROCERY LIST ---------');
+              setState(() {
+                searchGroceryDetails.clear();
+              });
+              Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+              addNewGroceryItemBloc.add(AddGroceryToShoppingListFromSuggesticEvent(latitude: position.latitude.toString(), longitude: position.longitude.toString()));
+            }
+
+            if (state is ClearGroceryListErrorState) {
+              Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+              addNewGroceryItemBloc.add(AddGroceryToShoppingListFromSuggesticEvent(latitude: position.latitude.toString(), longitude: position.longitude.toString()));
+            }
+
+            print('-------->>>>>>$selectedItemCount');
+
+            if (state is AddGroceryToShoppingListFromSuggesticLoadingState) {
+              isGroceryFetchLoadingState = true;
+            }
+            if (state is AddGroceryToShoppingListFromSuggesticErrorState) {
+              isGroceryFetchLoadingState = true;
+            }
+
+            if (state is AddGroceryToShoppingListFromSuggesticSuccessState) {
+              groceryDetails = state.groceryDetails ?? [];
+              isGroceryFetchLoadingState = false;
+              if (groceryDetails.isNotEmpty) {
+                for (var i = 0; i < groceryDetails.length; i++) {
+                  checkbox.add({
+                    'value': true,
+                    'onDelete': false,
+                    'onUpdateRemove': false,
+                    'onUpdateAdd': false,
+                  });
+                }
+
+                selectedItemCount = groceryDetails.length;
+              }
+            }
           },
+
+          // listener: (context, state) {
+          //   // FETCH STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          //   if (state is GroceryFetchLoadingState) {
+          //     isGroceryFetchLoadingState = true;
+          //   }
+          //   if (state is GroceryFetchSuccessState) {
+          //     edgesList = state.edgesList ?? [];
+          //     isGroceryFetchLoadingState = false;
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   // Grocery Add-Remove STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          //   if (state is GroceryAddToShoppingLoadingState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].productId! == state.productId) {
+          //         edgesList[i].isAddItem = state.isAdd;
+          //         edgesList[i].isRemoveItem = state.isRemove;
+          //
+          //         break;
+          //       }
+          //     }
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   if (state is GroceryAddToShoppingSuccessState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].productId ==
+          //           state.recipesAddToGroceryData!.productId) {
+          //         edgesList[i].isAddItem = false;
+          //         edgesList[i].isRemoveItem = false;
+          //         edgesList[i].quantity =
+          //             state.recipesAddToGroceryData!.quantity;
+          //         break;
+          //       }
+          //     }
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   if (state is GroceryAddToShoppingErrorState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       edgesList[i].isAddItem = false;
+          //       edgesList[i].isRemoveItem = false;
+          //     }
+          //   }
+          //
+          //   // Grocery Delete STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          //   if (state is RemoveGroceryLoadingState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].productId! == state.productId) {
+          //         edgesList[i].isDeleteLoading = true;
+          //         break;
+          //       }
+          //     }
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   if (state is RemoveGrocerySuccessState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].productId == state.productID) {
+          //         edgesList[i].isDeleteLoading = false;
+          //         edgesList.removeWhere((e) => e.productId == state.productID);
+          //         break;
+          //       }
+          //     }
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   if (state is RemoveGroceryErrorState) {
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].productId == state.productID) {
+          //         edgesList[i].isDeleteLoading = false;
+          //         break;
+          //       }
+          //     }
+          //     int count = 0;
+          //     for (var i = 0; i < edgesList.length; i++) {
+          //       if (edgesList[i].isAddedForViewCart == true) {
+          //         count = count + 1;
+          //       }
+          //     }
+          //     selectedItemCount = count;
+          //   }
+          //
+          //   if (state is GroceryAskReceiveOrderEventState) {
+          //     askReceiveOrder = state.askReceiveOrder;
+          //   }
+          //
+          //   if (state is ClearShoppingListSuccessState) {
+          //     if (state.isClear) {
+          //       setState(() {
+          //         edgesList.clear();
+          //         Navigator.pop(context);
+          //         isListClearByClick = true;
+          //       });
+          //     }
+          //   }
+          //   int count = 0;
+          //   for (var i = 0; i < edgesList.length; i++) {
+          //     if (edgesList[i].isAddedForViewCart == true) {
+          //       count = count + 1;
+          //     }
+          //   }
+          //   selectedItemCount = count;
+          // },
           builder: (context, state) {
             return SafeArea(
               child: SizedBox(
@@ -366,10 +534,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Custom List',
-                            style: FontUtils.h20(
-                                fontColor: AppColors.oxFF010101,
-                                fontWeight: FWT.semiBold)),
+                        Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
@@ -382,7 +547,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         : groceryDetails.isEmpty
                             ? GestureDetector(
                                 onTap: () {
-                                  // groceryBloc.add(GroceryFetchEvent());
+                                  groceryBloc.add(GroceryFetchEvent());
                                 },
                                 child: Text(
                                   StringUtils.regenerateGroceryList,
@@ -415,12 +580,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
+                          borderRadius: const BorderRadius.all(Radius.circular(12)),
                           boxShadow: boxShadowWidget,
                         ),
                         child: TextFormField(
-                          readOnly: true,
                           onTap: () {
                             // Get.toNamed('/GrocerySearchScreen')!.then((value) {
                             //   groceryBloc.add(GroceryFetchEvent());
@@ -471,10 +634,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             hintText: 'Search for item',
                             hintStyle: FontUtils.h16(),
                             border: InputBorder.none,
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide.none),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide.none),
+                            enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                           ),
                         ),
                       ),
@@ -610,7 +771,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                           fontWeight: FWT.regular),
                                     ),
                                   ],
-                                )
+                                ) :
 
                           // : isSearchOn == true
                           //     ? searchGroceryDetails.isNotEmpty

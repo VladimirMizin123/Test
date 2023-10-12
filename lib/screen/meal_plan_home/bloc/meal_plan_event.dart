@@ -94,6 +94,16 @@ class SwapMealDetailsEvent extends MealPlanEvent {
   SwapMealDetailsEvent({this.similarMealData,this.dateTime, this.day, this.mealId});
 }
 
+class AddSwapMealEvent extends MealPlanEvent {
+  final SimilarMealData? similarMealData;
+  final int? day;
+  final DateTime? dateTime;
+  final String? mealId;
+  final String? recipeId;
+
+  AddSwapMealEvent({required this.similarMealData, required this.day, required this.dateTime, required this.mealId, required this.recipeId});
+}
+
 class RestaurantSearchEvent extends MealPlanEvent {
   final String? name;
   final String? latitude;
@@ -118,3 +128,5 @@ class BarcodeScanEvent extends MealPlanEvent {
 
   BarcodeScanEvent({required this.barcode});
 }
+
+class ClearUserGroceryMealPlanEvent extends MealPlanEvent {}

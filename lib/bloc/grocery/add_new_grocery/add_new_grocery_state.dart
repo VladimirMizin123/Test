@@ -48,8 +48,7 @@ class RemoveGroceryItemSuccessState extends AddNewGroceryItemState {
   final String? userGroceryListId;
   final bool? isDelete;
 
-  RemoveGroceryItemSuccessState(
-      {required this.userGroceryListId, required this.isDelete});
+  RemoveGroceryItemSuccessState({required this.userGroceryListId, required this.isDelete});
 }
 
 class RemoveGroceryItemErrorState extends AddNewGroceryItemState {
@@ -109,3 +108,15 @@ class ClearGroceryListSuccessState extends AddNewGroceryItemState {
 
   ClearGroceryListSuccessState({required this.isClear});
 }
+
+class AddGroceryToShoppingListFromSuggesticLoadingState extends AddNewGroceryItemState {
+  AddGroceryToShoppingListFromSuggesticLoadingState();
+}
+
+class AddGroceryToShoppingListFromSuggesticSuccessState extends AddNewGroceryItemState {
+  List<GroceryDetails>? groceryDetails;
+
+  AddGroceryToShoppingListFromSuggesticSuccessState({required this.groceryDetails});
+}
+
+class AddGroceryToShoppingListFromSuggesticErrorState extends AddNewGroceryItemState {}

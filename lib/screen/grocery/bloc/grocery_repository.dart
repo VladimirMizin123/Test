@@ -21,18 +21,6 @@ class GroceryRepository {
   String userID = PreferenceUtils.getString(prefUserData);
   // String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
 
-  Future<Either<ErrorModel, AddGroceryToShoppingListFromSuggesticModal>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
-    String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
-    // log(apiURL, name: 'API URL :');
-    final response = await apiServices.get(apiURL);
-    // log(response.body, name: 'API RESPONSE :');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(AddGroceryToShoppingListFromSuggesticModal.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
-  }
-
   Future<Either<ErrorModel, GetGroceryShoppingListModel>> fetchGroceryShoppingList() async {
     // String apiURL = '${ApiUrls.getAllItemFromShoppingList}?userId=$userID';
     String apiURL = '${ApiUrls.getShoppingList}/$userID';

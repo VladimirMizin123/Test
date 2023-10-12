@@ -9,7 +9,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   GroceryBloc() : super(InitialState()) {
-    on<AddGroceryToShoppingListFromSuggesticEvent>(_onAddGroceryToShoppingListFromSuggestic);
+    // on<AddGroceryToShoppingListFromSuggesticEvent>(_onAddGroceryToShoppingListFromSuggestic);
     on<GroceryFetchEvent>(_onFetchGroceryItem);
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
     on<RemoveGroceryEvent>(_onRemoveShoppingItem);
@@ -56,22 +56,6 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(AddNewCustomMealErrorState());
-    }
-  }
-
-  _onAddGroceryToShoppingListFromSuggestic(AddGroceryToShoppingListFromSuggesticEvent event, Emitter<GroceryState> emit) async {
-    emit(AddGroceryToShoppingListFromSuggesticLoadingState());
-
-    try {
-      await _repository.addGroceryToShoppingListFromSuggestic(latitude: event.latitude, longitude: event.longitude).fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(AddGroceryToShoppingListFromSuggesticErrorState());
-      }, (right) {
-        emit(AddGroceryToShoppingListFromSuggesticSuccessState(isAdded: right.success ?? false));
-      });
-    } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
-      emit(AddGroceryToShoppingListFromSuggesticErrorState());
     }
   }
 

@@ -4,12 +4,11 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_a
 
 abstract class GroceryEvent {}
 
-class AddGroceryToShoppingListFromSuggesticEvent extends GroceryEvent {
-  final String? latitude;
-  final String? longitude;
-
-  AddGroceryToShoppingListFromSuggesticEvent({required this.latitude, required this.longitude});
-}
+// class AddGroceryToShoppingListFromSuggesticEvent extends GroceryEvent {
+//   final String? latitude;
+//   final String? longitude;
+//   AddGroceryToShoppingListFromSuggesticEvent({required this.latitude, required this.longitude});
+// }
 
 class GroceryFetchEvent extends GroceryEvent {
   GroceryFetchEvent();
