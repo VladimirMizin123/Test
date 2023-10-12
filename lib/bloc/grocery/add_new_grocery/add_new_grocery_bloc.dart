@@ -24,7 +24,7 @@ class AddNewGroceryItemBloc
 
   _onAddNewGroceryItem(
       AddNewGroceryItem event, Emitter<AddNewGroceryItemState> emit) async {
-    emit(LoadingState());
+    emit(LoadingState(productId: event.id ?? ''));
     try {
       await _repository
           .addGroceryItem(
@@ -41,12 +41,12 @@ class AddNewGroceryItemBloc
         },
         (right) {
           showToast(isSuccess: true, message: right.message!);
-          emit(AddGroceryItemSuccessfulState());
+          emit(AddGroceryItemSuccessfulState(productId: event.id ?? ''));
         },
       );
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
-      emit(ErrorState());
+      emit(ErrorState(productId: event.id ?? ''));
     }
   }
 
@@ -78,11 +78,11 @@ class AddNewGroceryItemBloc
       await _repository
           .deleteGroceryItem(userGroceryListId: event.userGroceryListId!)
           .fold((left) {
-        emit(RemoveGroceryItemErrorState(
-            userGroceryListId: event.userGroceryListId));
+        // emit(RemoveGroceryItemErrorState(
+        //     userGroceryListId: event.userGroceryListId));
         onFailError(emit: emit, text: left.errorMessage!);
-        emit(RemoveGroceryItemErrorState(
-            userGroceryListId: event.userGroceryListId));
+        // emit(RemoveGroceryItemErrorState(
+        //     userGroceryListId: event.userGroceryListId));
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
 
@@ -92,6 +92,7 @@ class AddNewGroceryItemBloc
             isDelete: right.success));
       });
     } catch (e) {
+      print('---->>>>>>');
       showToast(isSuccess: false, message: e.toString());
       emit(RemoveGroceryItemErrorState(
           userGroceryListId: event.userGroceryListId));

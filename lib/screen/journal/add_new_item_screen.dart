@@ -549,15 +549,15 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           } else {
                             getAddNewMealBloc.add(
                               AddNewMeal(
-                                name: nameController.text,
-                                imageUrl: File(pickedImageFilePath),
-                                protein: proteinController.text,
-                                fat: fatController.text,
-                                carbs: carbsController.text,
-                                calorie: calController.text,
-                                type: Get.arguments,
-                                userId: userId,
-                              ),
+                                  name: nameController.text,
+                                  imageUrl: File(pickedImageFilePath),
+                                  protein: proteinController.text,
+                                  fat: fatController.text,
+                                  carbs: carbsController.text,
+                                  calorie: calController.text,
+                                  type: Get.arguments,
+                                  userId: userId,
+                                  quantity: '1'),
                             );
                           }
                         },

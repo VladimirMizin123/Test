@@ -24,6 +24,7 @@ class AddNewMealRepository {
     required String calorie,
     required String type,
     required String userId,
+    required String quantity,
   }) async {
     List<http.MultipartFile> mealItemImage = [];
 
@@ -52,9 +53,8 @@ class AddNewMealRepository {
       'Calorie': calorie.toString(),
       'Type': type.toString(),
       'UserId': userId.toString(),
+      'Quantity': quantity.toString()
     };
-    print('---Image-->>>>>$mealItemImage');
-    print('---data-->>>>>$data');
     final response = await apiServices.postMultipart(
         url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {

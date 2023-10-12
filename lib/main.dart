@@ -45,6 +45,7 @@ import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
+import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
@@ -463,11 +464,13 @@ class _MyAppState extends State<MyApp> {
             ),
 
             GetPage(
-                name: '/RandomLoginScreen', page: () => RandomLoadingScreen())
+              name: '/RandomLoginScreen',
+              page: () => RandomLoadingScreen(),
+            ),
 
             // GetPage(
             //   name: '/JournalSearchScreen',
-            //   page: () =>  const JournalSearchScreen(mealType: ''),
+            //   page: () => const JournalSearchScreen(),
             // ),
           ],
         );

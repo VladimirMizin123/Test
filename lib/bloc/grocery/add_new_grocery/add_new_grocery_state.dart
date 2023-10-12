@@ -4,11 +4,23 @@ abstract class AddNewGroceryItemState {}
 
 class InitialState extends AddNewGroceryItemState {}
 
-class AddGroceryItemSuccessfulState extends AddNewGroceryItemState {}
+class AddGroceryItemSuccessfulState extends AddNewGroceryItemState {
+  final String? productId;
 
-class LoadingState extends AddNewGroceryItemState {}
+  AddGroceryItemSuccessfulState({this.productId});
+}
 
-class ErrorState extends AddNewGroceryItemState {}
+class LoadingState extends AddNewGroceryItemState {
+  final String? productId;
+
+  LoadingState({this.productId});
+}
+
+class ErrorState extends AddNewGroceryItemState {
+  final String? productId;
+
+  ErrorState({this.productId});
+}
 
 /// Get Grocery State ===============================================================
 

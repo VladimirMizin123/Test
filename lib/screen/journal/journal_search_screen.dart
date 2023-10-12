@@ -18,7 +18,8 @@ import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 class JournalSearchScreen extends StatefulWidget {
   final JournalMealScreenArguments journalMealScreenArguments;
-  const JournalSearchScreen({super.key, required this.journalMealScreenArguments});
+  const JournalSearchScreen(
+      {super.key, required this.journalMealScreenArguments});
 
   @override
   State<JournalSearchScreen> createState() => _JournalSearchScreenState();
@@ -27,10 +28,15 @@ class JournalSearchScreen extends StatefulWidget {
 class _JournalSearchScreenState extends State<JournalSearchScreen> {
   TextEditingController searchController = TextEditingController();
   JournalPlanBloc journalPlanBloc = JournalPlanBloc();
+  AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
 
   List<Cart> groceryMultiSearchModelDataList = [];
   List<MealData> mealList = [];
 
+  List<Map<String, dynamic>> groceryDetails = [];
+
+  bool add = false;
+  bool isButtonEnable = false;
   @override
   void initState() {
     super.initState();
@@ -46,14 +52,22 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
           bloc: journalPlanBloc,
           listener: (context, state) {
             if (state is JournalSearchSuccessState) {
-              groceryMultiSearchModelDataList = state.groceryMultiSearchProductList ?? [];
+              groceryMultiSearchModelDataList =
+                  state.groceryMultiSearchProductList ?? [];
             }
             if (state is JournalAddToGrocerySuccessState) {
               // MAKE STATUS TRUE AND CHANGE ICON PLUS SIGN TO CHECK SIGN IN THIS LIST - groceryMultiSearchModelDataList
             }
             if (state is JournalFetchMealPlanSuccessState) {
               for (var i = 0; i < state.mealPlanList.length; i++) {
-                if (DateTime(state.mealPlanList[i].date!.year, state.mealPlanList[i].date!.month, state.mealPlanList[i].date!.day) == DateTime(widget.journalMealScreenArguments.dateTime!.year, widget.journalMealScreenArguments.dateTime!.month, widget.journalMealScreenArguments.dateTime!.day)) {
+                if (DateTime(
+                        state.mealPlanList[i].date!.year,
+                        state.mealPlanList[i].date!.month,
+                        state.mealPlanList[i].date!.day) ==
+                    DateTime(
+                        widget.journalMealScreenArguments!.dateTime!.year,
+                        widget.journalMealScreenArguments!.dateTime!.month,
+                        widget.journalMealScreenArguments!.dateTime!.day)) {
                   mealList = state.mealPlanList[i].meals ?? [];
                   break;
                 }
@@ -62,11 +76,31 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
 
             if (state is JournalAddEatenLoadingState) {
               setState(() {
-                for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
-                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
-                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
-                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.mealID) {
-                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = true;
+                for (var i = 0;
+                    i < groceryMultiSearchModelDataList.length;
+                    i++) {
+                  for (var j = 0;
+                      j <
+                          groceryMultiSearchModelDataList[i]
+                              .groceryResult!
+                              .length;
+                      j++) {
+                    for (var k = 0;
+                        k <
+                            groceryMultiSearchModelDataList[i]
+                                .groceryResult![j]
+                                .products!
+                                .length;
+                        k++) {
+                      if (groceryMultiSearchModelDataList[i]
+                              .groceryResult![j]
+                              .products![k]
+                              .productId ==
+                          state.mealID) {
+                        groceryMultiSearchModelDataList[i]
+                            .groceryResult![j]
+                            .products![k]
+                            .isLoading = true;
                       }
                     }
                   }
@@ -81,12 +115,35 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
 
             if (state is JournalAddEatenSuccessState) {
               setState(() {
-              for (var i = 0; i < groceryMultiSearchModelDataList.length; i++) {
-                  for (var j = 0; j < groceryMultiSearchModelDataList[i].groceryResult!.length; j++) {
-                    for (var k = 0; k < groceryMultiSearchModelDataList[i].groceryResult![j].products!.length; k++) {
-                      if (groceryMultiSearchModelDataList[i].groceryResult![j].products![k].productId == state.mealID) {
-                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isLoading = false;
-                        groceryMultiSearchModelDataList[i].groceryResult![j].products![k].isAddedToShoppingList = true;
+                for (var i = 0;
+                    i < groceryMultiSearchModelDataList.length;
+                    i++) {
+                  for (var j = 0;
+                      j <
+                          groceryMultiSearchModelDataList[i]
+                              .groceryResult!
+                              .length;
+                      j++) {
+                    for (var k = 0;
+                        k <
+                            groceryMultiSearchModelDataList[i]
+                                .groceryResult![j]
+                                .products!
+                                .length;
+                        k++) {
+                      if (groceryMultiSearchModelDataList[i]
+                              .groceryResult![j]
+                              .products![k]
+                              .productId ==
+                          state.mealID) {
+                        groceryMultiSearchModelDataList[i]
+                            .groceryResult![j]
+                            .products![k]
+                            .isLoading = false;
+                        groceryMultiSearchModelDataList[i]
+                            .groceryResult![j]
+                            .products![k]
+                            .isAddedToShoppingList = true;
                       }
                     }
                   }
@@ -117,8 +174,12 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                           onTap: () {
                             Get.back();
                           },
-                          child: const Icon(Icons.keyboard_arrow_left_outlined, size: 30)),
-                      Text('Breakfast', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
+                          child: const Icon(Icons.keyboard_arrow_left_outlined,
+                              size: 30)),
+                      Text('Breakfast',
+                          style: FontUtils.h20(
+                              fontColor: AppColors.oxFF010101,
+                              fontWeight: FWT.semiBold)),
                       Opacity(
                         opacity: 0,
                         child: Image.asset(
@@ -136,14 +197,19 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextField(
                         controller: searchController,
                         onSubmitted: (String value) {
                           journalPlanBloc.add(JournalSearchEvent(
-                            journalSearchModelList: [GrocerySearchModel(groceryName: searchController.text, quantity: 0)],
+                            journalSearchModelList: [
+                              GrocerySearchModel(
+                                  groceryName: searchController.text,
+                                  quantity: 0)
+                            ],
                           ));
                         },
                         decoration: InputDecoration(
@@ -151,8 +217,10 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                           hintText: 'Search for item',
                           hintStyle: FontUtils.h16(),
                           border: InputBorder.none,
-                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
+                          focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -251,103 +319,260 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                             ? const Center(
                                 child: CircularProgressIndicator(),
                               )
-                            : SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: ListView.builder(
-                                  itemCount: groceryMultiSearchModelDataList.length,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, i) {
-                                    return ListView.builder(
-                                      itemCount: groceryMultiSearchModelDataList[i].groceryResult!.length,
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, ind) {
-                                        return ListView.builder(
-                                          itemCount: groceryMultiSearchModelDataList[i].groceryResult![ind].products!.length,
+                            : BlocConsumer(
+                                bloc: addNewGroceryItemBloc,
+                                listener: (context, state) {
+                                  if (state is LoadingState) {
+                                    add = true;
+                                  }
+                                  if (state is AddGroceryItemSuccessfulState) {
+                                    add = false;
+                                  }
+
+                                  if (state is ErrorState) {
+                                    add = false;
+                                  }
+                                },
+                                builder: (context, state) => Column(
+                                  children: [
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        physics: const BouncingScrollPhysics(),
+                                        child: ListView.builder(
+                                          itemCount:
+                                              groceryMultiSearchModelDataList
+                                                  .length,
                                           shrinkWrap: true,
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  // Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName));
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(12),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
-                                                              style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, i) {
+                                            return ListView.builder(
+                                              itemCount:
+                                                  groceryMultiSearchModelDataList[
+                                                          i]
+                                                      .groceryResult!
+                                                      .length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, ind) {
+                                                return ListView.builder(
+                                                  itemCount:
+                                                      groceryMultiSearchModelDataList[
+                                                              i]
+                                                          .groceryResult![ind]
+                                                          .products!
+                                                          .length,
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 6),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          Get.toNamed(
+                                                            '/GroceryItemDetails',
+                                                            arguments:
+                                                                GroceryItemDetailsArguments(
+                                                              isFromGroceryScreen:
+                                                                  true,
+                                                              productName:
+                                                                  groceryMultiSearchModelDataList[
+                                                                          i]
+                                                                      .groceryResult![
+                                                                          ind]
+                                                                      .products![
+                                                                          index]
+                                                                      .itemName,
+                                                              groceryDetails: {
+                                                                "itemName": groceryMultiSearchModelDataList[
+                                                                        i]
+                                                                    .groceryResult![
+                                                                        ind]
+                                                                    .products![
+                                                                        index]
+                                                                    .itemName
+                                                                    .toString(),
+                                                                "quantity": 1,
+                                                                "measurementType": groceryMultiSearchModelDataList[
+                                                                        i]
+                                                                    .groceryResult![
+                                                                        ind]
+                                                                    .products![
+                                                                        index]
+                                                                    .unitOfMeasurement
+                                                                    .toString(),
+                                                                "measurementValue": groceryMultiSearchModelDataList[
+                                                                        i]
+                                                                    .groceryResult![
+                                                                        ind]
+                                                                    .products![
+                                                                        index]
+                                                                    .unitSize
+                                                                    .toString()
+                                                              },
                                                             ),
-                                                            Row(
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              boxShadow:
+                                                                  boxShadowWidget,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(12),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
                                                               children: [
-                                                                Text(
-                                                                  '1 slice, Dave’s Killer Bread - ',
-                                                                  style: FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                                                                Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      width:
+                                                                          270.w,
+                                                                      child:
+                                                                          Text(
+                                                                        groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ??
+                                                                            '',
+                                                                        style: FontUtils.h16(
+                                                                            fontColor:
+                                                                                AppColors.black,
+                                                                            fontWeight: FWT.medium),
+                                                                      ),
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          '1 slice, Dave’s Killer Bread - ',
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.middleGray,
+                                                                              fontWeight: FWT.medium),
+                                                                        ),
+                                                                        Text(
+                                                                          '110 cal',
+                                                                          style: FontUtils.h12(
+                                                                              fontColor: AppColors.black,
+                                                                              fontWeight: FWT.medium),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                                Text(
-                                                                  '110 cal',
-                                                                  style: FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
-                                                                ),
+                                                                groceryMultiSearchModelDataList[
+                                                                            i]
+                                                                        .groceryResult![
+                                                                            ind]
+                                                                        .products![
+                                                                            index]
+                                                                        .isAddedToShoppingList
+                                                                    ? SvgPicture.asset(
+                                                                        AssetsUtils
+                                                                            .icAddCircle,
+                                                                        height:
+                                                                            30)
+                                                                    : groceryMultiSearchModelDataList[i]
+                                                                            .groceryResult![
+                                                                                ind]
+                                                                            .products![
+                                                                                index]
+                                                                            .isLoading
+                                                                        ? const Center(
+                                                                            child:
+                                                                                CircularProgressIndicator())
+                                                                        : GestureDetector(
+                                                                            onTap:
+                                                                                () {
+                                                                              if (widget.isFrom == 'Journal') {
+                                                                                journalPlanBloc.add(
+                                                                                  JournalAddToEatenEvent(
+                                                                                    mealId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                                    calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie,
+                                                                                    carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs,
+                                                                                    fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat,
+                                                                                    protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein,
+                                                                                    mealType: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].mealType,
+                                                                                    noOfServing: 1,
+                                                                                    recipeId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
+                                                                                    mealName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName,
+                                                                                  ),
+                                                                                );
+                                                                              } else {
+                                                                                if (groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList == false) {
+                                                                                  groceryDetails.add({
+                                                                                    "itemName": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName.toString(),
+                                                                                    "quantity": 1,
+                                                                                    "measurementType": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
+                                                                                    "measurementValue": groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString()
+                                                                                  });
+                                                                                  groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList = true;
+                                                                                  isButtonEnable = true;
+                                                                                }
+
+                                                                                setState(() {});
+                                                                              }
+                                                                            },
+                                                                            child:
+                                                                                SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
                                                               ],
                                                             ),
-                                                          ],
+                                                          ),
                                                         ),
-                                                        groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isAddedToShoppingList
-                                                            ? SvgPicture.asset(AssetsUtils.icAddCircle, height: 30)
-                                                            : groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].isLoading
-                                                                ? const Center(child: CircularProgressIndicator())
-                                                                : GestureDetector(
-                                                                    onTap: () {
-                                                                      journalPlanBloc.add(
-                                                                        JournalAddToEatenEvent(
-                                                                          mealId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                                                                          calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie,
-                                                                          carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs,
-                                                                          fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat,
-                                                                          protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein,
-                                                                          mealType: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].mealType,
-                                                                          noOfServing: 1,
-                                                                          recipeId: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                                                                          mealName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName,
-                                                                        ),
-                                                                      );
-
-                                                                      // journalPlanBloc.add(JournalAddToShoppingListEvent(
-                                                                      //   productID: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId!,
-                                                                      //   productName: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].itemName ?? '',
-                                                                      //   price: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].price.toString(),
-                                                                      //   unitSize: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize.toString(),
-                                                                      //   unitOfMeasurement: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement.toString(),
-                                                                      //   quantity: '1',
-                                                                      //   recipeId: '',
-                                                                      //   mealmeStoreId: groceryMultiSearchModelDataList[i].store!.id!,
-                                                                      //   isAdd: true,
-                                                                      //   isRemove: false,
-                                                                      //   isChecked: false,
-                                                                      // ));
-                                                                    },
-                                                                    child: SvgPicture.asset(AssetsUtils.icAddIcon, height: 30)),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
                                             );
                                           },
-                                        );
-                                      },
-                                    );
-                                  },
+                                        ),
+                                      ),
+                                    ),
+                                    widget.isFrom == 'Grocery'
+                                        ? Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 15.w),
+                                            child: add == true
+                                                ? const CircularProgressIndicator()
+                                                    .paddingOnly(
+                                                        bottom: 30.h, top: 10.h)
+                                                : buildButton(
+                                                    context: context,
+                                                    bgColor: isButtonEnable
+                                                        ? AppColors.primaryBlue
+                                                        : AppColors.disable,
+                                                    hasImage: false,
+                                                    onPressed: () {
+                                                      // ADD NEW ITEM API,
+                                                      addNewGroceryItemBloc.add(
+                                                        AddNewGroceryItem(
+                                                            userId: userId,
+                                                            groceryItems:
+                                                                groceryDetails),
+                                                      );
+                                                    },
+                                                    textColor: Colors.white,
+                                                    title: StringUtils.addItem,
+                                                  ).paddingOnly(
+                                                    bottom: 30.h, top: 10.h),
+                                          )
+                                        : const SizedBox()
+                                  ],
                                 ),
                               ),
                   )

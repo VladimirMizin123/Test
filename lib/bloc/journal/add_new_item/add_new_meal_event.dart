@@ -16,6 +16,7 @@ class AddNewMeal extends AddNewMealEvent {
   final String calorie;
   final String type;
   final String userId;
+  final String quantity;
 
   AddNewMeal({
     required this.name,
@@ -26,5 +27,6 @@ class AddNewMeal extends AddNewMealEvent {
     required this.calorie,
     required this.type,
     required this.userId,
+    required this.quantity,
   });
 }

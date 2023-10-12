@@ -37,7 +37,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   int selectedIndex = 0;
   MealPlanBloc mealPlanBloc = MealPlanBloc();
   AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
-
+  bool addItem = false;
   bool isAddButtonEnable = false;
   FetchModelData? fetchModelData;
 
@@ -1083,131 +1083,150 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                   // ),
                                                 ]),
                                           const SizedBox(height: 15),
-                                          GestureDetector(
-                                            onTap: () {
-                                              if (isAddButtonEnable) {
-                                                // mealPlanBloc.add(
-                                                //   GrocerySearchEvent(
-                                                //       grocerySearchModelList:
-                                                //           grocerySearchList),
-                                                // );
+                                          BlocConsumer(
+                                            bloc: addNewGroceryItemBloc,
+                                            listener: (context, state) {
+                                              if (state is LoadingState) {
+                                                addItem = true;
+                                              }
+                                              if (state
+                                                  is AddGroceryItemSuccessfulState) {
+                                                addItem = false;
+                                              }
+                                              if (state is ErrorState) {
+                                                addItem = false;
+                                              }
+                                            },
+                                            builder: (context, state) =>
+                                                GestureDetector(
+                                              onTap: () {
+                                                if (isAddButtonEnable) {
+                                                  // mealPlanBloc.add(
+                                                  //   GrocerySearchEvent(
+                                                  //       grocerySearchModelList:
+                                                  //           grocerySearchList),
+                                                  // );
 
-                                                // bloc.add(GroceryAddToShoppingListEvent(
-                                                //   productID: '',
-                                                //   productName: widget.mealDataArguments!.mealData!.recipe!.name!,
-                                                //   price: '',
-                                                //   unitSize: '',
-                                                //   unitOfMeasurement: '',
-                                                //   quantity: '1',
-                                                //   recipeId: '',
-                                                //   mealmeStoreId: '',
-                                                //   isAdd: true,
-                                                //   isRemove: false,
-                                                //   isChecked: false,
-                                                // ));
+                                                  // bloc.add(GroceryAddToShoppingListEvent(
+                                                  //   productID: '',
+                                                  //   productName: widget.mealDataArguments!.mealData!.recipe!.name!,
+                                                  //   price: '',
+                                                  //   unitSize: '',
+                                                  //   unitOfMeasurement: '',
+                                                  //   quantity: '1',
+                                                  //   recipeId: '',
+                                                  //   mealmeStoreId: '',
+                                                  //   isAdd: true,
+                                                  //   isRemove: false,
+                                                  //   isChecked: false,
+                                                  // ));
 
-                                                List<Map<String, dynamic>>
-                                                    groceryDetails = [];
+                                                  List<Map<String, dynamic>>
+                                                      groceryDetails = [];
 
-                                                for (var i = 0;
-                                                    i <
-                                                        grocerySearchList
-                                                            .length;
-                                                    i++) {
-                                                  for (var j = 0;
-                                                      j <
-                                                          fetchModelData!
-                                                              .recipe!
-                                                              .parsedIngredientLines!
+                                                  for (var i = 0;
+                                                      i <
+                                                          grocerySearchList
                                                               .length;
-                                                      j++) {
-                                                    if (grocerySearchList[i]
-                                                        .groceryName!
-                                                        .toLowerCase()
-                                                        .contains(fetchModelData!
-                                                            .recipe!
-                                                            .parsedIngredientLines![
-                                                                j]
-                                                            .ingredient!
-                                                            .toLowerCase())) {
-                                                      if (fetchModelData!
-                                                          .recipe!
-                                                          .parsedIngredientLines![
-                                                              j]
-                                                          .quantity!
-                                                          .split('')
-                                                          .contains('/')) {}
-
-                                                      groceryDetails.add({
-                                                        'itemName':
-                                                            grocerySearchList[i]
-                                                                    .groceryName ??
-                                                                '',
-                                                        'quantity':
-                                                            grocerySearchList[i]
-                                                                    .quantity ??
-                                                                1,
-                                                        'measurementType':
+                                                      i++) {
+                                                    for (var j = 0;
+                                                        j <
                                                             fetchModelData!
+                                                                .recipe!
+                                                                .parsedIngredientLines!
+                                                                .length;
+                                                        j++) {
+                                                      if (grocerySearchList[i]
+                                                          .groceryName!
+                                                          .toLowerCase()
+                                                          .contains(fetchModelData!
+                                                              .recipe!
+                                                              .parsedIngredientLines![
+                                                                  j]
+                                                              .ingredient!
+                                                              .toLowerCase())) {
+                                                        groceryDetails.add(
+                                                          {
+                                                            'itemName':
+                                                                grocerySearchList[
+                                                                            i]
+                                                                        .groceryName ??
+                                                                    '',
+                                                            'quantity':
+                                                                grocerySearchList[
+                                                                            i]
+                                                                        .quantity ??
+                                                                    1,
+                                                            'measurementType':
+                                                                fetchModelData!
+                                                                        .recipe!
+                                                                        .parsedIngredientLines![
+                                                                            j]
+                                                                        .unit ??
+                                                                    '',
+                                                            'measurementValue':
+                                                                fetchModelData!
                                                                     .recipe!
                                                                     .parsedIngredientLines![
                                                                         j]
-                                                                    .unit ??
-                                                                '',
-                                                        'measurementValue':
-                                                            fetchModelData!
-                                                                .recipe!
-                                                                .parsedIngredientLines![
-                                                                    j]
-                                                                .quantity
-                                                                .toString()
-                                                      });
+                                                                    .quantity
+                                                                    .toString()
+                                                          },
+                                                        );
+                                                      }
                                                     }
                                                   }
-                                                }
 
-                                                addNewGroceryItemBloc.add(
-                                                  AddNewGroceryItem(
-                                                    userId: userId,
-                                                    groceryItems:
-                                                        groceryDetails,
-                                                  ),
-                                                );
-                                              } else {
-                                                Fluttertoast.showToast(
-                                                    msg:
-                                                        'Select atleast 1 Ingredients');
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 4.h),
-                                              child: Container(
-                                                height:
-                                                    screenSize.height * 0.065,
-                                                width: screenSize.width,
-                                                decoration: isAddButtonEnable
-                                                    ? BoxDecoration(
-                                                        color: AppColors
-                                                            .primaryBlue,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8))
-                                                    : BoxDecoration(
-                                                        color: AppColors.gray,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
+                                                  addNewGroceryItemBloc.add(
+                                                    AddNewGroceryItem(
+                                                      userId: userId,
+                                                      groceryItems:
+                                                          groceryDetails,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          'Select atleast 1 Ingredients');
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 4.h),
+                                                child: addItem == true
+                                                    ? const CircularProgressIndicator()
+                                                    : Container(
+                                                        height:
+                                                            screenSize.height *
+                                                                0.065,
+                                                        width: screenSize.width,
+                                                        decoration:
+                                                            isAddButtonEnable
+                                                                ? BoxDecoration(
+                                                                    color: AppColors
+                                                                        .primaryBlue,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8))
+                                                                : BoxDecoration(
+                                                                    color:
+                                                                        AppColors
+                                                                            .gray,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                  ),
+                                                        child: Center(
+                                                            child: Text(
+                                                                StringUtils
+                                                                    .addToGroceryList,
+                                                                style: FontUtils.h16(
+                                                                    fontColor:
+                                                                        AppColors
+                                                                            .whiteColor,
+                                                                    fontWeight:
+                                                                        FWT.semiBold))),
                                                       ),
-                                                child: Center(
-                                                    child: Text(
-                                                        StringUtils
-                                                            .addToGroceryList,
-                                                        style: FontUtils.h16(
-                                                            fontColor: AppColors
-                                                                .whiteColor,
-                                                            fontWeight:
-                                                                FWT.semiBold))),
                                               ),
                                             ),
                                           ),

@@ -28,7 +28,7 @@ class ScanBarcodeScreen extends StatefulWidget {
 class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
   final routeName = '/ScanBarcodeScreen';
   bool isFlashlightOn = false;
-
+  bool isSearchFieldOn = false;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController _qrViewController;
   ScanBarcodeArguments scanBarcodeArguments = Get.arguments;
@@ -72,60 +72,100 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
           onPressed: () => Navigator.pop(context),
         ).paddingOnly(left: 10.w),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 300.h,
-              width: 300.w,
-              child: QRView(
-                overlay: QrScannerOverlayShape(
-                  borderColor: Colors.white,
-                  borderRadius: 8.r,
-                  borderLength: 10.w,
-                  borderWidth: 10.w,
-                  cutOutHeight: 300.h,
-                  cutOutWidth: 300.w,
+      body: isSearchFieldOn == true
+          ? Align(
+              alignment: Alignment.bottomCenter,
+              child: TextField(
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14.h, horizontal: 15.w),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(6.r),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(6.r),
+                    ),
+                  ),
+                  suffix: Text(
+                    'Search',
+                    style: TextStyle(
+                      color: Color(0xffCE6B53),
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-                cameraFacing: CameraFacing.back,
-                key: qrKey,
-                onQRViewCreated: _onQRViewCreated,
               ),
-            ),
-          ),
-          const Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(
-                AssetsUtils.searchPen,
-                height: 35.h,
-                width: 35.w,
-              ),
-              GestureDetector(
-                onTap: isFlashlightOn
-                    ? () async {
-                        await TorchLight.disableTorch();
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 300.h,
+                    width: 300.w,
+                    child: QRView(
+                      overlay: QrScannerOverlayShape(
+                        borderColor: Colors.white,
+                        borderRadius: 8.r,
+                        borderLength: 10.w,
+                        borderWidth: 10.w,
+                        cutOutHeight: 300.h,
+                        cutOutWidth: 300.w,
+                      ),
+                      cameraFacing: CameraFacing.back,
+                      key: qrKey,
+                      onQRViewCreated: _onQRViewCreated,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
                         setState(() {
-                          isFlashlightOn = false; // Update the state
-                        });
-                      }
-                    : () async {
-                        await TorchLight.enableTorch();
-                        setState(() {
-                          isFlashlightOn = true; // Update the state
+                          isSearchFieldOn = true;
                         });
                       },
-                child: Image.asset(
-                  isFlashlightOn ? AssetsUtils.flashOn : AssetsUtils.flashOff,
-                  height: 35.h,
-                  width: 35.w,
-                ),
-              ),
-            ],
-          )
-        ],
-      ).paddingOnly(left: 20.w, right: 20.w, bottom: 35.h),
+                      child: Image.asset(
+                        AssetsUtils.searchPen,
+                        height: 35.h,
+                        width: 35.w,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: isFlashlightOn
+                          ? () async {
+                              await TorchLight.disableTorch();
+                              setState(() {
+                                isFlashlightOn = false; // Update the state
+                              });
+                            }
+                          : () async {
+                              await TorchLight.enableTorch();
+                              setState(() {
+                                isFlashlightOn = true; // Update the state
+                              });
+                            },
+                      child: Image.asset(
+                        isFlashlightOn
+                            ? AssetsUtils.flashOn
+                            : AssetsUtils.flashOff,
+                        height: 35.h,
+                        width: 35.w,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ).paddingOnly(left: 20.w, right: 20.w, bottom: 35.h),
     );
   }
 

@@ -3,11 +3,13 @@ abstract class AddNewGroceryItemEvent {}
 /// Add Grocery Event ===============================================================
 class AddNewGroceryItem extends AddNewGroceryItemEvent {
   final String userId;
+  final String? id;
   final List<Map<String, dynamic>> groceryItems;
 
   AddNewGroceryItem({
     required this.userId,
     required this.groceryItems,
+    this.id,
   });
 }
 
