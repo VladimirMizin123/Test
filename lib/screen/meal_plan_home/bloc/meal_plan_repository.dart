@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/add_grocery_to_shopping_list_from_suggestic_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
@@ -170,6 +171,30 @@ class MealPlanRepository {
     }
   }
 
+  Future<Either<ErrorModel, SuccessModel>> addSwapMeal({
+    String? recipeId,
+    String? mealId,  }) async {
+
+    final response = await apiServices.get('${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> clearUserGroceryList({
+    String? recipeId,
+    String? mealId,
+  }) async {
+    final response = await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
       {required String recipeID}) async {
     final response = await apiServices
@@ -298,4 +323,6 @@ class MealPlanRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+
+  
 }

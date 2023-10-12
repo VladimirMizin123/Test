@@ -53,7 +53,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
     return Scaffold(
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
           bloc: mealPlanBloc,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
               isLoadingData = false;
@@ -148,6 +148,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 } // TWVhbDoxNTQ2NDM1NzY=
               }
             }
+
+            
           },
           builder: (context, state) {
             return SafeArea(
@@ -199,6 +201,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                             },
                             child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
                         : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    
                     mealPlanList.isEmpty
                         ? const SizedBox()
                         : isReadyToShowWidget
