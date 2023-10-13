@@ -15,7 +15,8 @@ class AddNewGroceryItemBloc
     on<UpdateAddNewGroceryItem>(_onAddUpdateGroceryItem);
     on<UpdateRemoveNewGroceryItem>(_onRemoveUpdateGroceryItem);
     on<ClearUserGroceryEvent>(_onClearGroceryList);
-    on<AddGroceryToShoppingListFromSuggesticEvent>(_onAddGroceryToShoppingListFromSuggestic);
+    on<AddGroceryToShoppingListFromSuggesticEvent>(
+        _onAddGroceryToShoppingListFromSuggestic);
   }
 
   final AddNewGroceryItemRepository _repository = AddNewGroceryItemRepository();
@@ -177,15 +178,21 @@ class AddNewGroceryItemBloc
     }
   }
 
-   _onAddGroceryToShoppingListFromSuggestic(AddGroceryToShoppingListFromSuggesticEvent event, Emitter<AddNewGroceryItemState> emit) async {
+  _onAddGroceryToShoppingListFromSuggestic(
+      AddGroceryToShoppingListFromSuggesticEvent event,
+      Emitter<AddNewGroceryItemState> emit) async {
     emit(AddGroceryToShoppingListFromSuggesticLoadingState());
 
     try {
-      await _repository.addGroceryToShoppingListFromSuggestic(latitude: event.latitude, longitude: event.longitude).fold((left) {
+      await _repository
+          .addGroceryToShoppingListFromSuggestic(
+              latitude: event.latitude, longitude: event.longitude)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(AddGroceryToShoppingListFromSuggesticErrorState());
       }, (right) {
-        emit(AddGroceryToShoppingListFromSuggesticSuccessState(groceryDetails:right.data));
+        emit(AddGroceryToShoppingListFromSuggesticSuccessState(
+            groceryDetails: right.data));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -193,24 +200,22 @@ class AddNewGroceryItemBloc
     }
   }
 
-  
-
   /// Clear Grocery List Bloc =================================================================
   _onClearGroceryList(
       ClearUserGroceryEvent event, Emitter<AddNewGroceryItemState> emit) async {
-    emit(ClearGroceryListLoadingState());
+    emit(ClearGroceryLoadingState());
 
     try {
       await _repository.clearGroceryList().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
-        emit(ClearGroceryListErrorState());
+        emit(ClearGroceryErrorState());
       }, (right) {
-        emit(ClearGroceryListSuccessState(isClear: right.success ?? true));
+        emit(ClearGrocerySuccessState(isClear: right.success ?? true));
         showToast(isSuccess: true, message: right.message ?? 'Added!');
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
-      emit(ClearGroceryListErrorState());
+      emit(ClearGroceryErrorState());
     }
   }
 

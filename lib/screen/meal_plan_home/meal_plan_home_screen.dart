@@ -252,7 +252,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                             onTap: () {
                               mealPlanBloc.add(ClearUserGroceryMealPlanEvent());
                             },
-                            child: Text(StringUtils.regenerateGroceryList,
+                            child: Text(
+                                    state is ClearGroceryListSuccessState
+                                        ? StringUtils.regenerateGroceryList
+                                        : 'Clear Grocery List',
                                     style: FontUtils.h18(
                                         fontColor: AppColors.primaryBlue,
                                         fontWeight: FWT.medium))
@@ -272,9 +275,13 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                     //             // searchGroceryDetails.clear();
                     //             // checkbox.clear();
                     //           });
-                    //           addNewGroceryItemBloc.add(ClearUserGroceryEvent());
+                    //           // addNewGroceryItemBloc.add(ClearUserGroceryEvent());
                     //         },
-                    //         child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
+                    //         child: Text(StringUtils.regenerateGroceryList,
+                    //                 style: FontUtils.h18(
+                    //                     fontColor: AppColors.primaryBlue,
+                    //                     fontWeight: FWT.medium))
+                    //             .paddingSymmetric(vertical: 10.h),
                     //       ),
 
                     mealPlanList.isEmpty

@@ -30,11 +30,11 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
     return BlocConsumer<AddNewGroceryItemBloc, AddNewGroceryItemState>(
         bloc: widget.bloc,
         listener: (context, state) {
-          if (state is ClearGroceryListSuccessState) {
+          if (state is ClearGrocerySuccessState) {
             Get.back();
           }
 
-          if (state is ClearGroceryListErrorState) {
+          if (state is ClearGroceryErrorState) {
             Get.back();
           }
         },
@@ -88,9 +88,8 @@ class _ClearAllItemBottomSheetState extends State<ClearAllItemBottomSheet> {
                           height: screenSize.height * 0.05,
                           width: screenSize.width * 0.43,
                           context: context,
-                          isLoadingWidget: state is ClearGroceryListLoadingState
-                              ? true
-                              : false,
+                          isLoadingWidget:
+                              state is ClearGroceryLoadingState ? true : false,
                           buttonLable: 'Clear',
                           onTap: () {
                             widget.bloc.add(ClearUserGroceryEvent());

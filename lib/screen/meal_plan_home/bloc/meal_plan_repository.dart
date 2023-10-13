@@ -174,9 +174,10 @@ class MealPlanRepository {
 
   Future<Either<ErrorModel, SuccessModel>> addSwapMeal({
     String? recipeId,
-    String? mealId,  }) async {
-
-    final response = await apiServices.get('${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId');
+    String? mealId,
+  }) async {
+    final response = await apiServices.get(
+        '${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -188,7 +189,8 @@ class MealPlanRepository {
     String? recipeId,
     String? mealId,
   }) async {
-    final response = await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
+    final response =
+        await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -326,7 +328,8 @@ class MealPlanRepository {
   }
 
   Future<Either<ErrorModel, SuccessModel>> clearGroceryList() async {
-    final response = await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
+    final response =
+        await apiServices.delete('${ApiUrls.clearUserGroceryList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -334,8 +337,9 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, GetUserGroceryListModel>> addGroceryToShoppingListFromSuggestic({String? latitude, String? longitude}) async {
-    String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID?latitude=$latitude&loingitude=$longitude';
+  Future<Either<ErrorModel, GetUserGroceryListModel>>
+      addGroceryToShoppingListFromSuggestic() async {
+    String apiURL = '${ApiUrls.addGroceryToShoppingListFromSuggestic}/$userID';
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);
     // log(response.body, name: 'API RESPONSE :');
@@ -345,6 +349,4 @@ class MealPlanRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
-
-  
 }
