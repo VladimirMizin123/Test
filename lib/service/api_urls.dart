@@ -94,7 +94,8 @@ class ApiUrls {
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
   static const String addSwapMeal = '${baseUrl}api/Suggestic/AddSwapMeal';
-  static const String clearUserGroceryList = '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
+  static const String clearUserGroceryList =
+      '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
 
   //UserDetails
   static const String getUserDetailsById =
@@ -137,13 +138,6 @@ class ApiUrls {
       '${baseUrl}api/UserGroceryList/RemoveUserGrocery';
   static const String updateUserGroceryItem =
       '${baseUrl}api/UserGroceryList/UpdateUserGroceryList';
-
-  static const String clearUserGroceryList =
-      '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
-
-  // Custom Meal Details Api
-  static const String addNewMeal =
-      '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
   static const String getCustomMeal =
       '${baseUrl}api/UserCustomMeal/GetUserCustomMealList';

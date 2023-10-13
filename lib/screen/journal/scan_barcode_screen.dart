@@ -224,7 +224,5 @@ class ScanBarcodeArguments {
   final String type;
 
   ScanBarcodeArguments(
-      {this.selectedDateTime,
-      required this.journalPlanBloc,
-      required this.type});
+      {this.selectedDateTime, required this.journalPlanBloc, this.type = ''});
 }
