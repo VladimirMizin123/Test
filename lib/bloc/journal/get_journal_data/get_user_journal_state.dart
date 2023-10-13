@@ -72,7 +72,8 @@ class LoadingDoneState extends GetUserJournalState {}
 
 class AddItemLoadingState extends GetUserJournalState {
   final String? title;
-  AddItemLoadingState({required this.title});
+  final String? itemId;
+  AddItemLoadingState({required this.title, required this.itemId});
 }
 
 class AddItemSuccessState extends GetUserJournalState {
@@ -139,4 +140,3 @@ class JournalLoadDashboardDataState extends GetUserJournalState {
   List<MealDataByDate>? data;
   JournalLoadDashboardDataState({this.data});
 }
-
