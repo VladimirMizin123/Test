@@ -46,15 +46,15 @@ class AddEatenMealRepository {
 
     Map<String, dynamic> data = {
       "suggesticMealId": mealId,
-      "mealName": mealName??'',
-      "calorie": calorie??0,
-      "mealType": mealType??'',
-      "noOfServing": noOfServing??0,
-     // "recipeId": recipeId,
-      "protein": protein??0,
-      "fat": fat??0,
-      "carbs": carbs??0,
-      "value": value??0,
+      "mealName": mealName ?? '',
+      "calorie": calorie ?? 0,
+      "mealType": mealType ?? '',
+      "noOfServing": noOfServing ?? 0,
+      // "recipeId": recipeId,
+      "protein": protein ?? 0,
+      "fat": fat ?? 0,
+      "carbs": carbs ?? 0,
+      "value": value ?? 0,
       "userId": userId,
     };
     final response = await apiServices.post(ApiUrls.addMealLog, data);

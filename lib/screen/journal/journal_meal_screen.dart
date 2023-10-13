@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
+import 'package:gymeats_mobile/screen/journal/custom_meal_list_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_skip_meal_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/journal/journal_swap_meal_bottomsheet.dart';
@@ -161,7 +162,21 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                     ),
                     Text(journalMealScreenArguments!.mealType!.capitalize ?? '',
                         style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
-                    SizedBox(height: 20.h, width: 20.w)
+
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(
+                          () => CustomMealList(
+                              type: journalMealScreenArguments!.mealType!),
+                        );
+                      },
+                      child: Image.asset(
+                        AssetsUtils.menuIcon,
+                        height: 22.h,
+                        width: 22.w,
+                      ),
+                    )
+                    // SizedBox(height: 20.h, width: 20.w)
                   ],
                 ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                 Padding(
@@ -248,7 +263,9 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                 arguments: ScanBarcodeArguments(
                                     journalPlanBloc: journalPlanBloc,
                                     selectedDateTime:
-                                        journalMealScreenArguments!.dateTime),
+                                        journalMealScreenArguments!.dateTime,
+                                    type: journalMealScreenArguments!
+                                        .mealType!.capitalizeFirst!),
                               );
                             },
                             child: const SvgImage(

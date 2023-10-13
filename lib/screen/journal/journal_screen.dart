@@ -315,14 +315,11 @@ class _JournalScreenState extends State<JournalScreen> {
                   bloc: bloc,
                   listener: (context, state) async {
                     if (state is JournalLoadDashboardDataState) {
-                      print(
-                          'JournalLoadDashboardDataState ---- - - - - - - - - - - - - ----- ${state.data!.length}');
                       logData = state.data ?? [];
                     }
 
                     if (state is AddItemSuccessState) {
                       // bloc.add(JournalGetDashboardDataEvent());
-                      print('AddItemSuccessState - - -- - - - - - - - - -- - ');
                       logData.add(MealDataByDate(mealId: state.mealID));
                     }
 
@@ -396,6 +393,8 @@ class _JournalScreenState extends State<JournalScreen> {
                       bloc: addNewMealBloc,
                       listener: (context, state) {
                         if (state is GetCustomMealListSuccessState) {
+                          print('----->>>>>>>>>>>>>>>=1');
+
                           customMealData = state.customMealDetails!;
 
                           breakFastCustomList.clear();
@@ -1377,8 +1376,6 @@ class _JournalScreenState extends State<JournalScreen> {
     //   }
     // }
 
-    print('----->>>>>sjdnhbdhwqsabhui}');
-
     bool isEaten = false;
     logData.map((e) {
       if (e.mealId == dataList![0].id) {
@@ -1387,6 +1384,14 @@ class _JournalScreenState extends State<JournalScreen> {
         }
       }
     }).toList();
+
+    // customDataList?.forEach((element) {
+    //   if (element.id == dataList![0].id) {
+    //     if (element.value.toString() == 'ATE') {
+    //       isEaten = true;
+    //     }
+    //   }
+    // });
 
     // logData.map((e) {
     //   for (var i = 0; i < customDataList!.length; i++) {
@@ -1503,15 +1508,19 @@ class _JournalScreenState extends State<JournalScreen> {
                     '${customDataList[index].calorie} ${StringUtils.calCount}',
                 child: InkWell(
                   onTap: () {
-                    if (isEatenn![index]['isEaten'] == false) {
-                      bloc.add(
-                        AddEatenMealData(
-                          mealId: customDataList[index].id,
-                          title: customDataList[index].name,
-                          value: 1,
-                        ),
-                      );
-                    }
+                    print(
+                        '==customDataList[index]===>${customDataList[index].toJson()}');
+
+                    bloc.add(
+                      AddEatenMealData(
+                        mealId: customDataList[index].id,
+                        title: customDataList[index].name,
+                        value: 1,
+                      ),
+                    );
+
+                    print(
+                        '---------------->>>>>>>>>>>${customDataList[index].id}');
                   },
                   child: isLoaderWidgetShow ?? false
                       ? SizedBox(
@@ -1525,7 +1534,7 @@ class _JournalScreenState extends State<JournalScreen> {
                             shape: BoxShape.circle,
                             color: AppColors.skyBlue,
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Icon(
                               Icons.add,
                               color: AppColors.primaryBlue,

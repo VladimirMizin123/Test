@@ -125,7 +125,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id == state.userGroceryListId) {
-                    searchGroceryDetails.removeWhere((e) => e.id == state.userGroceryListId);
+                    searchGroceryDetails
+                        .removeWhere((e) => e.id == state.userGroceryListId);
 
                     checkbox[i]['onDelete'] = false;
 
@@ -267,7 +268,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id! == state.userGroceryListId) {
-                    searchGroceryDetails[i].quantity = searchGroceryDetails[i].quantity + 1;
+                    searchGroceryDetails[i].quantity =
+                        searchGroceryDetails[i].quantity + 1;
                     checkbox[i]['onUpdateAdd'] = false;
                     break;
                   }
@@ -327,7 +329,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               if (isSearchOn == true) {
                 for (var i = 0; i < searchGroceryDetails.length; i++) {
                   if (searchGroceryDetails[i].id! == state.userGroceryListId) {
-                    searchGroceryDetails[i].quantity = searchGroceryDetails[i].quantity - 1;
+                    searchGroceryDetails[i].quantity =
+                        searchGroceryDetails[i].quantity - 1;
                     checkbox[i]['onUpdateRemove'] = false;
                     break;
                   }
@@ -348,13 +351,21 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
               setState(() {
                 searchGroceryDetails.clear();
               });
-              Position position = await GeolocatorPlatform.instance.getCurrentPosition();
-              addNewGroceryItemBloc.add(AddGroceryToShoppingListFromSuggesticEvent(latitude: position.latitude.toString(), longitude: position.longitude.toString()));
+              Position position =
+                  await GeolocatorPlatform.instance.getCurrentPosition();
+              addNewGroceryItemBloc.add(
+                  AddGroceryToShoppingListFromSuggesticEvent(
+                      latitude: position.latitude.toString(),
+                      longitude: position.longitude.toString()));
             }
 
             if (state is ClearGroceryListErrorState) {
-              Position position = await GeolocatorPlatform.instance.getCurrentPosition();
-              addNewGroceryItemBloc.add(AddGroceryToShoppingListFromSuggesticEvent(latitude: position.latitude.toString(), longitude: position.longitude.toString()));
+              Position position =
+                  await GeolocatorPlatform.instance.getCurrentPosition();
+              addNewGroceryItemBloc.add(
+                  AddGroceryToShoppingListFromSuggesticEvent(
+                      latitude: position.latitude.toString(),
+                      longitude: position.longitude.toString()));
             }
 
             print('-------->>>>>>$selectedItemCount');
@@ -534,7 +545,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
+                        Text('Grocery List',
+                            style: FontUtils.h20(
+                                fontColor: AppColors.oxFF010101,
+                                fontWeight: FWT.semiBold)),
                       ],
                     ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
@@ -580,7 +594,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: const BorderRadius.all(Radius.circular(12)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
                           boxShadow: boxShadowWidget,
                         ),
                         child: TextFormField(
@@ -634,8 +649,10 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             hintText: 'Search for item',
                             hintStyle: FontUtils.h16(),
                             border: InputBorder.none,
-                            enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide.none),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide.none),
                           ),
                         ),
                       ),
@@ -771,7 +788,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                           fontWeight: FWT.regular),
                                     ),
                                   ],
-                                ) :
+                                )
+                          :
 
                           // : isSearchOn == true
                           //     ? searchGroceryDetails.isNotEmpty
@@ -1151,7 +1169,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                           ///Regular Data Display ===================================================
 
-                          : SingleChildScrollView(
+                          //  :
+                          SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
                               child: ListView.builder(
                                 itemCount: groceryDetails.length,
