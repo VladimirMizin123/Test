@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
@@ -316,11 +313,26 @@ class _JournalScreenState extends State<JournalScreen> {
                   listener: (context, state) async {
                     if (state is JournalLoadDashboardDataState) {
                       logData = state.data ?? [];
+                      logData.map((e) {
+                        customMealData.map((e1) {
+                          if (e.mealId == e1.id) {
+                            if (e.value == 'ATE') {
+                              e1.isEaten = true;
+                            }
+                          }
+                        });
+                      });
                     }
 
                     if (state is AddItemSuccessState) {
                       // bloc.add(JournalGetDashboardDataEvent());
+                      bloc.add(JournalGetDashboardDataEvent(
+                          dateTime: DateTime.now()));
                       logData.add(MealDataByDate(mealId: state.mealID));
+
+                      setState(() {});
+                      //
+                      // addNewMealBloc.add(GetCustomListEvent());
                     }
 
                     if (state is RemoveWaterLoadingData) {
@@ -393,8 +405,6 @@ class _JournalScreenState extends State<JournalScreen> {
                       bloc: addNewMealBloc,
                       listener: (context, state) {
                         if (state is GetCustomMealListSuccessState) {
-                          print('----->>>>>>>>>>>>>>>=1');
-
                           customMealData = state.customMealDetails!;
 
                           breakFastCustomList.clear();
@@ -402,28 +412,17 @@ class _JournalScreenState extends State<JournalScreen> {
                           dinnerDataCustomList!.clear();
                           snackDataCustomList!.clear();
                           customMealData.map((e) {
-                            if (e.type == 'Breakfast' ||
-                                e.type == 'breakfast' ||
-                                e.type == 'Breakfast ') {
+                            if (e.type!.trim() == 'Breakfast' ||
+                                e.type!.trim() == 'breakfast') {
                               breakFastCustomList.add(e);
-                              isBreakFastEatenOption.add(
-                                {'isEaten': false},
-                              );
-                            } else if (e.type == 'Lunch' ||
-                                e.type == 'lunch' ||
-                                e.type == 'Lunch ') {
+                            } else if (e.type!.trim() == 'Lunch' ||
+                                e.type!.trim() == 'lunch') {
                               lunchDataCustomList!.add(e);
-                              isLunchEatenOption.add(
-                                {'isEaten': false},
-                              );
-                            } else if (e.type == 'Dinner' ||
-                                e.type == 'dinner' ||
-                                e.type == 'Dinner ') {
+                            } else if (e.type!.trim() == 'Dinner' ||
+                                e.type!.trim() == 'dinner') {
                               dinnerDataCustomList!.add(e);
-                              isDinnerEatenOption.add({'isEaten': false});
                             } else {
                               snackDataCustomList!.add(e);
-                              isSnackEatenOption.add({'isEaten': false});
                             }
                           }).toList();
                         }
@@ -1375,7 +1374,7 @@ class _JournalScreenState extends State<JournalScreen> {
     //     isDone = true; element.value == "ATE";
     //   }
     // }
-
+    print('==isLoaderWidgetShow====>${isLoaderWidgetShow}');
     bool isEaten = false;
     logData.map((e) {
       if (e.mealId == dataList![0].id) {
@@ -1385,13 +1384,15 @@ class _JournalScreenState extends State<JournalScreen> {
       }
     }).toList();
 
-    // customDataList?.forEach((element) {
-    //   if (element.id == dataList![0].id) {
-    //     if (element.value.toString() == 'ATE') {
-    //       isEaten = true;
-    //     }
-    //   }
-    // });
+    logData.map((e) {
+      customDataList?.forEach((element) {
+        if (e.mealId == element.id) {
+          if (e.value.toString() == 'ATE') {
+            element.isEaten = true;
+          }
+        }
+      });
+    }).toList();
 
     // logData.map((e) {
     //   for (var i = 0; i < customDataList!.length; i++) {
@@ -1507,10 +1508,7 @@ class _JournalScreenState extends State<JournalScreen> {
                 subTitle:
                     '${customDataList[index].calorie} ${StringUtils.calCount}',
                 child: InkWell(
-                  onTap: () {
-                    print(
-                        '==customDataList[index]===>${customDataList[index].toJson()}');
-
+                  onTap: () async {
                     bloc.add(
                       AddEatenMealData(
                         mealId: customDataList[index].id,
@@ -1518,11 +1516,14 @@ class _JournalScreenState extends State<JournalScreen> {
                         value: 1,
                       ),
                     );
-
-                    print(
-                        '---------------->>>>>>>>>>>${customDataList[index].id}');
+                    // bloc.add(
+                    //     JournalGetDashboardDataEvent(dateTime: DateTime.now()));
                   },
-                  child: isLoaderWidgetShow ?? false
+                  child: bloc.state is AddItemLoadingState &&
+                          (bloc.state as AddItemLoadingState)
+                                  .itemId
+                                  .toString() ==
+                              customDataList[index].id.toString()
                       ? SizedBox(
                           height: 25.h,
                           width: 25.w,
@@ -1534,9 +1535,11 @@ class _JournalScreenState extends State<JournalScreen> {
                             shape: BoxShape.circle,
                             color: AppColors.skyBlue,
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Icon(
-                              Icons.add,
+                              customDataList[index].isEaten
+                                  ? Icons.check
+                                  : Icons.add,
                               color: AppColors.primaryBlue,
                             ),
                           ),

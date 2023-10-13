@@ -47,10 +47,12 @@ class GetUserJournalBloc
   final GetExerciseDetailsRepository _exerciseDetailsRepository =
       GetExerciseDetailsRepository();
 
-  _onGetSurveyData(JournalGetDashboardDataEvent event, Emitter<GetUserJournalState> emit) async {
+  _onGetSurveyData(JournalGetDashboardDataEvent event,
+      Emitter<GetUserJournalState> emit) async {
     try {
       // final response = await _journalDataRepository.getDashboardData();
-      final data = await _journalDataRepository.getMealLogByDate(DateFormat('yyyy-MM-dd').format(event.dateTime!));
+      final data = await _journalDataRepository
+          .getMealLogByDate(DateFormat('yyyy-MM-dd').format(event.dateTime!));
 
       // response.fold((left) {}, (right) {
       data.fold(
@@ -173,8 +175,21 @@ class GetUserJournalBloc
       AddEatenMealData event, Emitter<GetUserJournalState> emit) async {
     try {
       emit(LoadingDoneState());
-      emit(AddItemLoadingState(title: event.title));
-      await _eatenMealRepository.addEatenMeal(userId: userId, mealId: event.mealId ?? '', recipeId: event.recipeId ?? '', noOfServing: event.noOfServing ?? 0, mealName: event.mealName ?? '', mealType: event.mealType ?? '', calorie: event.calorie ?? 0, protein: event.protein ?? 0, fat: event.fat ?? 0, carbs: event.carbs ?? 0, value: event.value ?? 0).fold((left) {
+      emit(AddItemLoadingState(title: event.title, itemId: event.mealId));
+      await _eatenMealRepository
+          .addEatenMeal(
+              userId: userId,
+              mealId: event.mealId ?? '',
+              recipeId: event.recipeId ?? '',
+              noOfServing: event.noOfServing ?? 0,
+              mealName: event.mealName ?? '',
+              mealType: event.mealType ?? '',
+              calorie: event.calorie ?? 0,
+              protein: event.protein ?? 0,
+              fat: event.fat ?? 0,
+              carbs: event.carbs ?? 0,
+              value: event.value ?? 0)
+          .fold((left) {
         emit(AddItemErrorState(title: event.title, mealID: event.mealId));
         showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) {

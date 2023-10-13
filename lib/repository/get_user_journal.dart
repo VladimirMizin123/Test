@@ -28,6 +28,8 @@ class GetUserJournalDataRepository {
       String date) async {
     final response =
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
+    print(
+        'getMealLogByDate URL : ${'${ApiUrls.getMealLogByDate}/$userId?date=$date'}');
     print('getMealLogByDate response : ${response.body}');
     print('getMealLogByDate response statusCode : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {

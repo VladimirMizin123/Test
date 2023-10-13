@@ -55,6 +55,7 @@ class CustomMealDetails {
   double? calorie;
   String? type;
   String? userId;
+  bool isEaten;
 
   CustomMealDetails({
     this.id,
@@ -67,6 +68,7 @@ class CustomMealDetails {
     this.calorie,
     this.type,
     this.userId,
+    this.isEaten = false,
   });
 
   factory CustomMealDetails.fromJson(Map<String, dynamic> json) =>
