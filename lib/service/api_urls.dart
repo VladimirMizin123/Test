@@ -139,6 +139,13 @@ class ApiUrls {
   static const String updateUserGroceryItem =
       '${baseUrl}api/UserGroceryList/UpdateUserGroceryList';
 
+  // static const String clearUserGroceryList =
+  //     '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
+  //
+  // // Custom Meal Details Api
+  // static const String addNewMeal =
+  //     '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
+
   static const String getCustomMeal =
       '${baseUrl}api/UserCustomMeal/GetUserCustomMealList';
 }
