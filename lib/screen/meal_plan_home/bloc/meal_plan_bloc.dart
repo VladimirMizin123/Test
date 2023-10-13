@@ -51,7 +51,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
         });
       }, (right) {
         emit(ClearGroceryListSuccessState());
-        showToast(isSuccess: true, message: right.message ?? 'Added!');
+        // showToast(isSuccess: true, message: right.message ?? 'Added!');
       });
     } catch (e) {
       // showToast(isSuccess: false, message: e.toString());

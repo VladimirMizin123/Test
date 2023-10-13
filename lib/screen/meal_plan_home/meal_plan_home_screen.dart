@@ -252,10 +252,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                             onTap: () {
                               mealPlanBloc.add(ClearUserGroceryMealPlanEvent());
                             },
-                            child: Text(
-                                    state is ClearGroceryListSuccessState
-                                        ? StringUtils.regenerateGroceryList
-                                        : 'Clear Grocery List',
+                            child: Text(StringUtils.regenerateGroceryList,
                                     style: FontUtils.h18(
                                         fontColor: AppColors.primaryBlue,
                                         fontWeight: FWT.medium))
