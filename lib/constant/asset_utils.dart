@@ -80,7 +80,11 @@ class AssetsUtils {
   static const currentLocationMarker =
       "assets/image/current_location_marker.png";
   static const menuIcon = "assets/image/menu_icon.png";
+  static const restaurantFood = "assets/image/restaurant_food.png";
+  static const restaurantFood1 = "assets/image/restaurant_food1.png";
+  static const restaurantFood2 = "assets/image/restaurant_food2.png";
 
+  /// SVG
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
   static const icFemaleChart = '${svgPath}ic_female_chart.svg';
@@ -123,6 +127,7 @@ class AssetsUtils {
   static const icFlagIcon = '${svgPath}ic_flag_icon.svg';
   static const gymEatsLogoRound = '${svgPath}gym_eats_logo.svg';
   static const googleLogo = '${svgPath}google.svg';
+  static const icLike = '${svgPath}ic_like.svg';
 
   /// Icons
 
@@ -161,4 +166,5 @@ class AssetsUtils {
   static const searchPen = "assets/icon/searchPen.png";
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
+  static const deliveryVehicle = "assets/icon/delivery_veh.png";
 }

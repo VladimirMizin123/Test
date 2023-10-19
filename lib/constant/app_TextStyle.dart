@@ -11,5 +11,10 @@ class AppTextStyle {
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle gymEatsStyle = TextStyle(color: Colors.green, fontSize: 24.sp, fontWeight: FontWeight.w400, height: 0);
+  static TextStyle gymEatsStyle = TextStyle(
+    color: Colors.green,
+    fontSize: 24.sp,
+    fontWeight: FontWeight.w400,
+    height: 0,
+  );
 }

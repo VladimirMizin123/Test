@@ -34,6 +34,7 @@ Widget buildButton(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           hasImage == true
               ? Padding(
@@ -615,25 +616,27 @@ Widget simpleTextBorderButton({
                 borderRadius: BorderRadius.circular(8))
             : BoxDecoration(
                 border: Border.all(
-                    color: AppColors.primaryBlue, width: isDarkColor ? 2 : 1),
+                    color: color ?? AppColors.primaryBlue,
+                    width: isDarkColor ? 2 : 1),
                 borderRadius: BorderRadius.circular(10)),
         child: Center(
-            child: isLoadingWidget
-                ? Transform.scale(
-                    scale: 0.5,
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                    ))
-                : Text(buttonLable!,
-                    style: isFillColor
-                        ? FontUtils.h16(
-                            fontColor: lableColor ?? AppColors.whiteColor,
-                            fontWeight:
-                                isDarkColor ? FWT.semiBold : FWT.regular)
-                        : FontUtils.h16(
-                            fontColor: lableColor ?? AppColors.primaryBlue,
-                            fontWeight:
-                                isDarkColor ? FWT.semiBold : FWT.regular))),
+          child: isLoadingWidget
+              ? Transform.scale(
+                  scale: 0.5,
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                  ))
+              : Text(
+                  buttonLable!,
+                  style: isFillColor
+                      ? FontUtils.h16(
+                          fontColor: AppColors.whiteColor,
+                          fontWeight: isDarkColor ? FWT.semiBold : FWT.regular)
+                      : FontUtils.h16(
+                          fontColor: lableColor ?? AppColors.primaryBlue,
+                          fontWeight: isDarkColor ? FWT.semiBold : FWT.regular),
+                ),
+        ),
       ),
     ),
   );

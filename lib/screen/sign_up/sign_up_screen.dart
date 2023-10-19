@@ -176,26 +176,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               textColor: Colors.white,
                               bgColor: Colors.black,
                               title: StringUtils.google),
-                  Wrap(
-                    children: [
-                      Text(StringUtils.alreadyAccount,
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: StringUtils.alreadyAccount,
                           style: textTheme.bodyMedium!.copyWith(
                             color: const Color(0xFF373737),
-                          )),
-                      InkWell(
-                        onTap: () {
-                          Get.toNamed('/LoginScreen');
-                          // Login Screen
-                        },
-                        child: Text(StringUtils.logIn,
-                            style: textTheme.bodyLarge!.copyWith(
-                                decoration: TextDecoration.underline,
-                                color: themeData.primaryColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400)),
-                      ),
-                    ],
-                  ).paddingOnly(top: 22.h),
+                          ),
+                        ),
+                        TextSpan(
+                          text: StringUtils.logIn,
+                          style: textTheme.bodyLarge!.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: themeData.primaryColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Single tapped.
+                              Get.toNamed('/LoginScreen');
+                            },
+                        ),
+                      ],
+                    ),
+                  ).paddingOnly(top: 22),
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
