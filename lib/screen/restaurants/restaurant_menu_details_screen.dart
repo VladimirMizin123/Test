@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -35,11 +36,17 @@ class _RestaurantMenuDetailsScreenState
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                child: GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.white,
+                  ),
                 ),
               )
             ],
@@ -199,8 +206,8 @@ class _RestaurantMenuDetailsScreenState
                             borderRadius: BorderRadius.circular(6),
                             color: AppColors.coral,
                           ),
-                          child: Center(
-                            child: const Icon(Icons.add,
+                          child: const Center(
+                            child: Icon(Icons.add,
                                 size: 27, color: AppColors.terracotta),
                           ),
                         ),
@@ -220,7 +227,7 @@ class _RestaurantMenuDetailsScreenState
                   context: context,
                   isDarkColor: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Center(
