@@ -8,18 +8,18 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
-class DeliverOrderBottomSheet extends StatefulWidget {
-  const DeliverOrderBottomSheet({super.key});
+class LogFoodIntakeBottomSheet extends StatefulWidget {
+  const LogFoodIntakeBottomSheet({super.key});
 
   @override
-  State<DeliverOrderBottomSheet> createState() =>
-      _DeliverOrderBottomSheetState();
+  State<LogFoodIntakeBottomSheet> createState() =>
+      _LogFoodIntakeBottomSheetState();
 }
 
-class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
+class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
   int selectedIndex = -1;
+  List option = ['BreakFast', 'Lunch', 'Snack', 'Dinner'];
 
-  List option = ['Bring me the order', 'I will pick it myself'];
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -29,26 +29,27 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
           topLeft: Radius.circular(25), topRight: Radius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
+        child: IntrinsicHeight(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: 3.h,
-                    width: 80.w,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.disable),
-                  )),
+                alignment: Alignment.center,
+                child: Container(
+                  height: 3.h,
+                  width: 80.w,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.disable),
+                ),
+              ),
               const SizedBox(height: 10),
               SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
               const SizedBox(height: 15),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  'How would you like to receive your order?',
+                  'For which meal will we write down the dish?',
                   style: FontUtils.h20(
                     fontColor: AppColors.darkGray,
                     fontWeight: FWT.medium,
@@ -57,7 +58,7 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
               ),
               const SizedBox(height: 15),
               myWidget(
-                  title: 'Bring me the order',
+                  title: 'Breakfast',
                   isSelected: selectedIndex == 0 ? true : false,
                   onTap: () {
                     setState(() {
@@ -66,11 +67,29 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                   }),
               const SizedBox(height: 10),
               myWidget(
-                  title: 'I will pick it myself',
+                  title: 'Lunch',
                   isSelected: selectedIndex == 1 ? true : false,
                   onTap: () {
                     setState(() {
                       selectedIndex = 1;
+                    });
+                  }),
+              const SizedBox(height: 10),
+              myWidget(
+                  title: 'Snack',
+                  isSelected: selectedIndex == 2 ? true : false,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 2;
+                    });
+                  }),
+              const SizedBox(height: 10),
+              myWidget(
+                  title: 'Dinner',
+                  isSelected: selectedIndex == 3 ? true : false,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 3;
                     });
                   }),
               const SizedBox(height: 15),
@@ -78,7 +97,7 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                 context: context,
                 color: AppColors.terracotta,
                 lableColor: AppColors.terracotta,
-                buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
+                buttonLable: selectedIndex == -1 ? 'Back' : 'Log Dish',
                 height: screenSize.height * 0.065,
                 width: screenSize.width,
                 isLoadingWidget: false,

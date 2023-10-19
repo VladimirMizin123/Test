@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -15,139 +19,365 @@ class FilterScreen extends StatefulWidget {
 
 class _FilterScreenState extends State<FilterScreen> {
   List mealType = [
-    'Rating   >',
-    'Price   >',
-    'Fast Delivery   >',
+    'Rating',
+    'Price',
+    'Fast Delivery',
   ];
+
+  List mealData = [
+    {
+      'image': AssetsUtils.food,
+      'title': 'Asian',
+    },
+    {
+      'image': AssetsUtils.food1,
+      'title': 'Italian',
+    },
+    {
+      'image': AssetsUtils.food2,
+      'title': 'Chinese',
+    },
+    {
+      'image': AssetsUtils.food,
+      'title': 'Asian',
+    },
+    {
+      'image': AssetsUtils.food1,
+      'title': 'Italian',
+    },
+    {
+      'image': AssetsUtils.food2,
+      'title': 'Chinese',
+    },
+    {
+      'image': AssetsUtils.food,
+      'title': 'Asian',
+    },
+    {
+      'image': AssetsUtils.food1,
+      'title': 'Italian',
+    },
+    {
+      'image': AssetsUtils.food2,
+      'title': 'Chinese',
+    },
+    {
+      'image': AssetsUtils.food,
+      'title': 'Asian',
+    },
+    {
+      'image': AssetsUtils.food1,
+      'title': 'Italian',
+    },
+    {
+      'image': AssetsUtils.food2,
+      'title': 'Chinese',
+    },
+  ];
+  List selectedTabData = [];
+  List selectedCategoryData = [];
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Image.asset(
-                  AssetsUtils.gymEatsSpoon,
-                  height: 22.h,
-                  width: 56.w,
-                  color: AppColors.terracotta,
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Image.asset(
+                AssetsUtils.gymEatsSpoon,
+                height: 22.h,
+                width: 56.w,
+                color: AppColors.terracotta,
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 21),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                      ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 8, bottom: 21, left: 16, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
                     ),
-                    const Text(
-                      'All Filters',
-                      style: TextStyle(
-                        color: Color(0xFF010101),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 22,
-                      ),
-                      textAlign: TextAlign.center,
+                  ),
+                  const Text(
+                    'All Filters',
+                    style: TextStyle(
+                      color: Color(0xFF010101),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 22,
                     ),
-                    const SizedBox(
-                      width: 30,
-                    )
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  )
+                ],
               ),
-              Text(
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
                 'Sort by',
                 style: FontUtils.h24(
                   fontColor: const Color(0xff000000),
                   fontWeight: FWT.medium,
                 ),
               ),
+            ),
 
-              /// Tab bar ----------------------------------------------------------------------
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 24),
-                child: SizedBox(
-                  height: 40.h,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: mealType.length,
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Container(
+            /// Tab bar ----------------------------------------------------------------------
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 16, bottom: 24, right: 16, left: 16),
+              child: SizedBox(
+                height: 40.h,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: mealType.length,
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (selectedTabData.contains(mealType[index])) {
+                          setState(() {
+                            selectedTabData.remove(mealType[index]);
+                          });
+                        } else {
+                          setState(() {
+                            selectedTabData.add(mealType[index]);
+                          });
+                        }
+                      },
+                      child: Container(
                         margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 9, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
                         decoration: BoxDecoration(
-                          color: AppColors.lightGrey,
+                          color: selectedTabData.contains(mealType[index])
+                              ? AppColors.coral
+                              : AppColors.lightGrey,
                           borderRadius: BorderRadius.circular(100),
                         ),
-                        child: Center(
-                          child: Text(
-                            mealType[index],
-                            style: FontUtils.h18(
-                              fontColor: AppColors.darkGray,
-                              fontWeight: FWT.medium,
+                        child: Row(
+                          children: [
+                            index == 0
+                                ? Padding(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    child: Icon(
+                                      Icons.star,
+                                      color: selectedTabData
+                                              .contains(mealType[index])
+                                          ? AppColors.terracotta
+                                          : AppColors.darkGray,
+                                    ),
+                                  )
+                                : const SizedBox(),
+                            Text(
+                              mealType[index],
+                              style: FontUtils.h18(
+                                fontColor:
+                                    selectedTabData.contains(mealType[index])
+                                        ? AppColors.terracotta
+                                        : AppColors.darkGray,
+                                fontWeight: FWT.medium,
+                              ),
                             ),
-                          ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              size: 15,
+                              color: selectedTabData.contains(mealType[index])
+                                  ? AppColors.terracotta
+                                  : AppColors.darkGray,
+                            )
+                          ],
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
+            ),
 
-              Text(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
                 'Browse by category',
                 style: FontUtils.h24(
                   fontColor: Colors.black,
                   fontWeight: FWT.medium,
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ),
+            ),
 
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    mainAxisExtent: 110,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Container(
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  mainAxisExtent: MediaQuery.of(context).size.height * 0.12,
+                ),
+                physics: const BouncingScrollPhysics(),
+                itemCount: mealData.length,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (selectedCategoryData.contains(mealData[index])) {
+                        setState(() {
+                          selectedCategoryData.remove(mealData[index]);
+                        });
+                      } else {
+                        setState(() {
+                          selectedCategoryData.add(mealData[index]);
+                        });
+                      }
+                    },
+                    child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: selectedCategoryData.contains(mealData[index])
+                            ? AppColors.coral
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(8),
+                        border: selectedCategoryData.contains(mealData[index])
+                            ? Border.all(color: AppColors.terracotta)
+                            : const Border(),
                         boxShadow: [
                           BoxShadow(
                             color: const Color(0xff004C63).withOpacity(0.08),
                             offset: const Offset(0, 0),
                             blurRadius: 16,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 4.h, left: 3.h),
+                              child: Text(
+                                mealData[index]['title'],
+                                style: FontUtils.h17(
+                                  fontColor: Colors.black,
+                                  fontWeight: FWT.regular,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.12,
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                bottomRight: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  mealData[index]['image'],
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           )
                         ],
                       ),
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCategoryData.clear();
+                      });
+                    },
+                    child: Container(
+                      height: 48,
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
+                        border: Border.all(
+                            color: selectedCategoryData.isEmpty
+                                ? AppColors.disabledColor
+                                : AppColors.terracotta,
+                            width: 2),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Clear',
+                          style: FontUtils.h18(
+                            fontColor: selectedCategoryData.isEmpty
+                                ? AppColors.disabledColor
+                                : AppColors.terracotta,
+                            fontWeight: FWT.medium,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (selectedCategoryData.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: 'Select atleast 1 Category',
+                        );
+                      }
+                    },
+                    child: Container(
+                      height: 48,
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: selectedCategoryData.isEmpty
+                            ? AppColors.disabledColor
+                            : AppColors.terracotta,
+                        border: Border.all(
+                          color: selectedCategoryData.isEmpty
+                              ? AppColors.disabledColor
+                              : AppColors.terracotta,
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Apply',
+                          style: FontUtils.h18(
+                            fontColor: Colors.white,
+                            fontWeight: FWT.medium,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

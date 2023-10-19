@@ -148,4 +148,9 @@ class ApiUrls {
 
   static const String getCustomMeal =
       '${baseUrl}api/UserCustomMeal/GetUserCustomMealList';
+
+  /// Restaurant Apis ------------------------------------------------------------
+
+  static const String getUserAddress =
+      '${baseUrl}api/UserAddress/GetAllUserAddress';
 }

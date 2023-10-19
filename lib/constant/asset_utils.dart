@@ -83,6 +83,10 @@ class AssetsUtils {
   static const restaurantFood = "assets/image/restaurant_food.png";
   static const restaurantFood1 = "assets/image/restaurant_food1.png";
   static const restaurantFood2 = "assets/image/restaurant_food2.png";
+  static const food = "assets/image/food.png";
+  static const food1 = "assets/image/food1.png";
+  static const food2 = "assets/image/food2.png";
+  static const food3 = "assets/image/food3.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';
@@ -128,6 +132,8 @@ class AssetsUtils {
   static const gymEatsLogoRound = '${svgPath}gym_eats_logo.svg';
   static const googleLogo = '${svgPath}google.svg';
   static const icLike = '${svgPath}ic_like.svg';
+  static const icCanEat = '${svgPath}ic_caneat.png';
+  static const icAdd = '${svgPath}ic_add.png';
 
   /// Icons
 
