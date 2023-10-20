@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
@@ -17,6 +19,8 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
 
 class _RestaurantMenuDetailsScreenState
     extends State<RestaurantMenuDetailsScreen> {
+  int item = 0;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -29,7 +33,6 @@ class _RestaurantMenuDetailsScreenState
               Container(
                 height: 305.h,
                 decoration: const BoxDecoration(
-                  color: Colors.red,
                   image: DecorationImage(
                     image: AssetImage(AssetsUtils.food3),
                     fit: BoxFit.cover,
@@ -77,7 +80,7 @@ class _RestaurantMenuDetailsScreenState
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(right: 10.w, bottom: 14.h),
+                  padding: EdgeInsets.only(right: 10.w, bottom: 10.h),
                   child: Text(
                     'Fried onions, green peppers, mixed cheese, served with fries',
                     style: FontUtils.h14(
@@ -163,11 +166,18 @@ class _RestaurantMenuDetailsScreenState
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 10),
+                  padding: const EdgeInsets.only(top: 8, bottom: 18),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
+                        onTap: () {
+                          if (item != 0) {
+                            setState(() {
+                              item--;
+                            });
+                          }
+                        },
                         child: Container(
                           height: size.height * 0.060,
                           width: size.height * 0.060,
@@ -175,10 +185,12 @@ class _RestaurantMenuDetailsScreenState
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(color: AppColors.terracotta)),
                           child: Center(
-                              child: SvgPicture.asset(
-                            AssetsUtils.icDelete,
-                            color: AppColors.terracotta,
-                          )),
+                              child: item == 1 || item == 0
+                                  ? SvgPicture.asset(
+                                      AssetsUtils.icDelete,
+                                      color: AppColors.terracotta,
+                                    )
+                                  : const Icon(Icons.remove)),
                           // child: const Center(child: Icon(Icons.remove, size: 27)),
                         ),
                       ),
@@ -187,11 +199,12 @@ class _RestaurantMenuDetailsScreenState
                         height: size.height * 0.060,
                         width: size.height * 0.060,
                         decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.disable),
-                            borderRadius: BorderRadius.circular(6)),
+                          border: Border.all(color: AppColors.disable),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                         child: Center(
                             child: Text(
-                          '0',
+                          '$item',
                           style: FontUtils.h18(
                               fontWeight: FWT.semiBold,
                               fontColor: AppColors.darkGray),
@@ -199,6 +212,11 @@ class _RestaurantMenuDetailsScreenState
                       ),
                       SizedBox(width: 8.w),
                       GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            item++;
+                          });
+                        },
                         child: Container(
                           height: size.height * 0.060,
                           width: size.height * 0.060,
@@ -215,18 +233,31 @@ class _RestaurantMenuDetailsScreenState
                     ],
                   ),
                 ),
-                simpleTextBorderButton(
-                  color: AppColors.terracotta,
-                  width: size.width,
+                RestaurantMealAddButtonWidget(
+                  onTap: () {
+                    if (item > 0) {
+                      Get.to(
+                        () => const RestaurantCart(),
+                        transition: Transition.fadeIn,
+                      );
+                    }
+                  },
+                  buttonLable: item == 0 ? 'Add to cart' : 'View Cart',
                   isFillColor: true,
-                  height: 48.h,
-                  isLoadingWidget: false,
-                  buttonLable: 'Add to Cart',
-                  lableColor: Colors.white,
-                  onTap: () {},
-                  context: context,
-                  isDarkColor: false,
+                  selectedItemCount: item,
                 ),
+                // simpleTextBorderButton(
+                //   color: AppColors.terracotta,
+                //   width: size.width,
+                //   isFillColor: true,
+                //   height: 40.h,
+                //   isLoadingWidget: false,
+                //   buttonLable: 'Add to Cart',
+                //   lableColor: Colors.white,
+                //   onTap: () {},
+                //   context: context,
+                //   isDarkColor: false,
+                // ),
                 const SizedBox(
                   height: 5,
                 ),

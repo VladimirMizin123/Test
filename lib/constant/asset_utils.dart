@@ -134,6 +134,9 @@ class AssetsUtils {
   static const icLike = '${svgPath}ic_like.svg';
   static const icCanEat = '${svgPath}ic_caneat.png';
   static const icAdd = '${svgPath}ic_add.png';
+  static const icRemove = '${svgPath}ic_remove.svg';
+  static const debitCard = '${svgPath}debit_card.svg';
+  static const deliveryInfo = '${svgPath}delivery_info.svg';
 
   /// Icons
 

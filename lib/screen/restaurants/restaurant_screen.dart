@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -98,7 +98,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: BlocConsumer(
+        child: bloc.BlocConsumer(
           bloc: restaurantBloc,
           listener: (context, state) {
             if (state is GetUserAddressSuccessState) {
@@ -344,9 +344,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                     }
 
                                     if (index == 0) {
-                                      Get.to(
-                                        () => const FilterScreen(),
-                                      );
+                                      Get.to(() => FilterScreen(),
+                                          transition: Transition.fadeIn);
                                     }
                                   },
                                   child: Container(
@@ -419,6 +418,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                     restaurantName: restaurantData[index]
                                         ['name'],
                                   ),
+                                  transition: Transition.fadeIn,
                                 );
                               },
                               child: Container(

@@ -27,7 +27,7 @@ class RestaurantMealAddButtonWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Container(
             width: double.infinity.w,
-            height: 45.h,
+            height: 40.h,
             decoration: BoxDecoration(
                 border: Border.all(color: AppColors.terracotta, width: 1),
                 color: AppColors.terracotta,
@@ -50,20 +50,23 @@ class RestaurantMealAddButtonWidget extends StatelessWidget {
                       : Container(
                           // height: screenSize.height * 0.04,
                           // width: screenSize.height * 0.04,
-                          margin: EdgeInsets.symmetric(vertical: 10.h),
+                          margin: EdgeInsets.symmetric(vertical: 5.h),
                           padding: EdgeInsets.symmetric(
                               vertical: 2.h, horizontal: 10.w),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
-                            color: Color(0xffA55642),
+                            color: const Color(0xffA55642),
                           ),
                           child: Center(
-                              child: Text(
-                            selectedItemCount.toString(),
-                            style: FontUtils.h18(
-                                fontColor: AppColors.coral,
-                                fontWeight: FWT.semiBold),
-                          ))),
+                            child: Text(
+                              selectedItemCount.toString(),
+                              style: FontUtils.h18(
+                                  fontColor: AppColors.coral,
+                                  fontWeight: FWT.semiBold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                 ],
               ),
             )),

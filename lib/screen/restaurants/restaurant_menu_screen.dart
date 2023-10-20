@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
 
@@ -147,6 +148,27 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                             selectedTabData.add(mealType[index]);
                           });
                         }
+
+                        if (index != 0) {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return FilterBottomSheet(
+                                filterType: mealType[index],
+                              );
+                            },
+                            isDismissible: false,
+                            shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16.r),
+                                topRight: Radius.circular(16.r),
+                              ),
+                              borderSide: const BorderSide(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -225,6 +247,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           mealName:
                               'Smoked Mackerel Salad With Fennel And Apple',
                         ),
+                        transition: Transition.fadeIn,
                       );
                     },
                     child: Column(
@@ -293,6 +316,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                         Get.to(
                                           () =>
                                               const RestaurantMenuDetailsScreen(),
+                                          transition: Transition.fadeIn,
                                         );
                                       },
                                       child: Image.asset(
