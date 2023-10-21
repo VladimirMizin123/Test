@@ -5,6 +5,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 
 class AddressConfirmation extends StatefulWidget {
@@ -192,8 +193,10 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     userData.addAddressModel = addAddressModel;
 
                     Get.toNamed('/PremiumScreen', arguments: userData);
-                  } else {
+                  } else if (widget.arguments['string'] == 'isFromDashboard') {
                     Get.offAllNamed('/AppManagerScreen');
+                  } else {
+                    Get.back(result: 'streetName.text');
                   }
                 }
               },

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as s;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
@@ -20,7 +22,7 @@ import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
-
+import 'dart:ui' as ui;
 import '../../bloc/google_map/add_address/add_address_event.dart';
 import '../../bloc/google_map/add_address/add_address_state.dart';
 
@@ -59,14 +61,8 @@ class _GetUserAddressState extends State<GetUserAddress>
     BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(
-        size: Size(0, 0),
-      ),
-      AssetsUtils.currentLocationMarker,
-    ).then((d) {
-      customIcon = d;
-    });
+    customIcon = BitmapDescriptor.fromBytes(
+        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
 
     selectedLatLng = LatLng(position.latitude, position.longitude);
@@ -80,7 +76,7 @@ class _GetUserAddressState extends State<GetUserAddress>
       Marker(
         markerId: const MarkerId('0'),
         position: LatLng(position.latitude, position.longitude),
-        icon: customIcon!,
+        icon: customIcon,
       )
     ];
     mapController
@@ -88,6 +84,19 @@ class _GetUserAddressState extends State<GetUserAddress>
     setState(() {});
     return true;
   }
+
+  /// Marker Icon for location ---------------------------------------------------------
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await s.rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
+  /// Permission Handler for location ---------------------------------------------------------
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -500,14 +509,10 @@ class _GetUserAddressState extends State<GetUserAddress>
                         onTap: (argument) async {
                           BitmapDescriptor? customIcon;
 
-                          await BitmapDescriptor.fromAssetImage(
-                            const ImageConfiguration(
-                              size: Size(0, 0),
-                            ),
-                            AssetsUtils.locationMarker,
-                          ).then((d) {
-                            customIcon = d;
-                          });
+                          customIcon = BitmapDescriptor.fromBytes(
+                            await getBytesFromAsset(
+                                AssetsUtils.locationMarker, 150),
+                          );
 
                           if (markers.length > 1) {
                             markers.removeLast();
@@ -517,7 +522,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                               markerId: const MarkerId('1'),
                               position:
                                   LatLng(argument.latitude, argument.longitude),
-                              icon: customIcon!,
+                              icon: customIcon,
                             ),
                           );
 
@@ -729,6 +734,16 @@ class _GetUserAddressState extends State<GetUserAddress>
                                 arguments: argumentsValue,
                               ),
                             );
+                          } else if (argumentsValue['string'] ==
+                              'isFromCheckout') {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddressConfirmation(
+                                    locationData: addressData,
+                                    arguments: argumentsValue,
+                                  ),
+                                ));
                           } else {
                             bloc.add(
                               SaveClickEvent(

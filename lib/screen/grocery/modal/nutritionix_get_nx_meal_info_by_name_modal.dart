@@ -4,9 +4,13 @@
 
 import 'dart:convert';
 
-NutritionixGetNxMealInfoByNameModel nutritionixGetNxMealInfoByNameModelFromJson(String str) => NutritionixGetNxMealInfoByNameModel.fromJson(json.decode(str));
+NutritionixGetNxMealInfoByNameModel nutritionixGetNxMealInfoByNameModelFromJson(
+        String str) =>
+    NutritionixGetNxMealInfoByNameModel.fromJson(json.decode(str));
 
-String nutritionixGetNxMealInfoByNameModelToJson(NutritionixGetNxMealInfoByNameModel data) => json.encode(data.toJson());
+String nutritionixGetNxMealInfoByNameModelToJson(
+        NutritionixGetNxMealInfoByNameModel data) =>
+    json.encode(data.toJson());
 
 class NutritionixGetNxMealInfoByNameModel {
   final bool? success;
@@ -21,11 +25,15 @@ class NutritionixGetNxMealInfoByNameModel {
     this.data,
   });
 
-  factory NutritionixGetNxMealInfoByNameModel.fromJson(Map<String, dynamic> json) => NutritionixGetNxMealInfoByNameModel(
+  factory NutritionixGetNxMealInfoByNameModel.fromJson(
+          Map<String, dynamic> json) =>
+      NutritionixGetNxMealInfoByNameModel(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? null : NutritionixGetNxMealInfoByNameModelData.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : NutritionixGetNxMealInfoByNameModelData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,9 +52,9 @@ class NutritionixGetNxMealInfoByNameModelData {
   final num? servingWeightGrams;
   final num? nfMetricQty;
   final String? nfMetricUom;
-  final num? nfCalories;
-  final num? nfTotalFat;
-  final num? nfSaturatedFat;
+  final dynamic nfCalories;
+  final dynamic nfTotalFat;
+  final dynamic nfSaturatedFat;
   final num? nfCholesterol;
   final num? nfSodium;
   final num? nfTotalCarbohydrate;
@@ -115,7 +123,9 @@ class NutritionixGetNxMealInfoByNameModelData {
     this.nfIngredientStatement,
   });
 
-  factory NutritionixGetNxMealInfoByNameModelData.fromJson(Map<String, dynamic> json) => NutritionixGetNxMealInfoByNameModelData(
+  factory NutritionixGetNxMealInfoByNameModelData.fromJson(
+          Map<String, dynamic> json) =>
+      NutritionixGetNxMealInfoByNameModelData(
         foodName: json["food_name"],
         brandName: json["brand_name"],
         servingQty: json["serving_qty"],
@@ -134,12 +144,17 @@ class NutritionixGetNxMealInfoByNameModelData {
         nfProtein: json["nf_protein"],
         nfPotassium: json["nf_potassium"],
         nfP: json["nf_p"],
-        fullNutrients: json["full_nutrients"] == null ? [] : List<FullNutrient>.from(json["full_nutrients"]!.map((x) => FullNutrient.fromJson(x))),
+        fullNutrients: json["full_nutrients"] == null
+            ? []
+            : List<FullNutrient>.from(
+                json["full_nutrients"]!.map((x) => FullNutrient.fromJson(x))),
         nixBrandName: json["nix_brand_name"],
         nixBrandId: json["nix_brand_id"],
         nixItemName: json["nix_item_name"],
         nixItemId: json["nix_item_id"],
-        metadata: json["metadata"] == null ? null : Metadata.fromJson(json["metadata"]),
+        metadata: json["metadata"] == null
+            ? null
+            : Metadata.fromJson(json["metadata"]),
         source: json["source"],
         ndbNo: json["ndb_no"],
         tags: json["tags"],
@@ -151,7 +166,9 @@ class NutritionixGetNxMealInfoByNameModelData {
         classCode: json["class_code"],
         brickCode: json["brick_code"],
         tagId: json["tag_id"],
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
         nfIngredientStatement: json["nf_ingredient_statement"],
       );
 
@@ -174,7 +191,9 @@ class NutritionixGetNxMealInfoByNameModelData {
         "nf_protein": nfProtein,
         "nf_potassium": nfPotassium,
         "nf_p": nfP,
-        "full_nutrients": fullNutrients == null ? [] : List<dynamic>.from(fullNutrients!.map((x) => x.toJson())),
+        "full_nutrients": fullNutrients == null
+            ? []
+            : List<dynamic>.from(fullNutrients!.map((x) => x.toJson())),
         "nix_brand_name": nixBrandName,
         "nix_brand_id": nixBrandId,
         "nix_item_name": nixItemName,

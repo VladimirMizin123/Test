@@ -9,8 +9,8 @@ import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantCart extends StatefulWidget {
-  const RestaurantCart({super.key});
-
+  const RestaurantCart({super.key, required this.data});
+  final Map<String, dynamic> data;
   @override
   State<RestaurantCart> createState() => _RestaurantCartState();
 }
@@ -71,7 +71,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
             Expanded(
               child: ListView.separated(
                 shrinkWrap: true,
-                itemCount: 2,
+                itemCount: 1,
                 physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.zero,
                 separatorBuilder: (context, index) {
@@ -96,7 +96,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '1x',
+                                      '${widget.data['count']}x',
                                       style: FontUtils.h18(
                                         fontColor: Colors.black,
                                         fontWeight: FWT.medium,
@@ -109,7 +109,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                         SizedBox(
                                           width: 230.w,
                                           child: Text(
-                                            'Smoked Mackerel Salad With Fennel And Apple',
+                                            widget.data['title'],
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.regular),
@@ -129,7 +129,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                       ],
                                     ),
                                     Text(
-                                      '\$6.00',
+                                      widget.data['price'],
                                       style: FontUtils.h18(
                                         fontColor: Colors.black,
                                         fontWeight: FWT.medium,
@@ -142,7 +142,13 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        if (widget.data['count'] != 1) {
+                                          setState(() {
+                                            widget.data['count']--;
+                                          });
+                                        }
+                                      },
                                       child: SvgPicture.asset(
                                         AssetsUtils.icRemove,
                                         height: 22.h,
@@ -150,7 +156,11 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        setState(() {
+                                          widget.data['count']++;
+                                        });
+                                      },
                                       child: Image.asset(
                                         AssetsUtils.icAdd,
                                         height: 22.h,

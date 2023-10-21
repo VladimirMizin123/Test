@@ -10,7 +10,8 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dar
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
-  const RestaurantMenuDetailsScreen({super.key});
+  const RestaurantMenuDetailsScreen({super.key, required this.data});
+  final Map<String, dynamic> data;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>
@@ -20,7 +21,8 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
 class _RestaurantMenuDetailsScreenState
     extends State<RestaurantMenuDetailsScreen> {
   int item = 0;
-
+  bool selectFirst = false;
+  bool selectSecond = false;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -28,31 +30,31 @@ class _RestaurantMenuDetailsScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              Container(
-                height: 305.h,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(AssetsUtils.food3),
-                    fit: BoxFit.cover,
+          Expanded(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(AssetsUtils.food3),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 30.h, left: 15.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-                child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                  ),
-                ),
-              )
-            ],
+            ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -63,7 +65,7 @@ class _RestaurantMenuDetailsScreenState
                   height: 8,
                 ),
                 Text(
-                  'Chicken Quesadilla',
+                  widget.data['title'],
                   style: FontUtils.h24(
                     fontColor: Colors.black,
                     fontWeight: FWT.medium,
@@ -72,7 +74,7 @@ class _RestaurantMenuDetailsScreenState
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text(
-                    '\$6.00',
+                    widget.data['price'],
                     style: FontUtils.h18(
                       fontColor: Colors.black,
                       fontWeight: FWT.medium,
@@ -139,9 +141,18 @@ class _RestaurantMenuDetailsScreenState
                       ),
                     ),
                     const Spacer(),
-                    Image.asset(
-                      AssetsUtils.icAdd,
-                      height: 24.h,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectFirst = true;
+                        });
+                      },
+                      child: Image.asset(
+                        selectFirst == true
+                            ? AssetsUtils.terracotaCheck
+                            : AssetsUtils.icAdd,
+                        height: 24.h,
+                      ),
                     )
                   ],
                 ),
@@ -159,9 +170,18 @@ class _RestaurantMenuDetailsScreenState
                       ),
                     ),
                     const Spacer(),
-                    Image.asset(
-                      AssetsUtils.icAdd,
-                      height: 24.h,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectSecond = true;
+                        });
+                      },
+                      child: Image.asset(
+                        selectSecond == true
+                            ? AssetsUtils.terracotaCheck
+                            : AssetsUtils.icAdd,
+                        height: 24.h,
+                      ),
                     )
                   ],
                 ),
@@ -237,7 +257,12 @@ class _RestaurantMenuDetailsScreenState
                   onTap: () {
                     if (item > 0) {
                       Get.to(
-                        () => const RestaurantCart(),
+                        () => RestaurantCart(data: {
+                          'image': AssetsUtils.restaurantFood1,
+                          'title': widget.data['title'],
+                          'price': widget.data['price'],
+                          'count': item
+                        }),
                         transition: Transition.fadeIn,
                       );
                     }

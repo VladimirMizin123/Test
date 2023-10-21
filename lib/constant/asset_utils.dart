@@ -87,6 +87,11 @@ class AssetsUtils {
   static const food1 = "assets/image/food1.png";
   static const food2 = "assets/image/food2.png";
   static const food3 = "assets/image/food3.png";
+  static const scanner = "assets/image/scanner.png";
+  static const journalBG7 = "assets/image/journalBg7.png";
+  static const canEatRed = "assets/image/can_eat_red.png";
+  static const canEatYellow = "assets/image/can_eat_yellow.png";
+  static const terracotaCheck = "assets/image/check.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';
@@ -137,6 +142,8 @@ class AssetsUtils {
   static const icRemove = '${svgPath}ic_remove.svg';
   static const debitCard = '${svgPath}debit_card.svg';
   static const deliveryInfo = '${svgPath}delivery_info.svg';
+  static const icVisa = '${svgPath}ic_visa.svg';
+  static const vegetables = '${svgPath}vegetables.svg';
 
   /// Icons
 

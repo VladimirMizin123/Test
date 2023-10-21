@@ -230,7 +230,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                   ],
                                 ),
                                 child: TextFormField(
-                                  readOnly: true,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
@@ -331,7 +330,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    if (selectedFoodOrigin
+                                    if (index == 0) {
+                                      Get.to(() => const FilterScreen(),
+                                          transition: Transition.fadeIn);
+                                    } else if (selectedFoodOrigin
                                         .contains(mealType[index])) {
                                       setState(() {
                                         selectedFoodOrigin
@@ -341,11 +343,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                       setState(() {
                                         selectedFoodOrigin.add(mealType[index]);
                                       });
-                                    }
-
-                                    if (index == 0) {
-                                      Get.to(() => FilterScreen(),
-                                          transition: Transition.fadeIn);
                                     }
                                   },
                                   child: Container(

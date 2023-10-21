@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,11 +10,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
+import 'package:gymeats_mobile/screen/get_location/get_location.dart';
+import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/order_details_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/payment_method_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
+import 'dart:ui' as ui;
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({super.key});
-
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
@@ -29,6 +41,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   LatLng? selectedLatLng;
   String? selectedLocationValue;
   List<Marker> markers = [];
+
+  /// Get Current location ---------------------------------------------------------
   Future getCurrentLocation() async {
     bool serviceEnabled = await _handleLocationPermission();
     if (!serviceEnabled) return;
@@ -36,14 +50,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(
-        size: Size(0, 0),
-      ),
-      AssetsUtils.currentLocationMarker,
-    ).then((d) {
-      customIcon = d;
-    });
+    customIcon = BitmapDescriptor.fromBytes(
+        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
+
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
 
     selectedLatLng = LatLng(position.latitude, position.longitude);
@@ -53,19 +62,33 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       zoom: 14.4746,
     );
 
-    markers = [
-      Marker(
-        markerId: const MarkerId('0'),
-        position: LatLng(position.latitude, position.longitude),
-        icon: customIcon!,
-      )
-    ];
+    setState(() {
+      markers = [
+        Marker(
+          markerId: const MarkerId('0'),
+          position: LatLng(position.latitude, position.longitude),
+          icon: customIcon!,
+        )
+      ];
+    });
     mapController
         .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
     setState(() {});
     return true;
   }
 
+  /// Marker Icon for location ---------------------------------------------------------
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
+  /// Permission Handler for location ---------------------------------------------------------
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -151,10 +174,22 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     return true;
   }
 
+  String result = '';
+  List<dynamic> data = [];
   @override
   void initState() {
+    getData();
     super.initState();
     getCurrentLocation();
+  }
+
+  List cardData = [];
+
+  getData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    data = jsonDecode(pref.getString('cardData').toString());
+    setState(() {});
   }
 
   @override
@@ -242,31 +277,100 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             )
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(AssetsUtils.debitCard),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            const Text(
-                              'Choose payment\nmethod',
-                              style: TextStyle(
-                                color: Color(0xff010101),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
+                        child: data.isEmpty
+                            ? Row(
+                                children: [
+                                  SvgPicture.asset(AssetsUtils.debitCard),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  const Text(
+                                    'Choose payment\nmethod',
+                                    style: TextStyle(
+                                      color: Color(0xff010101),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await Get.to(
+                                        () => const PaymentMethodScreen(),
+                                        transition: Transition.fadeIn,
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text('Edit',
+                                            style: FontUtils.h14(
+                                                fontColor: AppColors.terracotta,
+                                                fontWeight: FWT.lightMedium)),
+                                        const Icon(
+                                          Icons.keyboard_arrow_right_sharp,
+                                          color: AppColors.terracotta,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  SvgPicture.asset(AssetsUtils.icVisa),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  const Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Visa',
+                                        style: TextStyle(
+                                          color: Color(0xff010101),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Ending 1234',
+                                        style: TextStyle(
+                                          color: Color(0xff010101),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await Get.to(
+                                        () => const PaymentMethodScreen(),
+                                        transition: Transition.fadeIn,
+                                      )!
+                                          .then((value) => (value) {
+                                                setState(() {
+                                                  getData();
+                                                });
+                                              });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text('Edit',
+                                            style: FontUtils.h14(
+                                                fontColor: AppColors.terracotta,
+                                                fontWeight: FWT.lightMedium)),
+                                        const Icon(
+                                          Icons.keyboard_arrow_right_sharp,
+                                          color: AppColors.terracotta,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
-                            const Spacer(),
-                            Text('Edit',
-                                style: FontUtils.h14(
-                                    fontColor: AppColors.terracotta,
-                                    fontWeight: FWT.lightMedium)),
-                            const Icon(
-                              Icons.keyboard_arrow_right_sharp,
-                              color: AppColors.terracotta,
-                            )
-                          ],
-                        ),
                       ),
 
                       ///Delivery info --------------------------------------------------------------------
@@ -300,23 +404,51 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             const SizedBox(
                               width: 15,
                             ),
-                            const Text(
-                              'Bring me the order',
-                              style: TextStyle(
+                            Text(
+                              result.isEmpty ? 'Bring me the order' : result,
+                              style: const TextStyle(
                                 color: Color(0xff010101),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
                             const Spacer(),
-                            Text('Edit',
-                                style: FontUtils.h14(
-                                    fontColor: AppColors.terracotta,
-                                    fontWeight: FWT.lightMedium)),
-                            const Icon(
-                              Icons.keyboard_arrow_right_sharp,
-                              color: AppColors.terracotta,
-                            )
+                            GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return const DeliverOrderBottomSheet();
+                                  },
+                                  isDismissible: false,
+                                  shape: OutlineInputBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(16.r),
+                                      topRight: Radius.circular(16.r),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: Colors.transparent,
+                                    ),
+                                  ),
+                                ).then((value) {
+                                  setState(() {
+                                    result = value;
+                                  });
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  Text('Edit',
+                                      style: FontUtils.h14(
+                                          fontColor: AppColors.terracotta,
+                                          fontWeight: FWT.lightMedium)),
+                                  const Icon(
+                                    Icons.keyboard_arrow_right_sharp,
+                                    color: AppColors.terracotta,
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -347,47 +479,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 myLocationButtonEnabled: true,
                                 zoomControlsEnabled: false,
                                 compassEnabled: true,
-                                onTap: (argument) async {
-                                  BitmapDescriptor? customIcon;
-
-                                  await BitmapDescriptor.fromAssetImage(
-                                    const ImageConfiguration(
-                                      size: Size(0, 0),
-                                    ),
-                                    AssetsUtils.locationMarker,
-                                  ).then((d) {
-                                    customIcon = d;
-                                  });
-
-                                  // if (markers.length > 1) {
-                                  //   markers.removeLast();
-                                  // }
-                                  // markers.add(
-                                  //   Marker(
-                                  //     markerId: const MarkerId('1'),
-                                  //     position:
-                                  //     LatLng(argument.latitude, argument.longitude),
-                                  //     icon: customIcon!,
-                                  //   ),
-                                  // );
-                                  //
-                                  // selectedLatLng =
-                                  //     LatLng(argument.latitude, argument.longitude);
-                                  // currentPosition = CameraPosition(
-                                  //   target:
-                                  //   LatLng(argument.latitude, argument.longitude),
-                                  //   zoom: 14.4746,
-                                  // );
-                                  // mapController.animateCamera(
-                                  //     CameraUpdate.newCameraPosition(currentPosition));
-                                  //
-                                  // findAddressURL(
-                                  //   lat: argument.latitude.toString(),
-                                  //   lng: argument.longitude.toString(),
-                                  // );
-                                  //
-                                  // setState(() {});
-                                },
+                                onTap: (argument) async {},
                               ),
                             ),
                             Padding(
@@ -409,9 +501,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     ),
                                   ),
                                   const Spacer(),
-                                  const Icon(
-                                    Icons.keyboard_arrow_right_sharp,
-                                    color: AppColors.darkGray,
+                                  GestureDetector(
+                                    onTap: () async {
+                                      Get.to(() => const GetUserAddress(),
+                                          transition: Transition.fadeIn,
+                                          arguments: {
+                                            "string": 'isFromCheckout',
+                                            "userData": ''
+                                          });
+                                    },
+                                    child: const Icon(
+                                      Icons.keyboard_arrow_right_sharp,
+                                      color: AppColors.darkGray,
+                                    ),
                                   )
                                 ],
                               ),
@@ -493,7 +595,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
+                            horizontal: 16, vertical: 0),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -506,12 +608,22 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             )
                           ],
                         ),
-                        child: const Text(
-                          'Cut the bread, please!',
-                          style: TextStyle(
-                            color: AppColors.darkGray,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.all(0),
+                            hintText: 'Add order Notes.....',
                           ),
                         ),
                       ),
@@ -526,11 +638,20 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             ),
             Container(
               width: MediaQuery.of(context).size.width,
-              color: Colors.white,
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  color: const Color(0xff004C63).withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 0),
+                )
+              ]),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Column(
                   children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       children: [
                         Text(
@@ -596,7 +717,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       ],
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 8.h),
+                      padding: EdgeInsets.only(top: 5.h),
                       child: Row(
                         children: [
                           Text(
@@ -625,11 +746,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         isFillColor: true,
                         height: 40.h,
                         isLoadingWidget: false,
-                        buttonLable: 'Checkout ',
+                        buttonLable: 'Confirm ',
                         lableColor: Colors.white,
                         onTap: () {
                           Get.to(
-                            () => const CheckOutScreen(),
+                            () => const RestaurantOrderDetailsScreen(),
                             transition: Transition.fadeIn,
                           );
                         },

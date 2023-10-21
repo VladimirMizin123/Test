@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -26,11 +25,48 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   ];
 
   List selectedTabData = [];
+
   List mealType = [
     'I can eat',
     'Price',
     'Rating',
   ];
+
+  List<Map<String, dynamic>> menuData = [
+    {
+      'image': AssetsUtils.restaurantFood,
+      'title': 'Smoked Mackerel Salad With Fennel And Apple',
+      'ingredients':
+          'Fried onions, green peppers, mixed cheese, served with fries',
+      'price': '\$6.00',
+      'canEatImage': AssetsUtils.icCanEat
+    },
+    {
+      'image': AssetsUtils.restaurantFood1,
+      'title': 'Pizza With Mozzarella',
+      'ingredients':
+          'Fried onions, green peppers, mixed cheese, served with fries',
+      'price': '\$8.00',
+      'canEatImage': AssetsUtils.icCanEat
+    },
+    {
+      'image': AssetsUtils.restaurantFood2,
+      'title': 'Pork With Potatoes',
+      'ingredients':
+          'Fried onions, green peppers, mixed cheese, served with fries',
+      'price': '\$5.00',
+      'canEatImage': AssetsUtils.canEatYellow
+    },
+    {
+      'image': AssetsUtils.restaurantFood,
+      'title': 'Smoked Mackerel Salad With Fennel And Apple',
+      'ingredients':
+          'Fried onions, green peppers, mixed cheese, served with fries',
+      'price': '\$6.00',
+      'canEatImage': AssetsUtils.canEatRed
+    },
+  ];
+
   int select = 0;
   @override
   Widget build(BuildContext context) {
@@ -231,7 +267,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             Expanded(
               child: ListView.separated(
                 shrinkWrap: true,
-                itemCount: 5,
+                itemCount: menuData.length,
                 physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.zero,
                 separatorBuilder: (context, index) {
@@ -243,9 +279,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   return GestureDetector(
                     onTap: () {
                       Get.to(
-                        () => const RestaurantMealDetails(
-                          mealName:
-                              'Smoked Mackerel Salad With Fennel And Apple',
+                        () => RestaurantMealDetails(
+                          mealName: menuData[index]['title'],
                         ),
                         transition: Transition.fadeIn,
                       );
@@ -261,7 +296,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Image.asset(
-                                  AssetsUtils.restaurantFood,
+                                  menuData[index]['image'],
                                   width: 80.w,
                                 ),
                                 Column(
@@ -274,14 +309,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                         SizedBox(
                                           width: 140.w,
                                           child: Text(
-                                            'Smoked Mackerel Salad With Fennel And Apple',
+                                            menuData[index]['title'],
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.regular),
                                           ),
                                         ),
                                         Image.asset(
-                                          AssetsUtils.icCanEat,
+                                          menuData[index]['canEatImage'],
                                           width: 30.w,
                                           height: 30.h,
                                         ),
@@ -290,7 +325,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     SizedBox(
                                       width: 160.w,
                                       child: Text(
-                                        'Fried onions, green peppers, mixed cheese, served with fries',
+                                        menuData[index]['ingredients'],
                                         style: FontUtils.h14(
                                           fontColor: const Color(0xffA2A4A7),
                                           fontWeight: FWT.light,
@@ -305,7 +340,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '\$6.00',
+                                      menuData[index]['price'],
                                       style: FontUtils.h18(
                                         fontColor: Colors.black,
                                         fontWeight: FWT.medium,
@@ -314,8 +349,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     GestureDetector(
                                       onTap: () {
                                         Get.to(
-                                          () =>
-                                              const RestaurantMenuDetailsScreen(),
+                                          () => RestaurantMenuDetailsScreen(
+                                            data: menuData[index],
+                                          ),
                                           transition: Transition.fadeIn,
                                         );
                                       },
