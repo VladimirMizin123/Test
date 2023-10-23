@@ -111,7 +111,8 @@ class FontUtils {
       fontFamily: 'Avenir',
     );
   }
-   static TextStyle h17({
+
+  static TextStyle h17({
     Color? fontColor,
     FWT fontWeight = FWT.regular,
   }) {

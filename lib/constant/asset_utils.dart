@@ -80,7 +80,20 @@ class AssetsUtils {
   static const currentLocationMarker =
       "assets/image/current_location_marker.png";
   static const menuIcon = "assets/image/menu_icon.png";
+  static const restaurantFood = "assets/image/restaurant_food.png";
+  static const restaurantFood1 = "assets/image/restaurant_food1.png";
+  static const restaurantFood2 = "assets/image/restaurant_food2.png";
+  static const food = "assets/image/food.png";
+  static const food1 = "assets/image/food1.png";
+  static const food2 = "assets/image/food2.png";
+  static const food3 = "assets/image/food3.png";
+  static const scanner = "assets/image/scanner.png";
+  static const journalBG7 = "assets/image/journalBg7.png";
+  static const canEatRed = "assets/image/can_eat_red.png";
+  static const canEatYellow = "assets/image/can_eat_yellow.png";
+  static const terracotaCheck = "assets/image/check.png";
 
+  /// SVG
   static const svgPath = 'assets/svg/';
   static const icMaleChart = '${svgPath}ic_male_chart.svg';
   static const icFemaleChart = '${svgPath}ic_female_chart.svg';
@@ -123,6 +136,14 @@ class AssetsUtils {
   static const icFlagIcon = '${svgPath}ic_flag_icon.svg';
   static const gymEatsLogoRound = '${svgPath}gym_eats_logo.svg';
   static const googleLogo = '${svgPath}google.svg';
+  static const icLike = '${svgPath}ic_like.svg';
+  static const icCanEat = '${svgPath}ic_caneat.png';
+  static const icAdd = '${svgPath}ic_add.png';
+  static const icRemove = '${svgPath}ic_remove.svg';
+  static const debitCard = '${svgPath}debit_card.svg';
+  static const deliveryInfo = '${svgPath}delivery_info.svg';
+  static const icVisa = '${svgPath}ic_visa.svg';
+  static const vegetables = '${svgPath}vegetables.svg';
 
   /// Icons
 
@@ -161,4 +182,5 @@ class AssetsUtils {
   static const searchPen = "assets/icon/searchPen.png";
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
+  static const deliveryVehicle = "assets/icon/delivery_veh.png";
 }

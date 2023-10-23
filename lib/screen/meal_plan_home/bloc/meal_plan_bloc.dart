@@ -114,6 +114,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
+
       emit(FetchMealPlanErrorState());
     }
   }

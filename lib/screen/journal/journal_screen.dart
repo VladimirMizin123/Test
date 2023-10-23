@@ -382,7 +382,6 @@ class _JournalScreenState extends State<JournalScreen> {
                     }
 
                     if (state is LoadWaterData) {
-                      print('------->>>ADDD');
                       waterData = state.data;
                       waterML = waterData!.totalWaterIntake!;
                     }
@@ -1374,7 +1373,6 @@ class _JournalScreenState extends State<JournalScreen> {
     //     isDone = true; element.value == "ATE";
     //   }
     // }
-    print('==isLoaderWidgetShow====>${isLoaderWidgetShow}');
     bool isEaten = false;
     logData.map((e) {
       if (e.mealId == dataList![0].id) {
@@ -1394,17 +1392,6 @@ class _JournalScreenState extends State<JournalScreen> {
       });
     }).toList();
 
-    // logData.map((e) {
-    //   for (var i = 0; i < customDataList!.length; i++) {
-    //     print('=-======>?>>>>>${e.mealId == customDataList[i].id}');
-    //
-    //     if (e.mealId == customDataList[i].id) {
-    //       if (e.value.toString() == 'ATE') {}
-    //     }
-    //   }
-    // }).toList();
-
-    // CONFLICT RESOLVED
     return Column(
       children: [
         InkWell(
@@ -1462,14 +1449,29 @@ class _JournalScreenState extends State<JournalScreen> {
               child: InkWell(
                 onTap: () {
                   if (!isEaten) {
-                    bloc.add(AddEatenMealData(
-                      mealId: dataList[0].id!,
-                      title: title,
-                      value: 1,
-                    ));
+                    bloc.add(
+                      AddEatenMealData(
+                        value: 1,
+                        mealName: dataList[0].recipe!.name,
+                        recipeId: dataList[0].recipe!.id,
+                        mealType: dataList[0].meal,
+                        noOfServing: dataList[0].numOfServings,
+                        userId: PreferenceUtils.getString(prefUserData),
+                        calorie:
+                            dataList[0].recipe!.nutrientsPerServing!.calories,
+                        carbs: dataList[0].recipe!.nutrientsPerServing!.carbs,
+                        fat: dataList[0].recipe!.nutrientsPerServing!.fat,
+                        protein:
+                            dataList[0].recipe!.nutrientsPerServing!.protein,
+                        title: dataList[0].recipe!.name,
+                        mealId: dataList[0].id,
+                      ),
+                    );
                   }
                 },
-                child: isLoaderWidgetShow ?? false
+                child: bloc.state is AddItemLoadingState &&
+                        (bloc.state as AddItemLoadingState).itemId.toString() ==
+                            dataList[0].id.toString()
                     ? SizedBox(
                         height: 25.h,
                         width: 25.w,
@@ -1511,11 +1513,20 @@ class _JournalScreenState extends State<JournalScreen> {
                   onTap: () async {
                     bloc.add(
                       AddEatenMealData(
-                        mealId: customDataList[index].id,
-                        title: customDataList[index].name,
                         value: 1,
+                        mealName: customDataList[index].name,
+                        mealType: customDataList[index].type,
+                        noOfServing: customDataList[index].quantity,
+                        userId: PreferenceUtils.getString(prefUserData),
+                        calorie: customDataList[index].calorie,
+                        carbs: customDataList[index].carbs,
+                        fat: customDataList[index].fat,
+                        protein: customDataList[index].protein,
+                        title: customDataList[index].name,
+                        mealId: customDataList[index].id,
                       ),
                     );
+
                     // bloc.add(
                     //     JournalGetDashboardDataEvent(dateTime: DateTime.now()));
                   },

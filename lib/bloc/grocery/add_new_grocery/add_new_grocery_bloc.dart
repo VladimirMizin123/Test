@@ -41,7 +41,7 @@ class AddNewGroceryItemBloc
           onFailError(emit: emit, text: left.errorMessage!);
         },
         (right) {
-          showToast(isSuccess: true, message: right.message!);
+          showToast(isSuccess: true, message: 'Ingredients Added Successfully');
           emit(AddGroceryItemSuccessfulState(productId: event.id ?? ''));
         },
       );
