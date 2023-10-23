@@ -153,4 +153,8 @@ class ApiUrls {
 
   static const String getUserAddress =
       '${baseUrl}api/UserAddress/GetAllUserAddress';
+  static const String getRestaurantList =
+      '${baseUrl}api/MealMe/GetRestaurantsNearBy';
+  static const String getRestaurantMenuList =
+      '${baseUrl}api/MealMe/GetRestaurantMenuList';
 }

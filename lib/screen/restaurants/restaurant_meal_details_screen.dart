@@ -23,9 +23,11 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 
 class RestaurantMealDetails extends StatefulWidget {
-  const RestaurantMealDetails({super.key, required this.mealName});
+  const RestaurantMealDetails(
+      {super.key, required this.mealName, required this.mealImage});
 
   final String mealName;
+  final String mealImage;
 
   @override
   State<RestaurantMealDetails> createState() => _RestaurantMealDetailsState();
@@ -138,7 +140,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                     Text(
                                       nutritionixGetNxMealInfoByNameModelData!
                                               .foodName ??
-                                          '',
+                                          widget.mealName,
                                       style: FontUtils.h20(
                                           fontColor: AppColors.black,
                                           fontWeight: FWT.semiBold),
@@ -151,10 +153,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                       height: 120.h,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
-                                        image: const DecorationImage(
-                                            image:
-                                                AssetImage(AssetsUtils.food3),
-                                            fit: BoxFit.cover),
+                                        image: widget.mealImage.isEmpty
+                                            ? const DecorationImage(
+                                                image: AssetImage(
+                                                    AssetsUtils.food3),
+                                                fit: BoxFit.cover)
+                                            : DecorationImage(
+                                                image: NetworkImage(
+                                                    widget.mealImage),
+                                                fit: BoxFit.cover),
                                       ),
                                     ),
                                     const SizedBox(
@@ -163,10 +170,11 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                     GridView(
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 2,
-                                              crossAxisSpacing: 6.w,
-                                              mainAxisSpacing: 6.h),
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 2,
+                                        crossAxisSpacing: 6.w,
+                                        mainAxisSpacing: 6.h,
+                                      ),
                                       shrinkWrap: true,
                                       physics:
                                           const NeverScrollableScrollPhysics(),

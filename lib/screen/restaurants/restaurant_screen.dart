@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +15,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/filter_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
 
@@ -56,36 +59,36 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     'Cheap',
   ];
 
-  List restaurantData = [
-    {
-      'type': 'Free Delivery',
-      'image': AssetsUtils.restaurantFood,
-      'name': 'GaGa',
-      'origin': 'Italian',
-    },
-    {
-      'type': 'Eat out only',
-      'image': AssetsUtils.restaurantFood1,
-      'name': 'Asian Rest',
-      'origin': 'Asian',
-    },
-    {
-      'type': 'Pick up only',
-      'image': AssetsUtils.restaurantFood2,
-      'name': 'Italian Rest',
-      'origin': 'Italian',
-    },
-  ];
+  // List restaurantData = [
+  //   {
+  //     'type': 'Free Delivery',
+  //     'image': AssetsUtils.restaurantFood,
+  //     'name': 'GaGa',
+  //     'origin': 'Italian',
+  //   },
+  //   {
+  //     'type': 'Eat out only',
+  //     'image': AssetsUtils.restaurantFood1,
+  //     'name': 'Asian Rest',
+  //     'origin': 'Asian',
+  //   },
+  //   {
+  //     'type': 'Pick up only',
+  //     'image': AssetsUtils.restaurantFood2,
+  //     'name': 'Italian Rest',
+  //     'origin': 'Italian',
+  //   },
+  // ];
 
   List selectedFoodOrigin = [];
-  List<UserAddress> userAddress = [];
+  UserAddress? getUserAddress;
+  List<RestaurantList> restaurantList = [];
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool loading = false;
   var result = '';
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showBottomSheet();
       restaurantBloc.add(GetUserAddressEvent());
@@ -102,7 +105,45 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           bloc: restaurantBloc,
           listener: (context, state) {
             if (state is GetUserAddressSuccessState) {
-              userAddress = state.userAddress;
+              for (var i = 0; i < state.userAddress.length; i++) {
+                if (state.userAddress[i].isPrimary == true) {
+                  getUserAddress = state.userAddress[i];
+                  restaurantBloc.add(
+                    GetRestaurantListEvent(
+                      getUserAddress?.latitude ?? 0,
+                      getUserAddress?.longitude ?? 0,
+                      getUserAddress?.streetNum ?? '',
+                      getUserAddress?.streetName ?? '',
+                      getUserAddress?.city ?? '',
+                      getUserAddress?.state ?? '',
+                      getUserAddress?.country ?? '',
+                      getUserAddress?.zipcode ?? '',
+                      false,
+                      5,
+                    ),
+                  );
+                  break;
+                }
+              }
+              if (getUserAddress == null) {
+                getUserAddress = state.userAddress[0];
+
+                restaurantBloc.add(
+                  GetRestaurantListEvent(
+                    getUserAddress?.latitude ?? 0,
+                    getUserAddress?.longitude ?? 0,
+                    getUserAddress?.streetNum ?? '',
+                    getUserAddress?.streetName ?? '',
+                    getUserAddress?.city ?? '',
+                    getUserAddress?.state ?? '',
+                    getUserAddress?.country ?? '',
+                    getUserAddress?.zipcode ?? '',
+                    false,
+                    5,
+                  ),
+                );
+              }
+
               loading = false;
             }
 
@@ -111,6 +152,18 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             }
 
             if (state is GetUserAddressErrorState) {
+              loading = false;
+            }
+
+            if (state is GetRestaurantListLoadingState) {
+              loading = true;
+            }
+            if (state is GetRestaurantListSuccessState) {
+              restaurantList = state.restaurantList;
+
+              loading = false;
+            }
+            if (state is GetRestaurantListErrorState) {
               loading = false;
             }
           },
@@ -291,29 +344,36 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         ),
 
                         /// Location ---------------------------------------------------------------------
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AssetsUtils.icRestaurants,
-                              height: 14,
-                              width: 12,
-                            ),
-                            SizedBox(
-                              width: 150,
-                              child: Text(
-                                userAddress.isEmpty
-                                    ? 'No Location'
-                                    : '${userAddress[0].streetName}',
-                                style: FontUtils.h14(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.lightMedium,
+                        IntrinsicWidth(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 55.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AssetsUtils.icRestaurants,
+                                  height: 14,
+                                  width: 12,
                                 ),
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          ],
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    getUserAddress == null
+                                        ? 'No Location'
+                                        : getUserAddress?.streetName ?? '',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
 
                         /// Tab bar ----------------------------------------------------------------------
@@ -397,185 +457,250 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
                         /// Restaurant list --------------------------------------------------------------
 
-                        Expanded(
-                          child: ListView.separated(
-                            itemCount: restaurantData.length,
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            padding: const EdgeInsets.only(bottom: 10, top: 5),
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(
-                                height: 16,
-                              );
-                            },
-                            itemBuilder: (context, index) => GestureDetector(
-                              onTap: () {
-                                Get.to(
-                                  () => RestaurantMenuScreen(
-                                    restaurantName: restaurantData[index]
-                                        ['name'],
-                                  ),
-                                  transition: Transition.fadeIn,
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
+                        restaurantList.isEmpty
+                            ? Expanded(
+                                child: Center(
+                                  child: Text('Currently No Restaurant Found',
+                                      style: FontUtils.h18(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium,
+                                      )),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Container(
-                                      height: 160,
+                              )
+                            : Expanded(
+                                child: ListView.separated(
+                                  itemCount: restaurantList.length,
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding:
+                                      const EdgeInsets.only(bottom: 10, top: 5),
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(
+                                      height: 16,
+                                    );
+                                  },
+                                  itemBuilder: (context, index) =>
+                                      GestureDetector(
+                                    onTap: () {
+                                      Get.to(
+                                        () => RestaurantMenuScreen(
+                                          restaurantName:
+                                              restaurantList[index].name ?? '',
+                                          restaurantId:
+                                              restaurantList[index].id!,
+                                        ),
+                                        transition: Transition.fadeIn,
+                                      );
+                                    },
+                                    child: Container(
                                       width: MediaQuery.of(context).size.width,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              restaurantData[index]['image']),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.max,
                                         children: [
                                           Container(
-                                            width: 109,
-                                            margin: const EdgeInsets.all(12),
+                                            height: 160,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
                                             decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: Center(
-                                              child: Text(
-                                                restaurantData[index]['type'],
-                                                style: FontUtils.h16(
-                                                  fontColor: Colors.black,
-                                                  fontWeight: FWT.regular,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Container(
-                                              height: 30,
-                                              width: 109,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                              margin: const EdgeInsets.all(9),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                      AssetsUtils.icLike),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 4),
-                                                    child: Center(
-                                                      child: Text(
-                                                        '95%',
-                                                        style: FontUtils.h16(
-                                                          fontColor:
-                                                              Colors.black,
-                                                          fontWeight:
-                                                              FWT.regular,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Center(
-                                                    child: Text(
-                                                      '(145)',
-                                                      style: FontUtils.h12(
-                                                        fontColor:
-                                                            AppColors.disable,
-                                                        fontWeight: FWT.regular,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 8, bottom: 4),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            restaurantData[index]['name'],
-                                            style: FontUtils.h18(
-                                              fontColor: AppColors.darkGray,
-                                              fontWeight: FWT.semiBold,
-                                            ),
-                                          ),
-                                          Container(
-                                            height: 22,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.lightGrey,
                                               borderRadius:
                                                   BorderRadius.circular(8),
+                                              image: restaurantList[index]
+                                                      .logoPhotos!
+                                                      .isEmpty
+                                                  ? const DecorationImage(
+                                                      image: AssetImage(
+                                                        AssetsUtils
+                                                            .restaurantFood,
+                                                      ),
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : DecorationImage(
+                                                      image: NetworkImage(
+                                                          restaurantList[index]
+                                                              .logoPhotos![0]),
+                                                      fit: BoxFit.cover,
+                                                    ),
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                restaurantData[index]['origin'],
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                restaurantList[index]
+                                                            .quotes!
+                                                            .cheapestDelivery!
+                                                            .deliveryFee!
+                                                            .deliveryFeeFlat ==
+                                                        0
+                                                    ? Container(
+                                                        width: 109,
+                                                        margin: const EdgeInsets
+                                                            .all(12),
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8)),
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Free Delivery',
+                                                            style:
+                                                                FontUtils.h16(
+                                                              fontColor:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FWT.regular,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : const SizedBox(),
+                                                const Spacer(),
+                                                Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: Container(
+                                                    height: 30,
+                                                    width: 109,
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                    margin:
+                                                        const EdgeInsets.all(9),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8)),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                            AssetsUtils.icLike),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      4),
+                                                          child: Center(
+                                                            child: Text(
+                                                              restaurantList[
+                                                                      index]
+                                                                  .weightedRatingValue!
+                                                                  .toStringAsFixed(
+                                                                      1),
+                                                              style:
+                                                                  FontUtils.h16(
+                                                                fontColor:
+                                                                    Colors
+                                                                        .black,
+                                                                fontWeight:
+                                                                    FWT.regular,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Center(
+                                                          child: Text(
+                                                            '(${restaurantList[index].aggregatedRatingCount ?? ''})',
+                                                            style:
+                                                                FontUtils.h12(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .disable,
+                                                              fontWeight:
+                                                                  FWT.regular,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 8, bottom: 4),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    restaurantList[index]
+                                                            .name ??
+                                                        '',
+                                                    style: FontUtils.h18(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.semiBold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  height: 22,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 8),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.lightGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Italian',
+                                                      style: FontUtils.h14(
+                                                        fontColor:
+                                                            AppColors.darkGray,
+                                                        fontWeight:
+                                                            FWT.lightMedium,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                AssetsUtils.deliveryVehicle,
+                                                width: 15,
+                                                height: 15,
+                                                color: AppColors.darkGray,
+                                              ),
+                                              const SizedBox(
+                                                width: 8,
+                                              ),
+                                              Text(
+                                                '\$ ${restaurantList[index].quotes!.cheapestDelivery!.deliveryFee!.deliveryFeeFlat ?? 0}  •  ${restaurantList[index].quotes!.cheapestDelivery!.timeEstimate!.minimum ?? 0}-${restaurantList[index].quotes!.cheapestDelivery!.timeEstimate!.maximum ?? 0} min',
                                                 style: FontUtils.h14(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.lightMedium,
                                                 ),
-                                              ),
-                                            ),
+                                              )
+                                            ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          AssetsUtils.deliveryVehicle,
-                                          width: 15,
-                                          height: 15,
-                                          color: AppColors.darkGray,
-                                        ),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        Text(
-                                          '\$ 20.99  •  15-25 min',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        )
+                              )
                       ],
                     ),
                   );

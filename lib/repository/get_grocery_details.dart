@@ -34,11 +34,7 @@ class AddNewGroceryItemRepository {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       print('FailBOdeweDYYY--${response.body}');
-      return Left(
-        ErrorModel.fromJson(
-          jsonDecode(response.body),
-        ),
-      );
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 

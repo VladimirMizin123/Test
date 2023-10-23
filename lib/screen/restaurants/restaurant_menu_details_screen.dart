@@ -5,13 +5,14 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
   const RestaurantMenuDetailsScreen({super.key, required this.data});
-  final Map<String, dynamic> data;
+  final MenuItemList data;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>
@@ -33,9 +34,9 @@ class _RestaurantMenuDetailsScreenState
           Expanded(
             child: Container(
               width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(AssetsUtils.food3),
+                  image: NetworkImage(widget.data.image!),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -65,7 +66,7 @@ class _RestaurantMenuDetailsScreenState
                   height: 8,
                 ),
                 Text(
-                  widget.data['title'],
+                  widget.data.name!,
                   style: FontUtils.h24(
                     fontColor: Colors.black,
                     fontWeight: FWT.medium,
@@ -74,7 +75,7 @@ class _RestaurantMenuDetailsScreenState
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text(
-                    widget.data['price'],
+                    widget.data.formattedPrice!,
                     style: FontUtils.h18(
                       fontColor: Colors.black,
                       fontWeight: FWT.medium,
@@ -259,8 +260,8 @@ class _RestaurantMenuDetailsScreenState
                       Get.to(
                         () => RestaurantCart(data: {
                           'image': AssetsUtils.restaurantFood1,
-                          'title': widget.data['title'],
-                          'price': widget.data['price'],
+                          'title': widget.data.name!,
+                          'price': widget.data.formattedPrice!,
                           'count': item
                         }),
                         transition: Transition.fadeIn,
