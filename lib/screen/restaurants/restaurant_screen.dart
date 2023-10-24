@@ -465,6 +465,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                               setState(() {
                                                 restaurantList =
                                                     value['restaurantData'];
+                                                selectedFoodOrigin =
+                                                    value['filterTab'];
                                               });
                                             });
                                           },
