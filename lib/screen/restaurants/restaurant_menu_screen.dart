@@ -127,14 +127,17 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           Icons.arrow_back_ios,
                         ),
                       ),
-                      Text(
-                        '${widget.restaurantName} Menu',
-                        style: const TextStyle(
-                          color: Color(0xFF010101),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22,
+                      SizedBox(
+                        width: 270.w,
+                        child: Text(
+                          '${widget.restaurantName} Menu',
+                          style: const TextStyle(
+                            color: Color(0xFF010101),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(
                         width: 30,

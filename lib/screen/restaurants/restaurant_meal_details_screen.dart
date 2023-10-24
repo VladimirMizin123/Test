@@ -350,7 +350,11 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                               context: context,
                                               isScrollControlled: true,
                                               builder: (context) {
-                                                return const LogFoodIntakeBottomSheet();
+                                                return LogFoodIntakeBottomSheet(
+                                                  nutritionixGetNxMealInfoByNameModelData:
+                                                      nutritionixGetNxMealInfoByNameModelData,
+                                                  isMainScreen: false,
+                                                );
                                               },
                                               isDismissible: false,
                                               shape: OutlineInputBorder(

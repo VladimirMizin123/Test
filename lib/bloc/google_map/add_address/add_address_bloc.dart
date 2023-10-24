@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_event.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_state.dart';
 import 'package:gymeats_mobile/repository/add_address.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 
 import '../../../widget/app_widget.dart';
@@ -16,7 +17,7 @@ class AddAddressBloc extends Bloc<AddAddressEvent, AddAddressState> {
   final AddAddressRepository _repository = AddAddressRepository();
 
   _onAddAddress(SaveClickEvent event, Emitter<AddAddressState> emit) async {
-    emit(LoadingState());
+    emit(AddAddressLoadingState());
     try {
       await _repository
           .addAddress(
@@ -40,12 +41,20 @@ class AddAddressBloc extends Bloc<AddAddressEvent, AddAddressState> {
           // showToast(isSuccess: true, message: right.message!);
           emit(AddAddressSuccessfulState());
 
-          Get.to(
-            () => AddressConfirmation(
-              locationData: right.data,
-              arguments: const {"string": 'isFromDashboard', "userData": ''},
-            ),
-          );
+          if (event.isFrom == 'isFromCheckout') {
+            Get.offAll(
+              () => const AppManagerScreen(
+                selectIndex: 3,
+              ),
+            );
+          }
+          if (event.isFrom == 'isFromDashboard') {
+            Get.offAll(
+              () => const AppManagerScreen(
+                selectIndex: 2,
+              ),
+            );
+          }
         },
       );
     } catch (e) {

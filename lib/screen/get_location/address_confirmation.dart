@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
+
+import '../../bloc/google_map/add_address/add_address_event.dart';
+import '../../bloc/google_map/add_address/add_address_state.dart';
 
 class AddressConfirmation extends StatefulWidget {
   const AddressConfirmation(
@@ -25,6 +32,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
   TextEditingController zipName = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
+  AddAddressBloc bloc = AddAddressBloc();
   @override
   void initState() {
     super.initState();
@@ -40,189 +48,215 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 8.h,
-            ),
-            Center(
-              child: Image.asset(
-                AssetsUtils.gymEatsSpoon,
-                height: 22.h,
-                width: 56.w,
+        body: BlocConsumer(
+          bloc: bloc,
+          listener: (context, state) {},
+          builder: (context, state) => Column(
+            children: [
+              SizedBox(
+                height: 8.h,
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 8.w, top: 8.h),
-              child: Row(
-                children: [
-                  const BackButtonWidget(),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  Text(
-                    'Add delivery address',
-                    style: TextStyle(
-                      color: const Color(0xff010101),
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Avenir',
-                    ),
-                  ),
-                ],
+              Center(
+                child: Image.asset(
+                  AssetsUtils.gymEatsSpoon,
+                  height: 22.h,
+                  width: 56.w,
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: EdgeInsets.only(left: 8.w, top: 8.h),
+                child: Row(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
-                      child: Text('Street',
-                          style: TextStyle(
-                              color: const Color(0xff373737),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300)),
-                    ),
-                    commonTextField(
-                        controller: streetName,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please Enter Street Name';
-                          } else {
-                            return null;
-                          }
-                        }),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                      child: Text('Apartment number',
-                          style: TextStyle(
-                              color: const Color(0xff373737),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300)),
-                    ),
-                    commonTextField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please Enter Apartment number';
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: apartmentName,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                      child: Text('City',
-                          style: TextStyle(
-                              color: const Color(0xff373737),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300)),
-                    ),
-                    commonTextField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please Enter City Name';
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: city,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                      child: Text(
-                        'Zip',
-                        style: TextStyle(
-                            color: const Color(0xff373737),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w300),
-                      ),
-                    ),
-                    commonTextField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please Enter Zip Code';
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: zipName,
-                    ),
+                    const BackButtonWidget(),
                     SizedBox(
-                      height: 10,
+                      width: 10.w,
+                    ),
+                    Text(
+                      'Add delivery address',
+                      style: TextStyle(
+                        color: const Color(0xff010101),
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Avenir',
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Spacer(),
-            GestureDetector(
-              onTap: () {
-                if (formKey.currentState!.validate()) {
-                  if (widget.arguments['string'] == 'isFromRegister') {
-                    AddAddressModel addAddressModel = AddAddressModel();
-                    addAddressModel.latitude = widget.locationData['latitude'];
-                    addAddressModel.longitude =
-                        widget.locationData['longitude'];
-                    addAddressModel.streetNum =
-                        widget.locationData['street_Num'];
-                    addAddressModel.streetName =
-                        widget.locationData['street_Name'];
-                    addAddressModel.city = widget.locationData['city'];
-                    addAddressModel.state = widget.locationData['state'];
-                    addAddressModel.country = widget.locationData['country'];
-                    addAddressModel.addressType =
-                        widget.locationData['addressType'];
-                    addAddressModel.zipcode = widget.locationData['zipcode'];
-                    addAddressModel.isPrimary = false;
-
-                    UserSignUpDataModel userData = UserSignUpDataModel(
-                      firstName: widget.arguments['userData'].firstName,
-                      lastName: widget.arguments['userData'].lastName,
-                      email: widget.arguments['userData'].email,
-                      password: widget.arguments['userData'].password,
-                      userName: widget.arguments['userData'].email,
-                      confirmPassword:
-                          widget.arguments['userData'].confirmPassword,
-                    );
-
-                    userData.addAddressModel = addAddressModel;
-
-                    Get.toNamed('/PremiumScreen', arguments: userData);
-                  } else if (widget.arguments['string'] == 'isFromDashboard') {
-                    Get.offAllNamed('/AppManagerScreen');
-                  } else {
-                    Get.back(result: 'streetName.text');
-                  }
-                }
-              },
-              child: Container(
-                height: 48.h,
-                margin: EdgeInsets.only(
-                    top: 0.h, bottom: 40.h, right: 20.w, left: 20.w),
-                width: Get.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  color: const Color(0xffCE6B53),
-                ),
-                child: Center(
-                  child: Text(
-                    'Confirm',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Avenir',
-                    ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
+                        child: Text('Street',
+                            style: TextStyle(
+                                color: const Color(0xff373737),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w300)),
+                      ),
+                      commonTextField(
+                          controller: streetName,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please Enter Street Name';
+                            } else {
+                              return null;
+                            }
+                          }),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                        child: Text('Apartment number',
+                            style: TextStyle(
+                                color: const Color(0xff373737),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w300)),
+                      ),
+                      commonTextField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please Enter Apartment number';
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: apartmentName,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                        child: Text('City',
+                            style: TextStyle(
+                                color: const Color(0xff373737),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w300)),
+                      ),
+                      commonTextField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please Enter City Name';
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: city,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                        child: Text(
+                          'Zip',
+                          style: TextStyle(
+                              color: const Color(0xff373737),
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w300),
+                        ),
+                      ),
+                      commonTextField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please Enter Zip Code';
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: zipName,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  String userID = PreferenceUtils.getString(prefUserData);
+                  if (formKey.currentState!.validate()) {
+                    if (widget.arguments['string'] == 'isFromRegister') {
+                      AddAddressModel addAddressModel = AddAddressModel();
+                      addAddressModel.latitude =
+                          widget.locationData['latitude'];
+                      addAddressModel.longitude =
+                          widget.locationData['longitude'];
+                      addAddressModel.streetNum =
+                          widget.locationData['street_Num'];
+                      addAddressModel.streetName =
+                          widget.locationData['street_Name'];
+                      addAddressModel.city = widget.locationData['city'];
+                      addAddressModel.state = widget.locationData['state'];
+                      addAddressModel.country = widget.locationData['country'];
+                      addAddressModel.addressType =
+                          widget.locationData['addressType'];
+                      addAddressModel.zipcode = widget.locationData['zipcode'];
+                      addAddressModel.isPrimary = false;
+
+                      UserSignUpDataModel userData = UserSignUpDataModel(
+                        firstName: widget.arguments['userData'].firstName,
+                        lastName: widget.arguments['userData'].lastName,
+                        email: widget.arguments['userData'].email,
+                        password: widget.arguments['userData'].password,
+                        userName: widget.arguments['userData'].email,
+                        confirmPassword:
+                            widget.arguments['userData'].confirmPassword,
+                      );
+
+                      userData.addAddressModel = addAddressModel;
+
+                      Get.toNamed('/PremiumScreen', arguments: userData);
+                    } else {
+                      bloc.add(
+                        SaveClickEvent(
+                          latitude: widget.locationData['latitude'],
+                          longitude: widget.locationData['longitude'],
+                          streetNum: apartmentName.text.toString(),
+                          streetName: streetName.text.toString(),
+                          city: city.text.toString(),
+                          state: widget.locationData['state'],
+                          country: widget.locationData['country'],
+                          addressType: widget.locationData['addressType'],
+                          zipcode: zipName.text.toString(),
+                          isPrimary: true,
+                          userId: userID,
+                          isFrom: widget.arguments['string'],
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: state is AddAddressLoadingState
+                    ? Padding(
+                        padding: EdgeInsets.only(bottom: 40.h),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : Container(
+                        height: 48.h,
+                        margin: EdgeInsets.only(
+                            top: 0.h, bottom: 40.h, right: 20.w, left: 20.w),
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.r),
+                          color: const Color(0xffCE6B53),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Confirm',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Avenir',
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

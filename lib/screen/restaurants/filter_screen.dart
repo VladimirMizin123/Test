@@ -8,11 +8,15 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FilterScreen extends StatefulWidget {
-  const FilterScreen({super.key});
-
+  const FilterScreen(
+      {super.key, required this.cousinesList, required this.restaurantList});
+  final CousinesList cousinesList;
+  final List<RestaurantList> restaurantList;
   @override
   State<FilterScreen> createState() => _FilterScreenState();
 }
@@ -76,6 +80,9 @@ class _FilterScreenState extends State<FilterScreen> {
   ];
   List selectedTabData = [];
   List selectedCategoryData = [];
+  List<RestaurantList> data = [];
+
+  Map<String, dynamic> alldata = {};
 
   @override
   Widget build(BuildContext context) {
@@ -228,32 +235,37 @@ class _FilterScreenState extends State<FilterScreen> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
-                  mainAxisExtent: MediaQuery.of(context).size.height * 0.12,
+                  mainAxisExtent: MediaQuery.of(context).size.height * 0.13,
                 ),
                 physics: const BouncingScrollPhysics(),
-                itemCount: mealData.length,
+                itemCount: widget.cousinesList.cousines!.length,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      if (selectedCategoryData.contains(mealData[index])) {
+                      if (selectedCategoryData
+                          .contains(widget.cousinesList.cousines![index])) {
                         setState(() {
-                          selectedCategoryData.remove(mealData[index]);
+                          selectedCategoryData
+                              .remove(widget.cousinesList.cousines![index]);
                         });
                       } else {
                         setState(() {
-                          selectedCategoryData.add(mealData[index]);
+                          selectedCategoryData
+                              .add(widget.cousinesList.cousines![index]);
                         });
                       }
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: selectedCategoryData.contains(mealData[index])
+                        color: selectedCategoryData
+                                .contains(widget.cousinesList.cousines![index])
                             ? AppColors.coral
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
-                        border: selectedCategoryData.contains(mealData[index])
+                        border: selectedCategoryData
+                                .contains(widget.cousinesList.cousines![index])
                             ? Border.all(color: AppColors.terracotta)
                             : const Border(),
                         boxShadow: [
@@ -270,19 +282,23 @@ class _FilterScreenState extends State<FilterScreen> {
                             alignment: Alignment.bottomCenter,
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 4.h, left: 3.h),
-                              child: Text(
-                                mealData[index]['title'],
-                                style: FontUtils.h17(
-                                  fontColor: Colors.black,
-                                  fontWeight: FWT.regular,
+                              child: SizedBox(
+                                width: 70.w,
+                                child: Text(
+                                  widget.cousinesList.cousines![index],
+                                  style: FontUtils.h17(
+                                    fontColor: Colors.black,
+                                    fontWeight: FWT.regular,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
                           ),
                           const Spacer(),
                           Container(
-                            height: MediaQuery.of(context).size.height * 0.12,
-                            width: MediaQuery.of(context).size.width * 0.25,
+                            // height: MediaQuery.of(context).size.height * 0.12,
+                            width: MediaQuery.of(context).size.width * 0.22,
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.only(
                                 bottomRight: Radius.circular(8),
@@ -290,7 +306,7 @@ class _FilterScreenState extends State<FilterScreen> {
                               ),
                               image: DecorationImage(
                                 image: AssetImage(
-                                  mealData[index]['image'],
+                                  AssetsUtils.food1,
                                 ),
                                 fit: BoxFit.cover,
                               ),
@@ -346,6 +362,44 @@ class _FilterScreenState extends State<FilterScreen> {
                         Fluttertoast.showToast(
                           msg: 'Select atleast 1 Category',
                         );
+                      } else {
+                        // for (var i = 0; i < widget.restaurantList.length; i++) {
+                        //   for (var j = 0;
+                        //       j < widget.restaurantList[i].cuisines!.length;
+                        //       j++) {
+                        //     print(
+                        //         '---$i-->>>>>${widget.restaurantList[i].cuisines![j]}');
+                        //
+                        //     if (widget.restaurantList[i].cuisines![j]
+                        //         .contains('Bagels')) {
+                        //       print('YESSSS');
+                        //     }
+                        //   }
+                        // }
+                        data.clear();
+                        for (var i = 0; i < widget.restaurantList.length; i++) {
+                          for (var j = 0;
+                              j < widget.restaurantList[i].cuisines!.length;
+                              j++) {
+                            for (var k = 0;
+                                k < selectedCategoryData.length;
+                                k++) {
+                              if (widget.restaurantList[i].cuisines![j]
+                                  .contains(selectedCategoryData[k]
+                                      .toString()
+                                      .trim())) {
+                                data.add(widget.restaurantList[i]);
+                                print('----->>>>.1');
+                              }
+                            }
+                          }
+                        }
+                        alldata = {
+                          'restaurantData': data,
+                          'filterTab': selectedCategoryData
+                        };
+
+                        Get.back(result: alldata);
                       }
                     },
                     child: Container(

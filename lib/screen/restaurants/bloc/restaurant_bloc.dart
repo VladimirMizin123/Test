@@ -12,6 +12,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetUserAddressEvent>(_onGetUserAddress);
     on<GetRestaurantListEvent>(_onGetRestaurantList);
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
+    on<GetCousinesEvent>(_onGetCousinesList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -63,7 +64,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  /// Get Grocery Item Bloc =================================================================
+  /// Get Restaurant Menu List Bloc  =================================================================
   _onGetRestaurantMenuList(
       GetRestaurantMenuListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantMenuListLoadingState());
@@ -81,6 +82,37 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetRestaurantMenuListErrorState());
+    }
+  }
+
+  /// Get Cousines Bloc ==============================================================================
+
+  _onGetCousinesList(
+      GetCousinesEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetCousinesListLoadingState());
+
+    try {
+      await _repository
+          .getCousinesListData(
+        latitude: event.latitude,
+        longitude: event.longitude,
+        maximumMiles: event.maximumMiles,
+        pickup: event.pickup,
+        userCity: event.userCity,
+        userCountry: event.userCountry,
+        userState: event.userState,
+        userStreetName: event.userStreetName,
+        userStreetNum: event.userStreetNum,
+        userZipcode: event.userZipcode,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetCousinesListSuccessState(cousinesList: right.data!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetCousinesListErrorState());
     }
   }
 

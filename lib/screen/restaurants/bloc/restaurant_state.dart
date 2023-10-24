@@ -1,3 +1,4 @@
+import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
@@ -47,3 +48,17 @@ class GetRestaurantMenuListSuccessState extends RestaurantState {
 class GetRestaurantMenuListLoadingState extends RestaurantState {}
 
 class GetRestaurantMenuListErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Get Cousines List State
+
+class GetCousinesListSuccessState extends RestaurantState {
+  final CousinesList cousinesList;
+
+  GetCousinesListSuccessState({required this.cousinesList});
+}
+
+class GetCousinesListLoadingState extends RestaurantState {}
+
+class GetCousinesListErrorState extends RestaurantState {}

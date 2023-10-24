@@ -29,7 +29,7 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
           topLeft: Radius.circular(25), topRight: Radius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
+        child: IntrinsicHeight(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

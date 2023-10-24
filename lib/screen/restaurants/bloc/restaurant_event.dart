@@ -37,3 +37,30 @@ class GetRestaurantMenuListEvent extends RestaurantEvent {
 
   GetRestaurantMenuListEvent(this.restaurantId, this.pickUp);
 }
+
+/// Get Cousines List Event ===============================================================
+class GetCousinesEvent extends RestaurantEvent {
+  final dynamic latitude;
+  final dynamic longitude;
+  final String userStreetNum;
+  final String userStreetName;
+  final String userCity;
+  final String userState;
+  final String userCountry;
+  final String userZipcode;
+  final bool pickup;
+  final int maximumMiles;
+
+  GetCousinesEvent(
+    this.latitude,
+    this.longitude,
+    this.userStreetNum,
+    this.userStreetName,
+    this.userCity,
+    this.userState,
+    this.userCountry,
+    this.userZipcode,
+    this.pickup,
+    this.maximumMiles,
+  );
+}
