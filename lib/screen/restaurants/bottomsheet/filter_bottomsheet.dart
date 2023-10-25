@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,8 +10,10 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key, required this.filterType});
+  const FilterBottomSheet(
+      {super.key, required this.filterType, this.selectedValue});
   final String filterType;
+  final List? selectedValue;
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
@@ -24,12 +28,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     '\$\$\$\$',
   ];
   List ratingType = [
+    '1',
+    '2',
     '3',
-    '3.5',
     '4',
-    '4.5',
     '5',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedFoodOrigin = widget.selectedValue ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +161,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
+                                          selectedIndex = index;
                                           if (selectedFoodOrigin
                                               .contains(ratingType[index])) {
                                             setState(() {
@@ -161,8 +172,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                             setState(() {
                                               selectedFoodOrigin
                                                   .add(ratingType[index]);
+                                              selectedFoodOrigin.sort(
+                                                  (a, b) => a.compareTo(b));
                                             });
                                           }
+
+                                          log('selectedFoodOrigin.sort((a, b) => a.compareTo(b));---------->>>>>> ${selectedFoodOrigin}');
                                         },
                                         child: Icon(
                                           Icons.star,
@@ -207,14 +222,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     if (selectedIndex == -1) {
                       Get.back();
                     } else {
-                      Get.back();
-                      // List<GroceryShoppingData> edgesDummyList = [];
-                      // for (var i = 0; i < widget.edgesList.length; i++) {
-                      //   if (widget.edgesList[i].isActive == true) {
-                      //     edgesDummyList.add(widget.edgesList[i]);
-                      //   }
-                      // }
-                      // if (edgesDummyList.isNotEmpty) {
+                      Get.back(result: selectedFoodOrigin);
                     }
                   },
                   isDarkColor: true,
