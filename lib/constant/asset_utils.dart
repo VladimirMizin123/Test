@@ -1,3 +1,5 @@
+import 'package:flutter_svg/flutter_svg.dart';
+
 class AssetsUtils {
   /// Images
   static const String defaultImage = "assets/image/defaultImage.png";
@@ -144,6 +146,19 @@ class AssetsUtils {
   static const deliveryInfo = '${svgPath}delivery_info.svg';
   static const icVisa = '${svgPath}ic_visa.svg';
   static const vegetables = '${svgPath}vegetables.svg';
+  static const forwardArrow = '${svgPath}forward_arrow.svg';
+  static const profileIcon = '${svgPath}profile_icon.svg';
+  static const about = '${svgPath}about.svg';
+  static const chat = '${svgPath}Chat.svg';
+  static const setting = '${svgPath}setting.svg';
+  static const gymEatsImage = '${svgPath}gym_eats.svg';
+  static const pencil = '${svgPath}ic_pencil.svg';
+  static const globalIcn = '${svgPath}Global.svg';
+  static const lock = '${svgPath}lock.svg';
+  static const unit = '${svgPath}ic_units.svg';
+  static const notificationIcn = '${svgPath}Notifications.svg';
+  static const icGps = '${svgPath}ic_gps.svg';
+  static const logOut = '${svgPath}log_out.svg';
 
   /// Icons
 
@@ -183,4 +198,6 @@ class AssetsUtils {
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
   static const deliveryVehicle = "assets/icon/delivery_veh.png";
+  static const lightBlueBackGroundImage =
+      "assets/image/light_blue_background_card.png";
 }

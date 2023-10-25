@@ -11,6 +11,10 @@ class AppColors {
   static const blueFocusedColor = Color(0xFF003D4F);
   static const errorColor = Color(0xFFFF9500);
   static const errorRedColor = Color(0XFFFF3B30);
+  static Color lightGreyColor = Colors.grey.shade100;
+  static Color primaryBlueColor = Color(0xff004C63);
+  static Color transparentColor = Colors.transparent;
+  static Color blackColor = Colors.black;
 
   static ThemeData lightTheme() {
     return ThemeData(
@@ -122,4 +126,7 @@ class AppColors {
   static const newDarkBlue = Color(0xFF6A909D);
   static const inactive = Color(0xFFD9D9D9);
   static const gray = Color(0xFFA2A4A7);
+
+  static const skyColor = Color(0xffD9DCEE);
+  static const darkGreyColor = Color(0xff373737);
 }
