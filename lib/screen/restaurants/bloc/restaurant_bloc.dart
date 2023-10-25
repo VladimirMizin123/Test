@@ -10,6 +10,9 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   RestaurantBloc() : super(InitialState()) {
     on<GetUserAddressEvent>(_onGetUserAddress);
+    on<GetRestaurantListEvent>(_onGetRestaurantList);
+    on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
+    on<GetCousinesEvent>(_onGetCousinesList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -23,11 +26,93 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       await _repository.getUserAddressData().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GetUserAddressSuccessState(userAddress: right.data!));
+        emit(GetUserAddressSuccessState(userAddress: right.data ?? []));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetUserAddressErrorState());
+    }
+  }
+
+  /// Get Restaurant List Bloc =================================================================
+  _onGetRestaurantList(
+      GetRestaurantListEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetRestaurantListLoadingState());
+
+    try {
+      await _repository
+          .getRestaurantListData(
+        latitude: event.latitude,
+        longitude: event.longitude,
+        maximumMiles: event.maximumMiles,
+        pickup: event.pickup,
+        userCity: event.userCity,
+        userCountry: event.userCountry,
+        userState: event.userState,
+        userStreetName: event.userStreetName,
+        userStreetNum: event.userStreetNum,
+        userZipcode: event.userZipcode,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetRestaurantListErrorState());
+    }
+  }
+
+  /// Get Restaurant Menu List Bloc  =================================================================
+  _onGetRestaurantMenuList(
+      GetRestaurantMenuListEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetRestaurantMenuListLoadingState());
+
+    try {
+      await _repository
+          .getRestaurantMenuList(
+              restaurantId: event.restaurantId, pickup: event.pickUp)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(
+            GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetRestaurantMenuListErrorState());
+    }
+  }
+
+  /// Get Cousines Bloc ==============================================================================
+
+  _onGetCousinesList(
+      GetCousinesEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetCousinesListLoadingState());
+
+    try {
+      await _repository
+          .getCousinesListData(
+        latitude: event.latitude,
+        longitude: event.longitude,
+        maximumMiles: event.maximumMiles,
+        pickup: event.pickup,
+        userCity: event.userCity,
+        userCountry: event.userCountry,
+        userState: event.userState,
+        userStreetName: event.userStreetName,
+        userStreetNum: event.userStreetNum,
+        userZipcode: event.userZipcode,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetCousinesListSuccessState(cousinesList: right.data!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetCousinesListErrorState());
     }
   }
 

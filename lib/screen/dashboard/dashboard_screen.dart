@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -259,77 +261,85 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
   }
 
-  Widget initView() => SingleChildScrollView(
-        child: ListView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            dashBoardCardView(
-              width: 315.w,
-              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 140.w,
-                        child: CircularPercentIndicator(
-                          radius: 68.0,
-                          animation: true,
-                          animationDuration: 1200,
-                          lineWidth: 8.0,
-                          percent:
-                              model.data!.totalIntakeFood!.toDouble().ceil() /
-                                  model.data!.totalCalorie!.toDouble().ceil(),
-                          center: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text:
-                                      '${int.parse(outOfTotalCalories.toString().split('.')[1]) >= 50 ? outOfTotalCalories.toDouble().ceil().toString() : outOfTotalCalories.toDouble().floor().toString()}cal left\n',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall!
-                                      .copyWith(color: AppColors.darkGray),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      // Single tapped.
-                                    },
-                                ),
-                                TextSpan(
-                                  text:
-                                      'out of ${int.parse(model.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model.data!.totalCalorie!.toDouble().ceil().toString() : model.data!.totalCalorie!.toDouble().floor().toString()}cal',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                          color: AppColors.middleGray,
-                                          fontWeight: FontWeight.w500),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      // Single tapped.
-                                    },
-                                ),
-                              ],
-                            ),
+  Widget initView() {
+    return SingleChildScrollView(
+      child: ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          dashBoardCardView(
+            width: 315.w,
+            margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 140.w,
+                      child: CircularPercentIndicator(
+                        radius: 68.0,
+                        animation: true,
+                        animationDuration: 1200,
+                        lineWidth: 8.0,
+                        percent: model.data!.totalIntakeFood!
+                                        .toDouble()
+                                        .ceil() /
+                                    model.data!.totalCalorie!
+                                        .toDouble()
+                                        .ceil() >
+                                1
+                            ? 1.0
+                            : model.data!.totalIntakeFood!.toDouble().ceil() /
+                                model.data!.totalCalorie!.toDouble().ceil(),
+                        center: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    '${int.parse(outOfTotalCalories.toString().split('.')[1]) >= 50 ? outOfTotalCalories.toDouble().ceil().toString() : outOfTotalCalories.toDouble().floor().toString()}cal left\n',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(color: AppColors.darkGray),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    // Single tapped.
+                                  },
+                              ),
+                              TextSpan(
+                                text:
+                                    'out of ${int.parse(model.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model.data!.totalCalorie!.toDouble().ceil().toString() : model.data!.totalCalorie!.toDouble().floor().toString()}cal',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                        color: AppColors.middleGray,
+                                        fontWeight: FontWeight.w500),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    // Single tapped.
+                                  },
+                              ),
+                            ],
                           ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                          backgroundColor: AppColors.lightGrey,
-                          progressColor: AppColors.primaryBlue,
                         ),
-                      ).paddingOnly(left: 5.w),
-                      SizedBox(
-                        width: 140.w,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            calDataView(
-                              imgIcon: AssetsUtils.breakFastIcon,
-                              title: 'Eaten',
-                              calCount: /*int.parse(model.data!.totalIntakeFood!
+                        circularStrokeCap: CircularStrokeCap.round,
+                        backgroundColor: AppColors.lightGrey,
+                        progressColor: AppColors.primaryBlue,
+                      ),
+                    ).paddingOnly(left: 5.w),
+                    SizedBox(
+                      width: 140.w,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          calDataView(
+                            imgIcon: AssetsUtils.breakFastIcon,
+                            title: 'Eaten',
+                            calCount: /*int.parse(model.data!.totalIntakeFood!
                                           .toString()
                                           .split('.')[1]) >=
                                       50
@@ -338,17 +348,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       .ceil()
                                       .toString()
                                   :*/
-                                  model.data!.totalIntakeFood!
-                                      .toDouble()
-                                      .floor()
-                                      .toString(),
-                              textTheme: Theme.of(context).textTheme,
-                            ),
-                            SizedBox(height: 15.h),
-                            calDataView(
-                              imgIcon: AssetsUtils.dumBBell,
-                              title: 'Burned',
-                              calCount: /*int.parse(model
+                                model.data!.totalIntakeFood!
+                                    .toDouble()
+                                    .floor()
+                                    .toString(),
+                            textTheme: Theme.of(context).textTheme,
+                          ),
+                          SizedBox(height: 15.h),
+                          calDataView(
+                            imgIcon: AssetsUtils.dumBBell,
+                            title: 'Burned',
+                            calCount: /*int.parse(model
                                           .data!.totalBurnedByExercise!
                                           .toString()
                                           .split('.')[1]) >=
@@ -358,24 +368,24 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       .ceil()
                                       .toString()
                                   :*/
-                                  model.data!.totalBurnedByExercise!
-                                      .toDouble()
-                                      .floor()
-                                      .toString(),
-                              textTheme: Theme.of(context).textTheme,
-                            ),
-                          ],
-                        ).paddingOnly(left: 30.w),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      calciumDataView(
-                        title: 'Carbs',
-                        textTheme: Theme.of(context).textTheme,
-                        gramCount: /*int.parse(model.data!.totalIntakeCarbs!
+                                model.data!.totalBurnedByExercise!
+                                    .toDouble()
+                                    .floor()
+                                    .toString(),
+                            textTheme: Theme.of(context).textTheme,
+                          ),
+                        ],
+                      ).paddingOnly(left: 30.w),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    calciumDataView(
+                      title: 'Carbs',
+                      textTheme: Theme.of(context).textTheme,
+                      gramCount: /*int.parse(model.data!.totalIntakeCarbs!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
@@ -384,35 +394,31 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 .ceil()
                                 .toString()
                             :*/
-                            model.data!.totalIntakeCarbs!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: int.parse(model.data!.totalCarbs!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model.data!.totalCarbs!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            : model.data!.totalCarbs!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        progressColor: AppColors.mint,
+                          model.data!.totalIntakeCarbs!
+                              .toDouble()
+                              .floor()
+                              .toString(),
+                      totalGram: int.parse(model.data!.totalCarbs!
+                                  .toString()
+                                  .split('.')[1]) >=
+                              50
+                          ? model.data!.totalCarbs!.toDouble().ceil().toString()
+                          : model.data!.totalCarbs!
+                              .toDouble()
+                              .floor()
+                              .toString(),
+                      progressColor: AppColors.mint,
+                      percentage:
+                          model.data!.totalIntakeCarbs!.toDouble().ceil() /
+                              model.data!.totalCarbs!.toDouble().ceil(),
+                    ),
+                    calciumDataView(
                         percentage:
-                            model.data!.totalIntakeCarbs!.toDouble().ceil() /
-                                model.data!.totalCarbs!.toDouble().ceil(),
-                      ),
-                      calciumDataView(
-                          percentage: model.data!.totalIntakeProtein!
-                                  .toDouble()
-                                  .ceil() /
-                              model.data!.totalProtein!.toDouble().ceil(),
-                          title: 'Protein',
-                          textTheme: Theme.of(context).textTheme,
-                          gramCount: /*int.parse(model.data!.totalIntakeProtein!
+                            model.data!.totalIntakeProtein!.toDouble().ceil() /
+                                model.data!.totalProtein!.toDouble().ceil(),
+                        title: 'Protein',
+                        textTheme: Theme.of(context).textTheme,
+                        gramCount: /*int.parse(model.data!.totalIntakeProtein!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
@@ -421,11 +427,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   .ceil()
                                   .toString()
                               :*/
-                              model.data!.totalIntakeProtein!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
-                          totalGram: /*int.parse(model.data!.totalProtein!
+                            model.data!.totalIntakeProtein!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        totalGram: /*int.parse(model.data!.totalProtein!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
@@ -434,18 +440,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   .ceil()
                                   .toString()
                               :*/
-                              model.data!.totalProtein!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
-                          progressColor: AppColors.skyBlue),
-                      calciumDataView(
-                        percentage:
-                            model.data!.totalIntakeFat!.toDouble().ceil() /
-                                model.data!.totalFat!.toDouble().ceil(),
-                        title: 'Fat',
-                        textTheme: Theme.of(context).textTheme,
-                        gramCount: /*int.parse(model.data!.totalIntakeFat!
+                            model.data!.totalProtein!
+                                .toDouble()
+                                .floor()
+                                .toString(),
+                        progressColor: AppColors.skyBlue),
+                    calciumDataView(
+                      percentage:
+                          model.data!.totalIntakeFat!.toDouble().ceil() /
+                              model.data!.totalFat!.toDouble().ceil(),
+                      title: 'Fat',
+                      textTheme: Theme.of(context).textTheme,
+                      gramCount: /*int.parse(model.data!.totalIntakeFat!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
@@ -454,67 +460,66 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 .ceil()
                                 .toString()
                             :*/
-                            model.data!.totalIntakeFat!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: /*int.parse(model.data!.totalFat!
+                          model.data!.totalIntakeFat!
+                              .toDouble()
+                              .floor()
+                              .toString(),
+                      totalGram: /*int.parse(model.data!.totalFat!
                                     .toString()
                                     .split('.')[1]) >=
                                 50
                             ? model.data!.totalFat!.toDouble().ceil().toString()
                             :*/
-                            model.data!.totalFat!.toDouble().floor().toString(),
-                        progressColor: AppColors.coral,
-                      ),
-                    ],
-                  )
-                ],
-              ).paddingAll(10),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      Get.toNamed('/AddWaterScreen',
-                              arguments: AddWaterArguments(
-                                  dailyGoal:
-                                      model.data!.dailyWaterGoals.toString()))!
-                          .then((value) {
-                        bloc.add(GetDashboardData());
-                      });
-                    },
-                    child: dashBoardCardView(
-                      margin:
-                          EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
-                      child: waterExerciseDataView(
-                        percentage: model.data!.totalIntakeWater! /
-                            model.data!.dailyWaterGoals!,
-                        title: StringUtils.water,
-                        textTheme: Theme.of(context).textTheme,
-                        progressColor: AppColors.primaryBlue,
-                        image: AssetsUtils.water,
-                        type: StringUtils.rate,
-                        countValue: model.data!.dailyWaterGoals!.toString(),
-                        mlCalCount: model.data!.totalIntakeWater!.toString(),
-                        tag: StringUtils.ml,
-                      ),
+                          model.data!.totalFat!.toDouble().floor().toString(),
+                      progressColor: AppColors.coral,
+                    ),
+                  ],
+                )
+              ],
+            ).paddingAll(10),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    Get.toNamed('/AddWaterScreen',
+                            arguments: AddWaterArguments(
+                                dailyGoal:
+                                    model.data!.dailyWaterGoals.toString()))!
+                        .then((value) {
+                      bloc.add(GetDashboardData());
+                    });
+                  },
+                  child: dashBoardCardView(
+                    margin: EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
+                    child: waterExerciseDataView(
+                      percentage: model.data!.totalIntakeWater! /
+                          model.data!.dailyWaterGoals!,
+                      title: StringUtils.water,
+                      textTheme: Theme.of(context).textTheme,
+                      progressColor: AppColors.primaryBlue,
+                      image: AssetsUtils.water,
+                      type: StringUtils.rate,
+                      countValue: model.data!.dailyWaterGoals!.toString(),
+                      mlCalCount: model.data!.totalIntakeWater!.toString(),
+                      tag: StringUtils.ml,
                     ),
                   ),
                 ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed('/AddExerciseScreen',
-                              arguments: AddExerciseArguments(
-                                  dateTime: DateTime.now()))!
-                          .then((value) {
-                        bloc.add(GetDashboardData());
-                      });
-                      /*Get.toNamed('/SecondDashBoardView',
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed('/AddExerciseScreen',
+                            arguments:
+                                AddExerciseArguments(dateTime: DateTime.now()))!
+                        .then((value) {
+                      bloc.add(GetDashboardData());
+                    });
+                    /*Get.toNamed('/SecondDashBoardView',
                               arguments: AddEntryArguments(
                                   exerciseLogList: ExerciseLogList(
                                       caloriesBurned: model
@@ -528,169 +533,168 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           exerciseCal = exerciseCal + int.parse(value);
                         });
                       });*/
-                    },
-                    child: dashBoardCardView(
-                      margin:
-                          EdgeInsets.only(right: 15.w, top: 15.h, bottom: 5.h),
-                      child: waterExerciseDataView(
-                        percentage: model.data!.totalBurnedByExercise! /
-                            model.data!.dailyExerciseGoals!,
-                        title: StringUtils.exercise,
-                        textTheme: Theme.of(context).textTheme,
-                        progressColor: AppColors.letsEatButton,
-                        image: AssetsUtils.icExercise,
-                        type: StringUtils.goal,
-                        countValue: model.data!.dailyExerciseGoals!.toString(),
-                        mlCalCount:
-                            model.data!.totalBurnedByExercise.toString(),
-                        tag: StringUtils.cal,
-                      ),
+                  },
+                  child: dashBoardCardView(
+                    margin:
+                        EdgeInsets.only(right: 15.w, top: 15.h, bottom: 5.h),
+                    child: waterExerciseDataView(
+                      percentage: model.data!.totalBurnedByExercise! /
+                          model.data!.dailyExerciseGoals!,
+                      title: StringUtils.exercise,
+                      textTheme: Theme.of(context).textTheme,
+                      progressColor: AppColors.letsEatButton,
+                      image: AssetsUtils.icExercise,
+                      type: StringUtils.goal,
+                      countValue: model.data!.dailyExerciseGoals!.toString(),
+                      mlCalCount: model.data!.totalBurnedByExercise.toString(),
+                      tag: StringUtils.cal,
                     ),
                   ),
                 ),
-              ],
-            ),
-            ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: trackerDataList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  bool isEaten = false;
+              ),
+            ],
+          ),
+          ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: trackerDataList.length,
+              itemBuilder: (BuildContext context, int index) {
+                bool isEaten = false;
 
-                  logData.map((e) {
-                    if (e.mealId == trackerDataList[index].id) {
-                      if(e.value.toString() =='ATE') {
-                        isEaten = true;
-                      }
+                logData.map((e) {
+                  if (e.mealId == trackerDataList[index].id) {
+                    if (e.value.toString() == 'ATE') {
+                      isEaten = true;
                     }
-                  }).toList();
+                  }
+                }).toList();
 
-                  return commonEatTypeData(
-                    image: trackerDataList[index].recipe!.mainImage,
-                    eatTitle: trackerDataList[index].meal,
-                    eatSubTitle: trackerDataList[index].recipe!.name ?? '',
-                    textTheme: Theme.of(context).textTheme,
-                    trailing: InkWell(
-                      onTap: isEaten
-                          ? null
-                          : () {
-                              if (!trackerDataList[index].isDone) {
-                                bloc.add(AddEatenMealData(
-                                    value: 1,
-                                    mealName:
-                                        trackerDataList[index].recipe!.name,
-                                    mealType: trackerDataList[index].meal,
-                                    noOfServing:
-                                        trackerDataList[index].numOfServings,
-                                    recipeId: trackerDataList[index].recipe!.id,
-                                    userId:
-                                        PreferenceUtils.getString(prefUserData),
-                                    calorie: trackerDataList[index]
-                                        .recipe!
-                                        .nutrientsPerServing!
-                                        .calories,
-                                    carbs: trackerDataList[index]
-                                        .recipe!
-                                        .nutrientsPerServing!
-                                        .carbs,
-                                    fat: trackerDataList[index]
-                                        .recipe!
-                                        .nutrientsPerServing!
-                                        .fat,
-                                    protein: trackerDataList[index]
-                                        .recipe!
-                                        .nutrientsPerServing!
-                                        .protein,
-                                    mealId:
-                                        trackerDataList[index].id.toString()));
-                              }
-                            },
-                      child: isDoneLoader && trackerDataList[index].id == mealId
-                          ? SizedBox(
-                              height: 25.h,
-                              width: 25.w,
-                              child: const AppCenterLoader())
-                          : Container(
-                              width: 25.w,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                return commonEatTypeData(
+                  image: trackerDataList[index].recipe!.mainImage,
+                  eatTitle: trackerDataList[index].meal,
+                  eatSubTitle: trackerDataList[index].recipe!.name ?? '',
+                  textTheme: Theme.of(context).textTheme,
+                  trailing: InkWell(
+                    onTap: isEaten
+                        ? null
+                        : () {
+                            if (!trackerDataList[index].isDone) {
+                              bloc.add(AddEatenMealData(
+                                  value: 1,
+                                  mealName: trackerDataList[index].recipe!.name,
+                                  mealType: trackerDataList[index].meal,
+                                  noOfServing:
+                                      trackerDataList[index].numOfServings,
+                                  recipeId: trackerDataList[index].recipe!.id,
+                                  userId:
+                                      PreferenceUtils.getString(prefUserData),
+                                  calorie: trackerDataList[index]
+                                      .recipe!
+                                      .nutrientsPerServing!
+                                      .calories,
+                                  carbs: trackerDataList[index]
+                                      .recipe!
+                                      .nutrientsPerServing!
+                                      .carbs,
+                                  fat: trackerDataList[index]
+                                      .recipe!
+                                      .nutrientsPerServing!
+                                      .fat,
+                                  protein: trackerDataList[index]
+                                      .recipe!
+                                      .nutrientsPerServing!
+                                      .protein,
+                                  mealId:
+                                      trackerDataList[index].id.toString()));
+                            }
+                          },
+                    child: isDoneLoader && trackerDataList[index].id == mealId
+                        ? SizedBox(
+                            height: 25.h,
+                            width: 25.w,
+                            child: const AppCenterLoader())
+                        : Container(
+                            width: 25.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isEaten
+                                  ? AppColors.primaryBlue
+                                  : AppColors.skyBlue,
+                            ),
+                            child: Center(
+                              child: Icon(
+                                isEaten ? Icons.check : Icons.add,
                                 color: isEaten
-                                    ? AppColors.primaryBlue
-                                    : AppColors.skyBlue,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  isEaten ? Icons.check : Icons.add,
-                                  color: isEaten
-                                      ? Colors.white
-                                      : AppColors.primaryBlue,
-                                ),
+                                    ? Colors.white
+                                    : AppColors.primaryBlue,
                               ),
                             ),
-                    ),
-                    calText: int.parse(trackerDataList[index]
-                                .calories
-                                .toString()
-                                .split('.')[1]) >=
-                            50
-                        ? trackerDataList[index]
-                            .calories!
-                            .toDouble()
-                            .ceil()
-                            .toString()
-                        : trackerDataList[index]
-                            .calories!
-                            .toDouble()
-                            .floor()
-                            .toString(),
-                  );
-                }),
-            SizedBox(
-              child: CarouselSlider(
-                items: carouselList,
-                options: CarouselOptions(
-                  autoPlay: false,
-                  height: 120.h,
-                  initialPage: currentIndex,
-                  viewportFraction: 1.05,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                  },
-                  scrollDirection: Axis.horizontal,
-                ),
-              ).paddingOnly(left: 20.w, top: 10.h),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 8.h,
-                  width: 8.w,
-                  margin: EdgeInsets.only(right: 5.w),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: currentIndex == 0
-                        ? AppColors.primaryBlue
-                        : AppColors.disable,
+                          ),
                   ),
+                  calText: int.parse(trackerDataList[index]
+                              .calories
+                              .toString()
+                              .split('.')[1]) >=
+                          50
+                      ? trackerDataList[index]
+                          .calories!
+                          .toDouble()
+                          .ceil()
+                          .toString()
+                      : trackerDataList[index]
+                          .calories!
+                          .toDouble()
+                          .floor()
+                          .toString(),
+                );
+              }),
+          SizedBox(
+            child: CarouselSlider(
+              items: carouselList,
+              options: CarouselOptions(
+                autoPlay: false,
+                height: 120.h,
+                initialPage: currentIndex,
+                viewportFraction: 1.05,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                scrollDirection: Axis.horizontal,
+              ),
+            ).paddingOnly(left: 20.w, top: 10.h),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 8.h,
+                width: 8.w,
+                margin: EdgeInsets.only(right: 5.w),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == 0
+                      ? AppColors.primaryBlue
+                      : AppColors.disable,
                 ),
-                Container(
-                  height: 8.h,
-                  width: 8.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: currentIndex == 1
-                        ? AppColors.primaryBlue
-                        : AppColors.disable,
-                  ),
-                )
-              ],
-            ).paddingOnly(bottom: 20.w, top: 0.h),
-          ],
-        ),
-      );
+              ),
+              Container(
+                height: 8.h,
+                width: 8.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == 1
+                      ? AppColors.primaryBlue
+                      : AppColors.disable,
+                ),
+              )
+            ],
+          ).paddingOnly(bottom: 20.w, top: 0.h),
+        ],
+      ),
+    );
+  }
 
   Widget calDataView(
       {String? imgIcon,

@@ -14,7 +14,12 @@ import '../grocery/screen/grocery_screen.dart';
 
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
-  const AppManagerScreen({super.key, this.routeName = ''});
+  final int? selectIndex;
+  const AppManagerScreen({
+    super.key,
+    this.routeName = '',
+    this.selectIndex,
+  });
 
   @override
   State<AppManagerScreen> createState() => _AppManagerScreenState();
@@ -25,6 +30,12 @@ class _AppManagerScreenState extends State<AppManagerScreen>
   int selectedIndex = 2;
 
   DateTime? currentBackPressTime;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectIndex ?? 2;
+  }
 
   @override
   Widget build(BuildContext context) {

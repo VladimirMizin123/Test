@@ -502,14 +502,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                   const Spacer(),
                                   GestureDetector(
-                                    onTap: () async {
-                                      Get.to(() => const GetUserAddress(),
-                                          transition: Transition.fadeIn,
-                                          arguments: {
-                                            "string": 'isFromCheckout',
-                                            "userData": ''
-                                          });
-                                    },
+                                    onTap: () async {},
                                     child: const Icon(
                                       Icons.keyboard_arrow_right_sharp,
                                       color: AppColors.darkGray,

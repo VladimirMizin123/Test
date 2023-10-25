@@ -43,8 +43,6 @@ class _GetUserAddressState extends State<GetUserAddress>
     mapController = controller;
   }
 
-  Timer? _debounce;
-
   static List ofcHomeList = ['Home', 'Office'];
   LatLng? selectedLatLng;
   CameraPosition currentPosition = const CameraPosition(
@@ -79,9 +77,11 @@ class _GetUserAddressState extends State<GetUserAddress>
         icon: customIcon,
       )
     ];
-    mapController
-        .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    setState(() {});
+
+    setState(() {
+      mapController
+          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+    });
     return true;
   }
 
@@ -446,38 +446,9 @@ class _GetUserAddressState extends State<GetUserAddress>
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getCurrentLocation();
-      // WidgetsBinding.instance.addObserver(this);
-    });
+    getCurrentLocation();
+    // WidgetsBinding.instance.addObserver(this);
   }
-
-  // @override
-  // Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-  //   switch (state) {
-  //     case AppLifecycleState.resumed:
-  //       log('HELLOOOO');
-  //
-  //       if (lifeCycleCall == true) {
-  //         getCurrentLocation();
-  //       }
-  //       break;
-  //     case AppLifecycleState.inactive:
-  //       break;
-  //     case AppLifecycleState.paused:
-  //       log('tata');
-  //       Get.back();
-  //       break;
-  //     case AppLifecycleState.detached:
-  //       break;
-  //   }
-  // }
-  //
-  // @override
-  // void dispose() {
-  //   WidgetsBinding.instance.removeObserver(this);
-  //   super.dispose();
-  // }
 
   bool lifeCycleCall = false;
 
@@ -489,7 +460,7 @@ class _GetUserAddressState extends State<GetUserAddress>
       body: BlocBuilder(
         bloc: bloc,
         builder: (context, state) {
-          if (state is LoadingState) {
+          if (state is AddAddressLoadingState) {
             return const AppCenterLoader();
           } else {
             return Column(
@@ -724,43 +695,43 @@ class _GetUserAddressState extends State<GetUserAddress>
                             'country': country,
                             'addressType': ofcHomeValue.toLowerCase(),
                             'zipcode': zipcode,
-                            'isPrimary': false,
+                            'isPrimary': true,
                           };
 
-                          if (argumentsValue['string'] == 'isFromRegister') {
-                            Get.to(
-                              () => AddressConfirmation(
-                                locationData: addressData,
-                                arguments: argumentsValue,
-                              ),
-                            );
-                          } else if (argumentsValue['string'] ==
-                              'isFromCheckout') {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddressConfirmation(
-                                    locationData: addressData,
-                                    arguments: argumentsValue,
-                                  ),
-                                ));
-                          } else {
-                            bloc.add(
-                              SaveClickEvent(
-                                latitude: selectedLatLng!.latitude,
-                                longitude: selectedLatLng!.longitude,
-                                streetNum: streetNum,
-                                streetName: streetName,
-                                city: city,
-                                state: state.toString(),
-                                country: country,
-                                addressType: ofcHomeValue.toLowerCase(),
-                                zipcode: zipcode,
-                                isPrimary: false,
-                                userId: userID,
-                              ),
-                            );
-                          }
+                          // if (argumentsValue['string'] == 'isFromRegister') {
+                          Get.to(
+                            () => AddressConfirmation(
+                              locationData: addressData,
+                              arguments: argumentsValue,
+                            ),
+                          );
+                          // } else if (argumentsValue['string'] ==
+                          //     'isFromCheckout') {
+                          //   Navigator.pushReplacement(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (context) => AddressConfirmation(
+                          //           locationData: addressData,
+                          //           arguments: argumentsValue,
+                          //         ),
+                          //       ));
+                          // } else {
+                          //   bloc.add(
+                          //     SaveClickEvent(
+                          //       latitude: selectedLatLng!.latitude,
+                          //       longitude: selectedLatLng!.longitude,
+                          //       streetNum: streetNum,
+                          //       streetName: streetName,
+                          //       city: city,
+                          //       state: state.toString(),
+                          //       country: country,
+                          //       addressType: ofcHomeValue.toLowerCase(),
+                          //       zipcode: zipcode,
+                          //       isPrimary: false,
+                          //       userId: userID,
+                          //     ),
+                          //   );
+                          // }
                         },
                         child: Container(
                           height: 48.h,

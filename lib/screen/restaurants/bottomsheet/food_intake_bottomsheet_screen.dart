@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
-class LogFoodIntakeBottomSheet extends StatefulWidget {
-  const LogFoodIntakeBottomSheet({super.key});
+import '../../../bloc/journal/get_journal_data/get_user_journal_event.dart';
+import '../../../bloc/journal/get_journal_data/get_user_journal_state.dart';
 
+class LogFoodIntakeBottomSheet extends StatefulWidget {
+  const LogFoodIntakeBottomSheet(
+      {super.key,
+      this.nutritionixGetNxMealInfoByNameModelData,
+      required this.isMainScreen});
+  final NutritionixGetNxMealInfoByNameModelData?
+      nutritionixGetNxMealInfoByNameModelData;
+  final bool isMainScreen;
   @override
   State<LogFoodIntakeBottomSheet> createState() =>
       _LogFoodIntakeBottomSheetState();
@@ -19,107 +31,151 @@ class LogFoodIntakeBottomSheet extends StatefulWidget {
 class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
   int selectedIndex = -1;
   List option = ['BreakFast', 'Lunch', 'Snack', 'Dinner'];
-
+  GetUserJournalBloc bloc = GetUserJournalBloc();
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return Material(
-      color: AppColors.whiteColor,
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: IntrinsicHeight(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  height: 3.h,
-                  width: 80.w,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: AppColors.disable),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
-              const SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'For which meal will we write down the dish?',
-                  style: FontUtils.h20(
-                    fontColor: AppColors.darkGray,
-                    fontWeight: FWT.medium,
+    return BlocConsumer(
+      bloc: bloc,
+      listener: (context, state) {},
+      builder: (context, state) => Material(
+        color: AppColors.whiteColor,
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: 3.h,
+                    width: 80.w,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.disable),
                   ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              myWidget(
-                  title: 'Breakfast',
-                  isSelected: selectedIndex == 0 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  }),
-              const SizedBox(height: 10),
-              myWidget(
-                  title: 'Lunch',
-                  isSelected: selectedIndex == 1 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  }),
-              const SizedBox(height: 10),
-              myWidget(
-                  title: 'Snack',
-                  isSelected: selectedIndex == 2 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 2;
-                    });
-                  }),
-              const SizedBox(height: 10),
-              myWidget(
-                  title: 'Dinner',
-                  isSelected: selectedIndex == 3 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 3;
-                    });
-                  }),
-              const SizedBox(height: 15),
-              simpleTextBorderButton(
-                context: context,
-                color: AppColors.terracotta,
-                lableColor: AppColors.terracotta,
-                buttonLable: selectedIndex == -1 ? 'Back' : 'Log Dish',
-                height: screenSize.height * 0.065,
-                width: screenSize.width,
-                isLoadingWidget: false,
-                onTap: () {
-                  if (selectedIndex == -1) {
-                    Get.back();
-                  } else {
-                    Get.back(result: option[selectedIndex]);
-                    // List<GroceryShoppingData> edgesDummyList = [];
-                    // for (var i = 0; i < widget.edgesList.length; i++) {
-                    //   if (widget.edgesList[i].isActive == true) {
-                    //     edgesDummyList.add(widget.edgesList[i]);
-                    //   }
-                    // }
-                    // if (edgesDummyList.isNotEmpty) {
-                  }
-                },
-                isDarkColor: true,
-                isFillColor: selectedIndex == -1 ? false : true,
-              ),
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+                SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    widget.isMainScreen == true
+                        ? 'Tell us what you are looking for?'
+                        : 'For which meal will we write down the dish?',
+                    style: FontUtils.h20(
+                      fontColor: AppColors.darkGray,
+                      fontWeight: FWT.medium,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                myWidget(
+                    title: 'Breakfast',
+                    isSelected: selectedIndex == 0 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 0;
+                      });
+                    }),
+                const SizedBox(height: 10),
+                myWidget(
+                    title: 'Lunch',
+                    isSelected: selectedIndex == 1 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 1;
+                      });
+                    }),
+                const SizedBox(height: 10),
+                myWidget(
+                    title: 'Snack',
+                    isSelected: selectedIndex == 2 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 2;
+                      });
+                    }),
+                const SizedBox(height: 10),
+                myWidget(
+                    title: 'Dinner',
+                    isSelected: selectedIndex == 3 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 3;
+                      });
+                    }),
+                const SizedBox(height: 15),
+                state is AddItemLoadingState
+                    ? const Center(child: CircularProgressIndicator())
+                    : simpleTextBorderButton(
+                        context: context,
+                        color: AppColors.terracotta,
+                        lableColor: AppColors.terracotta,
+                        buttonLable: selectedIndex == -1
+                            ? 'Back'
+                            : widget.isMainScreen == true
+                                ? 'Continue'
+                                : 'Log Dish',
+                        height: screenSize.height * 0.065,
+                        width: screenSize.width,
+                        isLoadingWidget: false,
+                        onTap: () {
+                          if (selectedIndex == -1) {
+                            Get.back();
+                          } else {
+                            if (widget.isMainScreen == true) {
+                              Get.back();
+                            } else {
+                              bloc.add(
+                                AddEatenMealData(
+                                  value: 1,
+                                  mealName: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .foodName ??
+                                      '',
+                                  recipeId: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .nixItemId ??
+                                      '',
+                                  mealType: option[selectedIndex],
+                                  noOfServing: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .servingQty ??
+                                      0,
+                                  userId:
+                                      PreferenceUtils.getString(prefUserData),
+                                  calorie: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .nfCalories ??
+                                      '',
+                                  carbs: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .nfTotalCarbohydrate ??
+                                      0,
+                                  fat: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .nfTotalFat ??
+                                      0,
+                                  protein: widget
+                                          .nutritionixGetNxMealInfoByNameModelData!
+                                          .nfProtein ??
+                                      0,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        isDarkColor: true,
+                        isFillColor: selectedIndex == -1 ? false : true,
+                      ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

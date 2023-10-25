@@ -12,18 +12,19 @@ class SaveClickEvent extends AddAddressEvent {
   final String zipcode;
   final bool isPrimary;
   final String userId;
+  final String isFrom;
 
-  SaveClickEvent({
-    required this.latitude,
-    required this.longitude,
-    required this.streetNum,
-    required this.streetName,
-    required this.city,
-    required this.state,
-    required this.country,
-    required this.addressType,
-    required this.zipcode,
-    required this.isPrimary,
-    required this.userId,
-  });
+  SaveClickEvent(
+      {required this.latitude,
+      required this.longitude,
+      required this.streetNum,
+      required this.streetName,
+      required this.city,
+      required this.state,
+      required this.country,
+      required this.addressType,
+      required this.zipcode,
+      required this.isPrimary,
+      required this.userId,
+      required this.isFrom});
 }

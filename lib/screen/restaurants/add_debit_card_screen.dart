@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/credit_card.dart';
+import 'package:ml_card_scanner/ml_card_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddDebitCardScreen extends StatefulWidget {
@@ -20,7 +22,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
   TextEditingController cardNumber = TextEditingController();
   TextEditingController validUntil = TextEditingController();
   TextEditingController cvvNumber = TextEditingController();
-
+  CardInfo? _cardInfo;
   @override
   void initState() {
     super.initState();
@@ -119,11 +121,22 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                   controller: cardNumber,
                   suffixIcon: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 13),
-                    child: Image.asset(
-                      AssetsUtils.scanner,
-                      height: 10.h,
-                      width: 10.w,
-                      color: AppColors.darkGray,
+                    child: GestureDetector(
+                      onTap: () async {
+                        await Get.to(() => const CreditCard())!.then((value) {
+                          setState(() {
+                            _cardInfo = value;
+
+                            cardNumber.text = _cardInfo!.number;
+                          });
+                        });
+                      },
+                      child: Image.asset(
+                        AssetsUtils.scanner,
+                        height: 10.h,
+                        width: 10.w,
+                        color: AppColors.darkGray,
+                      ),
                     ),
                   )),
               Row(
