@@ -86,10 +86,14 @@ class RestaurantRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(
-          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else {
+    }
+    // else if (response.statusCode == 400) {
+    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
+    //
+    //   return Right(
+    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    // }
+    else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

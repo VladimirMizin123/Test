@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -20,11 +21,15 @@ class FilterScreen extends StatefulWidget {
     required this.restaurantList,
     required this.selectedCategory,
     required this.rating,
+    required this.isFastDelivery,
+    required this.isPickup,
   });
   final CousinesList cousinesList;
   final List<RestaurantList> restaurantList;
   final List selectedCategory;
   final List rating;
+  final bool isFastDelivery;
+  final bool isPickup;
   @override
   State<FilterScreen> createState() => _FilterScreenState();
 }
@@ -32,7 +37,6 @@ class FilterScreen extends StatefulWidget {
 class _FilterScreenState extends State<FilterScreen> {
   List mealType = [
     'Rating',
-    // 'Price',
     'Fast Delivery',
   ];
 
@@ -95,6 +99,7 @@ class _FilterScreenState extends State<FilterScreen> {
   List rating = [];
   List price = [];
   bool isFilter = false;
+  bool isFastDelivery = false;
   showBottomSheet({String? type}) {
     showModalBottomSheet(
       context: context,
@@ -131,6 +136,15 @@ class _FilterScreenState extends State<FilterScreen> {
     selectedCategoryData = widget.selectedCategory;
     rating = widget.rating;
     data = Set.from(widget.restaurantList);
+    isFastDelivery = widget.isFastDelivery;
+    widget.isPickup == true
+        ? mealType = [
+            'Rating',
+          ]
+        : mealType = [
+            'Rating',
+            'Fast Delivery',
+          ];
     super.initState();
   }
 
@@ -140,7 +154,9 @@ class _FilterScreenState extends State<FilterScreen> {
     return Scaffold(
       body: SafeArea(
         child: WillPopScope(
-          onWillPop: () => Future(() => false),
+          onWillPop: () => Future(
+            () => false,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -161,11 +177,202 @@ class _FilterScreenState extends State<FilterScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        alldata = {
-                          'restaurantData': data,
-                          'filterTab': selectedCategoryData,
-                          'rating': rating
-                        };
+                        ratingFilter.clear();
+                        finalData.clear();
+
+                        /// WHEN RATING IS SELECTED ------------------------------------------------------
+
+                        if (rating.isNotEmpty) {
+                          /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
+
+                          if (rating.length == 1) {
+                            ratingFilter.addAll(data
+                                .where((element) =>
+                                    element.weightedRatingValue! <=
+                                    int.parse(rating.first))
+                                .toList());
+                          }
+
+                          /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
+
+                          else {
+                            ratingFilter.addAll(data
+                                .where((element) =>
+                                    element.weightedRatingValue! >=
+                                        int.parse(rating.first) &&
+                                    element.weightedRatingValue! <=
+                                        int.parse(rating.last))
+                                .toList());
+                          }
+
+                          /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
+
+                          if (selectedCategoryData.isNotEmpty) {
+                            for (var i = 0; i < ratingFilter.length; i++) {
+                              for (var j = 0;
+                                  j <
+                                      ratingFilter
+                                          .elementAt(i)
+                                          .cuisines!
+                                          .length;
+                                  j++) {
+                                for (var k = 0;
+                                    k < selectedCategoryData.length;
+                                    k++) {
+                                  if (ratingFilter
+                                      .elementAt(i)
+                                      .cuisines![j]
+                                      .contains(selectedCategoryData[k])) {
+                                    finalData.add(ratingFilter.elementAt(i));
+                                  }
+                                }
+                              }
+                            }
+
+                            /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
+
+                            if (isFastDelivery == true) {
+                              List<RestaurantList> data = List.from(finalData);
+
+                              data.sort(
+                                (a, b) {
+                                  return a.quotes!.cheapestDelivery!
+                                      .timeEstimate!.minimum!
+                                      .compareTo(b.quotes!.cheapestDelivery!
+                                          .timeEstimate!.minimum!);
+                                },
+                              );
+
+                              finalData = Set.from(data);
+
+                              alldata = {
+                                'restaurantData': finalData,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            } else {
+                              alldata = {
+                                'restaurantData': finalData,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            }
+                          } else {
+                            if (isFastDelivery == true) {
+                              List<RestaurantList> data =
+                                  List.from(ratingFilter);
+
+                              data.sort(
+                                (a, b) {
+                                  return a.quotes!.cheapestDelivery!
+                                      .timeEstimate!.minimum!
+                                      .compareTo(b.quotes!.cheapestDelivery!
+                                          .timeEstimate!.minimum!);
+                                },
+                              );
+
+                              ratingFilter = Set.from(data);
+
+                              alldata = {
+                                'restaurantData': ratingFilter,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            } else {
+                              alldata = {
+                                'restaurantData': ratingFilter,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            }
+                          }
+                        }
+
+                        /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
+
+                        else if (selectedCategoryData.isNotEmpty) {
+                          for (var i = 0; i < data.length; i++) {
+                            for (var j = 0;
+                                j < data.elementAt(i).cuisines!.length;
+                                j++) {
+                              for (var k = 0;
+                                  k < selectedCategoryData.length;
+                                  k++) {
+                                if (data
+                                    .elementAt(i)
+                                    .cuisines![j]
+                                    .contains(selectedCategoryData[k])) {
+                                  finalData.add(data.elementAt(i));
+                                }
+                              }
+                            }
+                          }
+
+                          /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
+                          if (isFastDelivery == true) {
+                            List<RestaurantList> data = List.from(finalData);
+
+                            data.sort(
+                              (a, b) {
+                                return a.quotes!.cheapestDelivery!.timeEstimate!
+                                    .minimum!
+                                    .compareTo(b.quotes!.cheapestDelivery!
+                                        .timeEstimate!.minimum!);
+                              },
+                            );
+
+                            finalData = Set.from(data);
+
+                            alldata = {
+                              'restaurantData': finalData,
+                              'filterTab': selectedCategoryData,
+                              'rating': rating,
+                              'fastDelivery': isFastDelivery
+                            };
+                          }
+
+                          /// WHEN FAST DELIVERY NOT SELECTED ------------------------------------------------------
+                          else {
+                            alldata = {
+                              'restaurantData': finalData,
+                              'filterTab': selectedCategoryData,
+                              'rating': rating,
+                              'fastDelivery': isFastDelivery
+                            };
+                          }
+                        }
+
+                        /// WHEN RATING AND CATEGORY ARE NOT SELECTED BUT FAST DELIVERY SELECTED ------------------------------------------------------
+                        else if (isFastDelivery == true) {
+                          widget.restaurantList.sort(
+                            (a, b) {
+                              return a.quotes!.cheapestDelivery!.timeEstimate!
+                                  .minimum!
+                                  .compareTo(b.quotes!.cheapestDelivery!
+                                      .timeEstimate!.minimum!);
+                            },
+                          );
+
+                          finalData = Set.from(widget.restaurantList);
+                          alldata = {
+                            'restaurantData': finalData,
+                            'filterTab': selectedCategoryData,
+                            'rating': rating,
+                            'fastDelivery': isFastDelivery
+                          };
+                        } else {
+                          alldata = {
+                            'restaurantData': data,
+                            'filterTab': selectedCategoryData,
+                            'rating': rating,
+                            'fastDelivery': isFastDelivery
+                          };
+                        }
+
                         Get.back(result: alldata);
                       },
                       child: const Icon(
@@ -215,23 +422,18 @@ class _FilterScreenState extends State<FilterScreen> {
                         onTap: () {
                           if (index == 0) {
                             showBottomSheet(type: 'Rating');
+                          } else {
+                            setState(() {
+                              isFastDelivery = !isFastDelivery;
+                            });
                           }
-                          // if (selectedTabData.contains(mealType[index])) {
-                          //   setState(() {
-                          //     selectedTabData.remove(mealType[index]);
-                          //   });
-                          // } else {
-                          //   setState(() {
-                          //     selectedTabData.add(mealType[index]);
-                          //   });
-                          // }
                         },
                         child: Container(
                           margin: const EdgeInsets.only(right: 8),
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           decoration: BoxDecoration(
                             color: index == 0 && rating.isNotEmpty ||
-                                    index == 1 && price.isNotEmpty
+                                    index == 1 && isFastDelivery
                                 ? AppColors.coral
                                 : AppColors.lightGrey,
                             borderRadius: BorderRadius.circular(100),
@@ -253,23 +455,26 @@ class _FilterScreenState extends State<FilterScreen> {
                                 mealType[index],
                                 style: FontUtils.h18(
                                   fontColor: index == 0 && rating.isNotEmpty ||
-                                          index == 1 && price.isNotEmpty
+                                          index == 1 && isFastDelivery
                                       ? AppColors.terracotta
                                       : AppColors.darkGray,
                                   fontWeight: FWT.medium,
                                 ),
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                size: 15,
-                                color: index == 0 && rating.isNotEmpty ||
-                                        index == 1 && price.isNotEmpty
-                                    ? AppColors.terracotta
-                                    : AppColors.darkGray,
-                              )
+                              index == 0
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: Icon(
+                                        Icons.arrow_forward_ios_outlined,
+                                        size: 15,
+                                        color:
+                                            index == 0 && rating.isNotEmpty ||
+                                                    index == 1 && isFastDelivery
+                                                ? AppColors.terracotta
+                                                : AppColors.darkGray,
+                                      ),
+                                    )
+                                  : const SizedBox()
                             ],
                           ),
                         ),
@@ -329,6 +534,9 @@ class _FilterScreenState extends State<FilterScreen> {
                                   widget.cousinesList.cousines![index])
                               ? Border.all(color: AppColors.terracotta)
                               : const Border(),
+                          image: const DecorationImage(
+                              image: AssetImage(AssetsUtils.food1),
+                              alignment: Alignment.centerRight),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(0xff004C63).withOpacity(0.08),
@@ -337,44 +545,19 @@ class _FilterScreenState extends State<FilterScreen> {
                             ),
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.only(bottom: 4.h, left: 3.h),
-                                child: SizedBox(
-                                  width: 70.w,
-                                  child: Text(
-                                    widget.cousinesList.cousines![index],
-                                    style: FontUtils.h17(
-                                      fontColor: Colors.black,
-                                      fontWeight: FWT.regular,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                        child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 4.h, left: 3.h),
+                            child: Text(
+                              widget.cousinesList.cousines![index],
+                              style: FontUtils.h17(
+                                fontColor: Colors.black,
+                                fontWeight: FWT.semiBold,
                               ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const Spacer(),
-                            Container(
-                              // height: MediaQuery.of(context).size.height * 0.12,
-                              width: MediaQuery.of(context).size.width * 0.22,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(8),
-                                  topRight: Radius.circular(8),
-                                ),
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    AssetsUtils.food1,
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            )
-                          ],
+                          ),
                         ),
                       ),
                     );
@@ -393,6 +576,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         setState(() {
                           selectedCategoryData.clear();
                           rating.clear();
+                          isFastDelivery = false;
                         });
                       },
                       child: Container(
@@ -402,18 +586,21 @@ class _FilterScreenState extends State<FilterScreen> {
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.white,
                           border: Border.all(
-                              color: selectedCategoryData.isNotEmpty ||
-                                      rating.isNotEmpty
-                                  ? AppColors.terracotta
-                                  : AppColors.disabledColor,
-                              width: 2),
+                            color: selectedCategoryData.isNotEmpty ||
+                                    rating.isNotEmpty ||
+                                    isFastDelivery
+                                ? AppColors.terracotta
+                                : AppColors.disabledColor,
+                            width: 2,
+                          ),
                         ),
                         child: Center(
                           child: Text(
                             'Clear',
                             style: FontUtils.h18(
                               fontColor: selectedCategoryData.isNotEmpty ||
-                                      rating.isNotEmpty
+                                      rating.isNotEmpty ||
+                                      isFastDelivery
                                   ? AppColors.terracotta
                                   : AppColors.disabledColor,
                               fontWeight: FWT.medium,
@@ -424,9 +611,9 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (selectedCategoryData.isNotEmpty) {
-                          isFilter = true;
-                        } else if (rating.isNotEmpty) {
+                        if (selectedCategoryData.isNotEmpty ||
+                            rating.isNotEmpty ||
+                            isFastDelivery) {
                           isFilter = true;
                         }
 
@@ -437,14 +624,23 @@ class _FilterScreenState extends State<FilterScreen> {
                         } else {
                           ratingFilter.clear();
                           finalData.clear();
+
+                          /// WHEN RATING IS SELECTED ------------------------------------------------------
+
                           if (rating.isNotEmpty) {
+                            /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
+
                             if (rating.length == 1) {
                               ratingFilter.addAll(data
                                   .where((element) =>
                                       element.weightedRatingValue! <=
                                       int.parse(rating.first))
                                   .toList());
-                            } else {
+                            }
+
+                            /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
+
+                            else {
                               ratingFilter.addAll(data
                                   .where((element) =>
                                       element.weightedRatingValue! >=
@@ -453,6 +649,9 @@ class _FilterScreenState extends State<FilterScreen> {
                                           int.parse(rating.last))
                                   .toList());
                             }
+
+                            /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
+
                             if (selectedCategoryData.isNotEmpty) {
                               for (var i = 0; i < ratingFilter.length; i++) {
                                 for (var j = 0;
@@ -475,19 +674,73 @@ class _FilterScreenState extends State<FilterScreen> {
                                 }
                               }
 
-                              alldata = {
-                                'restaurantData': finalData,
-                                'filterTab': selectedCategoryData,
-                                'rating': rating
-                              };
+                              /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
+
+                              if (isFastDelivery == true) {
+                                List<RestaurantList> data =
+                                    List.from(finalData);
+
+                                data.sort(
+                                  (a, b) {
+                                    return a.quotes!.cheapestDelivery!
+                                        .timeEstimate!.minimum!
+                                        .compareTo(b.quotes!.cheapestDelivery!
+                                            .timeEstimate!.minimum!);
+                                  },
+                                );
+
+                                finalData = Set.from(data);
+
+                                alldata = {
+                                  'restaurantData': finalData,
+                                  'filterTab': selectedCategoryData,
+                                  'rating': rating,
+                                  'fastDelivery': isFastDelivery
+                                };
+                              } else {
+                                alldata = {
+                                  'restaurantData': finalData,
+                                  'filterTab': selectedCategoryData,
+                                  'rating': rating,
+                                  'fastDelivery': isFastDelivery
+                                };
+                              }
                             } else {
-                              alldata = {
-                                'restaurantData': ratingFilter,
-                                'filterTab': selectedCategoryData,
-                                'rating': rating
-                              };
+                              if (isFastDelivery == true) {
+                                List<RestaurantList> data =
+                                    List.from(ratingFilter);
+
+                                data.sort(
+                                  (a, b) {
+                                    return a.quotes!.cheapestDelivery!
+                                        .timeEstimate!.minimum!
+                                        .compareTo(b.quotes!.cheapestDelivery!
+                                            .timeEstimate!.minimum!);
+                                  },
+                                );
+
+                                ratingFilter = Set.from(data);
+
+                                alldata = {
+                                  'restaurantData': ratingFilter,
+                                  'filterTab': selectedCategoryData,
+                                  'rating': rating,
+                                  'fastDelivery': isFastDelivery
+                                };
+                              } else {
+                                alldata = {
+                                  'restaurantData': ratingFilter,
+                                  'filterTab': selectedCategoryData,
+                                  'rating': rating,
+                                  'fastDelivery': isFastDelivery
+                                };
+                              }
                             }
-                          } else if (selectedCategoryData.isNotEmpty) {
+                          }
+
+                          /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
+
+                          else if (selectedCategoryData.isNotEmpty) {
                             for (var i = 0; i < data.length; i++) {
                               for (var j = 0;
                                   j < data.elementAt(i).cuisines!.length;
@@ -504,14 +757,61 @@ class _FilterScreenState extends State<FilterScreen> {
                                 }
                               }
                             }
+
+                            /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
+                            if (isFastDelivery == true) {
+                              List<RestaurantList> data = List.from(finalData);
+
+                              data.sort(
+                                (a, b) {
+                                  return a.quotes!.cheapestDelivery!
+                                      .timeEstimate!.minimum!
+                                      .compareTo(b.quotes!.cheapestDelivery!
+                                          .timeEstimate!.minimum!);
+                                },
+                              );
+
+                              finalData = Set.from(data);
+
+                              alldata = {
+                                'restaurantData': finalData,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            }
+
+                            /// WHEN FAST DELIVERY NOT SELECTED ------------------------------------------------------
+                            else {
+                              alldata = {
+                                'restaurantData': finalData,
+                                'filterTab': selectedCategoryData,
+                                'rating': rating,
+                                'fastDelivery': isFastDelivery
+                              };
+                            }
+                          }
+
+                          /// WHEN RATING AND CATEGORY ARE NOT SELECTED BUT FAST DELIVERY SELECTED ------------------------------------------------------
+                          else if (isFastDelivery == true) {
+                            widget.restaurantList.sort(
+                              (a, b) {
+                                return a.quotes!.cheapestDelivery!.timeEstimate!
+                                    .minimum!
+                                    .compareTo(b.quotes!.cheapestDelivery!
+                                        .timeEstimate!.minimum!);
+                              },
+                            );
+
+                            finalData = Set.from(widget.restaurantList);
                             alldata = {
                               'restaurantData': finalData,
                               'filterTab': selectedCategoryData,
-                              'rating': rating
+                              'rating': rating,
+                              'fastDelivery': isFastDelivery
                             };
                           }
 
-                          print('---ALLDATA-->>>>$alldata');
                           Get.back(result: alldata);
                         }
                       },
@@ -521,12 +821,14 @@ class _FilterScreenState extends State<FilterScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: selectedCategoryData.isNotEmpty ||
-                                  rating.isNotEmpty
+                                  rating.isNotEmpty ||
+                                  isFastDelivery
                               ? AppColors.terracotta
                               : AppColors.disabledColor,
                           border: Border.all(
                             color: selectedCategoryData.isNotEmpty ||
-                                    rating.isNotEmpty
+                                    rating.isNotEmpty ||
+                                    isFastDelivery
                                 ? AppColors.terracotta
                                 : AppColors.disabledColor,
                             width: 2,
