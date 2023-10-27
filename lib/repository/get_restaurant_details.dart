@@ -79,10 +79,9 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList(
       {String? restaurantId, bool? pickup}) async {
-    final response = await apiServices.get(
-      '${ApiUrls.getRestaurantMenuList}?restaurantId=$restaurantId&pickup=$pickup',
-    );
-
+    final response = await apiServices.post(
+        '${ApiUrls.getRestaurantMenuList}/$userID?restaurantId=$restaurantId&mealType=breakfast&pickup=$pickup',
+        {});
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));

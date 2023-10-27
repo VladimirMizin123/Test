@@ -74,8 +74,11 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .getRestaurantMenuList(
               restaurantId: event.restaurantId, pickup: event.pickUp)
           .fold((left) {
+        print('--left-->>>>>${left.data}');
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
+        print('---right->>>>>${right.data}');
+
         emit(
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
       });

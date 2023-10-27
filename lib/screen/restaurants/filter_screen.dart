@@ -35,11 +35,6 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  List mealType = [
-    'Rating',
-    'Fast Delivery',
-  ];
-
   List mealData = [
     {
       'image': AssetsUtils.food,
@@ -100,6 +95,10 @@ class _FilterScreenState extends State<FilterScreen> {
   List price = [];
   bool isFilter = false;
   bool isFastDelivery = false;
+  List mealType = [
+    'Rating',
+    'Fast Delivery',
+  ];
   showBottomSheet({String? type}) {
     showModalBottomSheet(
       context: context,
@@ -137,14 +136,7 @@ class _FilterScreenState extends State<FilterScreen> {
     rating = widget.rating;
     data = Set.from(widget.restaurantList);
     isFastDelivery = widget.isFastDelivery;
-    widget.isPickup == true
-        ? mealType = [
-            'Rating',
-          ]
-        : mealType = [
-            'Rating',
-            'Fast Delivery',
-          ];
+
     super.initState();
   }
 
@@ -419,13 +411,77 @@ class _FilterScreenState extends State<FilterScreen> {
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           if (index == 0) {
                             showBottomSheet(type: 'Rating');
                           } else {
-                            setState(() {
-                              isFastDelivery = !isFastDelivery;
-                            });
+                            if (widget.isPickup == false) {
+                              setState(() {
+                                isFastDelivery = !isFastDelivery;
+                              });
+                            } else {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+                                  return SimpleDialog(
+                                    shape: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20.w),
+                                        child: Text(
+                                          'Fast delivery option is not available for Pickup Services',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 15.w, vertical: 0.h),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Get.back();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Colors.red.withOpacity(0.8),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                  Radius.circular(5),
+                                                ),
+                                              ),
+                                              child: const Center(
+                                                child: Text(
+                                                  'Close',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           }
                         },
                         child: Container(

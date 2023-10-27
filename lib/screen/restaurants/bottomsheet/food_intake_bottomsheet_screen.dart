@@ -129,7 +129,7 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                             Get.back();
                           } else {
                             if (widget.isMainScreen == true) {
-                              Get.back();
+                              Get.back(result: option[selectedIndex]);
                             } else {
                               bloc.add(
                                 AddEatenMealData(

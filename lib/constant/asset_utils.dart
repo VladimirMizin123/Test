@@ -93,6 +93,7 @@ class AssetsUtils {
   static const canEatYellow = "assets/image/can_eat_yellow.png";
   static const terracotaCheck = "assets/image/check.png";
   static const ratingStar = "assets/image/rating_star.png";
+  static const greyCircle = "assets/image/grey_circle.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';
