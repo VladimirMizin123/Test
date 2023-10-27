@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
@@ -404,9 +405,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             const SizedBox(
                               width: 15,
                             ),
-                            Text(
-                              result.isEmpty ? 'Bring me the order' : result,
-                              style: const TextStyle(
+                            const Text(
+                              'Bring me the order',
+                              style: TextStyle(
                                 color: Color(0xff010101),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -415,26 +416,32 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             const Spacer(),
                             GestureDetector(
                               onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return const DeliverOrderBottomSheet();
-                                  },
-                                  isDismissible: false,
-                                  shape: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(16.r),
-                                      topRight: Radius.circular(16.r),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: Colors.transparent,
-                                    ),
+                                Get.offAll(
+                                  () => const AppManagerScreen(
+                                    selectIndex: 3,
                                   ),
-                                ).then((value) {
-                                  setState(() {
-                                    result = value;
-                                  });
-                                });
+                                );
+
+                                // showModalBottomSheet(
+                                //   context: context,
+                                //   builder: (context) {
+                                //     return const DeliverOrderBottomSheet();
+                                //   },
+                                //   isDismissible: false,
+                                //   shape: OutlineInputBorder(
+                                //     borderRadius: BorderRadius.only(
+                                //       topLeft: Radius.circular(16.r),
+                                //       topRight: Radius.circular(16.r),
+                                //     ),
+                                //     borderSide: const BorderSide(
+                                //       color: Colors.transparent,
+                                //     ),
+                                //   ),
+                                // ).then((value) {
+                                //   setState(() {
+                                //     result = value;
+                                //   });
+                                // });
                               },
                               child: Row(
                                 children: [
@@ -502,7 +509,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                   const Spacer(),
                                   GestureDetector(
-                                    onTap: () async {},
+                                    onTap: () async {
+                                      Get.offAll(
+                                        () => const AppManagerScreen(
+                                          selectIndex: 3,
+                                        ),
+                                      );
+                                    },
                                     child: const Icon(
                                       Icons.keyboard_arrow_right_sharp,
                                       color: AppColors.darkGray,

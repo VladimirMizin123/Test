@@ -80,7 +80,9 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      log('e---------->>>>>> ${e}');
+
+      // showToast(isSuccess: false, message: e.toString());
       emit(GetRestaurantMenuListErrorState());
     }
   }

@@ -479,3 +479,14 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+/// Done
+// Cousines Filter by Fast Delivery
+// Cousines Filter by rating modification
+// Ui Design of Category in Filter Screen
+// Menu List Filter by Price
+// Change the routes in Checkout Screen
+
+///Pending
+
+// Display Customization in Menu Details screen -- I

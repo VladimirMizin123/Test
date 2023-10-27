@@ -104,7 +104,7 @@ class MenuItemList {
   bool? isAvailable;
   int? minPrice;
   String? image;
-  List<MenuItemListCustomization>? customizations;
+  List<Customization>? customizations;
   int? originalPrice;
   String? formattedPrice;
   List<dynamic>? attributes;
@@ -112,6 +112,7 @@ class MenuItemList {
   String? thumbnailImage;
   bool? shouldFetchCustomizations;
   bool? supportsImageScaling;
+  dynamic highLightedColor;
 
   MenuItemList({
     this.name,
@@ -131,6 +132,7 @@ class MenuItemList {
     this.thumbnailImage,
     this.shouldFetchCustomizations,
     this.supportsImageScaling,
+    this.highLightedColor,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(
@@ -145,8 +147,8 @@ class MenuItemList {
         image: json["image"],
         customizations: json["customizations"] == null
             ? []
-            : List<MenuItemListCustomization>.from(json["customizations"]!
-                .map((x) => MenuItemListCustomization.fromJson(x))),
+            : List<Customization>.from(
+                json["customizations"]!.map((x) => Customization.fromJson(x))),
         originalPrice: json["original_price"],
         formattedPrice: json["formatted_price"],
         attributes: json["attributes"] == null
@@ -156,6 +158,7 @@ class MenuItemList {
         thumbnailImage: json["thumbnail_image"],
         shouldFetchCustomizations: json["should_fetch_customizations"],
         supportsImageScaling: json["supports_image_scaling"],
+        highLightedColor: json["highLightedColor"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -180,17 +183,18 @@ class MenuItemList {
         "thumbnail_image": thumbnailImage,
         "should_fetch_customizations": shouldFetchCustomizations,
         "supports_image_scaling": supportsImageScaling,
+        "highLightedColor": highLightedColor,
       };
 }
 
-class MenuItemListCustomization {
+class Customization {
   String? name;
   int? minChoiceOptions;
   int? maxChoiceOptions;
-  List<PurpleOption>? options;
+  List<Option>? options;
   String? customizationId;
 
-  MenuItemListCustomization({
+  Customization({
     this.name,
     this.minChoiceOptions,
     this.maxChoiceOptions,
@@ -198,15 +202,14 @@ class MenuItemListCustomization {
     this.customizationId,
   });
 
-  factory MenuItemListCustomization.fromJson(Map<String, dynamic> json) =>
-      MenuItemListCustomization(
+  factory Customization.fromJson(Map<String, dynamic> json) => Customization(
         name: json["name"],
         minChoiceOptions: json["min_choice_options"],
         maxChoiceOptions: json["max_choice_options"],
         options: json["options"] == null
             ? []
-            : List<PurpleOption>.from(
-                json["options"]!.map((x) => PurpleOption.fromJson(x))),
+            : List<Option>.from(
+                json["options"]!.map((x) => Option.fromJson(x))),
         customizationId: json["customization_id"],
       );
 
@@ -221,41 +224,30 @@ class MenuItemListCustomization {
       };
 }
 
-class PurpleOption {
+class Option {
   String? name;
   int? price;
-  List<PurpleCustomization>? customizations;
   int? minQty;
   int? maxQty;
-  ConditionalPrice? conditionalPrice;
   String? formattedPrice;
   int? defaultQty;
   String? optionId;
 
-  PurpleOption({
+  Option({
     this.name,
     this.price,
-    this.customizations,
     this.minQty,
     this.maxQty,
-    this.conditionalPrice,
     this.formattedPrice,
     this.defaultQty,
     this.optionId,
   });
 
-  factory PurpleOption.fromJson(Map<String, dynamic> json) => PurpleOption(
+  factory Option.fromJson(Map<String, dynamic> json) => Option(
         name: json["name"],
         price: json["price"],
-        customizations: json["customizations"] == null
-            ? []
-            : List<PurpleCustomization>.from(json["customizations"]!
-                .map((x) => PurpleCustomization.fromJson(x))),
         minQty: json["min_qty"],
         maxQty: json["max_qty"],
-        conditionalPrice: json["conditional_price"] == null
-            ? null
-            : ConditionalPrice.fromJson(json["conditional_price"]),
         formattedPrice: json["formatted_price"],
         defaultQty: json["default_qty"],
         optionId: json["option_id"],
@@ -264,207 +256,8 @@ class PurpleOption {
   Map<String, dynamic> toJson() => {
         "name": name,
         "price": price,
-        "customizations": customizations == null
-            ? []
-            : List<dynamic>.from(customizations!.map((x) => x.toJson())),
         "min_qty": minQty,
         "max_qty": maxQty,
-        "conditional_price": conditionalPrice?.toJson(),
-        "formatted_price": formattedPrice,
-        "default_qty": defaultQty,
-        "option_id": optionId,
-      };
-}
-
-class ConditionalPrice {
-  ConditionalPrice();
-
-  factory ConditionalPrice.fromJson(Map<String, dynamic> json) =>
-      ConditionalPrice();
-
-  Map<String, dynamic> toJson() => {};
-}
-
-class PurpleCustomization {
-  String? name;
-  int? minChoiceOptions;
-  int? maxChoiceOptions;
-  List<FluffyOption>? options;
-  String? customizationId;
-
-  PurpleCustomization({
-    this.name,
-    this.minChoiceOptions,
-    this.maxChoiceOptions,
-    this.options,
-    this.customizationId,
-  });
-
-  factory PurpleCustomization.fromJson(Map<String, dynamic> json) =>
-      PurpleCustomization(
-        name: json["name"],
-        minChoiceOptions: json["min_choice_options"],
-        maxChoiceOptions: json["max_choice_options"],
-        options: json["options"] == null
-            ? []
-            : List<FluffyOption>.from(
-                json["options"]!.map((x) => FluffyOption.fromJson(x))),
-        customizationId: json["customization_id"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "min_choice_options": minChoiceOptions,
-        "max_choice_options": maxChoiceOptions,
-        "options": options == null
-            ? []
-            : List<dynamic>.from(options!.map((x) => x.toJson())),
-        "customization_id": customizationId,
-      };
-}
-
-class FluffyOption {
-  String? name;
-  int? price;
-  List<FluffyCustomization>? customizations;
-  int? minQty;
-  int? maxQty;
-  ConditionalPrice? conditionalPrice;
-  String? formattedPrice;
-  int? defaultQty;
-  String? optionId;
-
-  FluffyOption({
-    this.name,
-    this.price,
-    this.customizations,
-    this.minQty,
-    this.maxQty,
-    this.conditionalPrice,
-    this.formattedPrice,
-    this.defaultQty,
-    this.optionId,
-  });
-
-  factory FluffyOption.fromJson(Map<String, dynamic> json) => FluffyOption(
-        name: json["name"],
-        price: json["price"],
-        customizations: json["customizations"] == null
-            ? []
-            : List<FluffyCustomization>.from(json["customizations"]!
-                .map((x) => FluffyCustomization.fromJson(x))),
-        minQty: json["min_qty"],
-        maxQty: json["max_qty"],
-        conditionalPrice: json["conditional_price"] == null
-            ? null
-            : ConditionalPrice.fromJson(json["conditional_price"]),
-        formattedPrice: json["formatted_price"],
-        defaultQty: json["default_qty"],
-        optionId: json["option_id"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "price": price,
-        "customizations": customizations == null
-            ? []
-            : List<dynamic>.from(customizations!.map((x) => x.toJson())),
-        "min_qty": minQty,
-        "max_qty": maxQty,
-        "conditional_price": conditionalPrice?.toJson(),
-        "formatted_price": formattedPrice,
-        "default_qty": defaultQty,
-        "option_id": optionId,
-      };
-}
-
-class FluffyCustomization {
-  String? name;
-  int? minChoiceOptions;
-  int? maxChoiceOptions;
-  List<TentacledOption>? options;
-  String? customizationId;
-
-  FluffyCustomization({
-    this.name,
-    this.minChoiceOptions,
-    this.maxChoiceOptions,
-    this.options,
-    this.customizationId,
-  });
-
-  factory FluffyCustomization.fromJson(Map<String, dynamic> json) =>
-      FluffyCustomization(
-        name: json["name"],
-        minChoiceOptions: json["min_choice_options"],
-        maxChoiceOptions: json["max_choice_options"],
-        options: json["options"] == null
-            ? []
-            : List<TentacledOption>.from(
-                json["options"]!.map((x) => TentacledOption.fromJson(x))),
-        customizationId: json["customization_id"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "min_choice_options": minChoiceOptions,
-        "max_choice_options": maxChoiceOptions,
-        "options": options == null
-            ? []
-            : List<dynamic>.from(options!.map((x) => x.toJson())),
-        "customization_id": customizationId,
-      };
-}
-
-class TentacledOption {
-  String? name;
-  int? price;
-  List<dynamic>? customizations;
-  int? minQty;
-  int? maxQty;
-  ConditionalPrice? conditionalPrice;
-  String? formattedPrice;
-  int? defaultQty;
-  String? optionId;
-
-  TentacledOption({
-    this.name,
-    this.price,
-    this.customizations,
-    this.minQty,
-    this.maxQty,
-    this.conditionalPrice,
-    this.formattedPrice,
-    this.defaultQty,
-    this.optionId,
-  });
-
-  factory TentacledOption.fromJson(Map<String, dynamic> json) =>
-      TentacledOption(
-        name: json["name"],
-        price: json["price"],
-        customizations: json["customizations"] == null
-            ? []
-            : List<dynamic>.from(json["customizations"]!.map((x) => x)),
-        minQty: json["min_qty"],
-        maxQty: json["max_qty"],
-        conditionalPrice: json["conditional_price"] == null
-            ? null
-            : ConditionalPrice.fromJson(json["conditional_price"]),
-        formattedPrice: json["formatted_price"],
-        defaultQty: json["default_qty"],
-        optionId: json["option_id"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "price": price,
-        "customizations": customizations == null
-            ? []
-            : List<dynamic>.from(customizations!.map((x) => x)),
-        "min_qty": minQty,
-        "max_qty": maxQty,
-        "conditional_price": conditionalPrice?.toJson(),
         "formatted_price": formattedPrice,
         "default_qty": defaultQty,
         "option_id": optionId,
