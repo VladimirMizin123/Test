@@ -14,15 +14,19 @@ import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RestaurantMenuScreen extends StatefulWidget {
-  const RestaurantMenuScreen(
-      {super.key,
-      this.restaurantName,
-      required this.restaurantId,
-      required this.pickup});
+  const RestaurantMenuScreen({
+    super.key,
+    this.restaurantName,
+    required this.restaurantId,
+    required this.pickup,
+    required this.mealType,
+  });
   final String? restaurantName;
   final String restaurantId;
+  final String mealType;
   final bool pickup;
 
   @override
@@ -37,41 +41,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     'Price',
   ];
 
-  List<Map<String, dynamic>> menuData = [
-    {
-      'image': AssetsUtils.restaurantFood,
-      'title': 'Smoked Mackerel Salad With Fennel And Apple',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$6.00',
-      'canEatImage': AssetsUtils.icCanEat
-    },
-    {
-      'image': AssetsUtils.restaurantFood1,
-      'title': 'Pizza With Mozzarella',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$8.00',
-      'canEatImage': AssetsUtils.icCanEat
-    },
-    {
-      'image': AssetsUtils.restaurantFood2,
-      'title': 'Pork With Potatoes',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$5.00',
-      'canEatImage': AssetsUtils.canEatYellow
-    },
-    {
-      'image': AssetsUtils.restaurantFood,
-      'title': 'Smoked Mackerel Salad With Fennel And Apple',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$6.00',
-      'canEatImage': AssetsUtils.canEatRed
-    },
-  ];
-
   int select = 0;
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
@@ -84,11 +53,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   void initState() {
     super.initState();
 
-    log('widget.restaurantId---------->>>>>> ${widget.restaurantId}');
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       restaurantBloc.add(
-        GetRestaurantMenuListEvent(widget.restaurantId, widget.pickup),
+        GetRestaurantMenuListEvent(
+          widget.restaurantId,
+          widget.pickup,
+          widget.mealType,
+        ),
       );
     });
   }
@@ -156,13 +127,102 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   ),
                 ),
                 state is GetRestaurantMenuListLoadingState
-                    ? const Expanded(
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                    ? Expanded(
+                        child: ListView.builder(
+                          itemCount: 10,
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.only(
+                              top: 20, left: 16, right: 16),
+                          scrollDirection: Axis.vertical,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            return Shimmer.fromColors(
+                                baseColor: AppColors.disable.withOpacity(0.20),
+                                highlightColor:
+                                    AppColors.disable.withOpacity(0.20),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Container(
+                                            height: 80,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 0,
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 0,
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    const Divider(
+                                        color: AppColors.disable,
+                                        thickness: 1.2),
+                                  ],
+                                ));
+                          },
                         ),
                       )
                     : restaurantMenu == null
-                        ? const SizedBox()
+                        ? Expanded(
+                            child: Center(
+                              child: Text(
+                                'Currently No Menu Found',
+                                style: FontUtils.h18(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium,
+                                ),
+                              ),
+                            ),
+                          )
                         : restaurantMenu!.categories!.isEmpty
                             ? Expanded(
                                 child: Center(
@@ -488,6 +548,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                     .menuItemList![
                                                                         index]
                                                                     .image!,
+                                                                data: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![index],
                                                               ),
                                                               transition:
                                                                   Transition
@@ -652,6 +716,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                     .menuItemList![
                                                                         index]
                                                                     .image!,
+                                                            data: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![
+                                                                index],
                                                           ),
                                                           transition:
                                                               Transition.fadeIn,
@@ -667,8 +736,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                     .width,
                                                             margin: EdgeInsets
                                                                 .symmetric(
-                                                                    horizontal:
-                                                                        20.w),
+                                                              horizontal: 20.w,
+                                                            ),
                                                             child: Row(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
@@ -714,10 +783,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                             .categories![select]
                                                                             .menuItemList![index]
                                                                             .name!,
-                                                                        style: FontUtils.h16(
-                                                                            fontColor:
-                                                                                AppColors.darkGray,
-                                                                            fontWeight: FWT.regular),
+                                                                        style: FontUtils
+                                                                            .h16(
+                                                                          fontColor:
+                                                                              AppColors.darkGray,
+                                                                          fontWeight:
+                                                                              FWT.regular,
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                     SizedBox(

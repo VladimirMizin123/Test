@@ -62,3 +62,13 @@ class GetCousinesListSuccessState extends RestaurantState {
 class GetCousinesListLoadingState extends RestaurantState {}
 
 class GetCousinesListErrorState extends RestaurantState {}
+
+class AddToRestaurantCartSuccessState extends RestaurantState {
+  final bool isAdded;
+
+  AddToRestaurantCartSuccessState({required this.isAdded});
+}
+
+class AddToRestaurantCartLoadingState extends RestaurantState {}
+
+class AddToRestaurantCartErrorState extends RestaurantState {}

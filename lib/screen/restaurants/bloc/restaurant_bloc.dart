@@ -13,6 +13,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetRestaurantListEvent>(_onGetRestaurantList);
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
+    on<AddRestaurantCartEvent>(_onAddToGroceryList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -72,13 +73,13 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository
           .getRestaurantMenuList(
-              restaurantId: event.restaurantId, pickup: event.pickUp)
+        restaurantId: event.restaurantId,
+        pickup: event.pickUp,
+        mealType: event.mealType,
+      )
           .fold((left) {
-        print('--left-->>>>>${left.data}');
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        print('---right->>>>>${right.data}');
-
         emit(
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
       });
@@ -118,6 +119,27 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetCousinesListErrorState());
+    }
+  }
+
+  /// Add Restaurant Item to cart Bloc ==============================================================================
+
+  _onAddToGroceryList(
+      AddRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
+    emit(AddToRestaurantCartLoadingState());
+
+    try {
+      await _repository
+          .menuAddToCartRestaurant(addItemsToShoppingList: event.addItemsList)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(AddToRestaurantCartSuccessState(isAdded: right.success ?? true));
+        showToast(isSuccess: false, message: right.message ?? 'Added!');
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(AddToRestaurantCartErrorState());
     }
   }
 

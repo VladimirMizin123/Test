@@ -26,9 +26,11 @@ class _RestaurantMenuDetailsScreenState
   bool selectFirst = false;
   bool selectSecond = false;
   Map<String, dynamic> selectedData = {};
+  List data = [];
+  List<Map<String, dynamic>> optionsList = [];
 
   getData() async {
-    if (widget.data.customizations! != null) {
+    if (widget.data.customizations != null) {
       for (var element in widget.data.customizations!) {
         selectedData.addAll(
           {
@@ -123,238 +125,231 @@ class _RestaurantMenuDetailsScreenState
 
                     widget.data.customizations == null ||
                             widget.data.customizations!.isEmpty
-                        ? SizedBox()
+                        ? const SizedBox()
                         : Column(
                             children: List.generate(
-                                widget.data.customizations!.length,
-                                (index) => Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            SizedBox(
-                                              width: widget
-                                                          .data
-                                                          .customizations?[
-                                                              index]
-                                                          .minChoiceOptions ==
-                                                      0
-                                                  ? 250.w
-                                                  : 140.w,
-                                              child: Text(
-                                                widget
-                                                        .data
-                                                        .customizations?[index]
-                                                        .name ??
-                                                    '',
-                                                style: FontUtils.h18(
-                                                  fontColor: Colors.black,
-                                                  fontWeight: FWT.semiBold,
-                                                ),
+                              widget.data.customizations!.length,
+                              (index) => Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: widget
+                                                    .data
+                                                    .customizations?[index]
+                                                    .minChoiceOptions ==
+                                                0
+                                            ? 250.w
+                                            : 140.w,
+                                        child: Text(
+                                          widget.data.customizations?[index]
+                                                  .name ??
+                                              '',
+                                          style: FontUtils.h18(
+                                            fontColor: Colors.black,
+                                            fontWeight: FWT.semiBold,
+                                          ),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      widget.data.customizations?[index]
+                                                  .minChoiceOptions ==
+                                              0
+                                          ? Text(
+                                              'Optional',
+                                              style: FontUtils.h12(
+                                                fontColor: AppColors.middleGray,
+                                                fontWeight: FWT.regular,
                                               ),
-                                            ),
-                                            const Spacer(),
-                                            widget.data.customizations?[index]
-                                                        .minChoiceOptions ==
-                                                    0
-                                                ? Text(
-                                                    'Optional',
+                                            )
+                                          : Row(
+                                              children: [
+                                                Text(
+                                                  'Choose ${widget.data.customizations?[index].minChoiceOptions ?? 1} option',
+                                                  style: FontUtils.h14(
+                                                    fontColor: Colors.black,
+                                                    fontWeight: FWT.regular,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 8,
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 8.w,
+                                                      vertical: 4.h),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.coral,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: Text(
+                                                    'Required',
                                                     style: FontUtils.h12(
                                                       fontColor:
-                                                          AppColors.middleGray,
+                                                          AppColors.terracotta,
                                                       fontWeight: FWT.regular,
                                                     ),
-                                                  )
-                                                : Row(
-                                                    children: [
-                                                      Text(
-                                                        'Choose ${widget.data.customizations?[index].minChoiceOptions ?? 1} option',
-                                                        style: FontUtils.h14(
-                                                          fontColor:
-                                                              Colors.black,
-                                                          fontWeight:
-                                                              FWT.regular,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      Container(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 8.w,
-                                                                vertical: 4.h),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color:
-                                                              AppColors.coral,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8),
-                                                        ),
-                                                        child: Text(
-                                                          'Required',
-                                                          style: FontUtils.h12(
-                                                            fontColor: AppColors
-                                                                .terracotta,
-                                                            fontWeight:
-                                                                FWT.regular,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    ],
                                                   ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 16.h,
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          margin: EdgeInsets.only(bottom: 16.h),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                  color:
-                                                      const Color(0xffECECED),
-                                                  width: 1)),
-                                          child: Column(
-                                            children: List.generate(
-                                              widget.data.customizations![index]
-                                                  .options!.length,
-                                              (index1) => Column(
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            selectedData
-                                                                .forEach((key,
-                                                                    value) {
-                                                              if (key ==
+                                                )
+                                              ],
+                                            ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 16.h,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    margin: EdgeInsets.only(bottom: 16.h),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                            color: const Color(0xffECECED),
+                                            width: 1)),
+                                    child: Column(
+                                      children: List.generate(
+                                        widget.data.customizations![index]
+                                            .options!.length,
+                                        (index1) => Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      selectedData.forEach(
+                                                        (key, value) {
+                                                          if (key ==
+                                                              widget
+                                                                  .data
+                                                                  .customizations![
+                                                                      index]
+                                                                  .name) {
+                                                            if (value
+                                                                .toString()
+                                                                .contains(widget
+                                                                    .data
+                                                                    .customizations![
+                                                                        index]
+                                                                    .options![
+                                                                        index1]
+                                                                    .name!)) {
+                                                              value.removeWhere((element) =>
+                                                                  element ==
                                                                   widget
-                                                                      .data
-                                                                      .customizations![
-                                                                          index]
-                                                                      .name) {
-                                                                if (value
-                                                                    .toString()
-                                                                    .contains(widget
-                                                                        .data
-                                                                        .customizations![
-                                                                            index]
-                                                                        .options![
-                                                                            index1]
-                                                                        .name!)) {
-                                                                  value.removeWhere((element) =>
-                                                                      element ==
-                                                                      widget
-                                                                          .data
-                                                                          .customizations![
-                                                                              index]
-                                                                          .options![
-                                                                              index1]
-                                                                          .name!);
-                                                                } else {
-                                                                  if (widget
-                                                                          .data
-                                                                          .customizations![
-                                                                              index]
-                                                                          .maxChoiceOptions! <
-                                                                      value.length +
-                                                                          1) {
-                                                                    value
-                                                                        .removeAt(
-                                                                            0);
-
-                                                                    value.add(widget
-                                                                        .data
-                                                                        .customizations![
-                                                                            index]
-                                                                        .options![
-                                                                            index1]
-                                                                        .name);
-                                                                  } else {
-                                                                    value.add(widget
-                                                                        .data
-                                                                        .customizations![
-                                                                            index]
-                                                                        .options![
-                                                                            index1]
-                                                                        .name);
-                                                                  }
-                                                                }
-                                                              }
-                                                            });
-                                                          });
-                                                        },
-                                                        child: Image.asset(
-                                                          selectedData[widget
-                                                                      .data
-                                                                      .customizations![
-                                                                          index]
-                                                                      .name]
-                                                                  .contains(widget
                                                                       .data
                                                                       .customizations![
                                                                           index]
                                                                       .options![
                                                                           index1]
-                                                                      .name)
-                                                              ? AssetsUtils
-                                                                  .terracotaCheck
-                                                              : AssetsUtils
-                                                                  .greyCircle,
-                                                          height: 18.h,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 12.w,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 250.w,
-                                                        child: Text(
-                                                          widget
-                                                              .data
-                                                              .customizations![
-                                                                  index]
-                                                              .options![index1]
-                                                              .name!,
-                                                          style: FontUtils.h15(
-                                                            fontColor:
-                                                                Colors.black,
-                                                            fontWeight:
-                                                                FWT.lightMedium,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                                      .name!);
+                                                            } else {
+                                                              if (widget
+                                                                      .data
+                                                                      .customizations![
+                                                                          index]
+                                                                      .maxChoiceOptions! <
+                                                                  value.length +
+                                                                      1) {
+                                                                value.removeAt(
+                                                                    0);
+
+                                                                value.add(widget
+                                                                    .data
+                                                                    .customizations![
+                                                                        index]
+                                                                    .options![
+                                                                        index1]
+                                                                    .name);
+                                                              } else {
+                                                                value.add(widget
+                                                                    .data
+                                                                    .customizations![
+                                                                        index]
+                                                                    .options![
+                                                                        index1]
+                                                                    .name);
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                      );
+                                                    });
+                                                  },
+                                                  child: Image.asset(
+                                                    selectedData[widget
+                                                                .data
+                                                                .customizations![
+                                                                    index]
+                                                                .name]
+                                                            .contains(widget
+                                                                .data
+                                                                .customizations![
+                                                                    index]
+                                                                .options![
+                                                                    index1]
+                                                                .name)
+                                                        ? AssetsUtils
+                                                            .terracotaCheck
+                                                        : AssetsUtils
+                                                            .greyCircle,
+                                                    height: 18.h,
                                                   ),
+                                                ),
+                                                SizedBox(
+                                                  width: 12.w,
+                                                ),
+                                                SizedBox(
+                                                  width: 230.w,
+                                                  child: Text(
+                                                    widget
+                                                            .data
+                                                            .customizations?[
+                                                                index]
+                                                            .options?[index1]
+                                                            .name ??
+                                                        '',
+                                                    style: FontUtils.h15(
+                                                      fontColor: Colors.black,
+                                                      fontWeight:
+                                                          FWT.lightMedium,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
                                                   widget
-                                                                  .data
-                                                                  .customizations![
-                                                                      index]
-                                                                  .options!
-                                                                  .length -
-                                                              1 ==
-                                                          index1
-                                                      ? const SizedBox()
-                                                      : Divider(
-                                                          color: const Color(
-                                                              0xffECECED),
-                                                          thickness: 1,
-                                                          height: 20.h,
-                                                        )
-                                                ],
-                                              ),
+                                                          .data
+                                                          .customizations?[
+                                                              index]
+                                                          .options?[index1]
+                                                          .formattedPrice ??
+                                                      '',
+                                                )
+                                              ],
                                             ),
-                                          ),
+                                            widget.data.customizations![index]
+                                                            .options!.length -
+                                                        1 ==
+                                                    index1
+                                                ? const SizedBox()
+                                                : Divider(
+                                                    color:
+                                                        const Color(0xffECECED),
+                                                    thickness: 1,
+                                                    height: 20.h,
+                                                  )
+                                          ],
                                         ),
-                                      ],
-                                    )),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                     widget.data.customizations == null ||
                             widget.data.customizations!.isEmpty
@@ -432,6 +427,35 @@ class _RestaurantMenuDetailsScreenState
                     RestaurantMealAddButtonWidget(
                       onTap: () {
                         if (item > 0) {
+                          // print(
+                          //     '--------CALCULATION>>>>>${(widget.data.originalPrice! / 100) * item}');
+                          //
+                          // print('------------->>SELECTEDDATA>>>$selectedData');
+                          // data.clear();
+                          // for (var element in selectedData.values) {
+                          //   element.forEach((element1) {
+                          //     data.add(element1);
+                          //   });
+                          // }
+                          //
+                          // // for (var i = 0;
+                          // //     i < widget.data.customizations!.length;
+                          // //     i++) {
+                          // //   for (var j = 0;
+                          // //       j <
+                          // //           widget.data.customizations![i].options!
+                          // //               .length;
+                          // //       j++) {
+                          // //
+                          // //
+                          // //     for(var k = 0; k<)
+                          // //
+                          // //
+                          // //   }
+                          // // }
+                          //
+                          // print('----->>>$data');
+
                           Get.to(
                             () => RestaurantCart(data: {
                               'image': AssetsUtils.restaurantFood1,
