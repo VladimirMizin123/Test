@@ -12,7 +12,7 @@ class AppColors {
   static const errorColor = Color(0xFFFF9500);
   static const errorRedColor = Color(0XFFFF3B30);
   static Color lightGreyColor = Colors.grey.shade100;
-  static Color primaryBlueColor = Color(0xff004C63);
+  static Color primaryBlueColor = const Color(0xff004C63);
   static Color transparentColor = Colors.transparent;
   static Color blackColor = Colors.black;
 

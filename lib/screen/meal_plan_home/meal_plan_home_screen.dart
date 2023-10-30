@@ -10,7 +10,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
-import 'package:gymeats_mobile/screen/account_screen/account_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';

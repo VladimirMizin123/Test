@@ -94,6 +94,8 @@ class AssetsUtils {
   static const canEatRed = "assets/image/can_eat_red.png";
   static const canEatYellow = "assets/image/can_eat_yellow.png";
   static const terracotaCheck = "assets/image/check.png";
+  static const gymEatsWhiteLogo = "assets/image/gymeat_white_logo.png";
+  static const vegetable = "assets/image/vegetable.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';
@@ -159,6 +161,9 @@ class AssetsUtils {
   static const notificationIcn = '${svgPath}Notifications.svg';
   static const icGps = '${svgPath}ic_gps.svg';
   static const logOut = '${svgPath}log_out.svg';
+  static const downArrow = '${svgPath}down_arrow.svg';
+  static const done = '${svgPath}Done.svg';
+  static const questionRounded = '${svgPath}question_rounded.svg';
 
   /// Icons
 

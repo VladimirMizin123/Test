@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../constant/asset_utils.dart';
-import '../../constant/color_utils.dart';
-import '../../widget/back_button_widget.dart';
+import '../../../constant/asset_utils.dart';
+import '../../../constant/color_utils.dart';
+import '../../../widget/back_button_widget.dart';
 
 Widget AccountTitleWidget({Widget? widget, String? title}) {
   return Container(

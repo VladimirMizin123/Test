@@ -3,8 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/screen/account_screen/account_scrren_widget.dart';
-import 'package:gymeats_mobile/screen/account_screen/setting/change_password_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/change_password/change_password_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/bottom_sheet_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../../widget/svg_image.dart';
 
@@ -29,7 +32,7 @@ class _SettingScreenState extends State<SettingScreen> {
       "title": "Units",
       "color": AppColors.disable,
       "image1": AssetsUtils.forwardArrow,
-      "screen": ChangePasswordScreen(),
+      "screen": UnitScreen(),
     },
     {
       "image": AssetsUtils.notificationIcn,
@@ -54,6 +57,7 @@ class _SettingScreenState extends State<SettingScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AccountTitleWidget(
                 title: "Settings",
@@ -76,6 +80,84 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ).paddingOnly(top: 150.h, right: 23.w, left: 23.w),
               ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                              30.w,
+                            ),
+                            topRight: Radius.circular(30.w)),
+                      ),
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 300,
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(30.w),
+                              topLeft: Radius.circular(30.w),
+                            ),
+                          ),
+                          child: bottomSheetWidget(
+                            buttonWidget: Container(
+                              height: 60,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  /*Container(
+                                    width: 30,
+                                    color: Colors.yellow,
+                                  )*/
+                                  Container(
+                                    width: 145.w,
+                                    child: buildButton(
+                                        context: context,
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: "Delete",
+                                        textColor: AppColors.whiteColor,
+                                        bgColor: AppColors.primaryBlueColor),
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  Container(
+                                    width: 145.w,
+                                    child: buildBorderButton(
+                                        context: context,
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: "Delete",
+                                        textColor: AppColors.primaryBlueColor,
+                                        bgColor: AppColors.whiteColor,
+                                        borderColor:
+                                            AppColors.primaryBlueColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Delete Account",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.darkGray),
+                  ),
+                ),
+              ).paddingOnly(top: 250.h),
             ],
           ),
         ),

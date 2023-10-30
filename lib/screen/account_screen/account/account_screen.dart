@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/about/about_screen.dart';
-import 'package:gymeats_mobile/screen/account_screen/account_scrren_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/profile/profile_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/program/program_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/setting/setting_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
-import 'address/address_screen.dart';
+import '../address/address_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -79,9 +79,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.whiteColor,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(color: Colors.grey.shade200, spreadRadius: 1)
-                    ],
                   ),
                   margin: EdgeInsets.only(top: 150.h, right: 23.w, left: 23.w),
                   child: Column(

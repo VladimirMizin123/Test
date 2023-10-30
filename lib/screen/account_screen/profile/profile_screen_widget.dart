@@ -27,11 +27,16 @@ Widget commonTextFormField(
     double? width,
     bool obscureText = false,
     Widget? suffixIcon,
+    TextStyle? style,
+    String? initialValue,
+    Color? enableBorderColor,
     TextStyle? hintStyle}) {
   return SizedBox(
     // width: 140.w,
     width: width,
     child: TextFormField(
+      initialValue: initialValue,
+      style: style,
       obscureText: obscureText,
       cursorColor: AppColors.primaryBlueColor,
       decoration: InputDecoration(
@@ -45,7 +50,7 @@ Widget commonTextFormField(
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.primaryBlueColor),
+          borderSide: BorderSide(color: enableBorderColor!),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

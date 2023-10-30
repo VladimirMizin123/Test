@@ -5,8 +5,9 @@ import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/all_programs/all_program_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/all_programs/program_detail/program_detail_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
-import '../account_scrren_widget.dart';
+import '../account/account_scrren_widget.dart';
 
 class ProgramScreen extends StatefulWidget {
   const ProgramScreen({super.key});
@@ -21,13 +22,13 @@ class _ProgramScreenState extends State<ProgramScreen> {
       "image": AssetsUtils.pencil,
       "title": "Retake Assessment",
       "color": AppColors.disable,
-      "screen": AllProgramScreen()
+      "screen": const ProgramDetailScreen()
     },
     {
       "image": AssetsUtils.globalIcn,
       "title": "View All Programs",
       "color": AppColors.whiteColor,
-      "screen": AllProgramScreen(),
+      "screen": const AllProgramScreen(),
     }
   ];
 

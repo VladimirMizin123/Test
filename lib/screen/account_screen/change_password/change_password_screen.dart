@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/profile/profile_screen_widget.dart';
-
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../../constant/color_utils.dart';
-import '../account_scrren_widget.dart';
+import '../account/account_scrren_widget.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -22,6 +23,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AccountTitleWidget(
                 title: "Change Password",
@@ -44,6 +46,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         height: 10.h,
                       ),
                       commonTextFormField(
+                          enableBorderColor: AppColors.disable,
                           suffixIcon: GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -51,12 +54,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 });
                               },
                               child: isOb
-                                  ? Icon(Icons.visibility_off)
+                                  ? const Icon(Icons.visibility_off)
                                   : Icon(Icons.remove_red_eye)),
                           width: double.infinity,
                           hintText: "",
                           obscureText: isOb,
                           hintStyle: TextStyle(),
+                          style: TextStyle(),
                           vertical: 15.h,
                           horizontal: 20.w),
                       SizedBox(
@@ -71,10 +75,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         height: 10.h,
                       ),
                       commonTextFormField(
+                          enableBorderColor: AppColors.disable,
                           width: double.infinity,
-                          hintText: "Write your new Password",
+                          hintText: StringUtils.writeNewPassword,
                           obscureText: false,
                           hintStyle: TextStyle(
+                              fontSize: 14.sp, fontWeight: FontWeight.w300),
+                          style: TextStyle(
                               fontSize: 14.sp, fontWeight: FontWeight.w300),
                           vertical: 15.h,
                           horizontal: 18.w),
@@ -90,17 +97,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         height: 10.h,
                       ),
                       commonTextFormField(
+                          enableBorderColor: AppColors.disable,
                           width: double.infinity,
-                          hintText: "Write your new Password",
+                          hintText: StringUtils.writeNewPassword,
                           obscureText: false,
                           hintStyle: TextStyle(
                               fontSize: 14.sp, fontWeight: FontWeight.w300),
                           vertical: 15.h,
+                          style: TextStyle(
+                              fontSize: 14.sp, fontWeight: FontWeight.w300),
                           horizontal: 18.w),
                     ],
-                  ).paddingOnly(left: 20.w, right: 20.w, top: 20.h),
+                  ).paddingOnly(left: 12.w, right: 12.w, top: 20.h),
                 ),
               ),
+              SizedBox(
+                height: 150.h,
+              ),
+              buildButton(
+                      context: context,
+                      bgColor: AppColors.primaryBlueColor,
+                      textColor: AppColors.whiteColor,
+                      title: "Update",
+                      onPressed: () {})
+                  .paddingOnly(left: 22.w, right: 22.w, top: 20.h),
             ],
           ),
         ),
