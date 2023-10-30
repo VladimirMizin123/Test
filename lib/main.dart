@@ -479,9 +479,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-// 1. Modification in some bottomsheet and api integration
-// 2. initialization of addShoppingList api
-// 3. apply shimmer design in restaurant screen, restaurant menu screen
-// 4. testing the filter and make some modification
-// https://we.tl/t-R7G5BVbFUr

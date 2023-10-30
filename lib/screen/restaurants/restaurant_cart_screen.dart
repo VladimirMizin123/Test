@@ -36,8 +36,12 @@ class _RestaurantCartState extends State<RestaurantCart> {
             ),
 
             Padding(
-              padding:
-                  EdgeInsets.only(top: 3, bottom: 20.h, left: 16, right: 16),
+              padding: EdgeInsets.only(
+                top: 3,
+                bottom: 20.h,
+                left: 16,
+                right: 16,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
