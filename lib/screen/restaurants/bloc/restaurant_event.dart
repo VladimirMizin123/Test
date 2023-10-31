@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
+
 abstract class RestaurantEvent {}
 
 /// Get User Address Event ===============================================================
@@ -34,8 +36,13 @@ class GetRestaurantListEvent extends RestaurantEvent {
 class GetRestaurantMenuListEvent extends RestaurantEvent {
   final String? restaurantId;
   final bool? pickUp;
+  final String? mealType;
 
-  GetRestaurantMenuListEvent(this.restaurantId, this.pickUp);
+  GetRestaurantMenuListEvent(
+    this.restaurantId,
+    this.pickUp,
+    this.mealType,
+  );
 }
 
 /// Get Cousines List Event ===============================================================
@@ -63,4 +70,10 @@ class GetCousinesEvent extends RestaurantEvent {
     this.pickup,
     this.maximumMiles,
   );
+}
+
+/// Add to Cart Event ===============================================================
+class AddRestaurantCartEvent extends RestaurantEvent {
+  final List<AddRestaurantItemsToShoppingListModel> addItemsList;
+  AddRestaurantCartEvent({required this.addItemsList});
 }

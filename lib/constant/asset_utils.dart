@@ -96,6 +96,8 @@ class AssetsUtils {
   static const terracotaCheck = "assets/image/check.png";
   static const gymEatsWhiteLogo = "assets/image/gymeat_white_logo.png";
   static const vegetable = "assets/image/vegetable.png";
+  static const ratingStar = "assets/image/rating_star.png";
+  static const greyCircle = "assets/image/grey_circle.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';

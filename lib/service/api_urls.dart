@@ -29,6 +29,7 @@ class ApiUrls {
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
+  static const String getDietList = '${baseUrl}api/Diet/GetDietList';
   static const String getAllRestrictionList =
       '${baseUrl}api/Suggestic/GetAllRestrictionList';
   static const String getUserRestrictionList =
@@ -155,7 +156,9 @@ class ApiUrls {
       '${baseUrl}api/UserAddress/GetAllUserAddress';
   static const String getRestaurantList =
       '${baseUrl}api/MealMe/GetRestaurantsNearBy';
+  // static const String getRestaurantMenuList =
+  //     '${baseUrl}api/MealMe/GetRestaurantMenuList';
   static const String getRestaurantMenuList =
-      '${baseUrl}api/MealMe/GetRestaurantMenuList';
+      '${baseUrl}api/MealMe/GetHighlightedFoodMenuList';
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
 }

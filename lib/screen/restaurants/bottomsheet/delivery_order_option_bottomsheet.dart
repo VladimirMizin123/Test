@@ -23,84 +23,87 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return Material(
-      color: AppColors.whiteColor,
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: IntrinsicHeight(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: 3.h,
-                    width: 80.w,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.disable),
-                  )),
-              const SizedBox(height: 10),
-              SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
-              const SizedBox(height: 15),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'How would you like to receive your order?',
-                  style: FontUtils.h20(
-                    fontColor: AppColors.darkGray,
-                    fontWeight: FWT.medium,
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: Material(
+        color: AppColors.whiteColor,
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 3.h,
+                      width: 80.w,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: AppColors.disable),
+                    )),
+                const SizedBox(height: 10),
+                SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
+                const SizedBox(height: 15),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'How would you like to receive your order?',
+                    style: FontUtils.h20(
+                      fontColor: AppColors.darkGray,
+                      fontWeight: FWT.medium,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              myWidget(
-                  title: 'Bring me the order',
-                  isSelected: selectedIndex == 0 ? true : false,
+                const SizedBox(height: 15),
+                myWidget(
+                    title: 'Bring me the order',
+                    isSelected: selectedIndex == 0 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 0;
+                      });
+                    }),
+                const SizedBox(height: 10),
+                myWidget(
+                    title: 'I will pick it myself',
+                    isSelected: selectedIndex == 1 ? true : false,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 1;
+                      });
+                    }),
+                const SizedBox(height: 15),
+                simpleTextBorderButton(
+                  context: context,
+                  color: AppColors.terracotta,
+                  lableColor: AppColors.terracotta,
+                  buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
+                  height: screenSize.height * 0.065,
+                  width: screenSize.width,
+                  isLoadingWidget: false,
                   onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  }),
-              const SizedBox(height: 10),
-              myWidget(
-                  title: 'I will pick it myself',
-                  isSelected: selectedIndex == 1 ? true : false,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  }),
-              const SizedBox(height: 15),
-              simpleTextBorderButton(
-                context: context,
-                color: AppColors.terracotta,
-                lableColor: AppColors.terracotta,
-                buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
-                height: screenSize.height * 0.065,
-                width: screenSize.width,
-                isLoadingWidget: false,
-                onTap: () {
-                  if (selectedIndex == -1) {
-                    Get.back();
-                  } else {
-                    Get.back(result: option[selectedIndex]);
-                    // List<GroceryShoppingData> edgesDummyList = [];
-                    // for (var i = 0; i < widget.edgesList.length; i++) {
-                    //   if (widget.edgesList[i].isActive == true) {
-                    //     edgesDummyList.add(widget.edgesList[i]);
-                    //   }
-                    // }
-                    // if (edgesDummyList.isNotEmpty) {
-                  }
-                },
-                isDarkColor: true,
-                isFillColor: selectedIndex == -1 ? false : true,
-              ),
-              const SizedBox(height: 10),
-            ],
+                    if (selectedIndex == -1) {
+                      Get.back();
+                    } else {
+                      Get.back(result: option[selectedIndex]);
+                      // List<GroceryShoppingData> edgesDummyList = [];
+                      // for (var i = 0; i < widget.edgesList.length; i++) {
+                      //   if (widget.edgesList[i].isActive == true) {
+                      //     edgesDummyList.add(widget.edgesList[i]);
+                      //   }
+                      // }
+                      // if (edgesDummyList.isNotEmpty) {
+                    }
+                  },
+                  isDarkColor: true,
+                  isFillColor: selectedIndex == -1 ? false : true,
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

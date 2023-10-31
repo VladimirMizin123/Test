@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,8 +10,11 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key, required this.filterType});
+  const FilterBottomSheet(
+      {super.key, required this.filterType, this.selectedValue, this.price});
   final String filterType;
+  final String? price;
+  final List? selectedValue;
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
@@ -24,12 +29,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     '\$\$\$\$',
   ];
   List ratingType = [
+    '1',
+    '2',
     '3',
-    '3.5',
     '4',
-    '4.5',
     '5',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedFoodOrigin = widget.selectedValue ?? [];
+    if (widget.price == '0-10') {
+      priceIndex = 0;
+    } else if (widget.price == '10-20') {
+      priceIndex = 1;
+    } else if (widget.price == '20-40') {
+      priceIndex = 2;
+    } else if (widget.price == '40') {
+      priceIndex = 3;
+    } else {
+      priceIndex = -1;
+    }
+  }
+
+  int priceIndex = -1;
+  String priceValue = '';
 
   @override
   Widget build(BuildContext context) {
@@ -81,17 +106,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () {
-                                  if (selectedFoodOrigin
-                                      .contains(priceType[index])) {
-                                    setState(() {
-                                      selectedFoodOrigin
-                                          .remove(priceType[index]);
-                                    });
-                                  } else {
-                                    setState(() {
-                                      selectedFoodOrigin.add(priceType[index]);
-                                    });
-                                  }
+                                  // if (selectedFoodOrigin
+                                  //     .contains(priceType[index])) {
+                                  //   setState(() {
+                                  //     selectedFoodOrigin
+                                  //         .remove(priceType[index]);
+                                  //   });
+                                  // } else {
+                                  //   setState(() {
+                                  //     selectedFoodOrigin.add(priceType[index]);
+                                  //   });
+                                  // }
+
+                                  setState(() {
+                                    priceIndex = index;
+                                  });
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
@@ -100,8 +129,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 24),
                                   decoration: BoxDecoration(
-                                    color: selectedFoodOrigin
-                                            .contains(priceType[index])
+                                    color: priceIndex == index
                                         ? AppColors.coral
                                         : AppColors.lightGrey,
                                     borderRadius: BorderRadius.circular(100),
@@ -110,8 +138,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                     child: Text(
                                       priceType[index],
                                       style: FontUtils.h18(
-                                        fontColor: selectedFoodOrigin
-                                                .contains(priceType[index])
+                                        fontColor: priceIndex == index
                                             ? AppColors.terracotta
                                             : AppColors.darkGray,
                                         fontWeight: FWT.medium,
@@ -151,6 +178,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
+                                          selectedIndex = index;
                                           if (selectedFoodOrigin
                                               .contains(ratingType[index])) {
                                             setState(() {
@@ -161,6 +189,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                             setState(() {
                                               selectedFoodOrigin
                                                   .add(ratingType[index]);
+                                              selectedFoodOrigin.sort(
+                                                  (a, b) => a.compareTo(b));
                                             });
                                           }
                                         },
@@ -191,42 +221,72 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ),
 
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: simpleTextBorderButton(
-                  context: context,
-                  color: AppColors.terracotta,
-                  lableColor: AppColors.terracotta,
-                  buttonLable:
-                      selectedFoodOrigin.isEmpty ? 'Back' : 'View Result',
-                  height: screenSize.height * 0.065,
-                  width: screenSize.width,
-                  isLoadingWidget: false,
-                  onTap: () {
-                    if (selectedIndex == -1) {
-                      Get.back();
-                    } else {
-                      Get.back();
-                      // List<GroceryShoppingData> edgesDummyList = [];
-                      // for (var i = 0; i < widget.edgesList.length; i++) {
-                      //   if (widget.edgesList[i].isActive == true) {
-                      //     edgesDummyList.add(widget.edgesList[i]);
-                      //   }
-                      // }
-                      // if (edgesDummyList.isNotEmpty) {
-                    }
-                  },
-                  isDarkColor: true,
-                  isFillColor: selectedFoodOrigin.isEmpty ? false : true,
-                ),
-              ),
+              widget.filterType == 'Price'
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 15),
+                      child: simpleTextBorderButton(
+                        context: context,
+                        color: AppColors.terracotta,
+                        lableColor: AppColors.terracotta,
+                        buttonLable: priceIndex == -1 ? 'Back' : 'View Result',
+                        height: screenSize.height * 0.065,
+                        width: screenSize.width,
+                        isLoadingWidget: false,
+                        onTap: () {
+                          if (priceIndex == -1) {
+                            Get.back();
+                          } else {
+                            if (priceType[priceIndex] == '\$') {
+                              priceValue = '0-10';
+                            } else if (priceType[priceIndex] == '\$\$') {
+                              priceValue = '10-20';
+                            } else if (priceType[priceIndex] == '\$\$\$') {
+                              priceValue = '20-40';
+                            } else {
+                              priceValue = '40';
+                            }
+                            Get.back(
+                              result: priceValue,
+                            );
+                          }
+                        },
+                        isDarkColor: true,
+                        isFillColor: priceIndex == -1 ? false : true,
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 15),
+                      child: simpleTextBorderButton(
+                        context: context,
+                        color: AppColors.terracotta,
+                        lableColor: AppColors.terracotta,
+                        buttonLable:
+                            selectedFoodOrigin.isEmpty || priceIndex == -1
+                                ? 'Back'
+                                : 'View Result',
+                        height: screenSize.height * 0.065,
+                        width: screenSize.width,
+                        isLoadingWidget: false,
+                        onTap: () {
+                          if (selectedIndex == -1 || priceIndex == -1) {
+                            Get.back();
+                          } else {
+                            Get.back(result: selectedFoodOrigin);
+                          }
+                        },
+                        isDarkColor: true,
+                        isFillColor: selectedFoodOrigin.isEmpty ? false : true,
+                      ),
+                    ),
 
               Center(
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
                       selectedFoodOrigin.clear();
+                      priceIndex = -1;
                     });
                   },
                   child: Text(

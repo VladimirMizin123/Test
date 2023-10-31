@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/models/success_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
@@ -78,18 +80,21 @@ class RestaurantRepository {
   /// Get Restaurant Menu List ====================================================================
 
   Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList(
-      {String? restaurantId, bool? pickup}) async {
-    final response = await apiServices.get(
-      '${ApiUrls.getRestaurantMenuList}?restaurantId=$restaurantId&pickup=$pickup',
-    );
-
+      {String? restaurantId, bool? pickup, String? mealType}) async {
+    final response = await apiServices.post(
+        '${ApiUrls.getRestaurantMenuList}/$userID?restaurantId=$restaurantId&mealType=$mealType&pickup=$pickup',
+        {});
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(
-          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else {
+    }
+    // else if (response.statusCode == 400) {
+    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
+    //
+    //   return Right(
+    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    // }
+    else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
@@ -132,6 +137,20 @@ class RestaurantRepository {
       return Right(GetCousinesListModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(GetCousinesListModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> menuAddToCartRestaurant(
+      {required List<AddRestaurantItemsToShoppingListModel>
+          addItemsToShoppingList}) async {
+    final response = await apiServices.post(
+      ApiUrls.addItemsToShoppingList,
+      {"userId": userID, "itemList": addItemsToShoppingList},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
