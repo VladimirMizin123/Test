@@ -27,7 +27,7 @@ class RestaurantMealAddButtonWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Container(
             width: double.infinity.w,
-            height: 40.h,
+            height: 48.h,
             decoration: BoxDecoration(
                 border: Border.all(color: AppColors.terracotta, width: 1),
                 color: AppColors.terracotta,

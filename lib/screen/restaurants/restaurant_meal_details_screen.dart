@@ -23,9 +23,11 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.mealName,
     required this.mealImage,
     required this.data,
+    required this.restaurantId,
   });
   final String mealName;
   final String mealImage;
+  final String restaurantId;
   final MenuItemList data;
 
   @override
@@ -336,6 +338,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                         Get.to(
                                           () => RestaurantMenuDetailsScreen(
                                             data: widget.data,
+                                            restaurantId: widget.restaurantId,
                                           ),
                                         );
                                       },

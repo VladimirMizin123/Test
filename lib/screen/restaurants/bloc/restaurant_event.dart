@@ -77,3 +77,5 @@ class AddRestaurantCartEvent extends RestaurantEvent {
   final List<AddRestaurantItemsToShoppingListModel> addItemsList;
   AddRestaurantCartEvent({required this.addItemsList});
 }
+
+class GetShoppingListEvent extends RestaurantEvent {}

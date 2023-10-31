@@ -14,6 +14,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
     on<AddRestaurantCartEvent>(_onAddToGroceryList);
+    on<GetShoppingListEvent>(_onFetchShoppingList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -84,8 +85,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
       });
     } catch (e) {
-      log('e---------->>>>>> ${e}');
-
       // showToast(isSuccess: false, message: e.toString());
       emit(GetRestaurantMenuListErrorState());
     }
@@ -134,12 +133,31 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
+        showToast(isSuccess: true, message: right.message!);
         emit(AddToRestaurantCartSuccessState(isAdded: right.success ?? true));
-        showToast(isSuccess: false, message: right.message ?? 'Added!');
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(AddToRestaurantCartErrorState());
+    }
+  }
+
+  _onFetchShoppingList(
+      GetShoppingListEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetShoppingListLoadingState());
+
+    try {
+      await _repository.getShoppingList().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(
+          GetShoppingListSuccessState(
+              shoppingListData: right.data == null ? [] : right.data!),
+        );
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetShoppingListErrorState());
     }
   }
 

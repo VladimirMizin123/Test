@@ -1,6 +1,7 @@
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 abstract class RestaurantState {}
@@ -63,6 +64,10 @@ class GetCousinesListLoadingState extends RestaurantState {}
 
 class GetCousinesListErrorState extends RestaurantState {}
 
+///================================================================================================================
+
+/// Add Restaurant cart State
+
 class AddToRestaurantCartSuccessState extends RestaurantState {
   final bool isAdded;
 
@@ -72,3 +77,17 @@ class AddToRestaurantCartSuccessState extends RestaurantState {
 class AddToRestaurantCartLoadingState extends RestaurantState {}
 
 class AddToRestaurantCartErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Get Restaurant cart State
+
+class GetShoppingListSuccessState extends RestaurantState {
+  final List<ShoppingListData>? shoppingListData;
+
+  GetShoppingListSuccessState({this.shoppingListData});
+}
+
+class GetShoppingListLoadingState extends RestaurantState {}
+
+class GetShoppingListErrorState extends RestaurantState {}
