@@ -53,7 +53,8 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
 
               for (var i = 0; i < userEdgesRestrictionList.length; i++) {
                 for (var j = 0; j < edgesRestrictionList.length; j++) {
-                  if (userEdgesRestrictionList[i].id == edgesRestrictionList[j].node.id) {
+                  if (userEdgesRestrictionList[i].id ==
+                      edgesRestrictionList[j].node.id) {
                     restrictionIdList.add(edgesRestrictionList[j].node.id);
                     edgesRestrictionList[j].node.isRestricted = true;
                   }
@@ -98,8 +99,12 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                                     onTap: () {
                                       Get.back();
                                     },
-                                    child: const Icon(Icons.arrow_back_ios_new_rounded)),
-                                Text(StringUtils.foodPreferences, style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.bold)),
+                                    child: const Icon(
+                                        Icons.arrow_back_ios_new_rounded)),
+                                Text(StringUtils.foodPreferences,
+                                    style: FontUtils.h20(
+                                        fontColor: AppColors.oxFF010101,
+                                        fontWeight: FWT.bold)),
                                 Opacity(
                                   opacity: 0,
                                   child: Image.asset(
@@ -116,7 +121,9 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                             alignment: Alignment.center,
                             child: Text(
                               'Tell us if you want to avoid some food.',
-                              style: FontUtils.h14(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
+                              style: FontUtils.h14(
+                                  fontColor: AppColors.middleGray,
+                                  fontWeight: FWT.medium),
                             ),
                           ),
                           Expanded(
@@ -125,30 +132,61 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                                     child: CircularProgressIndicator(),
                                   )
                                 : edgesRestrictionList.isEmpty
-                                    ? const Center(child: Text('No Data Found!'))
+                                    ? const Center(
+                                        child: Text('No Data Found!'))
                                     : !isReadyToShowData
                                         ? const Center(
                                             child: CircularProgressIndicator(),
                                           )
                                         : SingleChildScrollView(
-                                            physics: const BouncingScrollPhysics(),
+                                            physics:
+                                                const BouncingScrollPhysics(),
                                             child: ListView.builder(
-                                              itemCount: edgesRestrictionList.length,
-                                              physics: const NeverScrollableScrollPhysics(),
+                                              itemCount:
+                                                  edgesRestrictionList.length,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
                                               shrinkWrap: true,
                                               itemBuilder: (context, index) {
                                                 return myWidget(
-                                                  edgesRestrictionList[index].node.name,
-                                                  edgesRestrictionList[index].node.isRestricted ?? false,
+                                                  edgesRestrictionList[index]
+                                                      .node
+                                                      .name,
+                                                  edgesRestrictionList[index]
+                                                          .node
+                                                          .isRestricted ??
+                                                      false,
                                                   (bool vale) {
                                                     setState(() {
-                                                      if (edgesRestrictionList[index].node.isRestricted == true) {
-                                                        edgesRestrictionList[index].node.isRestricted = false;
-                                                        restrictionIdList.removeWhere((element) => element == edgesRestrictionList[index].node.id);
+                                                      if (edgesRestrictionList[
+                                                                  index]
+                                                              .node
+                                                              .isRestricted ==
+                                                          true) {
+                                                        edgesRestrictionList[
+                                                                    index]
+                                                                .node
+                                                                .isRestricted =
+                                                            false;
+                                                        restrictionIdList
+                                                            .removeWhere((element) =>
+                                                                element ==
+                                                                edgesRestrictionList[
+                                                                        index]
+                                                                    .node
+                                                                    .id);
                                                       } else {
-                                                        edgesRestrictionList[index].node.isRestricted = true;
+                                                        edgesRestrictionList[
+                                                                    index]
+                                                                .node
+                                                                .isRestricted =
+                                                            true;
 
-                                                        restrictionIdList.add(edgesRestrictionList[index].node.id);
+                                                        restrictionIdList.add(
+                                                            edgesRestrictionList[
+                                                                    index]
+                                                                .node
+                                                                .id);
                                                       }
                                                     });
                                                   },
@@ -174,7 +212,8 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                       width: screenSize.width,
                       onTap: () {
                         // print(restrictionIdList.toList().toString());
-                        mealPlanBloc.add(AddUserRestrictionEvent(edgeRestrictionList: restrictionIdList));
+                        mealPlanBloc.add(AddUserRestrictionEvent(
+                            edgeRestrictionList: restrictionIdList));
                       },
                       isDarkColor: true,
                       isFillColor: true,
@@ -199,7 +238,10 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
         children: [
           Text(title),
           const Spacer(),
-          CupertinoSwitch(value: value, onChanged: onChange, activeColor: AppColors.switchColor),
+          CupertinoSwitch(
+              value: value,
+              onChanged: onChange,
+              activeColor: AppColors.switchColor),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_diet_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 
 import '../../models/get_survey_model.dart';
@@ -29,7 +30,15 @@ class GetAllRestrictionLoadingState extends UserSurveyState {}
 class GetAllRestrictionSuccessState extends UserSurveyState {
   final List<Edge>? edgesRestrictionList;
 
-  GetAllRestrictionSuccessState({ this.edgesRestrictionList});
+  GetAllRestrictionSuccessState({this.edgesRestrictionList});
+}
+
+class GetDietPlanLoadingState extends UserSurveyState {}
+
+class GetDietPlanSuccessState extends UserSurveyState {
+  final List<DietDetails>? edgesRestrictionList;
+
+  GetDietPlanSuccessState({this.edgesRestrictionList});
 }
 
 class PreviousScreenState extends UserSurveyState {}

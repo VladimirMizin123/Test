@@ -175,7 +175,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: () {},
                               textColor: Colors.white,
                               bgColor: Colors.black,
-                              title: StringUtils.google),
+                              title: StringUtils.google,
+                            ),
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(

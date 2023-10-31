@@ -87,6 +87,7 @@ class DataOption {
   bool isSelect;
   Color? color;
   String? restrictionId;
+  String? optionType;
 
   DataOption(
       {this.id,
@@ -96,6 +97,7 @@ class DataOption {
       this.diet,
       this.isSelect = false,
       this.restrictionId,
+      this.optionType,
       this.color = AppColors.primaryBlue});
 
   factory DataOption.fromJson(Map<String, dynamic> json) => DataOption(
@@ -108,6 +110,7 @@ class DataOption {
                     radix: 16) +
                 0xFF000000),
         restrictionId: json["restrictionId"],
+        optionType: json["optionType"],
         question: json["question"] == null
             ? null
             : SurveyDataQuestion.fromJson(json["question"]),
@@ -122,6 +125,7 @@ class DataOption {
         "diet": diet?.toJson(),
         "colorCode": color?.value.toRadixString(16),
         "restrictionId": restrictionId,
+        "optionType": optionType,
       };
 }
 

@@ -14,15 +14,19 @@ import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RestaurantMenuScreen extends StatefulWidget {
-  const RestaurantMenuScreen(
-      {super.key,
-      this.restaurantName,
-      required this.restaurantId,
-      required this.pickup});
+  const RestaurantMenuScreen({
+    super.key,
+    this.restaurantName,
+    required this.restaurantId,
+    required this.pickup,
+    required this.mealType,
+  });
   final String? restaurantName;
   final String restaurantId;
+  final String mealType;
   final bool pickup;
 
   @override
@@ -37,41 +41,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     'Price',
   ];
 
-  List<Map<String, dynamic>> menuData = [
-    {
-      'image': AssetsUtils.restaurantFood,
-      'title': 'Smoked Mackerel Salad With Fennel And Apple',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$6.00',
-      'canEatImage': AssetsUtils.icCanEat
-    },
-    {
-      'image': AssetsUtils.restaurantFood1,
-      'title': 'Pizza With Mozzarella',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$8.00',
-      'canEatImage': AssetsUtils.icCanEat
-    },
-    {
-      'image': AssetsUtils.restaurantFood2,
-      'title': 'Pork With Potatoes',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$5.00',
-      'canEatImage': AssetsUtils.canEatYellow
-    },
-    {
-      'image': AssetsUtils.restaurantFood,
-      'title': 'Smoked Mackerel Salad With Fennel And Apple',
-      'ingredients':
-          'Fried onions, green peppers, mixed cheese, served with fries',
-      'price': '\$6.00',
-      'canEatImage': AssetsUtils.canEatRed
-    },
-  ];
-
   int select = 0;
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
@@ -84,11 +53,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   void initState() {
     super.initState();
 
-    log('widget.restaurantId---------->>>>>> ${widget.restaurantId}');
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       restaurantBloc.add(
-        GetRestaurantMenuListEvent(widget.restaurantId, widget.pickup),
+        GetRestaurantMenuListEvent(
+          widget.restaurantId,
+          widget.pickup,
+          widget.mealType,
+        ),
       );
     });
   }
@@ -156,58 +127,166 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   ),
                 ),
                 state is GetRestaurantMenuListLoadingState
-                    ? const Expanded(
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                    ? Expanded(
+                        child: ListView.builder(
+                          itemCount: 10,
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.only(
+                              top: 20, left: 16, right: 16),
+                          scrollDirection: Axis.vertical,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            return Shimmer.fromColors(
+                                baseColor: AppColors.disable.withOpacity(0.20),
+                                highlightColor:
+                                    AppColors.disable.withOpacity(0.20),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Container(
+                                            height: 80,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 0,
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 0,
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.disable,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    const Divider(
+                                        color: AppColors.disable,
+                                        thickness: 1.2),
+                                  ],
+                                ));
+                          },
                         ),
                       )
                     : restaurantMenu == null
-                        ? const SizedBox()
-                        : Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                /// Meal type Slider ------------------------------------------------------------
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(left: 20.w),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: List.generate(
-                                        restaurantMenu!.categories!.length,
-                                        (index) => GestureDetector(
-                                          onTap: () async {
-                                            setState(() {
-                                              select = index;
-                                              // tabMenu[controller.select];
-                                            });
-                                          },
-                                          child: Container(
-                                            height: 30.h,
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 25.w),
-                                            decoration: BoxDecoration(
-                                              border: BorderDirectional(
-                                                bottom: BorderSide(
-                                                  color: index == select
-                                                      ? AppColors.primaryBlue
-                                                      : AppColors.disabledColor,
-                                                  width: 1,
+                        ? Expanded(
+                            child: Center(
+                              child: Text(
+                                'Currently No Menu Found',
+                                style: FontUtils.h18(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium,
+                                ),
+                              ),
+                            ),
+                          )
+                        : restaurantMenu!.categories!.isEmpty
+                            ? Expanded(
+                                child: Center(
+                                  child: Text(
+                                    'Currently No Menu Found',
+                                    style: FontUtils.h18(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.medium,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    /// Meal type Slider ------------------------------------------------------------
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      physics: const BouncingScrollPhysics(),
+                                      child: Padding(
+                                        padding: EdgeInsets.only(left: 20.w),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: List.generate(
+                                            restaurantMenu!.categories!.length,
+                                            (index) => GestureDetector(
+                                              onTap: () async {
+                                                setState(() {
+                                                  select = index;
+                                                  // tabMenu[controller.select];
+                                                });
+                                              },
+                                              child: Container(
+                                                height: 30.h,
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 25.w),
+                                                decoration: BoxDecoration(
+                                                  border: BorderDirectional(
+                                                    bottom: BorderSide(
+                                                      color: index == select
+                                                          ? AppColors
+                                                              .primaryBlue
+                                                          : AppColors
+                                                              .disabledColor,
+                                                      width: 1,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                restaurantMenu!
-                                                    .categories![index].name!,
-                                                style: FontUtils.h18(
-                                                  fontWeight: FWT.medium,
-                                                  fontColor: index == select
-                                                      ? AppColors.primaryBlue
-                                                      : AppColors.disabledColor,
+                                                child: Center(
+                                                  child: Text(
+                                                    restaurantMenu!
+                                                        .categories![index]
+                                                        .name!,
+                                                    style: FontUtils.h18(
+                                                      fontWeight: FWT.medium,
+                                                      fontColor: index == select
+                                                          ? AppColors
+                                                              .primaryBlue
+                                                          : AppColors
+                                                              .disabledColor,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -215,227 +294,410 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
 
-                                /// Tab bar ----------------------------------------------------------------------
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 16, bottom: 20),
-                                  child: SizedBox(
-                                    height: 40.h,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: mealType.length,
-                                      padding: const EdgeInsets.only(left: 16),
-                                      scrollDirection: Axis.horizontal,
-                                      physics: const BouncingScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            // if (selectedTabData
-                                            //     .contains(mealType[index])) {
-                                            //   setState(() {
-                                            //     selectedTabData
-                                            //         .remove(mealType[index]);
-                                            //   });
-                                            // } else {
-                                            //   setState(() {
-                                            //     selectedTabData
-                                            //         .add(mealType[index]);
-                                            //   });
-                                            // }
+                                    /// Tab bar ----------------------------------------------------------------------
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 16, bottom: 20),
+                                      child: SizedBox(
+                                        height: 40.h,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: mealType.length,
+                                          padding:
+                                              const EdgeInsets.only(left: 16),
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                // if (selectedTabData
+                                                //     .contains(mealType[index])) {
+                                                //   setState(() {
+                                                //     selectedTabData
+                                                //         .remove(mealType[index]);
+                                                //   });
+                                                // } else {
+                                                //   setState(() {
+                                                //     selectedTabData
+                                                //         .add(mealType[index]);
+                                                //   });
+                                                // }
 
-                                            if (index != 0) {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) {
-                                                  return FilterBottomSheet(
-                                                    filterType: mealType[index],
-                                                    price: priceValue,
-                                                  );
-                                                },
-                                                isDismissible: false,
-                                                shape: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(16.r),
-                                                    topRight:
-                                                        Radius.circular(16.r),
-                                                  ),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.transparent,
-                                                  ),
-                                                ),
-                                              ).then((value) {
-                                                if (value != null) {
-                                                  setState(() {
-                                                    priceValue = value;
-                                                  });
+                                                if (index != 0) {
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return FilterBottomSheet(
+                                                        filterType:
+                                                            mealType[index],
+                                                        price: priceValue,
+                                                      );
+                                                    },
+                                                    isDismissible: false,
+                                                    shape: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(
+                                                                16.r),
+                                                        topRight:
+                                                            Radius.circular(
+                                                                16.r),
+                                                      ),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                        color:
+                                                            Colors.transparent,
+                                                      ),
+                                                    ),
+                                                  ).then((value) {
+                                                    if (value != null) {
+                                                      setState(() {
+                                                        priceValue = value;
+                                                      });
 
-                                                  print('----->>>>$priceValue');
+                                                      print(
+                                                          '----->>>>$priceValue');
 
-                                                  /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
-                                                  //
-                                                  // else {
-                                                  //   ratingFilter.addAll(data
-                                                  //       .where((element) =>
-                                                  //   element.weightedRatingValue! >=
-                                                  //       int.parse(rating.first) &&
-                                                  //       element.weightedRatingValue! <=
-                                                  //           int.parse(rating.last))
-                                                  //       .toList());
-                                                  // }
-                                                } else {
-                                                  setState(() {
-                                                    priceValue = '';
+                                                      /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
+                                                      //
+                                                      // else {
+                                                      //   ratingFilter.addAll(data
+                                                      //       .where((element) =>
+                                                      //   element.weightedRatingValue! >=
+                                                      //       int.parse(rating.first) &&
+                                                      //       element.weightedRatingValue! <=
+                                                      //           int.parse(rating.last))
+                                                      //       .toList());
+                                                      // }
+                                                    } else {
+                                                      setState(() {
+                                                        priceValue = '';
+                                                      });
+                                                    }
                                                   });
                                                 }
-                                              });
-                                            }
-                                          },
-                                          child: Container(
-                                            margin:
-                                                const EdgeInsets.only(right: 8),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            decoration: BoxDecoration(
-                                              color: index == 1 &&
-                                                      priceValue.isNotEmpty
-                                                  ? AppColors.coral
-                                                  : AppColors.lightGrey,
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  mealType[index],
-                                                  style: FontUtils.h18(
-                                                    fontColor: index == 1 &&
-                                                            priceValue
-                                                                .isNotEmpty
-                                                        ? AppColors.terracotta
-                                                        : AppColors.darkGray,
-                                                    fontWeight: FWT.medium,
-                                                  ),
+                                              },
+                                              child: Container(
+                                                margin: const EdgeInsets.only(
+                                                    right: 8),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 15),
+                                                decoration: BoxDecoration(
+                                                  color: index == 1 &&
+                                                          priceValue.isNotEmpty
+                                                      ? AppColors.coral
+                                                      : AppColors.lightGrey,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
                                                 ),
-                                                index != 0
-                                                    ? Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(left: 10),
-                                                        child: Icon(
-                                                          Icons
-                                                              .arrow_forward_ios_outlined,
-                                                          size: 15,
-                                                          color: index == 1 &&
-                                                                  priceValue
-                                                                      .isNotEmpty
-                                                              ? AppColors
-                                                                  .terracotta
-                                                              : AppColors
-                                                                  .darkGray,
-                                                        ),
-                                                      )
-                                                    : const SizedBox()
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-
-                                /// Restaurant Menu ----------------------------------------------------------------
-
-                                Builder(builder: (context) {
-                                  int? index = -1;
-
-                                  if (priceValue.isNotEmpty) {
-                                    index = restaurantMenu!
-                                        .categories![select].menuItemList
-                                        ?.indexWhere((element) => priceValue ==
-                                                '40'
-                                            ? int.parse(priceValue) <=
-                                                ((element.originalPrice)! / 100)
-                                            : int.parse(priceValue
-                                                        .split('-')
-                                                        .first) <=
-                                                    ((element.originalPrice)! /
-                                                        100) &&
-                                                int.parse(priceValue
-                                                        .split('-')
-                                                        .last) >=
-                                                    ((element.originalPrice)! /
-                                                        100));
-
-                                    if (index! < 0) {
-                                      return Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Currently No Menu Found',
-                                            style: FontUtils.h18(
-                                              fontColor: AppColors.darkGray,
-                                              fontWeight: FWT.medium,
-                                            ),
-                                          ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      mealType[index],
+                                                      style: FontUtils.h18(
+                                                        fontColor: index == 1 &&
+                                                                priceValue
+                                                                    .isNotEmpty
+                                                            ? AppColors
+                                                                .terracotta
+                                                            : AppColors
+                                                                .darkGray,
+                                                        fontWeight: FWT.medium,
+                                                      ),
+                                                    ),
+                                                    index != 0
+                                                        ? Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 10),
+                                                            child: Icon(
+                                                              Icons
+                                                                  .arrow_forward_ios_outlined,
+                                                              size: 15,
+                                                              color: index ==
+                                                                          1 &&
+                                                                      priceValue
+                                                                          .isNotEmpty
+                                                                  ? AppColors
+                                                                      .terracotta
+                                                                  : AppColors
+                                                                      .darkGray,
+                                                            ),
+                                                          )
+                                                        : const SizedBox()
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      );
-                                    }
-                                  }
+                                      ),
+                                    ),
 
-                                  return Expanded(
-                                    child: ListView.separated(
-                                        shrinkWrap: true,
-                                        itemCount: restaurantMenu!
-                                            .categories![select]
-                                            .menuItemList!
-                                            .length,
-                                        physics: const BouncingScrollPhysics(),
-                                        padding: EdgeInsets.zero,
-                                        separatorBuilder: (context, index) {
-                                          return const SizedBox(
-                                            height: 10,
+                                    /// Restaurant Menu ----------------------------------------------------------------
+
+                                    Builder(builder: (context) {
+                                      int? index = -1;
+
+                                      if (priceValue.isNotEmpty) {
+                                        index = restaurantMenu!
+                                            .categories![select].menuItemList
+                                            ?.indexWhere((element) => priceValue ==
+                                                    '40'
+                                                ? int.parse(priceValue) <=
+                                                    ((element.originalPrice)! /
+                                                        100)
+                                                : int.parse(priceValue.split('-').first) <=
+                                                        ((element
+                                                                .originalPrice)! /
+                                                            100) &&
+                                                    int.parse(priceValue
+                                                            .split('-')
+                                                            .last) >=
+                                                        ((element
+                                                                .originalPrice)! /
+                                                            100));
+
+                                        if (index! < 0) {
+                                          return Expanded(
+                                            child: Center(
+                                              child: Text(
+                                                'Currently No Menu Found',
+                                                style: FontUtils.h18(
+                                                  fontColor: AppColors.darkGray,
+                                                  fontWeight: FWT.medium,
+                                                ),
+                                              ),
+                                            ),
                                           );
-                                        },
-                                        itemBuilder: (context, index) {
-                                          return priceValue.isNotEmpty
-                                              ? (priceValue == "40"
-                                                      ? int.parse(priceValue) <=
-                                                          ((restaurantMenu!
-                                                                  .categories![
-                                                                      select]
-                                                                  .menuItemList![
-                                                                      index]
-                                                                  .originalPrice)! /
-                                                              100)
-                                                      : int.parse(priceValue
-                                                                  .split('-')
-                                                                  .first) <=
+                                        }
+                                      }
+
+                                      return Expanded(
+                                        child: ListView.separated(
+                                            shrinkWrap: true,
+                                            itemCount: restaurantMenu!
+                                                .categories![select]
+                                                .menuItemList!
+                                                .length,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: EdgeInsets.zero,
+                                            separatorBuilder: (context, index) {
+                                              return const SizedBox(
+                                                height: 10,
+                                              );
+                                            },
+                                            itemBuilder: (context, index) {
+                                              return priceValue.isNotEmpty
+                                                  ? (priceValue == "40"
+                                                          ? int.parse(
+                                                                  priceValue) <=
                                                               ((restaurantMenu!
                                                                       .categories![
                                                                           select]
                                                                       .menuItemList![
                                                                           index]
                                                                       .originalPrice)! /
-                                                                  100) &&
-                                                          int.parse(priceValue
-                                                                  .split('-')
-                                                                  .last) >=
-                                                              ((restaurantMenu!
-                                                                      .categories![
-                                                                          select]
-                                                                      .menuItemList![
-                                                                          index]
-                                                                      .originalPrice)! /
-                                                                  100))
-                                                  ? GestureDetector(
+                                                                  100)
+                                                          : int.parse(priceValue
+                                                                      .split(
+                                                                          '-')
+                                                                      .first) <=
+                                                                  ((restaurantMenu!
+                                                                          .categories![
+                                                                              select]
+                                                                          .menuItemList![
+                                                                              index]
+                                                                          .originalPrice)! /
+                                                                      100) &&
+                                                              int.parse(priceValue
+                                                                      .split(
+                                                                          '-')
+                                                                      .last) >=
+                                                                  ((restaurantMenu!
+                                                                          .categories![
+                                                                              select]
+                                                                          .menuItemList![
+                                                                              index]
+                                                                          .originalPrice)! /
+                                                                      100))
+                                                      ? GestureDetector(
+                                                          onTap: () {
+                                                            Get.to(
+                                                              () =>
+                                                                  RestaurantMealDetails(
+                                                                mealName: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![
+                                                                        index]
+                                                                    .name!,
+                                                                mealImage: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![
+                                                                        index]
+                                                                    .image!,
+                                                                data: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![index],
+                                                              ),
+                                                              transition:
+                                                                  Transition
+                                                                      .fadeIn,
+                                                            );
+                                                          },
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                margin: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            20.w),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    restaurantMenu!.categories![select].menuItemList![index].image ==
+                                                                            null
+                                                                        ? Image
+                                                                            .asset(
+                                                                            AssetsUtils.food1,
+                                                                            width:
+                                                                                80.w,
+                                                                          )
+                                                                        : Image
+                                                                            .network(
+                                                                            restaurantMenu!.categories![select].menuItemList![index].image!,
+                                                                            width:
+                                                                                80.w,
+                                                                          ),
+                                                                    Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          width:
+                                                                              130.w,
+                                                                          child:
+                                                                              Text(
+                                                                            restaurantMenu!.categories![select].menuItemList![index].name!,
+                                                                            style:
+                                                                                FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular),
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              150.w,
+                                                                          child:
+                                                                              Text(
+                                                                            restaurantMenu!.categories![select].menuItemList![index].description ??
+                                                                                '',
+                                                                            style:
+                                                                                FontUtils.h14(
+                                                                              fontColor: const Color(0xffA2A4A7),
+                                                                              fontWeight: FWT.light,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    restaurantMenu!
+                                                                            .categories![
+                                                                                select]
+                                                                            .menuItemList![
+                                                                                index]
+                                                                            .highLightedColor!
+                                                                            .isEmpty
+                                                                        ? const SizedBox()
+                                                                        : Image
+                                                                            .asset(
+                                                                            restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Red'
+                                                                                ? AssetsUtils.canEatRed
+                                                                                : restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Yellow'
+                                                                                    ? AssetsUtils.canEatYellow
+                                                                                    : AssetsUtils.icCanEat,
+                                                                            width:
+                                                                                25.w,
+                                                                          ),
+                                                                    Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .end,
+                                                                      children: [
+                                                                        Text(
+                                                                          restaurantMenu!
+                                                                              .categories![select]
+                                                                              .menuItemList![index]
+                                                                              .formattedPrice
+                                                                              .toString(),
+                                                                          style:
+                                                                              FontUtils.h18(
+                                                                            fontColor:
+                                                                                Colors.black,
+                                                                            fontWeight:
+                                                                                FWT.medium,
+                                                                          ),
+                                                                        ),
+                                                                        GestureDetector(
+                                                                          onTap:
+                                                                              () {
+                                                                            Get.to(
+                                                                              () => RestaurantMenuDetailsScreen(
+                                                                                data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                              ),
+                                                                              transition: Transition.fadeIn,
+                                                                            );
+                                                                          },
+                                                                          child:
+                                                                              Image.asset(
+                                                                            AssetsUtils.icAdd,
+                                                                            height:
+                                                                                22.h,
+                                                                            alignment:
+                                                                                Alignment.bottomRight,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Divider(
+                                                                endIndent: 20.w,
+                                                                indent: 20.w,
+                                                                color: AppColors
+                                                                    .disabledColor,
+                                                                thickness: 1,
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : const SizedBox()
+                                                  : GestureDetector(
                                                       onTap: () {
                                                         Get.to(
                                                           () =>
@@ -454,6 +716,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                     .menuItemList![
                                                                         index]
                                                                     .image!,
+                                                            data: restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![
+                                                                index],
                                                           ),
                                                           transition:
                                                               Transition.fadeIn,
@@ -461,126 +728,157 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                       },
                                                       child: Column(
                                                         children: [
-                                                          IntrinsicHeight(
-                                                            child: Container(
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
-                                                                      horizontal:
-                                                                          20.w),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Image.network(
-                                                                    restaurantMenu!
+                                                          Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            margin: EdgeInsets
+                                                                .symmetric(
+                                                              horizontal: 20.w,
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                restaurantMenu!
+                                                                            .categories![
+                                                                                select]
+                                                                            .menuItemList![
+                                                                                index]
+                                                                            .image ==
+                                                                        null
+                                                                    ? Image
+                                                                        .asset(
+                                                                        AssetsUtils
+                                                                            .food1,
+                                                                        width:
+                                                                            80.w,
+                                                                      )
+                                                                    : Image
+                                                                        .network(
+                                                                        restaurantMenu!
+                                                                            .categories![select]
+                                                                            .menuItemList![index]
+                                                                            .image!,
+                                                                        width:
+                                                                            80.w,
+                                                                      ),
+                                                                Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      width:
+                                                                          130.w,
+                                                                      child:
+                                                                          Text(
+                                                                        restaurantMenu!
+                                                                            .categories![select]
+                                                                            .menuItemList![index]
+                                                                            .name!,
+                                                                        style: FontUtils
+                                                                            .h16(
+                                                                          fontColor:
+                                                                              AppColors.darkGray,
+                                                                          fontWeight:
+                                                                              FWT.regular,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          150.w,
+                                                                      child:
+                                                                          Text(
+                                                                        restaurantMenu!.categories![select].menuItemList![index].description ??
+                                                                            '',
+                                                                        style: FontUtils
+                                                                            .h14(
+                                                                          fontColor:
+                                                                              const Color(0xffA2A4A7),
+                                                                          fontWeight:
+                                                                              FWT.light,
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                                restaurantMenu!
                                                                         .categories![
                                                                             select]
                                                                         .menuItemList![
                                                                             index]
-                                                                        .image!,
-                                                                    width: 80.w,
-                                                                  ),
-                                                                  Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Row(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          SizedBox(
-                                                                            width:
-                                                                                140.w,
-                                                                            child:
-                                                                                Text(
-                                                                              restaurantMenu!.categories![select].menuItemList![index].name!,
-                                                                              style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular),
-                                                                            ),
-                                                                          ),
-                                                                          // Image.asset(
-                                                                          //   menuData[index]
-                                                                          //       ['canEatImage'],
-                                                                          //   width: 30.w,
-                                                                          //   height: 30.h,
-                                                                          // ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(
+                                                                        .highLightedColor!
+                                                                        .isEmpty
+                                                                    ? const SizedBox()
+                                                                    : Image
+                                                                        .asset(
+                                                                        restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
+                                                                                'Red'
+                                                                            ? AssetsUtils.canEatRed
+                                                                            : restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Yellow'
+                                                                                ? AssetsUtils.canEatYellow
+                                                                                : AssetsUtils.icCanEat,
                                                                         width:
-                                                                            160.w,
-                                                                        child:
-                                                                            Text(
-                                                                          restaurantMenu!.categories![select].menuItemList![index].description ??
-                                                                              '',
-                                                                          style:
-                                                                              FontUtils.h14(
-                                                                            fontColor:
-                                                                                const Color(0xffA2A4A7),
-                                                                            fontWeight:
-                                                                                FWT.light,
+                                                                            25.w,
+                                                                      ),
+                                                                Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .end,
+                                                                  children: [
+                                                                    Text(
+                                                                      restaurantMenu!
+                                                                          .categories![
+                                                                              select]
+                                                                          .menuItemList![
+                                                                              index]
+                                                                          .formattedPrice
+                                                                          .toString(),
+                                                                      style: FontUtils
+                                                                          .h18(
+                                                                        fontColor:
+                                                                            Colors.black,
+                                                                        fontWeight:
+                                                                            FWT.medium,
+                                                                      ),
+                                                                    ),
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        Get.to(
+                                                                          () =>
+                                                                              RestaurantMenuDetailsScreen(
+                                                                            data:
+                                                                                restaurantMenu!.categories![select].menuItemList![index],
                                                                           ),
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                  Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .end,
-                                                                    children: [
-                                                                      Text(
-                                                                        restaurantMenu!
-                                                                            .categories![select]
-                                                                            .menuItemList![index]
-                                                                            .formattedPrice
-                                                                            .toString(),
-                                                                        style: FontUtils
-                                                                            .h18(
-                                                                          fontColor:
-                                                                              Colors.black,
-                                                                          fontWeight:
-                                                                              FWT.medium,
-                                                                        ),
+                                                                          transition:
+                                                                              Transition.fadeIn,
+                                                                        );
+                                                                      },
+                                                                      child: Image
+                                                                          .asset(
+                                                                        AssetsUtils
+                                                                            .icAdd,
+                                                                        height:
+                                                                            22.h,
+                                                                        alignment:
+                                                                            Alignment.bottomRight,
                                                                       ),
-                                                                      GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          Get.to(
-                                                                            () =>
-                                                                                RestaurantMenuDetailsScreen(
-                                                                              data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                            ),
-                                                                            transition:
-                                                                                Transition.fadeIn,
-                                                                          );
-                                                                        },
-                                                                        child: Image
-                                                                            .asset(
-                                                                          AssetsUtils
-                                                                              .icAdd,
-                                                                          height:
-                                                                              22.h,
-                                                                          alignment:
-                                                                              Alignment.bottomRight,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              ),
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              ],
                                                             ),
                                                           ),
                                                           Divider(
@@ -592,185 +890,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                           )
                                                         ],
                                                       ),
-                                                    )
-                                                  : const SizedBox()
-                                              : GestureDetector(
-                                                  onTap: () {
-                                                    Get.to(
-                                                      () =>
-                                                          RestaurantMealDetails(
-                                                        mealName:
-                                                            restaurantMenu!
-                                                                .categories![
-                                                                    select]
-                                                                .menuItemList![
-                                                                    index]
-                                                                .name!,
-                                                        mealImage:
-                                                            restaurantMenu!
-                                                                .categories![
-                                                                    select]
-                                                                .menuItemList![
-                                                                    index]
-                                                                .image!,
-                                                      ),
-                                                      transition:
-                                                          Transition.fadeIn,
                                                     );
-                                                  },
-                                                  child: Column(
-                                                    children: [
-                                                      IntrinsicHeight(
-                                                        child: Container(
-                                                          width: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .width,
-                                                          margin: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      20.w),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Image.network(
-                                                                restaurantMenu!
-                                                                    .categories![
-                                                                        select]
-                                                                    .menuItemList![
-                                                                        index]
-                                                                    .image!,
-                                                                width: 80.w,
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      SizedBox(
-                                                                        width:
-                                                                            140.w,
-                                                                        child:
-                                                                            Text(
-                                                                          restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index]
-                                                                              .name!,
-                                                                          style: FontUtils.h16(
-                                                                              fontColor: AppColors.darkGray,
-                                                                              fontWeight: FWT.regular),
-                                                                        ),
-                                                                      ),
-                                                                      // Image.asset(
-                                                                      //   menuData[index]
-                                                                      //       ['canEatImage'],
-                                                                      //   width: 30.w,
-                                                                      //   height: 30.h,
-                                                                      // ),
-                                                                    ],
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        160.w,
-                                                                    child: Text(
-                                                                      restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index]
-                                                                              .description ??
-                                                                          '',
-                                                                      style: FontUtils
-                                                                          .h14(
-                                                                        fontColor:
-                                                                            const Color(0xffA2A4A7),
-                                                                        fontWeight:
-                                                                            FWT.light,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Text(
-                                                                    restaurantMenu!
-                                                                        .categories![
-                                                                            select]
-                                                                        .menuItemList![
-                                                                            index]
-                                                                        .formattedPrice
-                                                                        .toString(),
-                                                                    style:
-                                                                        FontUtils
-                                                                            .h18(
-                                                                      fontColor:
-                                                                          Colors
-                                                                              .black,
-                                                                      fontWeight:
-                                                                          FWT.medium,
-                                                                    ),
-                                                                  ),
-                                                                  GestureDetector(
-                                                                    onTap: () {
-                                                                      Get.to(
-                                                                        () =>
-                                                                            RestaurantMenuDetailsScreen(
-                                                                          data: restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index],
-                                                                        ),
-                                                                        transition:
-                                                                            Transition.fadeIn,
-                                                                      );
-                                                                    },
-                                                                    child: Image
-                                                                        .asset(
-                                                                      AssetsUtils
-                                                                          .icAdd,
-                                                                      height:
-                                                                          22.h,
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .bottomRight,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        endIndent: 20.w,
-                                                        indent: 20.w,
-                                                        color: AppColors
-                                                            .disabledColor,
-                                                        thickness: 1,
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                        }),
-                                  );
-                                })
-                              ],
-                            ),
-                          )
+                                            }),
+                                      );
+                                    })
+                                  ],
+                                ),
+                              )
               ],
             );
           },

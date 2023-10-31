@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:either_dart/either.dart';
@@ -697,6 +698,10 @@ class _GetUserAddressState extends State<GetUserAddress>
                             'zipcode': zipcode,
                             'isPrimary': true,
                           };
+
+                          print(
+                              'argumentsValue---------->>>>>> $argumentsValue');
+                          print('argumentsValue---------->>>>>> $addressData');
 
                           // if (argumentsValue['string'] == 'isFromRegister') {
                           Get.to(

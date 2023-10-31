@@ -112,7 +112,7 @@ class MenuItemList {
   String? thumbnailImage;
   bool? shouldFetchCustomizations;
   bool? supportsImageScaling;
-  dynamic highLightedColor;
+  String? highLightedColor;
 
   MenuItemList({
     this.name,

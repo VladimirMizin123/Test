@@ -3,11 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
-import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
-import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
-import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
-import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
-import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -16,18 +11,22 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
-import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 
 class RestaurantMealDetails extends StatefulWidget {
-  const RestaurantMealDetails(
-      {super.key, required this.mealName, required this.mealImage});
-
+  const RestaurantMealDetails({
+    super.key,
+    required this.mealName,
+    required this.mealImage,
+    required this.data,
+  });
   final String mealName;
   final String mealImage;
+  final MenuItemList data;
 
   @override
   State<RestaurantMealDetails> createState() => _RestaurantMealDetailsState();
@@ -327,18 +326,22 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                     const SizedBox(height: 15),
                                     RestaurantMealAddButtonWidget(
                                       onTap: () {
-                                        if (addToCart == false) {
-                                          setState(() {
-                                            selectedItem = 1;
-                                            addToCart = true;
-                                          });
-                                        }
+                                        // if (addToCart == false) {
+                                        //   setState(() {
+                                        //     selectedItem = 1;
+                                        //     addToCart = true;
+                                        //   });
+                                        // }
+
+                                        Get.to(
+                                          () => RestaurantMenuDetailsScreen(
+                                            data: widget.data,
+                                          ),
+                                        );
                                       },
-                                      buttonLable: selectedItem == 0
-                                          ? 'Add to cart'
-                                          : 'View Cart',
+                                      buttonLable: 'Add to cart',
                                       isFillColor: true,
-                                      selectedItemCount: selectedItem,
+                                      selectedItemCount: 0,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
