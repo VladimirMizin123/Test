@@ -22,7 +22,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
       "image": AssetsUtils.pencil,
       "title": "Retake Assessment",
       "color": AppColors.disable,
-      "screen": const ProgramDetailScreen()
+      "screen": ''
     },
     {
       "image": AssetsUtils.globalIcn,
@@ -71,7 +71,8 @@ class _ProgramScreenState extends State<ProgramScreen> {
                                 fontSize: 24.sp,
                                 color: AppColors.darkGreyColor),
                           ),
-                          leading: SvgImage(image: AssetsUtils.gymEatsImage),
+                          leading:
+                              const SvgImage(image: AssetsUtils.gymEatsImage),
                         ),
                       ),
                       SizedBox(
@@ -82,7 +83,9 @@ class _ProgramScreenState extends State<ProgramScreen> {
                         var data = programList[index];
                         return accountScreenDataWidget(
                           onTap: () {
-                            print('object');
+                            if (data["screen"].toString().isEmpty) {
+                              return;
+                            }
                             Get.to(data["screen"]);
                           },
                           color: data["color"],

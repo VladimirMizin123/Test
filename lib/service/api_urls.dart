@@ -161,4 +161,11 @@ class ApiUrls {
   static const String getRestaurantMenuList =
       '${baseUrl}api/MealMe/GetHighlightedFoodMenuList';
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
+
+  ///Account APis---------------------------------------------------------
+
+  static const String getProgramData = '${baseUrl}api/Suggestic/GetAllProgram';
+
+  static const String getProgramInfo =
+      '${baseUrl}api/Suggestic/GetPrograminfo/';
 }

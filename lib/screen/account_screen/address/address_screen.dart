@@ -32,125 +32,125 @@ class _AddressScreenState extends State<AddressScreen> {
         create: (context) => MyAddressBloc(),
         child: BlocBuilder<MyAddressBloc, MyAddressState>(
           builder: (context, state) {
-            if (state is InitialState) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AccountTitleWidget(
-                    title: "My Address",
-                    widget: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.whiteColor,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.shade200, spreadRadius: 1)
-                        ],
-                      ),
-                      // height: 1.h,
-                      margin:
-                          EdgeInsets.only(top: 150.h, right: 23.w, left: 23.w),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 8.h,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 20.w),
-                                    child: Radio(
-                                      value: "Home",
-                                      groupValue: state,
-                                      onChanged: (value) {
-                                        //changeOption(value, context);
-                                        BlocProvider.of<MyAddressBloc>(context)
-                                            .add(MyAddressLoadEvent(
-                                                firstOption: 'Home'));
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 17.w,
-                                  ),
-                                  const Text("Home",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400)),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 20.w),
-                                    child: const SvgImage(
-                                      image: AssetsUtils.forwardArrow,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const DividerWidget(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 20.w),
-                                    child: Radio(
-                                      value: "Office",
-                                      groupValue: state,
-                                      onChanged: (value) {
-                                        BlocProvider.of<MyAddressBloc>(context)
-                                            .add(MyAddressLoadEvent(
-                                                firstOption: 'Office'));
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 17.w,
-                                  ),
-                                  const Text("Office",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400)),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 20.w),
-                                    child: const SvgImage(
-                                      image: AssetsUtils.forwardArrow,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  buildButton(
-                          context: context,
-                          title: "Add New Address",
-                          onPressed: () {
-                            Get.to(
-                              const MapAddressScreen(),
-                            );
-                          },
-                          textColor: AppColors.whiteColor,
-                          bgColor: AppColors.primaryBlueColor)
-                      .paddingOnly(right: 23.w, left: 23.w),
-                ],
-              ).paddingOnly(bottom: 20.h);
-            }
+            // if (state is InitialState) {
+            //   return Column(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       AccountTitleWidget(
+            //         title: "My Address",
+            //         widget: Container(
+            //           decoration: BoxDecoration(
+            //             color: AppColors.whiteColor,
+            //             borderRadius: BorderRadius.circular(10),
+            //             boxShadow: [
+            //               BoxShadow(
+            //                   color: Colors.grey.shade200, spreadRadius: 1)
+            //             ],
+            //           ),
+            //           // height: 1.h,
+            //           margin:
+            //               EdgeInsets.only(top: 150.h, right: 23.w, left: 23.w),
+            //           child: Column(
+            //             children: [
+            //               SizedBox(
+            //                 height: 8.h,
+            //               ),
+            //               Row(
+            //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //                 children: [
+            //                   Row(
+            //                     children: [
+            //                       Container(
+            //                         margin: EdgeInsets.only(left: 20.w),
+            //                         child: Radio(
+            //                           value: "Home",
+            //                           groupValue: state,
+            //                           onChanged: (value) {
+            //                             //changeOption(value, context);
+            //                             BlocProvider.of<MyAddressBloc>(context)
+            //                                 .add(MyAddressLoadEvent(
+            //                                     firstOption: 'Home'));
+            //                           },
+            //                         ),
+            //                       ),
+            //                       SizedBox(
+            //                         width: 17.w,
+            //                       ),
+            //                       const Text("Home",
+            //                           style: TextStyle(
+            //                               fontSize: 16,
+            //                               fontWeight: FontWeight.w400)),
+            //                     ],
+            //                   ),
+            //                   Row(
+            //                     children: [
+            //                       Container(
+            //                         margin: EdgeInsets.only(right: 20.w),
+            //                         child: const SvgImage(
+            //                           image: AssetsUtils.forwardArrow,
+            //                         ),
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ],
+            //               ),
+            //               const DividerWidget(),
+            //               Row(
+            //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //                 children: [
+            //                   Row(
+            //                     children: [
+            //                       Container(
+            //                         margin: EdgeInsets.only(left: 20.w),
+            //                         child: Radio(
+            //                           value: "Office",
+            //                           groupValue: state,
+            //                           onChanged: (value) {
+            //                             BlocProvider.of<MyAddressBloc>(context)
+            //                                 .add(MyAddressLoadEvent(
+            //                                     firstOption: 'Office'));
+            //                           },
+            //                         ),
+            //                       ),
+            //                       SizedBox(
+            //                         width: 17.w,
+            //                       ),
+            //                       const Text("Office",
+            //                           style: TextStyle(
+            //                               fontSize: 16,
+            //                               fontWeight: FontWeight.w400)),
+            //                     ],
+            //                   ),
+            //                   Row(
+            //                     children: [
+            //                       Container(
+            //                         margin: EdgeInsets.only(right: 20.w),
+            //                         child: const SvgImage(
+            //                           image: AssetsUtils.forwardArrow,
+            //                         ),
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //       buildButton(
+            //               context: context,
+            //               title: "Add New Address",
+            //               onPressed: () {
+            //                 Get.to(
+            //                   const MapAddressScreen(),
+            //                 );
+            //               },
+            //               textColor: AppColors.whiteColor,
+            //               bgColor: AppColors.primaryBlueColor)
+            //           .paddingOnly(right: 23.w, left: 23.w),
+            //     ],
+            //   ).paddingOnly(bottom: 20.h);
+            // }
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

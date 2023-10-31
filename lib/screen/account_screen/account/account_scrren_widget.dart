@@ -61,6 +61,7 @@ Widget AccountTitleWidget({Widget? widget, String? title}) {
           ).paddingOnly(top: 25.h, left: 20.w, right: 20.w, bottom: 10.h),
         ),
         Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             // Positioned(top: 20, child: widget!),
             widget!,

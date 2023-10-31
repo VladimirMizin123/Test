@@ -177,7 +177,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
-
+import 'package:gymeats_mobile/screen/account_screen/all_programs/program_detail/program_detail_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_model.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import '../../../constant/asset_utils.dart';
 import '../../../constant/color_utils.dart';
 import '../../../widget/svg_image.dart';
@@ -190,108 +196,161 @@ class AllProgramScreen extends StatefulWidget {
 }
 
 class _AllProgramScreenState extends State<AllProgramScreen> {
-  List programList = [
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-    {
-      "image": AssetsUtils.appleLogo,
-      "title": "Keto",
-      "subtitle": "by Dr. David"
-    },
-  ];
+  // List programList = [
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  //   {
+  //     "image": AssetsUtils.appleLogo,
+  //     "title": "Keto",
+  //     "subtitle": "by Dr. David"
+  //   },
+  // ];
+  AccountBloc accountBloc = AccountBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      accountBloc.add(GetAllProgramEvent());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            AccountTitleWidget(
-              title: "All Programs",
-              widget: Container(
-                height: 600,
+        child: AccountTitleWidget(
+          title: "All Programs",
+          widget: Expanded(
+            child: Container(
                 margin: EdgeInsets.only(top: 150.h),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemCount: programList.length,
-                    itemBuilder: (context, index) {
-                      var data = programList[index];
-                      return Container(
-                        margin: EdgeInsets.only(
-                            left: 8.w, right: 8.w, bottom: 15.h, top: 3.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.w),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: const Offset(
-                                  0, 0), // changes position of shadow
-                            ),
-                          ],
+                child: BlocConsumer(
+                  bloc: accountBloc,
+                  builder: (context, state) {
+                    if (state is GetAllProgramLoadingState) {
+                      return const AppCenterLoader();
+                    }
+
+                    if (state is GetAllProgramErrorState) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: AppColors.primaryBlue,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
                         ),
-                        child: ListTile(
-                          leading: Container(
-                            height: 55.w,
-                            width: 55.w,
-                            decoration: const BoxDecoration(
-                              color: AppColors.middleGray,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgImage(image: data["image"]),
-                          ),
-                          title: Text(data["title"]),
-                          subtitle: Text(data["subtitle"]),
-                          trailing:
-                              const SvgImage(image: AssetsUtils.forwardArrow),
-                        ).paddingOnly(top: 4.h, bottom: 4.h),
                       );
-                    }),
-              ).paddingOnly(left: 15.w, right: 15.w),
-            ),
-          ],
+                    }
+
+                    if (state is GetAllProgramSuccessState) {
+                      List<ProgramModel> programModelData =
+                          state.programModelData;
+
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: programModelData.length,
+                          itemBuilder: (context, index) {
+                            var data = programModelData[index].node;
+                            return Container(
+                              margin: EdgeInsets.only(
+                                  left: 8.w,
+                                  right: 8.w,
+                                  bottom: 15.h,
+                                  top: 3.h),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.w),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(
+                                        0, 0), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                leading: Container(
+                                  height: 55.w,
+                                  width: 55.w,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.middleGray,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const SvgImage(
+                                      image: AssetsUtils.appleLogo),
+                                ),
+                                title: Text(data?.name ?? ''),
+                                subtitle: Text(data?.author ?? ""),
+                                trailing: const SvgImage(
+                                    image: AssetsUtils.forwardArrow),
+                                onTap: () {
+                                  Get.to(() => ProgramDetailScreen(
+                                      programId: data?.id ?? ""));
+                                  // const ProgramDetailScreen();
+                                },
+                              ).paddingOnly(top: 4.h, bottom: 4.h),
+                            );
+                          });
+                    }
+
+                    return const Center(
+                      child: Text(
+                        'No Data',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: AppColors.primaryBlue,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    );
+                  },
+                  listener: (context, state) {},
+                )).paddingOnly(left: 15.w, right: 15.w),
+          ),
         ),
       ),
     );
