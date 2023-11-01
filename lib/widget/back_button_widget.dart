@@ -10,10 +10,12 @@ class BackButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // return const Icon(Icons.keyboard_arrow_left_outlined, size: 30);
     return Padding(
-      padding: const EdgeInsets.only(left: 12),
-      child: GestureDetector(onTap: () {
-       Get.back();
-      }, child: SvgPicture.asset(AssetsUtils.icBackArrow)),
+      padding: const EdgeInsets.only(left: 2),
+      child: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child: SvgPicture.asset(AssetsUtils.icBackArrow)),
     );
   }
 }

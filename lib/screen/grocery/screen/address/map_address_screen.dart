@@ -40,7 +40,10 @@ class MapAddressScreen extends StatelessWidget {
                           color: AppColors.primaryBlue,
                         ),
                       ),
-                      Align(alignment: Alignment.centerLeft, child: const BackButtonWidget().paddingSymmetric(horizontal: 6, vertical: 10.h)),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: const BackButtonWidget()
+                              .paddingSymmetric(horizontal: 6, vertical: 10.h)),
                     ],
                   ),
                 ),
@@ -55,14 +58,17 @@ class MapAddressScreen extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Add delivery address',
-                            style: FontUtils.h18(fontColor: AppColors.black, fontWeight: FWT.medium),
+                            style: FontUtils.h18(
+                                fontColor: AppColors.black,
+                                fontWeight: FWT.medium),
                           ),
                         ),
                         const SizedBox(height: 10),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: const BorderRadius.all(Radius.circular(12)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
                             boxShadow: boxShadowWidget,
                           ),
                           child: TextFormField(
@@ -71,12 +77,15 @@ class MapAddressScreen extends StatelessWidget {
                             },
                             readOnly: true,
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search, color: AppColors.black),
+                              prefixIcon: const Icon(Icons.search,
+                                  color: AppColors.black),
                               hintText: 'Search for item',
                               hintStyle: FontUtils.h16(),
                               border: InputBorder.none,
-                              enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                              focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                              enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide.none),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide.none),
                             ),
                           ),
                         ),
@@ -85,7 +94,8 @@ class MapAddressScreen extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: Row(
                             children: [
-                              SvgPicture.asset(AssetsUtils.icLocationIcon, color: AppColors.terracotta),
+                              SvgPicture.asset(AssetsUtils.icLocationIcon,
+                                  color: AppColors.terracotta),
                               const SizedBox(width: 10),
                               Text(
                                 'Current location',
@@ -101,7 +111,8 @@ class MapAddressScreen extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: Row(
                             children: [
-                              SvgPicture.asset(AssetsUtils.icFlagIcon, color: AppColors.black),
+                              SvgPicture.asset(AssetsUtils.icFlagIcon,
+                                  color: AppColors.black),
                               const SizedBox(width: 10),
                               Text(
                                 'Recent address',

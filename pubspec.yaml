@@ -54,6 +54,7 @@ dependencies:
   carousel_slider: ^4.2.1
   qr_code_scanner: ^1.0.1
   ml_card_scanner: ^0.0.5
+  datepicker_dropdown: ^0.0.8
 
 #  camera:
   firebase_auth:

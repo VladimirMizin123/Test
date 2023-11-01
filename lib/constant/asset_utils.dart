@@ -1,3 +1,5 @@
+import 'package:flutter_svg/flutter_svg.dart';
+
 class AssetsUtils {
   /// Images
   static const String defaultImage = "assets/image/defaultImage.png";
@@ -92,6 +94,8 @@ class AssetsUtils {
   static const canEatRed = "assets/image/can_eat_red.png";
   static const canEatYellow = "assets/image/can_eat_yellow.png";
   static const terracotaCheck = "assets/image/check.png";
+  static const gymEatsWhiteLogo = "assets/image/gymeat_white_logo.png";
+  static const vegetable = "assets/image/vegetable.png";
   static const ratingStar = "assets/image/rating_star.png";
   static const greyCircle = "assets/image/grey_circle.png";
 
@@ -146,6 +150,22 @@ class AssetsUtils {
   static const deliveryInfo = '${svgPath}delivery_info.svg';
   static const icVisa = '${svgPath}ic_visa.svg';
   static const vegetables = '${svgPath}vegetables.svg';
+  static const forwardArrow = '${svgPath}forward_arrow.svg';
+  static const profileIcon = '${svgPath}profile_icon.svg';
+  static const about = '${svgPath}about.svg';
+  static const chat = '${svgPath}Chat.svg';
+  static const setting = '${svgPath}setting.svg';
+  static const gymEatsImage = '${svgPath}gym_eats.svg';
+  static const pencil = '${svgPath}ic_pencil.svg';
+  static const globalIcn = '${svgPath}Global.svg';
+  static const lock = '${svgPath}lock.svg';
+  static const unit = '${svgPath}ic_units.svg';
+  static const notificationIcn = '${svgPath}Notifications.svg';
+  static const icGps = '${svgPath}ic_gps.svg';
+  static const logOut = '${svgPath}log_out.svg';
+  static const downArrow = '${svgPath}down_arrow.svg';
+  static const done = '${svgPath}Done.svg';
+  static const questionRounded = '${svgPath}question_rounded.svg';
 
   /// Icons
 
@@ -185,4 +205,6 @@ class AssetsUtils {
   static const flashOff = "assets/icon/flashOff.png";
   static const flashOn = "assets/icon/flashOn.png";
   static const deliveryVehicle = "assets/icon/delivery_veh.png";
+  static const lightBlueBackGroundImage =
+      "assets/image/light_blue_background_card.png";
 }

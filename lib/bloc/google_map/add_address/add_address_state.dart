@@ -1,9 +1,9 @@
-abstract class AddAddressState {}
+abstract class AddressState {}
 
-class InitialState extends AddAddressState {}
+class InitialState extends AddressState {}
 
-class AddAddressSuccessfulState extends AddAddressState {}
+class AddAddressSuccessfulState extends AddressState {}
 
-class AddAddressLoadingState extends AddAddressState {}
+class AddAddressLoadingState extends AddressState {}
 
-class ErrorState extends AddAddressState {}
+class ErrorState extends AddressState {}
