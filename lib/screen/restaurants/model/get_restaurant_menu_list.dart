@@ -116,6 +116,8 @@ class MenuItemList {
   int? cartQuantity;
   dynamic cartPrice;
   bool isAdded;
+  bool isAddUpdated;
+  bool isRemoveUpdated;
 
   MenuItemList({
     this.name,
@@ -139,6 +141,8 @@ class MenuItemList {
     this.cartQuantity = 0,
     this.cartPrice = 0,
     this.isAdded = false,
+    this.isAddUpdated = false,
+    this.isRemoveUpdated = false,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(

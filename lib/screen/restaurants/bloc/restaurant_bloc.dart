@@ -13,13 +13,17 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetRestaurantListEvent>(_onGetRestaurantList);
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
-    on<AddRestaurantCartEvent>(_onAddToGroceryList);
+    on<AddRestaurantCartEvent>(_onAddToRestaurantList);
     on<GetShoppingListEvent>(_onFetchShoppingList);
+    on<UpdateRestaurantCartEvent>(_onUpdateToRestaurantList);
+    on<RemoveShoppingListItemEvent>(_onRemoveShoppingList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
 
-  /// Get Grocery Item Bloc =================================================================
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESTAURANT PART<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  // Get Grocery Item Bloc =================================================================
   _onGetUserAddress(
       GetUserAddressEvent event, Emitter<RestaurantState> emit) async {
     emit(GetUserAddressLoadingState());
@@ -36,7 +40,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  /// Get Restaurant List Bloc =================================================================
+  // Get Restaurant List Bloc =================================================================
   _onGetRestaurantList(
       GetRestaurantListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantListLoadingState());
@@ -66,7 +70,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  /// Get Restaurant Menu List Bloc  =================================================================
+  // Get Restaurant Menu List Bloc  =================================================================
   _onGetRestaurantMenuList(
       GetRestaurantMenuListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantMenuListLoadingState());
@@ -90,7 +94,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  /// Get Cousines Bloc ==============================================================================
+  // Get Cousines Bloc ==============================================================================
 
   _onGetCousinesList(
       GetCousinesEvent event, Emitter<RestaurantState> emit) async {
@@ -121,26 +125,35 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  /// Add Restaurant Item to cart Bloc ==============================================================================
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESTAURANT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  _onAddToGroceryList(
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  // Add Restaurant Item to cart Bloc ==============================================================================
+
+  _onAddToRestaurantList(
       AddRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
     emit(AddToRestaurantCartLoadingState());
 
     try {
       await _repository
-          .menuAddToCartRestaurant(addItemsToShoppingList: event.addItemsList)
+          .addMenuToCartRestaurant(addItemsToShoppingList: event.addItemsList)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
-        emit(AddToRestaurantCartSuccessState(isAdded: right.success ?? true));
+        emit(AddToRestaurantCartSuccessState(
+            isAdded: right.success ?? true, data: right.data));
       });
     } catch (e) {
+      log('e---------->>>>>> ${e}');
+
       showToast(isSuccess: false, message: e.toString());
       emit(AddToRestaurantCartErrorState());
     }
   }
+
+  // Get Shopping List Bloc =========================================================================================
 
   _onFetchShoppingList(
       GetShoppingListEvent event, Emitter<RestaurantState> emit) async {
@@ -160,6 +173,56 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       emit(GetShoppingListErrorState());
     }
   }
+
+  // Update Restaurant Item to cart Bloc ============================================================================
+
+  _onUpdateToRestaurantList(
+      UpdateRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
+    emit(UpdateToRestaurantCartLoadingState(
+        productId: event.updateItemList.oldProductId!));
+
+    try {
+      await _repository
+          .updateMenuToCartRestaurant(
+              updateItemsToShoppingList: event.updateItemList)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        log('----DATA------PRICE--->>>>>>>>${right.data['price']}');
+        log('----DATA------QUANTITY--->>>>>>>>${right.data['quantity']}');
+        showToast(isSuccess: true, message: right.message!);
+        emit(UpdateToRestaurantCartSuccessState(
+            isAdded: right.success ?? true, data: right.data));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateToRestaurantCartErrorState(
+          productId: event.updateItemList.oldProductId!));
+    }
+  }
+
+  // Remove Shopping List Item Bloc =========================================================================================
+
+  _onRemoveShoppingList(
+      RemoveShoppingListItemEvent event, Emitter<RestaurantState> emit) async {
+    emit(RemoveShoppingListItemLoadingState(productId: event.productID));
+
+    try {
+      await _repository.removeShoppingListItem(productID: event.productID).fold(
+          (left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(
+          RemoveShoppingListItemSuccessState(productId: event.productID),
+        );
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(RemoveShoppingListItemErrorState(productId: event.productID));
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   onFailError({required String text, required Emitter<RestaurantState> emit}) {
     showToast(isSuccess: false, message: text);

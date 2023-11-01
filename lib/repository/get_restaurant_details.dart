@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_mode
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 
@@ -145,7 +146,7 @@ class RestaurantRepository {
 
   /// Add Shopping List ====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> menuAddToCartRestaurant(
+  Future<Either<ErrorModel, SuccessModel>> addMenuToCartRestaurant(
       {required List<AddRestaurantItemsToShoppingListModel>
           addItemsToShoppingList}) async {
     final response = await apiServices.post(
@@ -166,6 +167,42 @@ class RestaurantRepository {
         await apiServices.get('${ApiUrls.getShoppingList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetShoppingListData.fromJson(jsonDecode(response.body)));
+    }
+    // else if (response.statusCode == 400) {
+    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
+    //
+    //   return Right(
+    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    // }
+    else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Update Shopping List ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> updateMenuToCartRestaurant(
+      {required UpdateRestaurantItemsToShoppingListModel
+          updateItemsToShoppingList}) async {
+    final response = await apiServices.put(
+      ApiUrls.updateShoppingList,
+      updateItemsToShoppingList,
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Remove Shopping List Item====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> removeShoppingListItem(
+      {String? productID}) async {
+    final response = await apiServices
+        .delete('${ApiUrls.removeProduct}?userId=$userID&productId=$productID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     }
     // else if (response.statusCode == 400) {
     //   log('GetRestaurantMenuListErrorState---------->>>>>>}');

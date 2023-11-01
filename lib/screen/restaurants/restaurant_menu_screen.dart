@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -13,6 +15,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
@@ -49,9 +52,12 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool loading = false;
   bool loading1 = false;
+  bool isAddUpdate = false;
+  bool isRemoveUpdate = false;
   String priceValue = '';
   RestaurantMenu? restaurantMenu;
   List<ShoppingListData> cartData = [];
+  ShoppingListData? selectedCartData;
   List<MenuItemList> menuItem = [];
   bool hasCartData = false;
 
@@ -59,17 +65,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      restaurantBloc.add(
-        GetRestaurantMenuListEvent(
-          widget.restaurantId,
-          widget.pickup,
-          widget.mealType,
-        ),
-      );
+    restaurantBloc.add(
+      GetRestaurantMenuListEvent(
+        widget.restaurantId,
+        widget.pickup,
+        widget.mealType,
+      ),
+    );
 
-      restaurantBloc.add(GetShoppingListEvent());
-    });
+    restaurantBloc.add(GetShoppingListEvent());
   }
 
   @override
@@ -80,6 +84,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         child: bloc.BlocConsumer(
           bloc: restaurantBloc,
           listener: (context, state) {
+            ///GetRestaurantMenuList State ====================================================================
+
             if (state is GetRestaurantMenuListLoadingState) {
               loading = true;
             }
@@ -112,6 +118,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             if (state is GetRestaurantMenuListErrorState) {
               loading = false;
             }
+
+            ///GetShoppingList State ====================================================================
+
             if (state is GetShoppingListLoadingState) {
               loading1 = true;
             }
@@ -147,6 +156,109 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             }
             if (state is GetShoppingListErrorState) {
               loading1 = false;
+            }
+
+            ///UpdateToRestaurantCart State ====================================================================
+
+            if (state is UpdateToRestaurantCartSuccessState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.data['productId'] == element1.productId) {
+                    element1.cartQuantity = state.data['quantity'];
+                    element1.cartPrice = state.data['price'];
+
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = false;
+                    } else {
+                      element1.isRemoveUpdated = false;
+                    }
+
+                    isAddUpdate = false;
+                  }
+                }
+              }
+            }
+
+            if (state is UpdateToRestaurantCartLoadingState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.productId == element1.productId) {
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = true;
+                    } else {
+                      element1.isRemoveUpdated = true;
+                    }
+                  }
+                }
+              }
+            }
+
+            if (state is UpdateToRestaurantCartErrorState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.productId == element1.productId) {
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = false;
+                    } else {
+                      element1.isRemoveUpdated = false;
+                    }
+
+                    isAddUpdate = false;
+                  }
+                }
+              }
+            }
+
+            ///Remove To RestaurantCart State ====================================================================
+
+            if (state is RemoveShoppingListItemSuccessState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.productId == element1.productId) {
+                    element1.cartQuantity = 0;
+                    element1.cartPrice = 0;
+
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = false;
+                    } else {
+                      element1.isRemoveUpdated = false;
+                    }
+                    element1.isAdded = false;
+                    isAddUpdate = false;
+                    restaurantBloc.add(GetShoppingListEvent());
+                  }
+                }
+              }
+            }
+
+            if (state is RemoveShoppingListItemLoadingState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.productId == element1.productId) {
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = true;
+                    } else {
+                      element1.isRemoveUpdated = true;
+                    }
+                  }
+                }
+              }
+            }
+
+            if (state is RemoveShoppingListItemErrorState) {
+              for (var element in restaurantMenu!.categories!) {
+                for (var element1 in element.menuItemList!) {
+                  if (state.productId == element1.productId) {
+                    if (isAddUpdate == true) {
+                      element1.isAddUpdated = false;
+                    } else {
+                      element1.isRemoveUpdated = false;
+                    }
+
+                    isAddUpdate = false;
+                  }
+                }
+              }
             }
           },
           builder: (context, state) {
@@ -425,9 +537,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                         priceValue = value;
                                                       });
 
-                                                      print(
-                                                          '----->>>>$priceValue');
-
                                                       /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
                                                       //
                                                       // else {
@@ -601,33 +710,56 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                         100))
                                                         ? GestureDetector(
                                                             onTap: () {
-                                                              Get.to(
-                                                                () =>
-                                                                    RestaurantMealDetails(
-                                                                  mealName: restaurantMenu!
-                                                                      .categories![
-                                                                          select]
-                                                                      .menuItemList![
-                                                                          index]
-                                                                      .name!,
-                                                                  mealImage: restaurantMenu!
-                                                                      .categories![
-                                                                          select]
-                                                                      .menuItemList![
-                                                                          index]
-                                                                      .image!,
-                                                                  data: restaurantMenu!
-                                                                      .categories![
-                                                                          select]
-                                                                      .menuItemList![index],
-                                                                  restaurantId:
-                                                                      widget
-                                                                          .restaurantId,
-                                                                ),
-                                                                transition:
-                                                                    Transition
-                                                                        .fadeIn,
-                                                              );
+                                                              for (var element
+                                                                  in cartData) {
+                                                                if (element
+                                                                        .productId ==
+                                                                    restaurantMenu!
+                                                                        .categories![
+                                                                            select]
+                                                                        .menuItemList![
+                                                                            index]
+                                                                        .productId) {
+                                                                  selectedCartData =
+                                                                      element;
+                                                                }
+                                                              }
+
+                                                              selectedCartData ==
+                                                                      null
+                                                                  ? Get.to(
+                                                                          () =>
+                                                                              RestaurantMealDetails(
+                                                                                data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                restaurantId: widget.restaurantId,
+                                                                              ),
+                                                                          transition: Transition
+                                                                              .fadeIn)!
+                                                                      .then(
+                                                                          (value) {
+                                                                      if (value ==
+                                                                          true) {
+                                                                        restaurantBloc
+                                                                            .add(GetShoppingListEvent());
+                                                                      }
+                                                                    })
+                                                                  : Get.to(
+                                                                          () =>
+                                                                              RestaurantMealDetails(
+                                                                                data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                restaurantId: widget.restaurantId,
+                                                                                shoppingListData: selectedCartData,
+                                                                              ),
+                                                                          transition: Transition
+                                                                              .fadeIn)!
+                                                                      .then(
+                                                                          (value) {
+                                                                      if (value ==
+                                                                          true) {
+                                                                        restaurantBloc
+                                                                            .add(GetShoppingListEvent());
+                                                                      }
+                                                                    });
                                                             },
                                                             child: Column(
                                                               children: [
@@ -722,14 +854,38 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                           GestureDetector(
                                                                             onTap:
                                                                                 () async {
-                                                                              await Get.to(
-                                                                                () => RestaurantMenuDetailsScreen(
-                                                                                  data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                  restaurantId: widget.restaurantId,
-                                                                                ),
-                                                                                transition: Transition.fadeIn,
-                                                                              )!
-                                                                                  .then((value) {});
+                                                                              for (var element in cartData) {
+                                                                                if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                                  selectedCartData = element;
+                                                                                }
+                                                                              }
+
+                                                                              selectedCartData == null
+                                                                                  ? await Get.to(
+                                                                                      () => RestaurantMenuDetailsScreen(
+                                                                                        data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                        restaurantId: widget.restaurantId,
+                                                                                      ),
+                                                                                      transition: Transition.fadeIn,
+                                                                                    )!
+                                                                                      .then((value) {
+                                                                                      if (value == true) {
+                                                                                        restaurantBloc.add(GetShoppingListEvent());
+                                                                                      }
+                                                                                    })
+                                                                                  : await Get.to(
+                                                                                      () => RestaurantMenuDetailsScreen(
+                                                                                        data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                        restaurantId: widget.restaurantId,
+                                                                                        shoppingListData: selectedCartData,
+                                                                                      ),
+                                                                                      transition: Transition.fadeIn,
+                                                                                    )!
+                                                                                      .then((value) {
+                                                                                      if (value == true) {
+                                                                                        restaurantBloc.add(GetShoppingListEvent());
+                                                                                      }
+                                                                                    });
                                                                             },
                                                                             child:
                                                                                 Image.asset(
@@ -773,30 +929,64 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                           mainAxisAlignment:
                                                                               MainAxisAlignment.spaceBetween,
                                                                           children: [
-                                                                            Text('\$${restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100}',
+                                                                            Text('\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
                                                                                 style: FontUtils.h18(fontColor: const Color(0xff010101), fontWeight: FWT.semiBold)),
                                                                             Row(
                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                               children: [
                                                                                 GestureDetector(
                                                                                   onTap: () {
-                                                                                    // if (item !=
-                                                                                    //     0) {
-                                                                                    //   setState(
-                                                                                    //       () {
-                                                                                    //     item--;
-                                                                                    //   });
-                                                                                    // }
+                                                                                    for (var element in cartData) {
+                                                                                      if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                                        isRemoveUpdate = true;
+
+                                                                                        if (restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1) {
+                                                                                        } else {
+                                                                                          restaurantBloc.add(
+                                                                                            UpdateRestaurantCartEvent(
+                                                                                              updateItemList: UpdateRestaurantItemsToShoppingListModel(
+                                                                                                productName: element.productName ?? '',
+                                                                                                oldProductId: element.productId ?? '',
+                                                                                                newProductId: '',
+                                                                                                quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
+                                                                                                price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
+                                                                                                itemOptions: element.options ?? [],
+                                                                                                productType: element.productType ?? 'Restaurant',
+                                                                                                mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
+                                                                                                unitOfMeasurement: element.unitOfMeasurement ?? '',
+                                                                                                recipeId: element.recipeId ?? '',
+                                                                                                userId: element.userId ?? userId,
+                                                                                                brandName: element.brandName ?? '',
+                                                                                                isChecked: element.isChecked ?? false,
+                                                                                                unitSize: element.unitSize ?? 0,
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                        }
+                                                                                      }
+                                                                                    }
                                                                                   },
                                                                                   child: Container(
                                                                                     height: size.height * 0.060,
                                                                                     width: size.height * 0.060,
                                                                                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.terracotta)),
-                                                                                    child: const Center(
-                                                                                      child: Icon(
-                                                                                        Icons.remove,
-                                                                                        color: AppColors.terracotta,
-                                                                                      ),
+                                                                                    child: Center(
+                                                                                      child: restaurantMenu!.categories![select].menuItemList![index].isRemoveUpdated == true
+                                                                                          ? Transform.scale(
+                                                                                              scale: 0.5,
+                                                                                              child: const CircularProgressIndicator(
+                                                                                                color: AppColors.terracotta,
+                                                                                              ),
+                                                                                            )
+                                                                                          : restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1
+                                                                                              ? SvgPicture.asset(
+                                                                                                  AssetsUtils.icDelete,
+                                                                                                  color: AppColors.terracotta,
+                                                                                                )
+                                                                                              : const Icon(
+                                                                                                  Icons.remove,
+                                                                                                  color: AppColors.terracotta,
+                                                                                                ),
                                                                                     ),
                                                                                     // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                                                   ),
@@ -818,10 +1008,32 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                 SizedBox(width: 8.w),
                                                                                 GestureDetector(
                                                                                   onTap: () {
-                                                                                    // setState(
-                                                                                    //     () {
-                                                                                    //   item++;
-                                                                                    // });
+                                                                                    for (var element in cartData) {
+                                                                                      if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                                        isAddUpdate = true;
+
+                                                                                        restaurantBloc.add(
+                                                                                          UpdateRestaurantCartEvent(
+                                                                                            updateItemList: UpdateRestaurantItemsToShoppingListModel(
+                                                                                              productName: element.productName ?? '',
+                                                                                              oldProductId: element.productId ?? '',
+                                                                                              newProductId: '',
+                                                                                              quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
+                                                                                              price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
+                                                                                              itemOptions: element.options ?? [],
+                                                                                              productType: element.productType ?? 'Restaurant',
+                                                                                              mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
+                                                                                              unitOfMeasurement: element.unitOfMeasurement ?? '',
+                                                                                              recipeId: element.recipeId ?? '',
+                                                                                              userId: element.userId ?? userId,
+                                                                                              brandName: element.brandName ?? '',
+                                                                                              isChecked: element.isChecked ?? false,
+                                                                                              unitSize: element.unitSize ?? 0,
+                                                                                            ),
+                                                                                          ),
+                                                                                        );
+                                                                                      }
+                                                                                    }
                                                                                   },
                                                                                   child: Container(
                                                                                     height: size.height * 0.060,
@@ -830,8 +1042,18 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                       borderRadius: BorderRadius.circular(6),
                                                                                       color: AppColors.coral,
                                                                                     ),
-                                                                                    child: const Center(
-                                                                                      child: Icon(Icons.add, size: 27, color: AppColors.terracotta),
+                                                                                    child: Center(
+                                                                                      child: restaurantMenu!.categories![select].menuItemList![index].isAddUpdated == true
+                                                                                          ? Transform.scale(
+                                                                                              scale: 0.5,
+                                                                                              child: const CircularProgressIndicator(
+                                                                                                color: AppColors.terracotta,
+                                                                                              ))
+                                                                                          : const Icon(
+                                                                                              Icons.add,
+                                                                                              size: 27,
+                                                                                              color: AppColors.terracotta,
+                                                                                            ),
                                                                                     ),
                                                                                   ),
                                                                                 ),
@@ -854,32 +1076,66 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                         : const SizedBox()
                                                     : GestureDetector(
                                                         onTap: () {
-                                                          Get.to(
-                                                            () =>
-                                                                RestaurantMealDetails(
-                                                              mealName: restaurantMenu!
-                                                                  .categories![
-                                                                      select]
-                                                                  .menuItemList![
-                                                                      index]
-                                                                  .name!,
-                                                              mealImage: restaurantMenu!
-                                                                  .categories![
-                                                                      select]
-                                                                  .menuItemList![
-                                                                      index]
-                                                                  .image!,
-                                                              data: restaurantMenu!
-                                                                  .categories![
-                                                                      select]
-                                                                  .menuItemList![index],
-                                                              restaurantId: widget
-                                                                  .restaurantId,
-                                                            ),
-                                                            transition:
-                                                                Transition
-                                                                    .fadeIn,
-                                                          );
+                                                          for (var element
+                                                              in cartData) {
+                                                            if (element
+                                                                    .productId ==
+                                                                restaurantMenu!
+                                                                    .categories![
+                                                                        select]
+                                                                    .menuItemList![
+                                                                        index]
+                                                                    .productId) {
+                                                              selectedCartData =
+                                                                  element;
+                                                            }
+                                                          }
+
+                                                          selectedCartData ==
+                                                                  null
+                                                              ? Get.to(
+                                                                      () =>
+                                                                          RestaurantMealDetails(
+                                                                            data:
+                                                                                restaurantMenu!.categories![select].menuItemList![index],
+                                                                            restaurantId:
+                                                                                widget.restaurantId,
+                                                                          ),
+                                                                      transition:
+                                                                          Transition
+                                                                              .fadeIn)!
+                                                                  .then(
+                                                                      (value) {
+                                                                  if (value ==
+                                                                      true) {
+                                                                    restaurantBloc
+                                                                        .add(
+                                                                            GetShoppingListEvent());
+                                                                  }
+                                                                })
+                                                              : Get.to(
+                                                                      () =>
+                                                                          RestaurantMealDetails(
+                                                                            data:
+                                                                                restaurantMenu!.categories![select].menuItemList![index],
+                                                                            restaurantId:
+                                                                                widget.restaurantId,
+                                                                            shoppingListData:
+                                                                                selectedCartData,
+                                                                          ),
+                                                                      transition:
+                                                                          Transition
+                                                                              .fadeIn)!
+                                                                  .then(
+                                                                      (value) {
+                                                                  if (value ==
+                                                                      true) {
+                                                                    restaurantBloc
+                                                                        .add(
+                                                                      GetShoppingListEvent(),
+                                                                    );
+                                                                  }
+                                                                });
                                                         },
                                                         child: Column(
                                                           children: [
@@ -1009,21 +1265,40 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                       GestureDetector(
                                                                         onTap:
                                                                             () async {
-                                                                          await Get.to(
-                                                                            () =>
-                                                                                RestaurantMenuDetailsScreen(
-                                                                              data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                              restaurantId: widget.restaurantId,
-                                                                            ),
-                                                                            transition:
-                                                                                Transition.fadeIn,
-                                                                          )!
-                                                                              .then((value) {
-                                                                            if (value ==
-                                                                                true) {
-                                                                              restaurantBloc.add(GetShoppingListEvent());
+                                                                          for (var element
+                                                                              in cartData) {
+                                                                            if (element.productId ==
+                                                                                restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                              selectedCartData = element;
                                                                             }
-                                                                          });
+                                                                          }
+
+                                                                          selectedCartData == null
+                                                                              ? await Get.to(
+                                                                                  () => RestaurantMenuDetailsScreen(
+                                                                                    data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                    restaurantId: widget.restaurantId,
+                                                                                  ),
+                                                                                  transition: Transition.fadeIn,
+                                                                                )!
+                                                                                  .then((value) {
+                                                                                  if (value == true) {
+                                                                                    restaurantBloc.add(GetShoppingListEvent());
+                                                                                  }
+                                                                                })
+                                                                              : await Get.to(
+                                                                                  () => RestaurantMenuDetailsScreen(
+                                                                                    data: restaurantMenu!.categories![select].menuItemList![index],
+                                                                                    restaurantId: widget.restaurantId,
+                                                                                    shoppingListData: selectedCartData,
+                                                                                  ),
+                                                                                  transition: Transition.fadeIn,
+                                                                                )!
+                                                                                  .then((value) {
+                                                                                  if (value == true) {
+                                                                                    restaurantBloc.add(GetShoppingListEvent());
+                                                                                  }
+                                                                                });
                                                                         },
                                                                         child: Image
                                                                             .asset(
@@ -1079,7 +1354,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                               .spaceBetween,
                                                                       children: [
                                                                         Text(
-                                                                            '\$${restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100}',
+                                                                            '\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
                                                                             style:
                                                                                 FontUtils.h18(fontColor: const Color(0xff010101), fontWeight: FWT.semiBold)),
                                                                         Row(
@@ -1088,23 +1363,58 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                           children: [
                                                                             GestureDetector(
                                                                               onTap: () {
-                                                                                // if (item !=
-                                                                                //     0) {
-                                                                                //   setState(
-                                                                                //       () {
-                                                                                //     item--;
-                                                                                //   });
-                                                                                // }
+                                                                                for (var element in cartData) {
+                                                                                  if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                                    isRemoveUpdate = true;
+
+                                                                                    if (restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1) {
+                                                                                      restaurantBloc.add(RemoveShoppingListItemEvent(productID: restaurantMenu!.categories![select].menuItemList![index].productId!));
+                                                                                    } else {
+                                                                                      restaurantBloc.add(
+                                                                                        UpdateRestaurantCartEvent(
+                                                                                          updateItemList: UpdateRestaurantItemsToShoppingListModel(
+                                                                                            productName: element.productName ?? '',
+                                                                                            oldProductId: element.productId ?? '',
+                                                                                            newProductId: '',
+                                                                                            quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
+                                                                                            price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
+                                                                                            itemOptions: element.options ?? [],
+                                                                                            productType: element.productType ?? 'Restaurant',
+                                                                                            mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
+                                                                                            unitOfMeasurement: element.unitOfMeasurement ?? '',
+                                                                                            recipeId: element.recipeId ?? '',
+                                                                                            userId: element.userId ?? userId,
+                                                                                            brandName: element.brandName ?? '',
+                                                                                            isChecked: element.isChecked ?? false,
+                                                                                            unitSize: element.unitSize ?? 0,
+                                                                                          ),
+                                                                                        ),
+                                                                                      );
+                                                                                    }
+                                                                                  }
+                                                                                }
                                                                               },
                                                                               child: Container(
                                                                                 height: size.height * 0.060,
                                                                                 width: size.height * 0.060,
                                                                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.terracotta)),
-                                                                                child: const Center(
-                                                                                  child: Icon(
-                                                                                    Icons.remove,
-                                                                                    color: AppColors.terracotta,
-                                                                                  ),
+                                                                                child: Center(
+                                                                                  child: restaurantMenu!.categories![select].menuItemList![index].isRemoveUpdated == true
+                                                                                      ? Transform.scale(
+                                                                                          scale: 0.5,
+                                                                                          child: const CircularProgressIndicator(
+                                                                                            color: AppColors.terracotta,
+                                                                                          ),
+                                                                                        )
+                                                                                      : restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1
+                                                                                          ? SvgPicture.asset(
+                                                                                              AssetsUtils.icDelete,
+                                                                                              color: AppColors.terracotta,
+                                                                                            )
+                                                                                          : const Icon(
+                                                                                              Icons.remove,
+                                                                                              color: AppColors.terracotta,
+                                                                                            ),
                                                                                 ),
                                                                                 // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                                               ),
@@ -1126,10 +1436,32 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                             SizedBox(width: 8.w),
                                                                             GestureDetector(
                                                                               onTap: () {
-                                                                                // setState(
-                                                                                //     () {
-                                                                                //   item++;
-                                                                                // });
+                                                                                for (var element in cartData) {
+                                                                                  if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
+                                                                                    isAddUpdate = true;
+
+                                                                                    restaurantBloc.add(
+                                                                                      UpdateRestaurantCartEvent(
+                                                                                        updateItemList: UpdateRestaurantItemsToShoppingListModel(
+                                                                                          productName: element.productName ?? '',
+                                                                                          oldProductId: element.productId ?? '',
+                                                                                          newProductId: '',
+                                                                                          quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
+                                                                                          price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
+                                                                                          itemOptions: element.options ?? [],
+                                                                                          productType: element.productType ?? 'Restaurant',
+                                                                                          mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
+                                                                                          unitOfMeasurement: element.unitOfMeasurement ?? '',
+                                                                                          recipeId: element.recipeId ?? '',
+                                                                                          userId: element.userId ?? userId,
+                                                                                          brandName: element.brandName ?? '',
+                                                                                          isChecked: element.isChecked ?? false,
+                                                                                          unitSize: element.unitSize ?? 0,
+                                                                                        ),
+                                                                                      ),
+                                                                                    );
+                                                                                  }
+                                                                                }
                                                                               },
                                                                               child: Container(
                                                                                 height: size.height * 0.060,
@@ -1138,8 +1470,18 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                   borderRadius: BorderRadius.circular(6),
                                                                                   color: AppColors.coral,
                                                                                 ),
-                                                                                child: const Center(
-                                                                                  child: Icon(Icons.add, size: 27, color: AppColors.terracotta),
+                                                                                child: Center(
+                                                                                  child: restaurantMenu!.categories![select].menuItemList![index].isAddUpdated == true
+                                                                                      ? Transform.scale(
+                                                                                          scale: 0.5,
+                                                                                          child: const CircularProgressIndicator(
+                                                                                            color: AppColors.terracotta,
+                                                                                          ))
+                                                                                      : const Icon(
+                                                                                          Icons.add,
+                                                                                          size: 27,
+                                                                                          color: AppColors.terracotta,
+                                                                                        ),
                                                                                 ),
                                                                               ),
                                                                             ),
@@ -1172,7 +1514,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               onTap: () {},
                                               buttonLable: 'View Cart',
                                               isFillColor: true,
-                                              selectedItemCount: cartCount,
+                                              selectedItemCount:
+                                                  cartData.length,
                                             ),
                                           )
                                         : const SizedBox()

@@ -45,11 +45,12 @@ class GetShoppingListData {
 }
 
 class ShoppingListData {
+  String? id;
   String? userId;
   String? productId;
   String? productName;
   int? quantity;
-  double? price;
+  dynamic price;
   dynamic unitSize;
   String? unitOfMeasurement;
   String? recipeId;
@@ -57,18 +58,10 @@ class ShoppingListData {
   bool? isChecked;
   dynamic brandName;
   String? productType;
-  dynamic options;
-  String? id;
-  dynamic createdBy;
-  String? createdOn;
-  dynamic updatedBy;
-  dynamic updatedOn;
-  bool? isActive;
-  bool? isDeleted;
-  dynamic userCreatedBy;
-  dynamic userUpdatedBy;
+  List<Option>? options;
 
   ShoppingListData({
+    this.id,
     this.userId,
     this.productId,
     this.productName,
@@ -82,19 +75,11 @@ class ShoppingListData {
     this.brandName,
     this.productType,
     this.options,
-    this.id,
-    this.createdBy,
-    this.createdOn,
-    this.updatedBy,
-    this.updatedOn,
-    this.isActive,
-    this.isDeleted,
-    this.userCreatedBy,
-    this.userUpdatedBy,
   });
 
   factory ShoppingListData.fromJson(Map<String, dynamic> json) =>
       ShoppingListData(
+        id: json["id"],
         userId: json["userId"],
         productId: json["productId"],
         productName: json["productName"],
@@ -107,19 +92,14 @@ class ShoppingListData {
         isChecked: json["isChecked"],
         brandName: json["brandName"],
         productType: json["productType"],
-        options: json["options"],
-        id: json["id"],
-        createdBy: json["createdBy"],
-        createdOn: json["createdOn"],
-        updatedBy: json["updatedBy"],
-        updatedOn: json["updatedOn"],
-        isActive: json["isActive"],
-        isDeleted: json["isDeleted"],
-        userCreatedBy: json["userCreatedBy"],
-        userUpdatedBy: json["userUpdatedBy"],
+        options: json["options"] == null
+            ? []
+            : List<Option>.from(
+                json["options"]!.map((x) => Option.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "userId": userId,
         "productId": productId,
         "productName": productName,
@@ -132,15 +112,40 @@ class ShoppingListData {
         "isChecked": isChecked,
         "brandName": brandName,
         "productType": productType,
-        "options": options,
+        "options": options == null
+            ? []
+            : List<dynamic>.from(options!.map((x) => x.toJson())),
+      };
+}
+
+class Option {
+  String? id;
+  String? optionId;
+  int? quantity;
+  int? markedPrice;
+  String? productId;
+
+  Option({
+    this.id,
+    this.optionId,
+    this.quantity,
+    this.markedPrice,
+    this.productId,
+  });
+
+  factory Option.fromJson(Map<String, dynamic> json) => Option(
+        id: json["id"],
+        optionId: json["optionId"],
+        quantity: json["quantity"],
+        markedPrice: json["marked_price"],
+        productId: json["productId"],
+      );
+
+  Map<String, dynamic> toJson() => {
         "id": id,
-        "createdBy": createdBy,
-        "createdOn": createdOn,
-        "updatedBy": updatedBy,
-        "updatedOn": updatedOn,
-        "isActive": isActive,
-        "isDeleted": isDeleted,
-        "userCreatedBy": userCreatedBy,
-        "userUpdatedBy": userUpdatedBy,
+        "optionId": optionId,
+        "quantity": quantity,
+        "marked_price": markedPrice,
+        "productId": productId,
       };
 }

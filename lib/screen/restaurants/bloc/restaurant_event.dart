@@ -1,4 +1,5 @@
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 
 abstract class RestaurantEvent {}
 
@@ -73,9 +74,27 @@ class GetCousinesEvent extends RestaurantEvent {
 }
 
 /// Add to Cart Event ===============================================================
+
 class AddRestaurantCartEvent extends RestaurantEvent {
   final List<AddRestaurantItemsToShoppingListModel> addItemsList;
   AddRestaurantCartEvent({required this.addItemsList});
 }
 
+/// Update Cart Event ===============================================================
+
+class UpdateRestaurantCartEvent extends RestaurantEvent {
+  final UpdateRestaurantItemsToShoppingListModel updateItemList;
+  UpdateRestaurantCartEvent({required this.updateItemList});
+}
+
+/// Get Cart Event ===============================================================
+
 class GetShoppingListEvent extends RestaurantEvent {}
+
+/// Remove Shopping List Item Event ===============================================================
+
+class RemoveShoppingListItemEvent extends RestaurantEvent {
+  final String productID;
+
+  RemoveShoppingListItemEvent({required this.productID});
+}
