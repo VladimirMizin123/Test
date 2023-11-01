@@ -1,17 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
-import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/update_diet_program_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 
@@ -25,7 +19,7 @@ class AccountRepository {
   Future<Either<ErrorModel, GetAllProgramsResponseModel>>
       getAllProgramData() async {
     final response = await apiServices.get(
-      '${ApiUrls.getProgramData}',
+      ApiUrls.getProgramData,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -51,6 +45,24 @@ class AccountRepository {
     } else if (response.statusCode == 400) {
       return Right(
           getProgramInfoResponseModelFromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Update Programs Info ====================================================================
+
+  Future<Either<ErrorModel, UpdateDietProgramResponseModel>>
+      updateDietProgramInfo({String programId = ''}) async {
+    final response = await apiServices.put(
+        '${ApiUrls.updateDietProgramByProgramId}$userID?programId=$programId',
+        {});
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(updateDietProgramResponseModelFromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(
+          updateDietProgramResponseModelFromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

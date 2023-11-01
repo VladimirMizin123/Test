@@ -329,7 +329,7 @@ class _GetUserAddressState extends State<GetUserAddress>
           ///streetName
 
           List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'sublocality_level_3')
+                  ?.where((element1) => element1 == 'sublocality_level_2')
                   .toList() ??
               [];
 

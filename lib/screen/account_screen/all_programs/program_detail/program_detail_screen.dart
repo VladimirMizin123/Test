@@ -74,6 +74,9 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
             if (state is GetProgramInfoLoadingState) {
               return const AppCenterLoader();
             }
+            if (state is UpdateDietProgramLoadingState) {
+              return const AppCenterLoader();
+            }
 
             if (state is GetProgramInfoErrorState) {
               return Center(
@@ -394,19 +397,30 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                             ],
                           ),
                         ),
-                        buildButton(
-                                context: context,
-                                title: "Start New Program",
-                                onPressed: () {},
-                                textColor: AppColors.whiteColor,
-                                bgColor: AppColors.primaryBlueColor)
-                            .paddingOnly(left: 22.w, right: 22.w, top: 12.h),
+                        BlocConsumer(
+                          bloc: accountBloc,
+                          builder: (context, state) {
+                            return buildButton(
+                                    context: context,
+                                    title: "Start New Program",
+                                    onPressed: () {
+                                      accountBloc.add(UpdateProgramDietEvent(
+                                          widget.programId));
+                                    },
+                                    textColor: AppColors.whiteColor,
+                                    bgColor: AppColors.primaryBlueColor)
+                                .paddingOnly(
+                                    left: 22.w, right: 22.w, top: 12.h);
+                          },
+                          listener: (context, state) {},
+                        )
                       ],
                     ),
                   ],
                 ),
               );
             }
+
             return const Center(
               child: Text(
                 'No Data',
@@ -418,7 +432,11 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
               ),
             );
           },
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is UpdateDietProgramSuccessState) {
+              accountBloc.add(GetProgramInfoEvent(widget.programId));
+            }
+          },
         ),
       ),
     );

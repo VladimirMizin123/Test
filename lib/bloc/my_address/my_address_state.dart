@@ -1,9 +1,21 @@
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+
 abstract class MyAddressState {}
 
-// class InitialState extends MyAddressState {}
+class InitialState extends MyAddressState {}
 
-class RadioClickState extends MyAddressState {
-  final String? selectedState;
+class GetUserAddressLoadingState extends MyAddressState {}
 
-  RadioClickState({this.selectedState = 'Home'});
+class GetUserAddressSuccessState extends MyAddressState {
+  final List<UserAddress> userAddress;
+
+  GetUserAddressSuccessState({required this.userAddress});
+}
+
+class ErrorState extends MyAddressState {}
+
+class GetUserAddressErrorState extends MyAddressState {}
+
+class SetAddressPrimarySuccessState extends MyAddressState {
+  SetAddressPrimarySuccessState();
 }

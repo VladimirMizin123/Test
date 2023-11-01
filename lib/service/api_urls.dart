@@ -124,6 +124,9 @@ class ApiUrls {
   }
 
   static const String addNewAddress = '${baseUrl}api/UserAddress/AddNewAddress';
+
+  static const updateAddress = '${baseUrl}api/UserAddress/UpdateAddress';
+  static const deleteAddress = '${baseUrl}api/UserAddress/RemoveAddress';
   static const String addNewMeal =
       '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
@@ -154,6 +157,10 @@ class ApiUrls {
 
   static const String getUserAddress =
       '${baseUrl}api/UserAddress/GetAllUserAddress';
+
+  static const String setUserAddressPrimary =
+      '${baseUrl}api/UserAddress/SetPrimaryAddress';
+
   static const String getRestaurantList =
       '${baseUrl}api/MealMe/GetRestaurantsNearBy';
   // static const String getRestaurantMenuList =
@@ -168,4 +175,7 @@ class ApiUrls {
 
   static const String getProgramInfo =
       '${baseUrl}api/Suggestic/GetPrograminfo/';
+
+  static const String updateDietProgramByProgramId =
+      '${baseUrl}api/Suggestic/UpdateDietProgramByProgramId/';
 }

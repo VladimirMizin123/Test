@@ -20,25 +20,34 @@ Widget labelWidget({String? text, TextStyle? style}) {
   );
 }
 
-Widget commonTextFormField(
-    {String? hintText,
-    double? vertical,
-    double? horizontal,
-    double? width,
-    bool obscureText = false,
-    Widget? suffixIcon,
-    TextStyle? style,
-    String? initialValue,
-    Color? enableBorderColor,
-    TextStyle? hintStyle}) {
+Widget commonTextFormField({
+  String? hintText,
+  double? vertical,
+  double? horizontal,
+  double? width,
+  bool obscureText = false,
+  Widget? suffixIcon,
+  TextStyle? style,
+  String? initialValue,
+  Color? enableBorderColor,
+  TextStyle? hintStyle,
+  TextEditingController? textEditingController,
+  bool readOnly = false,
+  String? Function(String?)? validator,
+  VoidCallback? onTap,
+}) {
   return SizedBox(
     // width: 140.w,
     width: width,
     child: TextFormField(
+      validator: validator,
+      readOnly: readOnly,
       initialValue: initialValue,
+      controller: textEditingController,
       style: style,
       obscureText: obscureText,
       cursorColor: AppColors.primaryBlueColor,
+      onTap: onTap,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         hintStyle: hintStyle,

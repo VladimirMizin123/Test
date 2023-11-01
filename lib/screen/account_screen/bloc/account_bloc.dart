@@ -9,6 +9,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   AccountBloc() : super(InitialState()) {
     on<GetAllProgramEvent>(_onGetAllProgram);
     on<GetProgramInfoEvent>(_onGetProgramInfo);
+    on<UpdateProgramDietEvent>(_onUpdateDietProgramInfo);
   }
 
   final AccountRepository _repository = AccountRepository();
@@ -44,6 +45,24 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetProgramInfoErrorState(message: e.toString()));
+    }
+  }
+
+  /// Get All Program =================================================================
+  _onUpdateDietProgramInfo(
+      UpdateProgramDietEvent event, Emitter<AccountState> emit) async {
+    emit(UpdateDietProgramLoadingState());
+
+    try {
+      await _repository.updateDietProgramInfo(programId: event.programId).fold(
+          (left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(UpdateDietProgramSuccessState(message: right.message ?? ''));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateDietProgramErrorState(message: e.toString()));
     }
   }
 

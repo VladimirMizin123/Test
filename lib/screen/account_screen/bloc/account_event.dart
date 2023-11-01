@@ -11,3 +11,10 @@ class GetProgramInfoEvent extends AccountEvent {
 
   GetProgramInfoEvent(this.programId);
 }
+
+/// Update Program Diet Event ===============================================================
+class UpdateProgramDietEvent extends AccountEvent {
+  final String programId;
+
+  UpdateProgramDietEvent(this.programId);
+}
