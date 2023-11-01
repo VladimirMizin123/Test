@@ -218,10 +218,14 @@ class _RestaurantMenuDetailsScreenState
                     height: size.height * 0.45,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(widget.data.image ?? ''),
-                        fit: BoxFit.cover,
-                      ),
+                      image: widget.data.image == null ||
+                              widget.data.image!.isEmpty
+                          ? const DecorationImage(
+                              image: AssetImage(AssetsUtils.food3),
+                              fit: BoxFit.cover)
+                          : DecorationImage(
+                              image: NetworkImage(widget.data.image!),
+                              fit: BoxFit.cover),
                     ),
                     child: Align(
                       alignment: Alignment.topLeft,

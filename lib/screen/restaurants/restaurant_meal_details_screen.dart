@@ -158,7 +158,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(8),
-                                          image: widget.data.image!.isEmpty
+                                          image: widget.data.image == null ||
+                                                  widget.data.image!.isEmpty
                                               ? const DecorationImage(
                                                   image: AssetImage(
                                                       AssetsUtils.food3),

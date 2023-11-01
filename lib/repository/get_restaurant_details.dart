@@ -188,6 +188,11 @@ class RestaurantRepository {
       ApiUrls.updateShoppingList,
       updateItemsToShoppingList,
     );
+
+    log('updateItemsToShoppingList---------->>>>>> ${updateItemsToShoppingList.itemOptions}');
+
+    log('response.statusCode---------->>>>>> ${response.statusCode}');
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
