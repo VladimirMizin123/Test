@@ -113,6 +113,11 @@ class MenuItemList {
   bool? shouldFetchCustomizations;
   bool? supportsImageScaling;
   String? highLightedColor;
+  int? cartQuantity;
+  dynamic cartPrice;
+  bool isAdded;
+  bool isAddUpdated;
+  bool isRemoveUpdated;
 
   MenuItemList({
     this.name,
@@ -133,6 +138,11 @@ class MenuItemList {
     this.shouldFetchCustomizations,
     this.supportsImageScaling,
     this.highLightedColor,
+    this.cartQuantity = 0,
+    this.cartPrice = 0,
+    this.isAdded = false,
+    this.isAddUpdated = false,
+    this.isRemoveUpdated = false,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(

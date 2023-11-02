@@ -14,26 +14,32 @@ String addItemsToShoppingListModalToJson(
     json.encode(data.toJson());
 
 class AddRestaurantItemsToShoppingListModel {
-  final String productId;
-  final String productName;
-  final int quantity;
-  final int price;
-  final int unitSize;
-  final String unitOfMeasurement;
-  final String recipeId;
-  final bool isChecked;
-  final String mealmeStoreId;
+  final String? productId;
+  final String? productName;
+  final int? quantity;
+  final dynamic price;
+  final int? unitSize;
+  final String? unitOfMeasurement;
+  final String? recipeId;
+  final bool? isChecked;
+  final String? mealmeStoreId;
+  final List<Map<String, dynamic>>? options;
+  final String? productType;
+  final String? brandName;
 
   AddRestaurantItemsToShoppingListModel({
-    required this.productId,
-    required this.productName,
-    required this.quantity,
-    required this.price,
-    required this.unitSize,
-    required this.unitOfMeasurement,
-    required this.recipeId,
-    required this.isChecked,
-    required this.mealmeStoreId,
+    this.productId,
+    this.productName,
+    this.quantity,
+    this.price,
+    this.unitSize,
+    this.unitOfMeasurement,
+    this.recipeId,
+    this.isChecked,
+    this.mealmeStoreId,
+    this.options,
+    this.productType,
+    this.brandName,
   });
 
   factory AddRestaurantItemsToShoppingListModel.fromJson(
@@ -48,6 +54,9 @@ class AddRestaurantItemsToShoppingListModel {
         recipeId: json["recipeId"],
         isChecked: json["isChecked"],
         mealmeStoreId: json["mealmeStoreId"],
+        options: json["options"],
+        productType: json["productType"],
+        brandName: json["brandName"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -60,5 +69,8 @@ class AddRestaurantItemsToShoppingListModel {
         "recipeId": recipeId,
         "isChecked": isChecked,
         "mealmeStoreId": mealmeStoreId,
+        "options": options,
+        "productType": productType,
+        "brandName": brandName,
       };
 }

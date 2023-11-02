@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/change_password/change_password_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/bottom_sheet_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
+
+import '../../../widget/svg_image.dart';
+
+class SettingScreen extends StatefulWidget {
+  const SettingScreen({super.key});
+
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  List settingDataList = [
+    {
+      "image": AssetsUtils.lock,
+      "title": "Change password",
+      "color": AppColors.disable,
+      "image1": AssetsUtils.forwardArrow,
+      "screen": ChangePasswordScreen(),
+    },
+    {
+      "image": AssetsUtils.unit,
+      "title": "Units",
+      "color": AppColors.disable,
+      "image1": AssetsUtils.forwardArrow,
+      "screen": UnitScreen(),
+    },
+    {
+      "image": AssetsUtils.notificationIcn,
+      "title": "Notifications",
+      "color": AppColors.disable,
+      "image1": AssetsUtils.logOut,
+      "screen": ChangePasswordScreen(),
+    },
+    {
+      "image": AssetsUtils.icGps,
+      "title": "GPS",
+      "color": AppColors.transparentColor,
+      "image1": AssetsUtils.logOut,
+      "screen": ChangePasswordScreen(),
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.whiteColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AccountTitleWidget(
+                title: "Settings",
+                widget: accountScreenListWidget(
+                  children: List.generate(
+                    settingDataList.length,
+                    (index) {
+                      var data = settingDataList[index];
+                      return accountScreenDataWidget(
+                        onTap: () {
+                          print("data");
+                          Get.to(data["screen"]);
+                        },
+                        color: data["color"],
+                        leading: SvgImage(image: data["image"]),
+                        title: Text(data["title"]),
+                        trailing: SvgImage(image: data["image1"]),
+                      );
+                    },
+                  ),
+                ).paddingOnly(top: 150.h, right: 23.w, left: 23.w),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                              30.w,
+                            ),
+                            topRight: Radius.circular(30.w)),
+                      ),
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 300,
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(30.w),
+                              topLeft: Radius.circular(30.w),
+                            ),
+                          ),
+                          child: bottomSheetWidget(
+                            buttonWidget: Container(
+                              height: 60,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  /*Container(
+                                    width: 30,
+                                    color: Colors.yellow,
+                                  )*/
+                                  Container(
+                                    width: 145.w,
+                                    child: buildButton(
+                                        context: context,
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: "Delete",
+                                        textColor: AppColors.whiteColor,
+                                        bgColor: AppColors.primaryBlueColor),
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  Container(
+                                    width: 145.w,
+                                    child: buildBorderButton(
+                                        context: context,
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: "Delete",
+                                        textColor: AppColors.primaryBlueColor,
+                                        bgColor: AppColors.whiteColor,
+                                        borderColor:
+                                            AppColors.primaryBlueColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Delete Account",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.darkGray),
+                  ),
+                ),
+              ).paddingOnly(top: 250.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

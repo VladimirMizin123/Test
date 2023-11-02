@@ -176,8 +176,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       transition: Transition.fadeIn,
                       arguments: {"string": 'isFromCheckout', "userData": ''});
                 } else {
-                  showLogIntakeBottomSheet();
-
                   /// address is primary then primary will be taken
                   for (var i = 0; i < state.userAddress.length; i++) {
                     if (state.userAddress[i].isPrimary == true) {
@@ -188,6 +186,18 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
                   /// address is not primary then first will be taken
                   getUserAddress ??= state.userAddress[0];
+
+                  if (getUserAddress!.streetName.toString().isEmpty ||
+                      getUserAddress!.streetName == null) {
+                    Get.to(() => const GetUserAddress(),
+                        transition: Transition.fadeIn,
+                        arguments: {
+                          "string": 'isFromCheckout',
+                          "userData": ''
+                        });
+                  } else {
+                    showLogIntakeBottomSheet();
+                  }
                 }
                 getAddressLoadingState = false;
               }
@@ -213,7 +223,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               }
 
               /// Cousines State ----------------------------------------------------------
-
               if (state is GetCousinesListLoadingState) {
                 getCousinesLoadingState = true;
               }

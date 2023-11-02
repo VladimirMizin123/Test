@@ -1,6 +1,7 @@
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 abstract class RestaurantState {}
@@ -63,12 +64,76 @@ class GetCousinesListLoadingState extends RestaurantState {}
 
 class GetCousinesListErrorState extends RestaurantState {}
 
+///================================================================================================================
+
+/// Add Restaurant cart State
+
 class AddToRestaurantCartSuccessState extends RestaurantState {
   final bool isAdded;
-
-  AddToRestaurantCartSuccessState({required this.isAdded});
+  final dynamic data;
+  AddToRestaurantCartSuccessState({required this.isAdded, required this.data});
 }
 
 class AddToRestaurantCartLoadingState extends RestaurantState {}
 
 class AddToRestaurantCartErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Get Restaurant cart State
+
+class GetShoppingListSuccessState extends RestaurantState {
+  final List<ShoppingListData>? shoppingListData;
+
+  GetShoppingListSuccessState({this.shoppingListData});
+}
+
+class GetShoppingListLoadingState extends RestaurantState {}
+
+class GetShoppingListErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// update Restaurant cart State
+
+class UpdateToRestaurantCartSuccessState extends RestaurantState {
+  final bool isAdded;
+  final dynamic data;
+
+  UpdateToRestaurantCartSuccessState(
+      {required this.isAdded, required this.data});
+}
+
+class UpdateToRestaurantCartLoadingState extends RestaurantState {
+  final String productId;
+
+  UpdateToRestaurantCartLoadingState({required this.productId});
+}
+
+class UpdateToRestaurantCartErrorState extends RestaurantState {
+  final String productId;
+
+  UpdateToRestaurantCartErrorState({required this.productId});
+}
+
+///================================================================================================================
+
+/// Remove Restaurant cart State
+
+class RemoveShoppingListItemSuccessState extends RestaurantState {
+  final String productId;
+
+  RemoveShoppingListItemSuccessState({required this.productId});
+}
+
+class RemoveShoppingListItemLoadingState extends RestaurantState {
+  final String productId;
+
+  RemoveShoppingListItemLoadingState({required this.productId});
+}
+
+class RemoveShoppingListItemErrorState extends RestaurantState {
+  final String productId;
+
+  RemoveShoppingListItemErrorState({required this.productId});
+}

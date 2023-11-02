@@ -230,4 +230,54 @@ class StringUtils {
   static const deliveryTime = 'Delivery time: ';
   static const orderType = 'Order type: ';
   static const basedMeal = 'Based on your Meal Plan';
+  static const writeNewPassword = 'Write your new Password';
+  static const writePolicyInstructions =
+      "This Privacy Policy describes how we collect, use, and disclose your personal information when you visit our website or use our services. Please read this policy carefully to understand our practices regarding your personal data.";
+  static const policyInformationTitle1 = "Information We Collect";
+  static const policyInformationTitle2 = "Use of Information";
+  static const policy1 =
+      "We may collect various types of information from you, including:";
+  static const policy2 =
+      "We use the collected information for the following purposes:";
+  static const policyStep1 =
+      "Personal identification information (such as your name, email address, phone number, etc.) that you provide voluntarily when filling out forms or contacting us.";
+  static const policyStep2 =
+      "Usage information, including your IP address, browser type, operating system, and other technical information when you interact with our website or use our services.";
+  static const policyStep3 =
+      " Cookies and similar technologies to track your activity on our website and provide a personalized experience.";
+  static const policyInfo1 =
+      "To provide and improve our services, including customizing your experience and addressing your inquiries.";
+  static const policyInfo2 =
+      " To communicate with you regarding updates, offers, and promotional materials.";
+  static const policyInfo3 =
+      "To analyze and understand how our website and services are used, and to improve their functionality and performance. To comply with legal obligations and enforce our terms and conditions.";
+
+  static const writeTermsInstructions =
+      "These Terms and Conditions govern your use of our website and services. By accessing or using our website, you agree to be bound by these terms. If you do not agree with any part of these terms, you should not use our website.";
+
+  static const termsInformationTitle1 = "Intellectual Property";
+  static const termsInformationTitle2 = "User Responsibilities";
+
+  static const termsStep1 =
+      "All content and materials available on our website, including text, graphics, logos, images, videos, and software, are the property of our company and are protected by intellectual property laws. You may not use, reproduce, or distribute any of the content without our prior written consent.";
+
+  static const term2 = "When using our website or services, you agree to:";
+
+  static const termInfo1 = "Provide accurate and up-to-date information.";
+  static const termInfo2 = "Comply with all applicable laws and regulations.";
+  static const termInfo3 =
+      " Use our website and services for lawful purposes only and not engage in any illegal activities.";
+  static const termInfo4 =
+      "Not transmit any viruses, malware, or other malicious code.";
+  static const termInfo5 =
+      "Not interfere with or disrupt the functioning of our website or services";
+  static const aboutText1 =
+      "Welcome to our COVID-19 Immunity Boost Program.\nOne of the best ways to protect yourself from this illness is to make sure you have a strong defense system. With our Immunity Boost program, you'll see plenty of ways to do this through the food you eat.\nThe goal is to keep your inflammation down and bolster your immune system from the COVID-19 virus.";
+  static const aboutText2 =
+      "This 10-Day Grain Detox distills all the wisdom of the original Wheat Belly books, incorporating the most insightful, cutting-edge and effective strategies, and sharing them with you so that you can begin your path to weight and health success...in a short 10 days.";
+  static const eatMoreEagg =
+      "Eggs are little powerhouses of nutrition and are an important part of a successful grain-free lifestyle. We do not limit eggs, as the alarms over the potential cardiovascular risks of eggs have been confidently debunked. Choose cage-free, organic sources whenever possible or, even better, purchase them from a local source. If you are allergic to eggs from chickens, consider goose, duck, ostrich, or quail eggs, if available.";
+  static const deleteAccount = "Delete Account?";
+  static const deleteAccountInfo =
+      "Are you sure that you want to delete your account? You will lose all your stats and progress";
 }
