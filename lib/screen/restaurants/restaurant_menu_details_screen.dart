@@ -21,11 +21,12 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
-  const RestaurantMenuDetailsScreen(
-      {super.key,
-      required this.data,
-      required this.restaurantId,
-      this.shoppingListData});
+  const RestaurantMenuDetailsScreen({
+    super.key,
+    required this.data,
+    required this.restaurantId,
+    this.shoppingListData,
+  });
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
@@ -42,16 +43,22 @@ class _RestaurantMenuDetailsScreenState
   bool selectFirst = false;
   bool selectSecond = false;
   bool isAddUpdate = false;
+  bool customizationChange = false;
   Map<String, dynamic> selectedData = {};
+  List selectedOption = [];
   List data = [];
   List addApiData = [];
   List<Map<String, dynamic>> optionsList = [];
+  List<Map<String, dynamic>> secondOptionsList = [];
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
   bool isAdding = false;
 
   getData() async {
+    selectedOption.clear();
+    secondOptionsList.clear();
+    optionsList.clear();
     if (widget.data.customizations != null) {
       for (var element in widget.data.customizations!) {
         selectedData.addAll(
@@ -61,6 +68,15 @@ class _RestaurantMenuDetailsScreenState
         );
       }
     }
+
+    if (widget.shoppingListData != null) {
+      for (var element in widget.shoppingListData!.options!) {
+        selectedOption.add(element.optionId);
+      }
+    }
+
+    log('selectedOption---------->>>>>> ${selectedOption}');
+
     item = widget.data.cartQuantity!;
   }
 
@@ -81,7 +97,17 @@ class _RestaurantMenuDetailsScreenState
             bloc: restaurantBloc,
             listener: (context, state) {
               if (state is AddToRestaurantCartLoadingState) {
-                isAdding = true;
+                if (customizationChange == false) {
+                  isAdding = true;
+                } else {
+                  if (state.productId == widget.data.productId) {
+                    if (isAddUpdate == true) {
+                      widget.data.isAddUpdated = true;
+                    } else {
+                      widget.data.isRemoveUpdated = true;
+                    }
+                  }
+                }
               }
               if (state is AddToRestaurantCartSuccessState) {
                 widget.data.cartQuantity = state.data[0]['quantity'];
@@ -90,6 +116,18 @@ class _RestaurantMenuDetailsScreenState
                 isAdding = false;
 
                 addApiData = state.data;
+
+                if (state.data[0]['productId'] == widget.data.productId) {
+                  item = state.data[0]['quantity'];
+                  if (isAddUpdate == true) {
+                    widget.data.isAddUpdated = false;
+                  } else {
+                    widget.data.isRemoveUpdated = false;
+                  }
+                  isAddUpdate = false;
+                }
+
+                customizationChange = false;
 
                 // widget.shoppingListData?.productId = state.data[0]['productId'];
                 // widget.shoppingListData?.userId = state.data[0]['userId'];
@@ -111,7 +149,18 @@ class _RestaurantMenuDetailsScreenState
                 //     state.data[0]['productName'];
               }
               if (state is AddToRestaurantCartErrorState) {
-                isAdding = false;
+                if (customizationChange == false) {
+                  isAdding = false;
+                } else {
+                  if (state.productId == widget.data.productId) {
+                    if (isAddUpdate == true) {
+                      widget.data.isAddUpdated = true;
+                    } else {
+                      widget.data.isRemoveUpdated = true;
+                    }
+                  }
+                  customizationChange = false;
+                }
               }
 
               ///UpdateToRestaurantCart State ====================================================================
@@ -127,7 +176,6 @@ class _RestaurantMenuDetailsScreenState
                   } else {
                     widget.data.isRemoveUpdated = false;
                   }
-
                   isAddUpdate = false;
                 }
               }
@@ -157,38 +205,86 @@ class _RestaurantMenuDetailsScreenState
               ///Remove To RestaurantCart State ====================================================================
 
               if (state is RemoveShoppingListItemSuccessState) {
-                if (state.productId == widget.data.productId) {
-                  widget.data.cartQuantity = 0;
-                  widget.data.cartPrice = 0;
-                  item = 0;
-                  widget.data.isAdded = false;
-                  if (isAddUpdate == true) {
-                    widget.data.isAddUpdated = false;
+                log('customizationChange---------->>>>>> $customizationChange');
+
+                if (customizationChange == true) {
+                  price = widget.data.originalPrice;
+
+                  isAddUpdate == true
+                      ? item = widget.data.cartQuantity! + 1
+                      : item = widget.data.cartQuantity! - 1;
+
+                  if (price == 0) {
+                    for (var element in secondOptionsList) {
+                      price = price + element['marked_price'];
+                    }
+
+                    isAddUpdate == true
+                        ? price = price * item
+                        : price = price * item;
                   } else {
-                    widget.data.isRemoveUpdated = false;
+                    isAddUpdate == true
+                        ? price = price * item
+                        : price = price * item;
+
+                    for (var element in secondOptionsList) {
+                      price = price + element['marked_price'];
+                    }
                   }
 
-                  isAddUpdate = false;
-                }
+                  restaurantBloc.add(
+                    AddRestaurantCartEvent(
+                      addItemsList: [
+                        AddRestaurantItemsToShoppingListModel(
+                          productId: widget.data.productId ?? '',
+                          productName: widget.data.name ?? '',
+                          quantity: item,
+                          price: price,
+                          options: secondOptionsList,
+                          mealmeStoreId: widget.restaurantId,
+                          productType: 'Restaurant',
+                          isChecked: false,
+                          recipeId: '',
+                          unitOfMeasurement: '',
+                          unitSize: 0,
+                          brandName: '',
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  if (state.productId == widget.data.productId) {
+                    widget.data.cartQuantity = 0;
+                    widget.data.cartPrice = 0;
+                    item = 0;
+                    widget.data.isAdded = false;
+                    if (isAddUpdate == true) {
+                      widget.data.isAddUpdated = false;
+                    } else {
+                      widget.data.isRemoveUpdated = false;
+                    }
 
-                // for (var element in restaurantMenu!.categories!) {
-                //   for (var element1 in element.menuItemList!) {
-                //     if (state.productId == element1.productId) {
-                //       element1.cartQuantity = 0;
-                //       element1.cartPrice = 0;
-                //
-                //       if (isAddUpdate == true) {
-                //         element1.isAddUpdated = false;
-                //       } else {
-                //         element1.isRemoveUpdated = false;
-                //       }
-                //       element1.isAdded = false;
-                //       isAddUpdate = false;
-                //       restaurantBloc.add(GetShoppingListEvent());
-                //     }
-                //   }
-                // }
+                    isAddUpdate = false;
+                  }
+                }
               }
+              // for (var element in restaurantMenu!.categories!) {
+              //   for (var element1 in element.menuItemList!) {
+              //     if (state.productId == element1.productId) {
+              //       element1.cartQuantity = 0;
+              //       element1.cartPrice = 0;
+              //
+              //       if (isAddUpdate == true) {
+              //         element1.isAddUpdated = false;
+              //       } else {
+              //         element1.isRemoveUpdated = false;
+              //       }
+              //       element1.isAdded = false;
+              //       isAddUpdate = false;
+              //       restaurantBloc.add(GetShoppingListEvent());
+              //     }
+              //   }
+              // }
 
               if (state is RemoveShoppingListItemLoadingState) {
                 if (state.productId == widget.data.productId) {
@@ -394,6 +490,16 @@ class _RestaurantMenuDetailsScreenState
                                                     children: [
                                                       GestureDetector(
                                                         onTap: () {
+                                                          if (widget.data
+                                                                  .isAdded ==
+                                                              true) {
+                                                            selectedOption
+                                                                .clear();
+
+                                                            customizationChange =
+                                                                true;
+                                                          }
+
                                                           setState(() {
                                                             selectedData
                                                                 .forEach(
@@ -419,14 +525,20 @@ class _RestaurantMenuDetailsScreenState
                                                                             .options![index1]
                                                                             .name!);
 
-                                                                    optionsList.removeWhere((element) =>
-                                                                        element[
-                                                                            'option_id'] ==
-                                                                        widget
-                                                                            .data
-                                                                            .customizations?[index]
-                                                                            .options?[index1]
-                                                                            .optionId);
+                                                                    widget.data.isAdded ==
+                                                                            true
+                                                                        ? secondOptionsList.removeWhere((element) =>
+                                                                            element['option_id'] ==
+                                                                            widget
+                                                                                .data
+                                                                                .customizations?[
+                                                                                    index]
+                                                                                .options?[
+                                                                                    index1]
+                                                                                .optionId)
+                                                                        : optionsList.removeWhere((element) =>
+                                                                            element['option_id'] ==
+                                                                            widget.data.customizations?[index].options?[index1].optionId);
                                                                   } else {
                                                                     if (widget
                                                                             .data
@@ -438,43 +550,66 @@ class _RestaurantMenuDetailsScreenState
                                                                       value.removeAt(
                                                                           0);
 
-                                                                      for (var j =
-                                                                              0;
-                                                                          j < widget.data.customizations![index].options!.length;
-                                                                          j++) {
-                                                                        for (var i =
-                                                                                0;
-                                                                            i < optionsList.length;
-                                                                            i++) {
-                                                                          print(
-                                                                              'matched');
-                                                                          if (widget
+                                                                      if (widget
                                                                               .data
-                                                                              .customizations![index]
-                                                                              .options![j]
-                                                                              .optionId!
-                                                                              .contains(optionsList[i]['option_id'])) {
-                                                                            optionsList.removeAt(i);
+                                                                              .isAdded ==
+                                                                          true) {
+                                                                        for (var j =
+                                                                                0;
+                                                                            j < widget.data.customizations![index].options!.length;
+                                                                            j++) {
+                                                                          for (var i = 0;
+                                                                              i < secondOptionsList.length;
+                                                                              i++) {
+                                                                            if (widget.data.customizations![index].options![j].optionId!.contains(secondOptionsList[i]['option_id'])) {
+                                                                              secondOptionsList.removeAt(i);
 
-                                                                            break;
+                                                                              break;
+                                                                            }
                                                                           }
                                                                         }
-                                                                      }
 
-                                                                      /// add data in option list
-                                                                      optionsList
-                                                                          .add({
-                                                                        "option_id":
-                                                                            widget.data.customizations?[index].options?[index1].optionId ??
-                                                                                '',
-                                                                        "quantity":
-                                                                            1,
-                                                                        "marked_price": widget
-                                                                            .data
-                                                                            .customizations?[index]
-                                                                            .options?[index1]
-                                                                            .price
-                                                                      });
+                                                                        secondOptionsList
+                                                                            .add({
+                                                                          "option_id":
+                                                                              widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                          "quantity":
+                                                                              1,
+                                                                          "marked_price": widget
+                                                                              .data
+                                                                              .customizations?[index]
+                                                                              .options?[index1]
+                                                                              .price
+                                                                        });
+                                                                      } else {
+                                                                        for (var j =
+                                                                                0;
+                                                                            j < widget.data.customizations![index].options!.length;
+                                                                            j++) {
+                                                                          for (var i = 0;
+                                                                              i < optionsList.length;
+                                                                              i++) {
+                                                                            if (widget.data.customizations![index].options![j].optionId!.contains(optionsList[i]['option_id'])) {
+                                                                              optionsList.removeAt(i);
+
+                                                                              break;
+                                                                            }
+                                                                          }
+                                                                        }
+
+                                                                        optionsList
+                                                                            .add({
+                                                                          "option_id":
+                                                                              widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                          "quantity":
+                                                                              1,
+                                                                          "marked_price": widget
+                                                                              .data
+                                                                              .customizations?[index]
+                                                                              .options?[index1]
+                                                                              .price
+                                                                        });
+                                                                      }
 
                                                                       value.add(widget
                                                                           .data
@@ -492,20 +627,23 @@ class _RestaurantMenuDetailsScreenState
                                                                               index1]
                                                                           .name);
 
-                                                                      /// add data in option list
-                                                                      optionsList
-                                                                          .add({
-                                                                        "option_id":
-                                                                            widget.data.customizations?[index].options?[index1].optionId ??
-                                                                                '',
-                                                                        "quantity":
-                                                                            1,
-                                                                        "marked_price": widget
-                                                                            .data
-                                                                            .customizations?[index]
-                                                                            .options?[index1]
-                                                                            .price
-                                                                      });
+                                                                      widget.data.isAdded ==
+                                                                              true
+                                                                          ? secondOptionsList
+                                                                              .add({
+                                                                              "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                              "quantity": 1,
+                                                                              "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                            })
+                                                                          :
+
+                                                                          /// add data in option list
+                                                                          optionsList
+                                                                              .add({
+                                                                              "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                              "quantity": 1,
+                                                                              "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                            });
                                                                     }
                                                                   }
                                                                 }
@@ -515,17 +653,24 @@ class _RestaurantMenuDetailsScreenState
                                                         },
                                                         child: Image.asset(
                                                           selectedData[widget
-                                                                      .data
-                                                                      .customizations![
-                                                                          index]
-                                                                      .name]
-                                                                  .contains(widget
+                                                                          .data
+                                                                          .customizations![
+                                                                              index]
+                                                                          .name]
+                                                                      .contains(widget
+                                                                          .data
+                                                                          .customizations![
+                                                                              index]
+                                                                          .options![
+                                                                              index1]
+                                                                          .name) ||
+                                                                  selectedOption.contains(widget
                                                                       .data
                                                                       .customizations![
                                                                           index]
                                                                       .options![
                                                                           index1]
-                                                                      .name)
+                                                                      .optionId)
                                                               ? AssetsUtils
                                                                   .terracotaCheck
                                                               : AssetsUtils
@@ -643,82 +788,90 @@ class _RestaurantMenuDetailsScreenState
                                               oldProductId: addApiData[0]
                                                   ['productId'],
                                               newProductId: '',
-                                              itemOptions: addApiData[0]
-                                                      ['options'] ??
-                                                  [],
+                                              itemOptions: [],
                                             )),
                                           );
                                         } else {
-                                          restaurantBloc.add(
-                                            UpdateRestaurantCartEvent(
-                                              updateItemList:
-                                                  UpdateRestaurantItemsToShoppingListModel(
-                                                productName: widget
-                                                        .shoppingListData!
-                                                        .productName ??
-                                                    '',
-                                                oldProductId: widget
-                                                        .shoppingListData!
-                                                        .productId ??
-                                                    '',
-                                                newProductId: '',
-                                                quantity:
-                                                    widget.data.cartQuantity! -
-                                                        1,
-                                                price: (widget.data.cartPrice! /
-                                                        widget.data
-                                                            .cartQuantity!) *
-                                                    (widget.data.cartQuantity! -
-                                                        1),
-                                                itemOptions: widget
-                                                        .shoppingListData!
-                                                        .options ??
-                                                    [],
-                                                productType: widget
-                                                        .shoppingListData!
-                                                        .productType ??
-                                                    'Restaurant',
-                                                mealmeStoreId: widget
-                                                        .shoppingListData!
-                                                        .mealmeStoreId ??
-                                                    widget.restaurantId,
-                                                unitOfMeasurement: widget
-                                                        .shoppingListData!
-                                                        .unitOfMeasurement ??
-                                                    '',
-                                                recipeId: widget
-                                                        .shoppingListData!
-                                                        .recipeId ??
-                                                    '',
-                                                userId: widget.shoppingListData!
-                                                        .userId ??
-                                                    userId,
-                                                brandName: widget
-                                                        .shoppingListData!
-                                                        .brandName ??
-                                                    '',
-                                                isChecked: widget
-                                                        .shoppingListData!
-                                                        .isChecked ??
-                                                    false,
-                                                unitSize: widget
-                                                        .shoppingListData!
-                                                        .unitSize ??
-                                                    0,
+                                          if (customizationChange == true) {
+                                            restaurantBloc.add(
+                                              RemoveShoppingListItemEvent(
+                                                  productID: widget
+                                                      .shoppingListData!
+                                                      .productId!),
+                                            );
+                                          } else {
+                                            restaurantBloc.add(
+                                              UpdateRestaurantCartEvent(
+                                                updateItemList:
+                                                    UpdateRestaurantItemsToShoppingListModel(
+                                                  productName: widget
+                                                          .shoppingListData!
+                                                          .productName ??
+                                                      '',
+                                                  oldProductId: widget
+                                                          .shoppingListData!
+                                                          .productId ??
+                                                      '',
+                                                  newProductId: '',
+                                                  quantity: widget
+                                                          .data.cartQuantity! -
+                                                      1,
+                                                  price: (widget
+                                                              .data.cartPrice! /
+                                                          widget.data
+                                                              .cartQuantity!) *
+                                                      (widget.data
+                                                              .cartQuantity! -
+                                                          1),
+                                                  itemOptions: [],
+                                                  productType: widget
+                                                          .shoppingListData!
+                                                          .productType ??
+                                                      'Restaurant',
+                                                  mealmeStoreId: widget
+                                                          .shoppingListData!
+                                                          .mealmeStoreId ??
+                                                      widget.restaurantId,
+                                                  unitOfMeasurement: widget
+                                                          .shoppingListData!
+                                                          .unitOfMeasurement ??
+                                                      '',
+                                                  recipeId: widget
+                                                          .shoppingListData!
+                                                          .recipeId ??
+                                                      '',
+                                                  userId: widget
+                                                          .shoppingListData!
+                                                          .userId ??
+                                                      userId,
+                                                  brandName: widget
+                                                          .shoppingListData!
+                                                          .brandName ??
+                                                      '',
+                                                  isChecked: widget
+                                                          .shoppingListData!
+                                                          .isChecked ??
+                                                      false,
+                                                  unitSize: widget
+                                                          .shoppingListData!
+                                                          .unitSize ??
+                                                      0,
+                                                ),
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         }
                                       }
 
-                                      setState(() {
-                                        addToCart = true;
-                                      });
+                                      addToCart = true;
                                     } else {
-                                      setState(() {
+                                      if (item > 0) {
                                         item--;
-                                      });
+                                      }
                                     }
+                                    setState(() {
+                                      addToCart = true;
+                                    });
                                   },
                                   child: Container(
                                     height: size.height * 0.060,
@@ -800,67 +953,75 @@ class _RestaurantMenuDetailsScreenState
                                             quantity:
                                                 widget.data.cartQuantity! + 1,
                                             newProductId: '',
-                                            itemOptions:
-                                                addApiData[0]['options'] ?? [],
+                                            itemOptions: [],
                                           )),
                                         );
                                       } else {
-                                        restaurantBloc.add(
-                                          UpdateRestaurantCartEvent(
-                                            updateItemList:
-                                                UpdateRestaurantItemsToShoppingListModel(
-                                              productName: widget
-                                                      .shoppingListData!
-                                                      .productName ??
-                                                  '',
-                                              oldProductId: widget
-                                                      .shoppingListData!
-                                                      .productId ??
-                                                  '',
-                                              newProductId: '',
-                                              quantity:
-                                                  widget.data.cartQuantity! + 1,
-                                              price: (widget.data.cartPrice! /
-                                                      widget
-                                                          .data.cartQuantity!) *
-                                                  (widget.data.cartQuantity! +
-                                                      1),
-                                              itemOptions: widget
-                                                      .shoppingListData!
-                                                      .options ??
-                                                  [],
-                                              productType: widget
-                                                      .shoppingListData!
-                                                      .productType ??
-                                                  'Restaurant',
-                                              mealmeStoreId: widget
-                                                      .shoppingListData!
-                                                      .mealmeStoreId ??
-                                                  widget.restaurantId,
-                                              unitOfMeasurement: widget
-                                                      .shoppingListData!
-                                                      .unitOfMeasurement ??
-                                                  '',
-                                              recipeId: widget.shoppingListData!
-                                                      .recipeId ??
-                                                  '',
-                                              userId: widget.shoppingListData!
-                                                      .userId ??
-                                                  userId,
-                                              brandName: widget
-                                                      .shoppingListData!
-                                                      .brandName ??
-                                                  '',
-                                              isChecked: widget
-                                                      .shoppingListData!
-                                                      .isChecked ??
-                                                  false,
-                                              unitSize: widget.shoppingListData!
-                                                      .unitSize ??
-                                                  0,
+                                        if (customizationChange == true) {
+                                          restaurantBloc.add(
+                                            RemoveShoppingListItemEvent(
+                                                productID: widget
+                                                    .shoppingListData!
+                                                    .productId!),
+                                          );
+                                        } else {
+                                          restaurantBloc.add(
+                                            UpdateRestaurantCartEvent(
+                                              updateItemList:
+                                                  UpdateRestaurantItemsToShoppingListModel(
+                                                productName: widget
+                                                        .shoppingListData!
+                                                        .productName ??
+                                                    '',
+                                                oldProductId: widget
+                                                        .shoppingListData!
+                                                        .productId ??
+                                                    '',
+                                                newProductId: '',
+                                                quantity:
+                                                    widget.data.cartQuantity! +
+                                                        1,
+                                                price: (widget.data.cartPrice! /
+                                                        widget.data
+                                                            .cartQuantity!) *
+                                                    (widget.data.cartQuantity! +
+                                                        1),
+                                                itemOptions: [],
+                                                productType: widget
+                                                        .shoppingListData!
+                                                        .productType ??
+                                                    'Restaurant',
+                                                mealmeStoreId: widget
+                                                        .shoppingListData!
+                                                        .mealmeStoreId ??
+                                                    widget.restaurantId,
+                                                unitOfMeasurement: widget
+                                                        .shoppingListData!
+                                                        .unitOfMeasurement ??
+                                                    '',
+                                                recipeId: widget
+                                                        .shoppingListData!
+                                                        .recipeId ??
+                                                    '',
+                                                userId: widget.shoppingListData!
+                                                        .userId ??
+                                                    userId,
+                                                brandName: widget
+                                                        .shoppingListData!
+                                                        .brandName ??
+                                                    '',
+                                                isChecked: widget
+                                                        .shoppingListData!
+                                                        .isChecked ??
+                                                    false,
+                                                unitSize: widget
+                                                        .shoppingListData!
+                                                        .unitSize ??
+                                                    0,
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       }
 
                                       setState(() {
@@ -974,12 +1135,7 @@ class _RestaurantMenuDetailsScreenState
                                       }
                                     } else {
                                       Get.to(
-                                        () => RestaurantCart(data: {
-                                          'image': AssetsUtils.restaurantFood1,
-                                          'title': widget.data.name!,
-                                          'price': widget.data.formattedPrice!,
-                                          'count': item
-                                        }),
+                                        () => RestaurantCart(),
                                         // transition: Transition.fadeIn,
                                       );
                                     }

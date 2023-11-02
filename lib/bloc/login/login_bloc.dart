@@ -60,7 +60,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             print('getGender : $getGender');
             // emit(LoginSuccessfulState());
             Get.toNamed('/RandomLoginScreen', arguments: getGender);
-            // Get.toNamed('/AppManagerScreen', preventDuplicates: false);
+            // Get.toNamed('/AppManagerScreen',
+            //     arguments: getGender, preventDuplicates: false);
           });
         });
         // await _repository

@@ -16,6 +16,7 @@ import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
@@ -125,6 +126,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               loading1 = true;
             }
             if (state is GetShoppingListSuccessState) {
+              cartData.clear();
               cartData = state.shoppingListData!;
 
               if (restaurantMenu != null) {
@@ -854,6 +856,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                           GestureDetector(
                                                                             onTap:
                                                                                 () async {
+                                                                              log('cartData---------->>>>>> ${cartData}');
+
                                                                               for (var element in cartData) {
                                                                                 if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
                                                                                   selectedCartData = element;
@@ -1378,7 +1382,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                             newProductId: '',
                                                                                             quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
                                                                                             price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
-                                                                                            itemOptions: element.options ?? [],
+                                                                                            itemOptions: [],
                                                                                             productType: element.productType ?? 'Restaurant',
                                                                                             mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
                                                                                             unitOfMeasurement: element.unitOfMeasurement ?? '',
@@ -1448,7 +1452,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                           newProductId: '',
                                                                                           quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
                                                                                           price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
-                                                                                          itemOptions: element.options ?? [],
+                                                                                          itemOptions: [],
                                                                                           productType: element.productType ?? 'Restaurant',
                                                                                           mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
                                                                                           unitOfMeasurement: element.unitOfMeasurement ?? '',
@@ -1511,7 +1515,12 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                 vertical: 10.h),
                                             child:
                                                 RestaurantMealAddButtonWidget(
-                                              onTap: () {},
+                                              onTap: () {
+                                                Get.to(
+                                                  () => RestaurantCart(),
+                                                  // transition: Transition.fadeIn,
+                                                );
+                                              },
                                               buttonLable: 'View Cart',
                                               isFillColor: true,
                                               selectedItemCount:

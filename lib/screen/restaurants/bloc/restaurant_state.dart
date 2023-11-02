@@ -74,9 +74,17 @@ class AddToRestaurantCartSuccessState extends RestaurantState {
   AddToRestaurantCartSuccessState({required this.isAdded, required this.data});
 }
 
-class AddToRestaurantCartLoadingState extends RestaurantState {}
+class AddToRestaurantCartLoadingState extends RestaurantState {
+  final String productId;
 
-class AddToRestaurantCartErrorState extends RestaurantState {}
+  AddToRestaurantCartLoadingState({required this.productId});
+}
+
+class AddToRestaurantCartErrorState extends RestaurantState {
+  final String productId;
+
+  AddToRestaurantCartErrorState({required this.productId});
+}
 
 ///================================================================================================================
 

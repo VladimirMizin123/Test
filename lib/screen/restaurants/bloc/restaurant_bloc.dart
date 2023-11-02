@@ -133,7 +133,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
   _onAddToRestaurantList(
       AddRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
-    emit(AddToRestaurantCartLoadingState());
+    emit(AddToRestaurantCartLoadingState(
+        productId: event.addItemsList[0].productId!));
 
     try {
       await _repository
@@ -149,7 +150,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       log('e---------->>>>>> ${e}');
 
       showToast(isSuccess: false, message: e.toString());
-      emit(AddToRestaurantCartErrorState());
+      emit(AddToRestaurantCartErrorState(
+          productId: event.addItemsList[0].productId!));
     }
   }
 
