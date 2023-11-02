@@ -180,4 +180,18 @@ class ApiUrls {
 
   static const String updateDietProgramByProgramId =
       '${baseUrl}api/Suggestic/UpdateDietProgramByProgramId/';
+
+  static const String getProfileImage =
+      '${baseUrl}api/UserDetails/GetUserProfileImage';
+
+  static const String getProfileDetails =
+      '${baseUrl}api/UserDetails/GetProfileDetailsById/';
+
+  static const String updateProfileDetails =
+      '${baseUrl}api/UserDetails/AddOrUpdateProfileDetails/';
+
+  static const String updateProfileImage =
+      '${baseUrl}api/UserDetails/AddOrUpdateProfileImage/';
+
+  static const String changePassword = '${baseUrl}api/Auth/ChangePassword';
 }

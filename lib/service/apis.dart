@@ -69,7 +69,7 @@ class ApiServices {
         body: jsonBody,
         headers: headers,
       );
-      log(response.body, name: 'API RESPONSE :');
+      log(response.body, name: 'API RESPONSE : ${response.statusCode}');
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

@@ -12,7 +12,8 @@ import '../../app/sharedPrefrence.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
 
-class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> {
+class UserSignUpInfoBloc
+    extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> {
   UserSignUpInfoBloc() : super(InitialState()) {
     on<LatLogEvent>(_onLatLog);
     on<SignUpApiEvent>(_onSignUpApi);
@@ -26,7 +27,8 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
     final hasPermission = await _handleLocationPermission();
 
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((Position position) {
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
       debugPrint('position data--> $position');
 
       emit(LatLogState(currentPosition: position));
@@ -48,12 +50,16 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied) {
-            showToast(message: 'Location permissions are denied', isSuccess: false);
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
             return false;
           }
         }
         if (permission == LocationPermission.deniedForever) {
-          showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
+          showToast(
+              message:
+                  'Location permissions are permanently denied, we cannot request permissions.',
+              isSuccess: false);
           return false;
         }
       });
@@ -79,6 +85,8 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
         print("USER ID IN SIGNUP FLOW ------- $userID");
 
         await PreferenceUtils.setString(prefUserData, right.data!.userId!);
+        await PreferenceUtils.setString(
+            prefUserEmail, event.model.email?.trim() ?? "");
 
         try {
           await _repository.fetchMealPlan(right.data!.userId!).fold((left) {
@@ -88,7 +96,8 @@ class UserSignUpInfoBloc extends Bloc<UserSignUpInfoEvent, UserSignUpInfoState> 
           debugPrint('CATCH ERROR WHILE FETCH MEAL PLAN');
         }
 
-        print('event.model.restrictionID.LENGTH ----- ${event.model.restrictionID.length}');
+        print(
+            'event.model.restrictionID.LENGTH ----- ${event.model.restrictionID.length}');
         if (event.model.restrictionID.isNotEmpty) {
           try {
             await _repository

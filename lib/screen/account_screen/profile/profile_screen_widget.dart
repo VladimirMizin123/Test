@@ -35,6 +35,7 @@ Widget commonTextFormField({
   bool readOnly = false,
   String? Function(String?)? validator,
   VoidCallback? onTap,
+  TextInputType? textInputType,
 }) {
   return SizedBox(
     // width: 140.w,
@@ -47,6 +48,7 @@ Widget commonTextFormField({
       style: style,
       obscureText: obscureText,
       cursorColor: AppColors.primaryBlueColor,
+      keyboardType: textInputType,
       onTap: onTap,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
