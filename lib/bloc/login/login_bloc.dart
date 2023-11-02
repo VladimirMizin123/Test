@@ -48,6 +48,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
             userId = right.data!.userId!;
             await PreferenceUtils.setString(prefUserData, right.data!.userId!);
+            await PreferenceUtils.setString(prefUserEmail, event.email.trim());
             await PreferenceUtils.setBool(prefIsLogin, true);
             await PreferenceUtils.setBool(prefIsConfirmEmail, true);
           }
@@ -59,9 +60,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             final getGender = r.data!.gender;
             print('getGender : $getGender');
             // emit(LoginSuccessfulState());
-            Get.toNamed('/RandomLoginScreen', arguments: getGender);
-            // Get.toNamed('/AppManagerScreen',
-            //     arguments: getGender, preventDuplicates: false);
+            Get.toNamed('/RandomLoginScreen',
+                arguments: getGender.toString().capitalizeFirst);
+            // Get.toNamed('/AppManagerScreen', preventDuplicates: false);
           });
         });
         // await _repository

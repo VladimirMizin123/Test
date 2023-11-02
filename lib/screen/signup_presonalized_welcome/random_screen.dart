@@ -17,18 +17,18 @@ class RandomLoadingScreen extends StatelessWidget {
     final String? gender = Get.arguments;
     return randomNumber == 0
         ? FirstPersonalizedWelcomeScreen(
-            gender: gender ?? 'Male',
+            gender: gender.toString().capitalizeFirst ?? 'Male',
           )
         : randomNumber == 1
             ? SecondPersonalizedWelcomeScreen(
-                gender: gender ?? 'Male',
+                gender: gender.toString().capitalizeFirst ?? 'Male',
               )
             : randomNumber == 2
                 ? ThirdPersonalizedWelcomeScreen(
-                    gender: gender ?? 'Male',
+                    gender: gender.toString().capitalizeFirst ?? 'Male',
                   )
                 : FourthPersonalizedWelcomeScreen(
-                    gender: gender ?? 'Male',
+                    gender: gender.toString().capitalizeFirst ?? 'Male',
                   );
   }
 }

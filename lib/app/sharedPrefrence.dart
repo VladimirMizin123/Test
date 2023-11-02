@@ -7,6 +7,7 @@ String userId = '';
 const String prefIsLogin = 'isLogin';
 const String prefIsConfirmEmail = 'isConfirmEmail';
 const String prefUserData = 'userData';
+const String prefUserEmail = 'userEmail';
 const String prefToken = 'token';
 const String prefPasswordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';

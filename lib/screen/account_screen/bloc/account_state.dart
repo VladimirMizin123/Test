@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_model.dart'
     as gapm;
+import 'package:gymeats_mobile/screen/account_screen/model/get_profile_details_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart'
     as pim;
+import 'package:gymeats_mobile/screen/account_screen/model/update_profile_details_model.dart';
 
 abstract class AccountState {}
 
@@ -52,4 +56,87 @@ class UpdateDietProgramLoadingState extends AccountState {}
 class UpdateDietProgramErrorState extends AccountState {
   final String message;
   UpdateDietProgramErrorState({required this.message});
+}
+
+/// Get Profile Image State ===============================================================
+
+class GetProfileImageSuccessState extends AccountState {
+  final String? imageUrl;
+
+  GetProfileImageSuccessState({required this.imageUrl});
+}
+
+class GetProfileImageLoadingState extends AccountState {}
+
+class GetProfileImageErrorState extends AccountState {
+  final String message;
+  GetProfileImageErrorState({required this.message});
+}
+
+/// Get Profile Details State ===============================================================
+
+class GetProfileDetailsSuccessState extends AccountState {
+  final ProfileDetails? profileDetails;
+
+  GetProfileDetailsSuccessState({required this.profileDetails});
+}
+
+class GetProfileDetailsLoadingState extends AccountState {}
+
+class GetProfileDetailsErrorState extends AccountState {
+  final String message;
+  GetProfileDetailsErrorState({required this.message});
+}
+
+/// Update Profile Details State ===============================================================
+
+class UpdateProfileDetailsSuccessState extends AccountState {
+  final UpdatedProfileDetails? profileDetails;
+
+  UpdateProfileDetailsSuccessState({required this.profileDetails});
+}
+
+class UpdateProfileDetailsLoadingState extends AccountState {}
+
+class UpdateProfileDetailsErrorState extends AccountState {
+  final String message;
+  UpdateProfileDetailsErrorState({required this.message});
+}
+
+/// Update Profile Image State ===============================================================
+
+class UpdateProfileImageSuccessState extends AccountState {
+  final UpdatedProfileDetails? profileDetails;
+
+  UpdateProfileImageSuccessState({required this.profileDetails});
+}
+
+class UpdateProfileImageLoadingState extends AccountState {}
+
+class UpdateProfileImageErrorState extends AccountState {
+  final String message;
+  UpdateProfileImageErrorState({required this.message});
+}
+
+///SELECT IMAGE FOR Profile ===============================================================
+
+class SelectedImagePathState extends AccountState {
+  final File? imgPath;
+
+  SelectedImagePathState({required this.imgPath});
+}
+
+/// Change Password State ===============================================================
+
+class ChangePasswordSuccessState extends AccountState {
+  final String message;
+
+  ChangePasswordSuccessState({required this.message});
+}
+
+class ChangePasswordLoadingState extends AccountState {}
+
+class ChangePasswordErrorState extends AccountState {
+  final String message;
+  ChangePasswordErrorState({required this.message});
 }
