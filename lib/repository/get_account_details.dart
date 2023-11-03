@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/change_password_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/get_current_program_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_details_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_image_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart';
@@ -33,8 +34,24 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(getAllProgramsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          getAllProgramsResponseModelFromJson(jsonDecode(response.body)));
+      return Right(getAllProgramsResponseModelFromJson(response.body));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Get Current Programs ====================================================================
+
+  Future<Either<ErrorModel, GetCurrentProgramResponseModel>>
+      getCurrentProgramData() async {
+    final response = await apiServices.get(
+      '${ApiUrls.getCurrentProgram}$userID',
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(getCurrentProgramResponseModelFromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(getCurrentProgramResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -51,8 +68,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(getProgramInfoResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          getProgramInfoResponseModelFromJson(jsonDecode(response.body)));
+      return Right(getProgramInfoResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -69,8 +85,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateDietProgramResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          updateDietProgramResponseModelFromJson(jsonDecode(response.body)));
+      return Right(updateDietProgramResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -86,8 +101,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(getProfileImageResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          getProfileImageResponseModelFromJson(jsonDecode(response.body)));
+      return Right(getProfileImageResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -103,8 +117,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(getProfileDetailsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          getProfileDetailsResponseModelFromJson(jsonDecode(response.body)));
+      return Right(getProfileDetailsResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -140,8 +153,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateProfileDetailsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          updateProfileDetailsResponseModelFromJson(jsonDecode(response.body)));
+      return Right(updateProfileDetailsResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -181,8 +193,7 @@ class AccountRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateProfileImageResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
-      return Right(
-          updateProfileImageResponseModelFromJson(jsonDecode(response.body)));
+      return Right(updateProfileImageResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

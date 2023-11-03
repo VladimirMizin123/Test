@@ -7,6 +7,9 @@ abstract class AccountEvent {}
 /// Get All Program Event ===============================================================
 class GetAllProgramEvent extends AccountEvent {}
 
+/// Get All Program Event ===============================================================
+class GetCurrentProgramEvent extends AccountEvent {}
+
 /// Get Program Info Event ===============================================================
 class GetProgramInfoEvent extends AccountEvent {
   final String programId;

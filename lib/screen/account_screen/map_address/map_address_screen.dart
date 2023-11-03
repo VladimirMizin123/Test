@@ -381,7 +381,8 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
         });
       }
 
-      streetDetailsController.text = '$streetName, $city, $stateData, $country';
+      streetDetailsController.text =
+          '${streetName.isNotEmpty ? '$streetName, ' : ''}${city.isNotEmpty ? '$city, ' : ''}${stateData.isNotEmpty ? '$stateData, ' : ''}${country.isNotEmpty ? '$country. ' : ''}';
       apartmentNumberController.text = streetNum;
       floorNumberController.text = '';
       zipCodeController.text = zipcode;
@@ -407,8 +408,11 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
         addressTypeList.contains((widget.userAddress?.addressType ?? ""))
             ? widget.userAddress?.addressType ?? ""
             : addressTypeList.first;
+    streetName = widget.userAddress?.streetName?.split(',').first ?? '';
     streetDetailsController.text =
-        '${widget.userAddress?.streetName?.split(',').first ?? ''}, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
+        '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
+
+    '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
     apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
     floorNumberController.text =
         widget.userAddress?.streetName?.split(',').last.split(' ').last ?? '';
@@ -435,12 +439,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       mapController
           .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
     });
-
-    //
-    // streetDetailsController.text = '$streetName, $city, $stateData, $country';
-    // apartmentNumberController.text = streetNum;
-    // floorNumberController.text = '';
-    // zipCodeController.text = zipcode;
   }
 
   @override
@@ -636,14 +634,14 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                   UpdateClickEvent(
                                     latitude: selectedLatLng!.latitude,
                                     longitude: selectedLatLng!.longitude,
-                                    streetNum: streetNum,
+                                    streetNum: apartmentNumberController.text,
                                     streetName:
-                                        '$streetName, Floor no. ${floorNumberController.text}',
+                                        '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}',
                                     city: city,
-                                    state: state.toString(),
+                                    state: stateData,
                                     country: country,
                                     addressType: streetNameController.text,
-                                    zipcode: zipcode,
+                                    zipcode: zipCodeController.text,
                                     isPrimary:
                                         widget.userAddress?.isPrimary ?? false,
                                     userId:
@@ -658,14 +656,14 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                   SaveClickEvent(
                                     latitude: selectedLatLng!.latitude,
                                     longitude: selectedLatLng!.longitude,
-                                    streetNum: streetNum,
+                                    streetNum: apartmentNumberController.text,
                                     streetName:
-                                        '$streetName, Floor no. ${floorNumberController.text}',
+                                        '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}',
                                     city: city,
-                                    state: state.toString(),
+                                    state: stateData,
                                     country: country,
                                     addressType: streetNameController.text,
-                                    zipcode: zipcode,
+                                    zipcode: zipCodeController.text,
                                     isPrimary: true,
                                     userId:
                                         PreferenceUtils.getString(prefUserData),

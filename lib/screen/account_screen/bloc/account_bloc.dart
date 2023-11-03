@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
   AccountBloc() : super(InitialState()) {
     on<GetAllProgramEvent>(_onGetAllProgram);
+    on<GetCurrentProgramEvent>(_onGetCurrentProgram);
     on<GetProgramInfoEvent>(_onGetProgramInfo);
     on<UpdateProgramDietEvent>(_onUpdateDietProgramInfo);
     on<GetSelectedImagePathEvent>(_onGetSelectedImagePath);
@@ -34,6 +35,23 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetAllProgramErrorState(message: e.toString()));
+    }
+  }
+
+  /// Get All Program =================================================================
+  _onGetCurrentProgram(
+      GetCurrentProgramEvent event, Emitter<AccountState> emit) async {
+    emit(GetCurrentProgramLoadingState());
+
+    try {
+      await _repository.getCurrentProgramData().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetCurrentProgramSuccessState(myProgram: right.data!.myProfile!));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetCurrentProgramErrorState(message: e.toString()));
     }
   }
 

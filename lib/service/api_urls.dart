@@ -182,6 +182,9 @@ class ApiUrls {
 
   static const String getProgramData = '${baseUrl}api/Suggestic/GetAllProgram';
 
+  static const String getCurrentProgram =
+      '${baseUrl}api/Suggestic/GetUserCurrentProgram/';
+
   static const String getProgramInfo =
       '${baseUrl}api/Suggestic/GetPrograminfo/';
 

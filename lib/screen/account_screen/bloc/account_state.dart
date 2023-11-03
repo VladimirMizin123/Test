@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_model.dart'
     as gapm;
+import 'package:gymeats_mobile/screen/account_screen/model/get_current_program_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_details_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart'
     as pim;
@@ -26,6 +27,21 @@ class GetAllProgramLoadingState extends AccountState {}
 class GetAllProgramErrorState extends AccountState {
   final String message;
   GetAllProgramErrorState({required this.message});
+}
+
+/// Get Current Program State ===============================================================
+
+class GetCurrentProgramSuccessState extends AccountState {
+  final MyProgram myProgram;
+
+  GetCurrentProgramSuccessState({required this.myProgram});
+}
+
+class GetCurrentProgramLoadingState extends AccountState {}
+
+class GetCurrentProgramErrorState extends AccountState {
+  final String message;
+  GetCurrentProgramErrorState({required this.message});
 }
 
 /// Get All Program State ===============================================================
