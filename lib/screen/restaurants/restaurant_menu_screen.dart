@@ -92,28 +92,33 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             }
             if (state is GetRestaurantMenuListSuccessState) {
               restaurantMenu = state.restaurantMenuList;
-              cartCount = 0;
-              for (var i = 0; i < restaurantMenu!.categories!.length; i++) {
-                for (var j = 0;
-                    j < restaurantMenu!.categories![i].menuItemList!.length;
-                    j++) {
-                  for (var k = 0; k < cartData.length; k++) {
-                    if (cartData[k].productId ==
-                        restaurantMenu!
-                            .categories![i].menuItemList![j].productId) {
-                      restaurantMenu!.categories![i].menuItemList![j]
-                          .cartQuantity = cartData[k].quantity;
-                      restaurantMenu!.categories![i].menuItemList![j]
-                          .cartPrice = cartData[k].price;
-                      restaurantMenu!.categories![i].menuItemList![j].isAdded =
-                          true;
 
-                      hasCartData = true;
-                      cartCount++;
+              if (restaurantMenu != null) {
+                if (cartData.isNotEmpty) {
+                  for (var element in restaurantMenu!.categories!) {
+                    for (var element1 in element.menuItemList!) {
+                      for (var element2 in cartData) {
+                        if (element2.productId == element1.productId) {
+                          element1.cartQuantity = element2.quantity;
+                          element1.cartPrice = element2.price;
+                          element1.isAdded = true;
+                          hasCartData = true;
+                        }
+                      }
+                    }
+                  }
+                } else {
+                  for (var element in restaurantMenu!.categories!) {
+                    for (var element1 in element.menuItemList!) {
+                      element1.cartQuantity = 0;
+                      element1.cartPrice = 0;
+                      element1.isAdded = false;
+                      hasCartData = false;
                     }
                   }
                 }
               }
+
               loading = false;
             }
             if (state is GetRestaurantMenuListErrorState) {
@@ -129,31 +134,33 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               cartData.clear();
               cartData = state.shoppingListData!;
 
-              if (restaurantMenu != null) {
-                cartCount = 0;
-                for (var i = 0; i < restaurantMenu!.categories!.length; i++) {
-                  for (var j = 0;
-                      j < restaurantMenu!.categories![i].menuItemList!.length;
-                      j++) {
-                    for (var k = 0; k < cartData.length; k++) {
-                      if (cartData[k].productId ==
-                          restaurantMenu!
-                              .categories![i].menuItemList![j].productId) {
-                        restaurantMenu!.categories![i].menuItemList![j]
-                            .cartQuantity = cartData[k].quantity;
-                        restaurantMenu!.categories![i].menuItemList![j]
-                            .cartPrice = cartData[k].price;
-                        restaurantMenu!
-                            .categories![i].menuItemList![j].isAdded = true;
+              cartCount = cartData.length;
 
-                        hasCartData = true;
-                        cartCount++;
+              if (restaurantMenu != null) {
+                if (cartData.isNotEmpty) {
+                  for (var element in restaurantMenu!.categories!) {
+                    for (var element1 in element.menuItemList!) {
+                      for (var element2 in cartData) {
+                        if (element2.productId == element1.productId) {
+                          element1.cartQuantity = element2.quantity;
+                          element1.cartPrice = element2.price;
+                          element1.isAdded = true;
+                          hasCartData = true;
+                        }
                       }
+                    }
+                  }
+                } else {
+                  for (var element in restaurantMenu!.categories!) {
+                    for (var element1 in element.menuItemList!) {
+                      element1.cartQuantity = 0;
+                      element1.cartPrice = 0;
+                      element1.isAdded = false;
+                      hasCartData = false;
                     }
                   }
                 }
               }
-
               loading1 = false;
             }
             if (state is GetShoppingListErrorState) {
@@ -734,6 +741,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                               RestaurantMealDetails(
                                                                                 data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                 restaurantId: widget.restaurantId,
+                                                                                cartCount: cartCount,
                                                                               ),
                                                                           transition: Transition
                                                                               .fadeIn)!
@@ -751,6 +759,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                 data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                 restaurantId: widget.restaurantId,
                                                                                 shoppingListData: selectedCartData,
+                                                                                cartCount: cartCount,
                                                                               ),
                                                                           transition: Transition
                                                                               .fadeIn)!
@@ -759,7 +768,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                       if (value ==
                                                                           true) {
                                                                         restaurantBloc
-                                                                            .add(GetShoppingListEvent());
+                                                                            .add(
+                                                                          GetShoppingListEvent(),
+                                                                        );
                                                                       }
                                                                     });
                                                             },
@@ -856,8 +867,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                           GestureDetector(
                                                                             onTap:
                                                                                 () async {
-                                                                              log('cartData---------->>>>>> ${cartData}');
-
                                                                               for (var element in cartData) {
                                                                                 if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
                                                                                   selectedCartData = element;
@@ -869,6 +878,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                       () => RestaurantMenuDetailsScreen(
                                                                                         data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                         restaurantId: widget.restaurantId,
+                                                                                        cartCount: cartCount,
                                                                                       ),
                                                                                       transition: Transition.fadeIn,
                                                                                     )!
@@ -882,6 +892,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                         data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                         restaurantId: widget.restaurantId,
                                                                                         shoppingListData: selectedCartData,
+                                                                                        cartCount: cartCount,
                                                                                       ),
                                                                                       transition: Transition.fadeIn,
                                                                                     )!
@@ -945,6 +956,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                         isRemoveUpdate = true;
 
                                                                                         if (restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1) {
+                                                                                          restaurantBloc.add(RemoveShoppingListItemEvent(productID: restaurantMenu!.categories![select].menuItemList![index].productId!));
                                                                                         } else {
                                                                                           restaurantBloc.add(
                                                                                             UpdateRestaurantCartEvent(
@@ -954,7 +966,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                                 newProductId: '',
                                                                                                 quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
                                                                                                 price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
-                                                                                                itemOptions: element.options ?? [],
+                                                                                                itemOptions: [],
                                                                                                 productType: element.productType ?? 'Restaurant',
                                                                                                 mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
                                                                                                 unitOfMeasurement: element.unitOfMeasurement ?? '',
@@ -1024,7 +1036,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                               newProductId: '',
                                                                                               quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
                                                                                               price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
-                                                                                              itemOptions: element.options ?? [],
+                                                                                              itemOptions: [],
                                                                                               productType: element.productType ?? 'Restaurant',
                                                                                               mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
                                                                                               unitOfMeasurement: element.unitOfMeasurement ?? '',
@@ -1104,6 +1116,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                 restaurantMenu!.categories![select].menuItemList![index],
                                                                             restaurantId:
                                                                                 widget.restaurantId,
+                                                                            cartCount:
+                                                                                cartCount,
                                                                           ),
                                                                       transition:
                                                                           Transition
@@ -1126,6 +1140,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                 widget.restaurantId,
                                                                             shoppingListData:
                                                                                 selectedCartData,
+                                                                            cartCount:
+                                                                                cartCount,
                                                                           ),
                                                                       transition:
                                                                           Transition
@@ -1282,6 +1298,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                   () => RestaurantMenuDetailsScreen(
                                                                                     data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                     restaurantId: widget.restaurantId,
+                                                                                    cartCount: cartCount,
                                                                                   ),
                                                                                   transition: Transition.fadeIn,
                                                                                 )!
@@ -1295,6 +1312,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                                     data: restaurantMenu!.categories![select].menuItemList![index],
                                                                                     restaurantId: widget.restaurantId,
                                                                                     shoppingListData: selectedCartData,
+                                                                                    cartCount: cartCount,
                                                                                   ),
                                                                                   transition: Transition.fadeIn,
                                                                                 )!
@@ -1517,9 +1535,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                 RestaurantMealAddButtonWidget(
                                               onTap: () {
                                                 Get.to(
-                                                  () => RestaurantCart(),
+                                                  () => const RestaurantCart(),
                                                   // transition: Transition.fadeIn,
-                                                );
+                                                )!
+                                                    .then((value) {
+                                                  if (value == true) {
+                                                    restaurantBloc.add(
+                                                        GetShoppingListEvent());
+                                                  }
+                                                });
                                               },
                                               buttonLable: 'View Cart',
                                               isFillColor: true,

@@ -145,3 +145,33 @@ class RemoveShoppingListItemErrorState extends RestaurantState {
 
   RemoveShoppingListItemErrorState({required this.productId});
 }
+
+///================================================================================================================
+
+/// Create Order State
+
+class CreateOrderLoadingState extends RestaurantState {}
+
+class CreateOrderSuccessState extends RestaurantState {}
+
+class CreateOrderErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Create Product State
+
+class CreateProductLoadingState extends RestaurantState {}
+
+class CreateProductSuccessState extends RestaurantState {}
+
+class CreateProductErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Create Checkout State
+
+class CreateCheckoutLoadingState extends RestaurantState {}
+
+class CreateCheckoutSuccessState extends RestaurantState {}
+
+class CreateCheckoutErrorState extends RestaurantState {}

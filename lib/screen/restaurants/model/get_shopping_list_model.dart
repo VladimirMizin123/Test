@@ -59,6 +59,8 @@ class ShoppingListData {
   dynamic brandName;
   String? productType;
   List<Option>? options;
+  bool isRemoveUpdated;
+  bool isAddUpdated;
 
   ShoppingListData({
     this.id,
@@ -75,6 +77,8 @@ class ShoppingListData {
     this.brandName,
     this.productType,
     this.options,
+    this.isAddUpdated = false,
+    this.isRemoveUpdated = false,
   });
 
   factory ShoppingListData.fromJson(Map<String, dynamic> json) =>

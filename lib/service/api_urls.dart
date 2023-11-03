@@ -169,7 +169,14 @@ class ApiUrls {
   //     '${baseUrl}api/MealMe/GetRestaurantMenuList';
   static const String getRestaurantMenuList =
       '${baseUrl}api/MealMe/GetHighlightedFoodMenuList';
+
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
+
+  static const String createOrder = '${baseUrl}api/MealmeOrder/CreateOrder';
+  static const String createProduct =
+      '${baseUrl}api/StripePayment/CreateProduct';
+  static const String createCheckout =
+      '${baseUrl}api/StripePayment/CreateCheckOut';
 
   ///Account APis---------------------------------------------------------
 

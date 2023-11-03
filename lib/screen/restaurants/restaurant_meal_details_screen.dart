@@ -24,10 +24,12 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.data,
     required this.restaurantId,
     this.shoppingListData,
+    required this.cartCount,
   });
   final String restaurantId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
+  final int cartCount;
 
   @override
   State<RestaurantMealDetails> createState() => _RestaurantMealDetailsState();
@@ -347,6 +349,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                     data: widget.data,
                                                     restaurantId:
                                                         widget.restaurantId,
+                                                    cartCount: widget.cartCount,
                                                   ),
                                                 )
                                               : Get.to(
@@ -357,6 +360,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                         widget.restaurantId,
                                                     shoppingListData:
                                                         widget.shoppingListData,
+                                                    cartCount: widget.cartCount,
                                                   ),
                                                 );
                                         },

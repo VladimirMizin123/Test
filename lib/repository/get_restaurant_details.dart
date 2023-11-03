@@ -6,6 +6,9 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
@@ -89,14 +92,10 @@ class RestaurantRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    }
-    // else if (response.statusCode == 400) {
-    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
-    //
-    //   return Right(
-    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    // }
-    else {
+    } else if (response.statusCode == 400) {
+      return Right(
+          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
@@ -168,8 +167,6 @@ class RestaurantRepository {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetShoppingListData.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
-      log('GetRestaurantMenuListErrorState---------->>>>>>}');
-
       return Right(GetShoppingListData.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
@@ -213,6 +210,60 @@ class RestaurantRepository {
     //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
     // }
     else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Order ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> createOrder(
+      {required CreateOrderModel createOrderModel}) async {
+    final response = await apiServices.post(
+      ApiUrls.createOrder,
+      createOrderModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Product ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> createProduct(
+      {required CreateProductRequestModel createProductRequestModel}) async {
+    final response = await apiServices.post(
+      ApiUrls.createProduct,
+      createProductRequestModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Checkout====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> createCheckout(
+      {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
+    final response = await apiServices.post(
+      ApiUrls.createCheckout,
+      createCheckOutRequestModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

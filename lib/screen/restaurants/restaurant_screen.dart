@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -16,11 +13,11 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/food_intake_bottomsheet_screen.dart';
-import 'package:gymeats_mobile/screen/restaurants/credit_card.dart';
 import 'package:gymeats_mobile/screen/restaurants/filter_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -139,6 +136,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   List rating = [];
   bool isFastDelivery = false;
   bool isSearchOn = false;
+  int cartCount = 0;
   TextEditingController search = TextEditingController();
 
   @override
@@ -146,6 +144,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       restaurantBloc.add(GetUserAddressEvent());
+      restaurantBloc.add(GetShoppingListEvent());
     });
   }
 
@@ -235,6 +234,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               }
               if (state is GetCousinesListErrorState) {
                 getCousinesLoadingState = false;
+              }
+
+              /// Shopping list state -----------------------------------------------------
+
+              if (state is GetShoppingListSuccessState) {
+                cartCount = state.shoppingListData!.length;
               }
             },
             builder: (context, state) {
@@ -394,36 +399,47 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               },
                             ),
                           ),
-                          Container(
-                            height: 48,
-                            width: 77,
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 16,
-                                )
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SvgPicture.asset(
-                                  AssetsUtils.icShoppingIcon,
-                                  color: AppColors.darkGray,
-                                ),
-                                Text(
-                                  '0',
-                                  style: FontUtils.h18(
-                                      fontColor: AppColors.darkGray,
-                                      fontWeight: FWT.medium),
-                                )
-                              ],
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => const RestaurantCart(),
+                                      transition: Transition.fadeIn)!
+                                  .then((value) {
+                                restaurantBloc.add(GetShoppingListEvent());
+                              });
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 77,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 18),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xff004C63)
+                                        .withOpacity(0.08),
+                                    offset: const Offset(0, 0),
+                                    blurRadius: 16,
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SvgPicture.asset(
+                                    AssetsUtils.icShoppingIcon,
+                                    color: AppColors.darkGray,
+                                  ),
+                                  Text(
+                                    '$cartCount',
+                                    style: FontUtils.h18(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ],

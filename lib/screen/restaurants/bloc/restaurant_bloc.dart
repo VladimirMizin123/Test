@@ -13,10 +13,13 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetRestaurantListEvent>(_onGetRestaurantList);
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
-    on<AddRestaurantCartEvent>(_onAddToRestaurantList);
+    on<AddRestaurantCartEvent>(_onAddToShoppingList);
     on<GetShoppingListEvent>(_onFetchShoppingList);
-    on<UpdateRestaurantCartEvent>(_onUpdateToRestaurantList);
+    on<UpdateRestaurantCartEvent>(_onUpdateShoppingList);
     on<RemoveShoppingListItemEvent>(_onRemoveShoppingList);
+    on<CreateOrderEvent>(_onCreateOrder);
+    on<CreateProductEvent>(_onCreateProduct);
+    on<CreateCheckoutEvent>(_onCreateCheckout);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -131,7 +134,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
   // Add Restaurant Item to cart Bloc ==============================================================================
 
-  _onAddToRestaurantList(
+  _onAddToShoppingList(
       AddRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
     emit(AddToRestaurantCartLoadingState(
         productId: event.addItemsList[0].productId!));
@@ -167,7 +170,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       }, (right) {
         emit(
           GetShoppingListSuccessState(
-              shoppingListData: right.data == null ? [] : right.data!),
+              shoppingListData:
+                  right.data == [] || right.data == null ? [] : right.data!),
         );
       });
     } catch (e) {
@@ -178,7 +182,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
   // Update Restaurant Item to cart Bloc ============================================================================
 
-  _onUpdateToRestaurantList(
+  _onUpdateShoppingList(
       UpdateRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
     emit(UpdateToRestaurantCartLoadingState(
         productId: event.updateItemList.oldProductId!));
@@ -227,6 +231,71 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  // Create Order Bloc ==============================================================================
+
+  _onCreateOrder(CreateOrderEvent event, Emitter<RestaurantState> emit) async {
+    emit(CreateOrderLoadingState());
+
+    try {
+      await _repository
+          .createOrder(createOrderModel: event.createOrderModel)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(CreateOrderSuccessState());
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateOrderErrorState());
+    }
+  }
+
+  // Create Product Bloc ==============================================================================
+
+  _onCreateProduct(
+      CreateProductEvent event, Emitter<RestaurantState> emit) async {
+    emit(CreateProductLoadingState());
+
+    try {
+      await _repository
+          .createProduct(
+              createProductRequestModel: event.createProductRequestModel)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(CreateProductSuccessState());
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateProductErrorState());
+    }
+  }
+
+  // Create Product Bloc ==============================================================================
+
+  _onCreateCheckout(
+      CreateCheckoutEvent event, Emitter<RestaurantState> emit) async {
+    emit(CreateCheckoutLoadingState());
+
+    try {
+      await _repository
+          .createCheckout(
+              createCheckOutRequestModel: event.createCheckOutRequestModel)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(CreateCheckoutSuccessState());
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateCheckoutErrorState());
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   onFailError({required String text, required Emitter<RestaurantState> emit}) {
     showToast(isSuccess: false, message: text);
