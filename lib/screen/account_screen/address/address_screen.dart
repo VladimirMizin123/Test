@@ -331,6 +331,7 @@ class _AddressScreenState extends State<AddressScreen> {
                       );
 
                       if (value != null) {
+                        selectedAddress = null;
                         addressBloc.add(GetUserAddressEvent());
                       }
                     },

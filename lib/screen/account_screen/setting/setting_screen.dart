@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -25,30 +27,32 @@ class _SettingScreenState extends State<SettingScreen> {
       "title": "Change password",
       "color": AppColors.disable,
       "image1": AssetsUtils.forwardArrow,
-      "screen": ChangePasswordScreen(),
+      "screen": const ChangePasswordScreen(),
     },
     {
       "image": AssetsUtils.unit,
       "title": "Units",
       "color": AppColors.disable,
       "image1": AssetsUtils.forwardArrow,
-      "screen": UnitScreen(),
+      "screen": const UnitScreen(),
     },
     {
       "image": AssetsUtils.notificationIcn,
       "title": "Notifications",
       "color": AppColors.disable,
       "image1": AssetsUtils.logOut,
-      "screen": ChangePasswordScreen(),
+      "screen": ''
     },
-    {
-      "image": AssetsUtils.icGps,
-      "title": "GPS",
-      "color": AppColors.transparentColor,
-      "image1": AssetsUtils.logOut,
-      "screen": ChangePasswordScreen(),
-    },
+    // {
+    //   "image": AssetsUtils.icGps,
+    //   "title": "GPS",
+    //   "color": AppColors.transparentColor,
+    //   "image1": AssetsUtils.logOut,
+    //   "screen": ''
+    // },
   ];
+
+  bool isNotification = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +71,29 @@ class _SettingScreenState extends State<SettingScreen> {
                     (index) {
                       var data = settingDataList[index];
                       return accountScreenDataWidget(
-                        onTap: () {
-                          print("data");
+                        onTap: () async {
+                          if (data["title"].toString() == 'GPS') {
+                            await Geolocator.openAppSettings();
+                          }
+
+                          if (data["screen"].toString().isEmpty) {
+                            return;
+                          }
+
                           Get.to(data["screen"]);
                         },
                         color: data["color"],
                         leading: SvgImage(image: data["image"]),
                         title: Text(data["title"]),
-                        trailing: SvgImage(image: data["image1"]),
+                        trailing: data["title"].toString() == 'Notifications'
+                            ? CupertinoSwitch(
+                                value: isNotification,
+                                onChanged: (value) {
+                                  isNotification = value;
+                                  setState(() {});
+                                },
+                              )
+                            : SvgImage(image: data["image1"]),
                       );
                     },
                   ),

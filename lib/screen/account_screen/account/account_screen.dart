@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/about/about_screen.dart';
@@ -127,9 +128,15 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: 100.h,
               ),
-              const Text(
-                "Log out",
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+              InkWell(
+                onTap: () {
+                  PreferenceUtils.clearPrefs();
+                  Get.offAllNamed('LoginScreen');
+                },
+                child: const Text(
+                  "Log out",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                ),
               ),
             ],
           ),
