@@ -124,9 +124,7 @@ class _RestaurantMenuDetailsScreenState
 
               addApiData = state.data;
 
-              if (customizationChange == false) {
-                cartCount = cartCount + 1;
-              }
+              cartCount = cartCount + 1;
 
               if (state.data[0]['productId'] == widget.data.productId) {
                 item = state.data[0]['quantity'];
@@ -197,6 +195,8 @@ class _RestaurantMenuDetailsScreenState
             ///Remove To RestaurantCart State ====================================================================
 
             if (state is RemoveShoppingListItemSuccessState) {
+              cartCount = cartCount - 1;
+
               if (customizationChange == true) {
                 price = widget.data.originalPrice;
 
@@ -1342,7 +1342,10 @@ class _RestaurantMenuDetailsScreenState
                                             ? 'View Cart'
                                             : 'Add to cart',
                                         isFillColor: true,
-                                        selectedItemCount: cartCount,
+                                        selectedItemCount:
+                                            widget.data.isAdded == true
+                                                ? cartCount
+                                                : 0,
                                       ),
                                 const SizedBox(
                                   height: 5,

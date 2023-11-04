@@ -23,14 +23,14 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
   TextEditingController validUntil = TextEditingController();
   TextEditingController cvvNumber = TextEditingController();
   CardInfo? _cardInfo;
+
   @override
   void initState() {
     super.initState();
-
-    cardName.text = widget.data?['name'] ?? '';
-    cardNumber.text = widget.data?['number'] ?? '';
-    validUntil.text = widget.data?['valid'] ?? '';
-    cvvNumber.text = widget.data?['cvv'] ?? '';
+    cardName.text = widget.data!['name'];
+    cardNumber.text = widget.data!['number'];
+    validUntil.text = widget.data!['valid'];
+    cvvNumber.text = widget.data!['cvv'];
   }
 
   @override
@@ -206,11 +206,6 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
               const Spacer(),
               GestureDetector(
                 onTap: () async {
-                  List<dynamic> data = [];
-
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-
                   Map<String, dynamic> data1 = {
                     'name': cardName.text,
                     'number': cardNumber.text,
@@ -218,23 +213,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                     'cvv': cvvNumber.text,
                   };
 
-                  if (pref.getString('cardData') == null) {
-                    data.add(data1);
-
-                    print('---->>>>>>>$data');
-
-                    pref.setString('cardData', jsonEncode(data));
-                  } else {
-                    data = jsonDecode(pref.getString('cardData').toString());
-
-                    data.add(data1);
-
-                    print('---->>>>>>>$data');
-
-                    pref.setString('cardData', jsonEncode(data));
-                  }
-
-                  Get.back();
+                  Get.back(result: data1);
                 },
                 child: Container(
                   height: 45.h,

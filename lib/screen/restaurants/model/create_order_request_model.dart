@@ -55,8 +55,8 @@ class CreateOrderModel {
 }
 
 class UserAddress {
-  int? latitude;
-  int? longitude;
+  dynamic latitude;
+  dynamic longitude;
   String? streetNum;
   String? streetName;
   String? city;
@@ -103,7 +103,7 @@ class MealmeItems {
   String? productId;
   String? notes;
   int? quantity;
-  int? productMarkedPrice;
+  dynamic productMarkedPrice;
   List<SelectedOptions>? selectedOptions;
   int? productType;
 
