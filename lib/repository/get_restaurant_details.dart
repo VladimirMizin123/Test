@@ -8,7 +8,9 @@ import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
@@ -216,7 +218,7 @@ class RestaurantRepository {
 
   /// Create Order ====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> createOrder(
+  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateOrderModel createOrderModel}) async {
     final response = await apiServices.post(
       ApiUrls.createOrder,
@@ -224,9 +226,8 @@ class RestaurantRepository {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -234,7 +235,7 @@ class RestaurantRepository {
 
   /// Create Product ====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> createProduct(
+  Future<Either<ErrorModel, CreateProductResponseModel>> createProduct(
       {required CreateProductRequestModel createProductRequestModel}) async {
     final response = await apiServices.post(
       ApiUrls.createProduct,
@@ -242,9 +243,8 @@ class RestaurantRepository {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          CreateProductResponseModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -260,8 +260,6 @@ class RestaurantRepository {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

@@ -280,7 +280,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            '\$${cartData[index].price / 100}',
+                                                            '\$${cartData[index].price! / 100}',
                                                             style:
                                                                 FontUtils.h18(
                                                               fontColor:
@@ -545,7 +545,8 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                               onTap: () {
                                                 Get.to(
                                                   () => CheckOutScreen(
-                                                      cartData: cartData),
+                                                      cartData: cartData,
+                                                      subtotal: price),
                                                   transition: Transition.fadeIn,
                                                 );
                                               },

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:get/get.dart';
@@ -30,10 +31,20 @@ class SignUpRepository {
       var stream = http.ByteStream(model.userProfileImage!.openRead());
       stream.cast();
       var length = await model.userProfileImage!.length();
-      var multipartFileImage = http.MultipartFile('profileImage', stream, length, filename: model.userProfileImage!.path, contentType: MediaType('image', model.userProfileImage!.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpeg'));
+      var multipartFileImage = http.MultipartFile(
+          'profileImage', stream, length,
+          filename: model.userProfileImage!.path,
+          contentType: MediaType(
+              'image',
+              model.userProfileImage!.path.split('/').last.split('.').last ==
+                      'png'
+                  ? 'png'
+                  : 'jpeg'));
 
       profileImage.add(multipartFileImage);
     }
+
+    log('model.phoneNumber---------->>>>>> ${model.phoneNumber}');
 
     Map<String, String> data = {
       "FirstName": model.firstName!,
@@ -42,6 +53,7 @@ class SignUpRepository {
       "UserName": model.email!,
       "Password": model.password!,
       "ConfirmPassword": model.confirmPassword!,
+      "PoneNumber": model.phoneNumber!,
       "UserDetail.Age": model.age!,
       "UserDetail.Height": model.height!,
       "UserDetail.Weight": model.weight!,
@@ -55,16 +67,18 @@ class SignUpRepository {
       "UserAddress.Latitude": model.latitude!,
       "UserAddress.Longitude": model.longitude!,
     };
-    final response = await apiServices.postMultipart(url: ApiUrls.register, body: data, files: profileImage);
+    final response = await apiServices.postMultipart(
+        url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
-    print('SIGNUP RESPOSNE :::::::::  ${jsonDecode(response.body)}');
+      print('SIGNUP RESPOSNE :::::::::  ${jsonDecode(response.body)}');
       return Right(SignUpModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, CheckEmailExist>> checkIsEmailExist(String email) async {
+  Future<Either<ErrorModel, CheckEmailExist>> checkIsEmailExist(
+      String email) async {
     final response = await apiServices.get(
       '${ApiUrls.checkEmail}/$email',
     );
@@ -77,7 +91,8 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan(String userID) async {
+  Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan(
+      String userID) async {
     // int mealPlanScreenCountState = PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
     // if (mealPlanScreenCountState == 0) {
@@ -101,8 +116,10 @@ class SignUpRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> addUserRestriction({List<String> restrictionList = const [],String? userid}) async {
-    final response = await apiServices.post('${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
+  Future<Either<ErrorModel, SuccessModel>> addUserRestriction(
+      {List<String> restrictionList = const [], String? userid}) async {
+    final response = await apiServices.post(
+        '${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

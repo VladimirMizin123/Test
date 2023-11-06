@@ -257,6 +257,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       password: model.password,
                                       userName: model.userName,
                                       confirmPassword: model.confirmPassword,
+                                      phoneNumber: model.phoneNumber,
                                       gender: genderName,
                                       age: ageController.text,
                                       height: heightController.text,

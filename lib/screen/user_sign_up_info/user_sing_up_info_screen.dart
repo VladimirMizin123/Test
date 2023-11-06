@@ -112,7 +112,10 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                       ),
                       Text(
                         StringUtils.howDoesThisProfileLook,
-                        style: AppTextStyle.gymEatsStyle.copyWith(color: color, fontSize: 18.sp, fontWeight: FontWeight.w500),
+                        style: AppTextStyle.gymEatsStyle.copyWith(
+                            color: color,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500),
                       ).paddingOnly(top: 10),
                       SizedBox(
                         height: 10.h,
@@ -140,13 +143,37 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(model.age!, style: AppTextStyle.gymEatsStyle.copyWith(color: Colors.white, fontSize: 31.sp, fontWeight: FontWeight.w800)).paddingOnly(top: 5).marginOnly(left: 90),
-                                        Text(model.height!, style: AppTextStyle.gymEatsStyle.copyWith(color: Colors.white, fontSize: 31.sp, fontWeight: FontWeight.w800)).paddingOnly(top: 5).marginOnly(right: 105),
+                                        Text(model.age!,
+                                                style: AppTextStyle.gymEatsStyle
+                                                    .copyWith(
+                                                        color: Colors.white,
+                                                        fontSize: 31.sp,
+                                                        fontWeight:
+                                                            FontWeight.w800))
+                                            .paddingOnly(top: 5)
+                                            .marginOnly(left: 90),
+                                        Text(model.height!,
+                                                style: AppTextStyle.gymEatsStyle
+                                                    .copyWith(
+                                                        color: Colors.white,
+                                                        fontSize: 31.sp,
+                                                        fontWeight:
+                                                            FontWeight.w800))
+                                            .paddingOnly(top: 5)
+                                            .marginOnly(right: 105),
                                       ],
                                     ),
-                                    Text(model.weight!, style: AppTextStyle.gymEatsStyle.copyWith(color: Colors.white, fontSize: 31.sp, fontWeight: FontWeight.w800)).marginOnly(top: 60, right: 10),
+                                    Text(model.weight!,
+                                            style: AppTextStyle.gymEatsStyle
+                                                .copyWith(
+                                                    color: Colors.white,
+                                                    fontSize: 31.sp,
+                                                    fontWeight:
+                                                        FontWeight.w800))
+                                        .marginOnly(top: 60, right: 10),
                                   ],
                                 )
                               ],
@@ -161,33 +188,56 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                 child: PageView.builder(
                                   scrollDirection: Axis.horizontal,
                                   controller: pageController,
-                                  itemCount: (model.options!.length / itemsPerPage).ceil(),
+                                  itemCount:
+                                      (model.options!.length / itemsPerPage)
+                                          .ceil(),
                                   onPageChanged: (int page) {
                                     setState(() {
                                       currentPage = page;
                                     });
                                   },
-                                  itemBuilder: (BuildContext context, int index) {
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
                                     final startIndex = index * itemsPerPage;
-                                    final endIndex = (index + 1) * itemsPerPage < model.options!.length ? (index + 1) * itemsPerPage : model.options!.length;
+                                    final endIndex =
+                                        (index + 1) * itemsPerPage <
+                                                model.options!.length
+                                            ? (index + 1) * itemsPerPage
+                                            : model.options!.length;
 
-                                    final pageData = model.options!.sublist(startIndex, endIndex);
+                                    final pageData = model.options!
+                                        .sublist(startIndex, endIndex);
 
                                     return Row(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      mainAxisAlignment: pageData.length > 3 ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.start,
-                                      children: List.generate(pageData.length, (index) {
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      mainAxisAlignment: pageData.length > 3
+                                          ? MainAxisAlignment.spaceEvenly
+                                          : MainAxisAlignment.start,
+                                      children: List.generate(pageData.length,
+                                          (index) {
                                         return Container(
                                           height: 70.h,
                                           width: 70.w,
                                           padding: const EdgeInsets.all(18),
-                                          margin: EdgeInsets.only(right: index == (pageData.length - 1) ? 0 : 2.5, left: index == 0 ? 0 : 2.5),
+                                          margin: EdgeInsets.only(
+                                              right:
+                                                  index == (pageData.length - 1)
+                                                      ? 0
+                                                      : 2.5,
+                                              left: index == 0 ? 0 : 2.5),
                                           alignment: Alignment.center,
-                                          decoration: BoxDecoration(shape: BoxShape.circle, color: pageData[index].optionColor),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color:
+                                                  pageData[index].optionColor),
                                           child: Text(
                                             pageData[index].optionName,
                                             textAlign: TextAlign.center,
-                                            style: const TextStyle(fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.w400),
+                                            style: const TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400),
                                           ),
                                         );
                                       }),
@@ -218,7 +268,8 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                       Get.back();
                                     },
                                     textColor: setColor(gender: model.gender!),
-                                    borderColor: setColor(gender: model.gender!),
+                                    borderColor:
+                                        setColor(gender: model.gender!),
                                     bgColor: Colors.white,
                                     title: StringUtils.previous)
                                 .paddingOnly(top: 25.h),
@@ -233,28 +284,38 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                         context: context,
                                         onPressed: () {
                                           // print(model.restrictionID.toList().toString());
-                                          UserSignUpDataModel userSignUpDataModel = UserSignUpDataModel(
+                                          UserSignUpDataModel
+                                              userSignUpDataModel =
+                                              UserSignUpDataModel(
                                             firstName: model.firstName,
                                             lastName: model.lastName,
                                             email: model.email,
                                             password: model.password,
                                             userName: model.userName,
-                                            confirmPassword: model.confirmPassword,
+                                            confirmPassword:
+                                                model.confirmPassword,
+                                            phoneNumber: model.phoneNumber,
                                             gender: model.gender,
                                             age: model.age,
                                             height: model.height,
                                             weight: model.weight,
                                             dietId: model.dietId,
                                             surveyId: model.surveyId,
-                                            userProfileImage: model.userProfileImage,
-                                            latitude: _currentPosition!.latitude.toString(),
-                                            longitude: _currentPosition!.longitude.toString(),
+                                            userProfileImage:
+                                                model.userProfileImage,
+                                            latitude: _currentPosition!.latitude
+                                                .toString(),
+                                            longitude: _currentPosition!
+                                                .longitude
+                                                .toString(),
                                             restrictionID: model.restrictionID,
                                           );
-                                          bloc.add(SignUpApiEvent(model: userSignUpDataModel));
+                                          bloc.add(SignUpApiEvent(
+                                              model: userSignUpDataModel));
                                         },
                                         textColor: Colors.white,
-                                        bgColor: setColor(gender: model.gender!),
+                                        bgColor:
+                                            setColor(gender: model.gender!),
                                         title: StringUtils.next)
                                     .paddingOnly(top: 25.h),
                           ),

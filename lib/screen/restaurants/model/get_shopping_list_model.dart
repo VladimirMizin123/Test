@@ -50,7 +50,7 @@ class ShoppingListData {
   String? productId;
   String? productName;
   int? quantity;
-  dynamic price;
+  int? price;
   dynamic unitSize;
   String? unitOfMeasurement;
   String? recipeId;
@@ -88,7 +88,7 @@ class ShoppingListData {
         productId: json["productId"],
         productName: json["productName"],
         quantity: json["quantity"],
-        price: json["price"]?.toDouble(),
+        price: json["price"],
         unitSize: json["unitSize"],
         unitOfMeasurement: json["unitOfMeasurement"],
         recipeId: json["recipeId"],

@@ -9,6 +9,7 @@ class UserSignUpDataModel {
   String? firstName;
   String? lastName;
   String? password;
+  String? phoneNumber;
   String? userName;
   String? age;
   String? gender;
@@ -23,13 +24,13 @@ class UserSignUpDataModel {
   List<String> restrictionID;
   AddAddressModel? addAddressModel;
 
-
   UserSignUpDataModel(
       {this.gender,
       this.height,
       this.email,
       this.confirmPassword,
       this.password,
+      this.phoneNumber,
       this.age,
       this.dietId,
       this.firstName,

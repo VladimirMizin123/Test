@@ -85,6 +85,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: StringUtils.email)
                       .paddingOnly(top: 16),
                   commonTextField(
+                    context: context,
+                    controller: homeController.phoneNumberController,
+                    hintText: StringUtils.phone,
+                  ).paddingOnly(top: 16),
+                  commonTextField(
                           context: context,
                           controller: homeController.passwordController,
                           eyeShow: true,
@@ -143,6 +148,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           .passwordController.text,
                                       userName:
                                           homeController.emailController.text,
+                                      phoneNumber: homeController
+                                          .phoneNumberController.text,
                                     ),
                                   );
                                 },

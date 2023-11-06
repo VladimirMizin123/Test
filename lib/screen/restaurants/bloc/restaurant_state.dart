@@ -1,3 +1,6 @@
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart'
+    as order;
+import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
@@ -152,7 +155,11 @@ class RemoveShoppingListItemErrorState extends RestaurantState {
 
 class CreateOrderLoadingState extends RestaurantState {}
 
-class CreateOrderSuccessState extends RestaurantState {}
+class CreateOrderSuccessState extends RestaurantState {
+  final order.CreateOrderData? orderData;
+
+  CreateOrderSuccessState({this.orderData});
+}
 
 class CreateOrderErrorState extends RestaurantState {}
 
@@ -162,7 +169,11 @@ class CreateOrderErrorState extends RestaurantState {}
 
 class CreateProductLoadingState extends RestaurantState {}
 
-class CreateProductSuccessState extends RestaurantState {}
+class CreateProductSuccessState extends RestaurantState {
+  final ProductData? productData;
+
+  CreateProductSuccessState({this.productData});
+}
 
 class CreateProductErrorState extends RestaurantState {}
 

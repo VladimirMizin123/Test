@@ -12,6 +12,7 @@ class HomeScreenController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final phoneNumberController = TextEditingController();
 
   List<String> chooseEatsList = [
     StringUtils.loseWeight,

@@ -2,7 +2,7 @@ class CreateOrderModel {
   String? userId;
   UserAddress? userAddress;
   bool? pickup;
-  List<MealmeItems>? mealmeItems;
+  List<CreateOrderMealmeItems>? mealmeItems;
   int? driverTipCents;
   int? pickupTipCents;
   String? userDropoffNotes;
@@ -25,9 +25,9 @@ class CreateOrderModel {
         : null;
     pickup = json['pickup'];
     if (json['mealmeItems'] != null) {
-      mealmeItems = <MealmeItems>[];
+      mealmeItems = <CreateOrderMealmeItems>[];
       json['mealmeItems'].forEach((v) {
-        mealmeItems!.add(MealmeItems.fromJson(v));
+        mealmeItems!.add(CreateOrderMealmeItems.fromJson(v));
       });
     }
     driverTipCents = json['driver_tip_cents'];
@@ -99,7 +99,7 @@ class UserAddress {
   }
 }
 
-class MealmeItems {
+class CreateOrderMealmeItems {
   String? productId;
   String? notes;
   int? quantity;
@@ -107,7 +107,7 @@ class MealmeItems {
   List<SelectedOptions>? selectedOptions;
   int? productType;
 
-  MealmeItems(
+  CreateOrderMealmeItems(
       {this.productId,
       this.notes,
       this.quantity,
@@ -115,7 +115,7 @@ class MealmeItems {
       this.selectedOptions,
       this.productType});
 
-  MealmeItems.fromJson(Map<String, dynamic> json) {
+  CreateOrderMealmeItems.fromJson(Map<String, dynamic> json) {
     productId = json['product_id'];
     notes = json['notes'];
     quantity = json['quantity'];

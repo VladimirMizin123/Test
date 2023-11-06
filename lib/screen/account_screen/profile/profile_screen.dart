@@ -48,6 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   DateTime? selectedDOB;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
   TextEditingController goalFocusController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController targetWeightController = TextEditingController();
@@ -331,6 +332,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               horizontal: 10,
                                               vertical: 0,
                                               hintText: "Last Name"),
+                                        ),
+                                        SizedBox(
+                                          height: 3.h,
+                                        ),
+                                        profileDataWidget(
+                                          text: "Phone Number",
+                                          style: TextStyle(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w400),
+                                          widget: commonTextFormField(
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please Enter Phone Number';
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              textEditingController:
+                                                  phoneNumberController,
+                                              enableBorderColor:
+                                                  AppColors.primaryBlueColor,
+                                              obscureText: false,
+                                              width: 140.w,
+                                              horizontal: 10,
+                                              vertical: 0,
+                                              textInputType:
+                                                  TextInputType.number,
+                                              hintText: "Phone Number"),
                                         ),
                                         SizedBox(
                                           height: 3.h,

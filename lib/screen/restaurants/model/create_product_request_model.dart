@@ -1,6 +1,6 @@
 class CreateProductRequestModel {
   String? userId;
-  List<MealmeItems>? mealmeItems;
+  List<ProductMealmeItems>? mealmeItems;
   String? orderId;
   int? totalAmount;
 
@@ -10,9 +10,9 @@ class CreateProductRequestModel {
   CreateProductRequestModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     if (json['mealmeItems'] != null) {
-      mealmeItems = <MealmeItems>[];
+      mealmeItems = <ProductMealmeItems>[];
       json['mealmeItems'].forEach((v) {
-        mealmeItems!.add(MealmeItems.fromJson(v));
+        mealmeItems!.add(ProductMealmeItems.fromJson(v));
       });
     }
     orderId = json['orderId'];
@@ -31,7 +31,7 @@ class CreateProductRequestModel {
   }
 }
 
-class MealmeItems {
+class ProductMealmeItems {
   String? name;
   int? basePrice;
   int? quantity;
@@ -40,7 +40,7 @@ class MealmeItems {
   String? productId;
   String? productType;
 
-  MealmeItems(
+  ProductMealmeItems(
       {this.name,
       this.basePrice,
       this.quantity,
@@ -49,7 +49,7 @@ class MealmeItems {
       this.productId,
       this.productType});
 
-  MealmeItems.fromJson(Map<String, dynamic> json) {
+  ProductMealmeItems.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     basePrice = json['base_price'];
     quantity = json['quantity'];

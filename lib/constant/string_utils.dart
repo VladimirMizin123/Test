@@ -3,6 +3,7 @@ class StringUtils {
   static const fName = 'First Name';
   static const lName = 'Last Name';
   static const email = 'Email address';
+  static const phone = 'Phone Number';
   static const password = 'Password';
   static const letsEat = 'Let\'s Eat!';
   static const loseWeight = 'Lose Weight';

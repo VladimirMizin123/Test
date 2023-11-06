@@ -214,6 +214,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                           userName: model.userName,
                                           confirmPassword:
                                               model.confirmPassword,
+                                          phoneNumber: model.phoneNumber,
                                           gender: model.gender,
                                           age: model.age,
                                           height: model.height,
@@ -222,8 +223,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                           surveyId: model.surveyId,
                                           userProfileImage: imageFile,
                                           options: model.options,
-                                          restrictionID: model.restrictionID
-                                          );
+                                          restrictionID: model.restrictionID);
                                   Get.toNamed('/UserSignUpInfoScreen',
                                       arguments: userSignUpDataModel);
                                 },

@@ -244,8 +244,11 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .createOrder(createOrderModel: event.createOrderModel)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
-        emit(CreateOrderSuccessState());
+        emit(
+          CreateOrderSuccessState(orderData: right.data),
+        );
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -265,8 +268,9 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
               createProductRequestModel: event.createProductRequestModel)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
-        emit(CreateProductSuccessState());
+        emit(CreateProductSuccessState(productData: right.data));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -286,6 +290,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
               createCheckOutRequestModel: event.createCheckOutRequestModel)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
         emit(CreateCheckoutSuccessState());
       });

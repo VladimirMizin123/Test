@@ -179,14 +179,14 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     addAddressModel.isPrimary = false;
 
                     UserSignUpDataModel userData = UserSignUpDataModel(
-                      firstName: widget.arguments['userData'].firstName,
-                      lastName: widget.arguments['userData'].lastName,
-                      email: widget.arguments['userData'].email,
-                      password: widget.arguments['userData'].password,
-                      userName: widget.arguments['userData'].email,
-                      confirmPassword:
-                          widget.arguments['userData'].confirmPassword,
-                    );
+                        firstName: widget.arguments['userData'].firstName,
+                        lastName: widget.arguments['userData'].lastName,
+                        email: widget.arguments['userData'].email,
+                        password: widget.arguments['userData'].password,
+                        userName: widget.arguments['userData'].email,
+                        confirmPassword:
+                            widget.arguments['userData'].confirmPassword,
+                        phoneNumber: widget.arguments['userData'].phoneNumber);
 
                     userData.addAddressModel = addAddressModel;
 

@@ -1,8 +1,10 @@
+import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
+
 class CreateCheckOutRequestModel {
   String? userId;
   String? mealmeOrderId;
   String? priceId;
-  List<MealmeItems>? mealmeItems;
+  List<MealmeItem>? mealmeItems;
   int? phoneNumber;
   int? totalPrice;
   UserCardDetails? userCardDetails;
@@ -21,9 +23,9 @@ class CreateCheckOutRequestModel {
     mealmeOrderId = json['mealmeOrderId'];
     priceId = json['priceId'];
     if (json['mealmeItems'] != null) {
-      mealmeItems = <MealmeItems>[];
+      mealmeItems = <MealmeItem>[];
       json['mealmeItems'].forEach((v) {
-        mealmeItems!.add(MealmeItems.fromJson(v));
+        mealmeItems!.add(MealmeItem.fromJson(v));
       });
     }
     phoneNumber = json['phoneNumber'];

@@ -55,8 +55,10 @@ dependencies:
   qr_code_scanner: ^1.0.1
   ml_card_scanner: ^0.0.5
   datepicker_dropdown: ^0.0.8
+  flutter_masked_text2: ^0.9.1
 
-#  camera:
+
+  #  camera:
   firebase_auth:
   torch_light: ^1.0.0
   cached_network_image: ^3.2.3

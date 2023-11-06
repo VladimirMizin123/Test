@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
@@ -20,17 +22,23 @@ class AddDebitCardScreen extends StatefulWidget {
 class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
   TextEditingController cardName = TextEditingController();
   TextEditingController cardNumber = TextEditingController();
-  TextEditingController validUntil = TextEditingController();
   TextEditingController cvvNumber = TextEditingController();
   CardInfo? _cardInfo;
+  var controller = MaskedTextController(mask: '00/0000');
+
+  getData() {
+    if (widget.data != null) {
+      cardName.text = widget.data?['name'];
+      cardNumber.text = widget.data?['number'];
+      controller.text = widget.data?['valid'];
+      cvvNumber.text = widget.data?['cvv'];
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    cardName.text = widget.data!['name'];
-    cardNumber.text = widget.data!['number'];
-    validUntil.text = widget.data!['valid'];
-    cvvNumber.text = widget.data!['cvv'];
+    getData();
   }
 
   @override
@@ -155,15 +163,21 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                                   fontWeight: FontWeight.w300)),
                         ),
                         commonTextField(
-                          label: 'MM/YY',
-                          controller: validUntil,
+                          label: 'MM/YYYY',
+                          controller: controller,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please Enter Year/Month';
+                              return 'Please Enter Month/Month';
                             } else {
                               return null;
                             }
                           },
+                          onChanged: (value) {},
+                          maxLength: 6,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                          ],
                         ),
                       ],
                     ),
@@ -209,7 +223,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                   Map<String, dynamic> data1 = {
                     'name': cardName.text,
                     'number': cardNumber.text,
-                    'valid': validUntil.text,
+                    'valid': controller.text,
                     'cvv': cvvNumber.text,
                   };
 
@@ -243,16 +257,26 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
     );
   }
 
-  Widget commonTextField(
-      {String? Function(String?)? validator,
-      String? label,
-      Widget? suffixIcon,
-      TextEditingController? controller}) {
+  Widget commonTextField({
+    String? Function(String?)? validator,
+    String? label,
+    Widget? suffixIcon,
+    TextEditingController? controller,
+    int? maxLength,
+    Function(String)? onChanged,
+    List<TextInputFormatter>? inputFormatters,
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
       controller: controller,
+      onChanged: onChanged,
+      maxLength: maxLength,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
+        counterText: '',
         contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
         hintText: label,
         hintStyle: TextStyle(

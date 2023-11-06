@@ -34,6 +34,7 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
             password: event.password,
             userName: event.email,
             confirmPassword: event.confirmPassword,
+            phoneNumber: event.phoneNumber,
           );
           emit(InitialState());
           await Get.toNamed('/GoogleMapScreen',
