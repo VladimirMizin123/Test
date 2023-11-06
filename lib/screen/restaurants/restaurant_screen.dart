@@ -1216,7 +1216,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                               transition:
                                                                   Transition
                                                                       .fadeIn,
-                                                            );
+                                                            )!
+                                                              .then((value) {
+                                                              restaurantBloc.add(
+                                                                  GetShoppingListEvent());
+                                                            });
                                                     },
                                                     child: Container(
                                                       width:
@@ -1524,7 +1528,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                   transition:
                                                                       Transition
                                                                           .fadeIn,
-                                                                );
+                                                                )!
+                                                                  .then(
+                                                                      (value) {
+                                                                  restaurantBloc
+                                                                      .add(
+                                                                          GetShoppingListEvent());
+                                                                });
                                                     },
                                                     child: Container(
                                                       width:

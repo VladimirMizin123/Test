@@ -29,6 +29,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
   bool loading = false;
   bool isAddUpdate = false;
   bool isApiCall = false;
+  dynamic price = 0;
   @override
   void initState() {
     super.initState();
@@ -49,6 +50,11 @@ class _RestaurantCartState extends State<RestaurantCart> {
               }
               if (state is GetShoppingListSuccessState) {
                 cartData = state.shoppingListData!;
+
+                for (var element in cartData) {
+                  price = price + element.price;
+                }
+
                 loading = false;
               }
               if (state is GetShoppingListErrorState) {
@@ -58,6 +64,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
               ///UpdateToRestaurantCart State ====================================================================
 
               if (state is UpdateToRestaurantCartSuccessState) {
+                price = 0;
                 for (var element in cartData) {
                   if (state.data['productId'] == element.productId) {
                     element.quantity = state.data['quantity'];
@@ -71,6 +78,8 @@ class _RestaurantCartState extends State<RestaurantCart> {
 
                     isAddUpdate = false;
                   }
+
+                  price = price + element.price;
                 }
               }
 
@@ -103,6 +112,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
               ///Remove To RestaurantCart State ====================================================================
 
               if (state is RemoveShoppingListItemSuccessState) {
+                price = 0;
                 for (var element1 in cartData) {
                   if (state.productId == element1.productId) {
                     element1.quantity = 0;
@@ -115,6 +125,8 @@ class _RestaurantCartState extends State<RestaurantCart> {
                     }
                     isAddUpdate = false;
                   }
+
+                  price = price + element1.price;
                 }
 
                 cartData.removeWhere(
@@ -507,7 +519,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                 ),
                                                 const Spacer(),
                                                 Text(
-                                                  '\$ 16.37',
+                                                  '\$ ${price / 100}',
                                                   style: FontUtils.h24(
                                                     fontColor:
                                                         const Color(0xff010101),
@@ -532,7 +544,8 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                               lableColor: Colors.white,
                                               onTap: () {
                                                 Get.to(
-                                                  () => const CheckOutScreen(),
+                                                  () => CheckOutScreen(
+                                                      cartData: cartData),
                                                   transition: Transition.fadeIn,
                                                 );
                                               },

@@ -73,6 +73,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
               }
             },
             builder: (context, state) {
+              print('----->>${PreferenceUtils.getString(totalProtein)}');
               return SafeArea(
                 child: Column(
                   children: [
@@ -197,10 +198,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                       nutritionixGetNxMealInfoByNameModelData!
                                                           .nfCalories
                                                           .toString()),
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalCalorie))
-                                                  .toStringAsFixed(2)),
+                                              PreferenceUtils.getString(
+                                                          totalCalorie)
+                                                      .isEmpty
+                                                  ? 1
+                                                  : double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCalorie))
+                                                      .toStringAsFixed(2)),
                                               AppColors.primaryBlue),
                                           myProgressBarCardView(
                                               'Fat',
@@ -212,10 +218,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                       nutritionixGetNxMealInfoByNameModelData!
                                                           .nfTotalFat
                                                           .toString()),
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalFat))
-                                                  .toStringAsFixed(2)),
+                                              PreferenceUtils.getString(
+                                                          totalFat)
+                                                      .isEmpty
+                                                  ? 1
+                                                  : double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalFat))
+                                                      .toStringAsFixed(2)),
                                               AppColors.coral),
                                           myProgressBarCardView(
                                               'Carbs',
@@ -227,10 +238,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                       nutritionixGetNxMealInfoByNameModelData!
                                                           .nfTotalCarbohydrate
                                                           .toString()),
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalCarbs))
-                                                  .toStringAsFixed(2)),
+                                              PreferenceUtils.getString(
+                                                          totalCarbs)
+                                                      .isEmpty
+                                                  ? 1
+                                                  : double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCarbs))
+                                                      .toStringAsFixed(2)),
                                               AppColors.mint),
                                           myProgressBarCardView(
                                               'Protein',
@@ -242,10 +258,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                       nutritionixGetNxMealInfoByNameModelData!
                                                           .nfTotalFat
                                                           .toString()),
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalProtein))
-                                                  .toStringAsFixed(2)),
+                                              PreferenceUtils.getString(
+                                                          totalProtein)
+                                                      .isEmpty
+                                                  ? 1
+                                                  : double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalProtein))
+                                                      .toStringAsFixed(2)),
                                               AppColors.skyBlue),
                                         ],
                                       ),
