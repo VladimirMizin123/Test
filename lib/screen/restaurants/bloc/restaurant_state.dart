@@ -2,6 +2,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_mo
     as order;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
@@ -190,3 +191,17 @@ class CreateCheckoutSuccessState extends RestaurantState {
 }
 
 class CreateCheckoutErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Get Order State
+
+class GetOrderLoadingState extends RestaurantState {}
+
+class GetOrderSuccessState extends RestaurantState {
+  final List<OrderData> data;
+
+  GetOrderSuccessState({required this.data});
+}
+
+class GetOrderErrorState extends RestaurantState {}

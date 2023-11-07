@@ -20,6 +20,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<CreateOrderEvent>(_onCreateOrder);
     on<CreateProductEvent>(_onCreateProduct);
     on<CreateCheckoutEvent>(_onCreateCheckout);
+    on<GetOrderDetailsEvent>(_onGetOrderDetails);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -313,6 +314,26 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(CreateCheckoutErrorState());
+    }
+  }
+
+  _onGetOrderDetails(
+      GetOrderDetailsEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetOrderLoadingState());
+
+    try {
+      await _repository.getOrderDetails(mealmeId: event.mealMeOrderId).fold(
+          (left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetOrderErrorState());
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        emit(GetOrderSuccessState(data: right.data ?? []));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetOrderErrorState());
     }
   }
 

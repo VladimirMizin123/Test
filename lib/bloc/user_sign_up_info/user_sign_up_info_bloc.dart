@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
+import 'package:gymeats_mobile/repository/add_address.dart';
 
 import '../../app/sharedPrefrence.dart';
 import '../../repository/sign_up.dart';
@@ -70,6 +72,7 @@ class UserSignUpInfoBloc
   }
 
   final SignUpRepository _repository = SignUpRepository();
+  final AddAddressRepository _addressRepository = AddAddressRepository();
   String userID = '';
   _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
     try {
@@ -82,11 +85,33 @@ class UserSignUpInfoBloc
 
         userID = right.data!.userId!;
 
-        print("USER ID IN SIGNUP FLOW ------- $userID");
-
         await PreferenceUtils.setString(prefUserData, right.data!.userId!);
         await PreferenceUtils.setString(
             prefUserEmail, event.model.email?.trim() ?? "");
+        await PreferenceUtils.setString(
+            prefUserMobile, event.model.phoneNumber?.trim() ?? "");
+
+        // try {
+        //   await _addressRepository
+        //       .addAddress(
+        //     userId: userID,
+        //     state: 'Gujarat',
+        //     zipcode: event.model.addAddressModel?.zipcode ?? '',
+        //     longitude: event.model.addAddressModel?.longitude ?? 0,
+        //     streetName: event.model.addAddressModel?.streetName ?? '',
+        //     city: event.model.addAddressModel?.city ?? '',
+        //     streetNum: event.model.addAddressModel?.streetNum ?? '4',
+        //     addressType: event.model.addAddressModel?.addressType ?? '',
+        //     country: event.model.addAddressModel?.country ?? '',
+        //     isPrimary: true,
+        //     latitude: event.model.addAddressModel?.latitude ?? 0,
+        //   )
+        //       .fold((left) {
+        //     showToast(isSuccess: false, message: left.message!);
+        //   }, (right) async {});
+        // } catch (e) {
+        //   debugPrint('CATCH ERROR WHILE FETCH MEAL PLAN');
+        // }
 
         try {
           await _repository.fetchMealPlan(right.data!.userId!).fold((left) {

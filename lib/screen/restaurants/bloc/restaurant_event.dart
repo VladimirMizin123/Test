@@ -2,6 +2,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 
 abstract class RestaurantEvent {}
@@ -124,4 +125,12 @@ class CreateCheckoutEvent extends RestaurantEvent {
   final CreateCheckOutRequestModel createCheckOutRequestModel;
 
   CreateCheckoutEvent({required this.createCheckOutRequestModel});
+}
+
+/// Get Order ==============================================================================
+
+class GetOrderDetailsEvent extends RestaurantEvent {
+  final String mealMeOrderId;
+
+  GetOrderDetailsEvent({required this.mealMeOrderId});
 }

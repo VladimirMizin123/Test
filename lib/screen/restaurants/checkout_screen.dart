@@ -307,7 +307,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               );
             }
 
-            /// Create Product State ---------------------------------------------------
+            /// Create Checkout State ---------------------------------------------------
 
             if (state is CreateCheckoutLoadingState) {
               loadCreateOrder = true;
@@ -316,24 +316,30 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               loadCreateOrder = false;
             }
             if (state is CreateCheckoutSuccessState) {
+              log('state.data['
+                  ']---------->>>>>> ${state.data['confirmUrl']}');
+
               loadCreateOrder = false;
 
               webViewOpen = true;
               controller
+                ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                ..setBackgroundColor(const Color(0x00000000))
                 ..setNavigationDelegate(
                   NavigationDelegate(
                     onProgress: (int progress) {
-                      // Update loading bar.
+                      const Center(child: CircularProgressIndicator());
                     },
                     onPageStarted: (String url) {},
                     onPageFinished: (String url) {},
                     onWebResourceError: (WebResourceError error) {},
                     onNavigationRequest: (NavigationRequest request) {
-                      log('request.url---------->>>>>> ${request.url}');
-
                       if (request.url
                           .startsWith('https://gymeats.azurewebsites.net/')) {
-                        Get.to(() => const RestaurantOrderDetailsScreen());
+                        Get.to(() => RestaurantOrderDetailsScreen(
+                              mealMeOrderId:
+                                  productData?.priceId?.mealmeOrderId ?? '',
+                            ));
                         return NavigationDecision.prevent;
                       } else {
                         return NavigationDecision.navigate;

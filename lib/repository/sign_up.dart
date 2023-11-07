@@ -64,9 +64,16 @@ class SignUpRepository {
               : 'Non-binary',
       "UserDetail.SurveyId": model.surveyId!,
       "UserDetail.DietId": model.dietId!,
-      "UserAddress.Latitude": model.latitude!,
-      "UserAddress.Longitude": model.longitude!,
+      "UserAddress.Latitude": model.addAddressModel!.latitude!.toString(),
+      "UserAddress.Longitude": model.addAddressModel!.longitude!.toString(),
+      "UserAddress.Street_Num": model.addAddressModel!.streetNum!,
+      "UserAddress.Street_Name": model.addAddressModel!.streetName!,
+      "UserAddress.City": model.addAddressModel!.city!,
+      "UserAddress.State": model.addAddressModel!.state!,
+      "UserAddress.Country": model.addAddressModel!.country!,
+      "UserAddress.Zipcode": model.addAddressModel!.zipcode!,
     };
+
     final response = await apiServices.postMultipart(
         url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {

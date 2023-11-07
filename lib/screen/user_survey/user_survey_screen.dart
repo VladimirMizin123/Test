@@ -136,6 +136,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 surveyId: surveyId,
                 options: listOptions,
                 restrictionID: restrictionIDList,
+                addAddressModel: model.addAddressModel,
               );
 
               Get.toNamed('/UserPhotoSelectionScreen',
@@ -197,6 +198,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                         surveyId: surveyId,
                         options: listOptions,
                         restrictionID: restrictionIDList,
+                        addAddressModel: model.addAddressModel,
                       );
 
                       Get.toNamed('/UserPhotoSelectionScreen',

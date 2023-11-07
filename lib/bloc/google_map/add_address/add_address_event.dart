@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
+
 abstract class AddressEvent {}
 
 class SaveClickEvent extends AddressEvent {
@@ -14,19 +16,20 @@ class SaveClickEvent extends AddressEvent {
   final String userId;
   final String isFrom;
 
-  SaveClickEvent(
-      {required this.latitude,
-      required this.longitude,
-      required this.streetNum,
-      required this.streetName,
-      required this.city,
-      required this.state,
-      required this.country,
-      required this.addressType,
-      required this.zipcode,
-      required this.isPrimary,
-      required this.userId,
-      required this.isFrom});
+  SaveClickEvent({
+    required this.latitude,
+    required this.longitude,
+    required this.streetNum,
+    required this.streetName,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.addressType,
+    required this.zipcode,
+    required this.isPrimary,
+    required this.userId,
+    required this.isFrom,
+  });
 }
 
 class UpdateClickEvent extends AddressEvent {

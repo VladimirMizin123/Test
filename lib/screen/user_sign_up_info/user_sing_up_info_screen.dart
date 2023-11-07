@@ -309,6 +309,8 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                                 .longitude
                                                 .toString(),
                                             restrictionID: model.restrictionID,
+                                            addAddressModel:
+                                                model.addAddressModel,
                                           );
                                           bloc.add(SignUpApiEvent(
                                               model: userSignUpDataModel));

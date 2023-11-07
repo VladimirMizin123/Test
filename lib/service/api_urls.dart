@@ -177,6 +177,8 @@ class ApiUrls {
       '${baseUrl}api/StripePayment/CreateProduct';
   static const String createCheckout =
       '${baseUrl}api/StripePayment/CreateCheckOut';
+  static const String getOrderDetails =
+      '${baseUrl}api/StripePayment/GetOrderById';
 
   ///Account APis---------------------------------------------------------
 

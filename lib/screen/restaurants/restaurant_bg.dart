@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -37,12 +38,11 @@ class RestaurantBGView extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RestaurantScreen(),
-                        ),
-                        (route) => false);
+                    Get.offAll(
+                      () => const AppManagerScreen(
+                        selectIndex: 3,
+                      ),
+                    );
                   },
                   child: Container(
                     height: 40.h,

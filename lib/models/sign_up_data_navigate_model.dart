@@ -24,23 +24,25 @@ class UserSignUpDataModel {
   List<String> restrictionID;
   AddAddressModel? addAddressModel;
 
-  UserSignUpDataModel(
-      {this.gender,
-      this.height,
-      this.email,
-      this.confirmPassword,
-      this.password,
-      this.phoneNumber,
-      this.age,
-      this.dietId,
-      this.firstName,
-      this.lastName,
-      this.latitude,
-      this.longitude,
-      this.surveyId,
-      this.userName,
-      this.weight,
-      this.userProfileImage,
-      this.restrictionID = const [],
-      this.options});
+  UserSignUpDataModel({
+    this.gender,
+    this.height,
+    this.email,
+    this.confirmPassword,
+    this.password,
+    this.phoneNumber,
+    this.age,
+    this.dietId,
+    this.firstName,
+    this.lastName,
+    this.latitude,
+    this.longitude,
+    this.surveyId,
+    this.userName,
+    this.weight,
+    this.userProfileImage,
+    this.restrictionID = const [],
+    this.options,
+    this.addAddressModel,
+  });
 }
