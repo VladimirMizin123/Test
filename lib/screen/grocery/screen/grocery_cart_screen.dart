@@ -50,13 +50,33 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
+        print('askReceiveOrder==>${widget.arguments!.askReceiveOrder}');
         edgesList = List.from(widget.arguments!.edgesList);
+        for (var element in edgesList) {
+          element.product = null;
+          print('==element.toJson();==>${element.toJson()}');
+        }
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // List<GrocerySearchModel> grocerySearchModalDataList = [];
+    // List<Product>? groceryMultiSearchStoreProductListList = [];
+    // List<Cart> selectedStoreProductList = [];
+    // List<GroceryDetails> edgesList = [];
+    // List<GroceryDetails> onlyProductList = [];
+
+    print(
+        'grocerySearchModalDataList---------->>>>>> ${grocerySearchModalDataList}');
+    print(
+        'groceryMultiSearchStoreProductListList---------->>>>>> ${groceryMultiSearchStoreProductListList}');
+    print(
+        'selectedStoreProductList---------->>>>>> ${selectedStoreProductList}');
+    print('edgesList---------->>>>>> ${edgesList}');
+    print('onlyProductList---------->>>>>> ${onlyProductList}');
+
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: BlocConsumer<GroceryBloc, GroceryState>(
@@ -692,6 +712,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
+                                      print(
+                                          '==edgesList[$index].product ==>${edgesList[index].product}');
                                       return edgesList[index].product != null
                                           ? Column(
                                               children: [
@@ -789,10 +811,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Text(
-                                                      edgesList[index]
-                                                              .product!
-                                                              .formattedPrice ??
-                                                          '', // '\$ 5.99',
+                                                      '\$ ${(((edgesList[index].product!.price ?? 0) / 100) * edgesList[index].product!.cartItemCount).toStringAsFixed(2)}', // '\$ 5.99',
                                                       style: FontUtils.h17(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -823,7 +842,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                  .symmetric(
+                                                                      .symmetric(
                                                                   horizontal:
                                                                       12),
                                                           child: Row(
@@ -1166,7 +1185,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                  .symmetric(
+                                                                      .symmetric(
                                                                   horizontal:
                                                                       12),
                                                           child: Row(
@@ -1393,7 +1412,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     fontWeight: FWT.semiBold),
                               ),
                               Text(
-                                '\$ ${totalAmount(edgesList)}',
+                                '\$ ${totalAmount(edgesList).toStringAsFixed(2)}',
                                 style: FontUtils.h22(
                                     fontColor: AppColors.black,
                                     fontWeight: FWT.semiBold),
@@ -1403,13 +1422,31 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           const SizedBox(height: 30),
                           simpleTextBorderButton(
                             context: context,
-                            color: AppColors.green,
+                            color: edgesList.indexWhere(
+                                        (element) => element.product == null) <
+                                    0
+                                ? AppColors.green
+                                : AppColors.gray,
                             buttonLable: 'Checkout',
                             height: screenSize.height * 0.065,
                             width: screenSize.width,
                             isLoadingWidget: false,
                             onTap: () {
-                              Get.toNamed('/CheckoutScreen');
+                              int emptyIndex = edgesList.indexWhere(
+                                  (element) => element.product == null);
+
+                              if (emptyIndex < 0) {
+                                Get.toNamed('/CheckoutScreen',
+                                    arguments: GroceryCartScreenArguments(
+                                      edgesList: edgesList,
+                                      askReceiveOrder:
+                                          widget.arguments!.askReceiveOrder,
+                                      groceryBloc: groceryBloc,
+                                    ));
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: 'Please, select the product!');
+                              }
                             },
                             isDarkColor: true,
                             isFillColor: true,
@@ -1471,10 +1508,14 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 // Total Amount
 
   double totalAmount(List<GroceryDetails> edgesList) {
+    // '\$ ${(((edgesList[index].product!.price ?? 0) / 100) * edgesList[index].product!.cartItemCount).toStringAsFixed(2)}', //
+
     double total = 0;
     for (var i = 0; i < edgesList.length; i++) {
       if (edgesList[i].product != null) {
-        total = total + edgesList[i].product!.price!;
+        total = total +
+            ((edgesList[i].product!.price! / 100) *
+                edgesList[i].product!.cartItemCount);
       }
     }
     return total;

@@ -20,12 +20,15 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<CleatGroceryEvent>(_onClearShoppingList);
     on<BarcodeScanEvent>(_onScanBarcode);
     on<AddNewCustomMealEvent>(_onAddCustomMeal);
+    on<GetUserAddressEvent>(_onGetUserAddress);
   }
 
   final GroceryRepository _repository = GroceryRepository();
 
-  _onGroceryProductList(GroceryProductListEvent event, Emitter<GroceryState> emit) async {
-    emit(GroceryProductListState(productList: event.productList, productID: event.productID));
+  _onGroceryProductList(
+      GroceryProductListEvent event, Emitter<GroceryState> emit) async {
+    emit(GroceryProductListState(
+        productList: event.productList, productID: event.productID));
   }
 
   _onScanBarcode(BarcodeScanEvent event, Emitter<GroceryState> emit) async {
@@ -43,10 +46,19 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onAddCustomMeal(AddNewCustomMealEvent event, Emitter<GroceryState> emit) async {
+  _onAddCustomMeal(
+      AddNewCustomMealEvent event, Emitter<GroceryState> emit) async {
     emit(AddNewCustomMealLoadingState());
     try {
-      await _repository.addNewCustomMeal(calorie: event.calorie, carbs: event.carbs, fat: event.fat, name: event.name, protein: event.protein, type: event.type).fold((left) {
+      await _repository
+          .addNewCustomMeal(
+              calorie: event.calorie,
+              carbs: event.carbs,
+              fat: event.fat,
+              name: event.name,
+              protein: event.protein,
+              type: event.type)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(AddNewCustomMealErrorState());
       }, (right) {
@@ -59,14 +71,16 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onFetchGroceryItem(GroceryFetchEvent event, Emitter<GroceryState> emit) async {
+  _onFetchGroceryItem(
+      GroceryFetchEvent event, Emitter<GroceryState> emit) async {
     emit(GroceryFetchLoadingState());
 
     try {
       await _repository.fetchGroceryShoppingList().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryFetchSuccessState(edgesList: right.data == null ? [] : right.data!));
+        emit(GroceryFetchSuccessState(
+            edgesList: right.data == null ? [] : right.data!));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -74,15 +88,34 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onAddToShoppingList(GroceryAddToShoppingListEvent event, Emitter<GroceryState> emit) async {
-    emit(GroceryAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
+  _onAddToShoppingList(
+      GroceryAddToShoppingListEvent event, Emitter<GroceryState> emit) async {
+    emit(GroceryAddToShoppingLoadingState(
+        productId: event.productID,
+        isAdd: event.isAdd,
+        isRemove: event.isRemove));
 
     try {
-      await _repository.recipeAddToGrocery(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, isChecked: event.isChecked, unitSize: event.unitSize).fold((left) {
+      await _repository
+          .recipeAddToGrocery(
+              mealmeStoreId: event.mealmeStoreId,
+              price: event.price,
+              productID: event.productID,
+              productName: event.productName,
+              quantity: event.quantity,
+              recipeId: event.recipeId,
+              unitOfMeasurement: event.unitOfMeasurement,
+              isChecked: event.isChecked,
+              unitSize: event.unitSize)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(GroceryAddToShoppingErrorState());
       }, (right) {
-        emit(GroceryAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData: right.data, isAdd: event.isAdd, isRemove: event.isRemove));
+        emit(GroceryAddToShoppingSuccessState(
+            isAdded: right.success ?? false,
+            recipesAddToGroceryData: right.data,
+            isAdd: event.isAdd,
+            isRemove: event.isRemove));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -90,7 +123,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onRemoveShoppingItem(RemoveGroceryEvent event, Emitter<GroceryState> emit) async {
+  _onRemoveShoppingItem(
+      RemoveGroceryEvent event, Emitter<GroceryState> emit) async {
     emit(RemoveGroceryLoadingState(productId: event.productID));
 
     try {
@@ -99,7 +133,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(RemoveGroceryErrorState(productID: event.productID));
       }, (right) {
-        emit(RemoveGrocerySuccessState(productID: event.productID, isDelete: right.success));
+        emit(RemoveGrocerySuccessState(
+            productID: event.productID, isDelete: right.success));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -110,11 +145,17 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   _onSearchItem(GrocerySearchEvent event, Emitter<GroceryState> emit) async {
     emit(GrocerySearchLoadingState());
     try {
-      await _repository.grocerySearch(latitude: '41.881832', longitude: '-87.623177', grocerySearchModal: event.grocerySearchModelList!).fold((left) {
+      await _repository
+          .grocerySearch(
+              latitude: '41.881832',
+              longitude: '-87.623177',
+              grocerySearchModal: event.grocerySearchModelList!)
+          .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GrocerySearchSuccessState(groceryMultiSearchProductList: right.data!.carts));
+        emit(GrocerySearchSuccessState(
+            groceryMultiSearchProductList: right.data!.carts));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -122,15 +163,19 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onGroceryDetailsMealInfo(GroceryDetailsMealInfoEvent event, Emitter<GroceryState> emit) async {
+  _onGroceryDetailsMealInfo(
+      GroceryDetailsMealInfoEvent event, Emitter<GroceryState> emit) async {
     emit(GroceryNutritionixGetNxMealInfoByNameLoadingState());
 
     try {
-      await _repository.groceryDetailsMealInfo(productName: event.groceryProductName!).fold((left) {
+      await _repository
+          .groceryDetailsMealInfo(productName: event.groceryProductName!)
+          .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(GroceryNutritionixGetNxMealInfoByNameSuccessState(nutritionixGetNxMealInfoByNameModelData: right.data!));
+        emit(GroceryNutritionixGetNxMealInfoByNameSuccessState(
+            nutritionixGetNxMealInfoByNameModelData: right.data!));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -138,11 +183,14 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     }
   }
 
-  _onGrocerySelectedStoreEvent(GrocerySelectedStoreEvent event, Emitter<GroceryState> emit) async {
-    emit(GrocerySelectedStoreEventState(productsList: event.productsList ?? []));
+  _onGrocerySelectedStoreEvent(
+      GrocerySelectedStoreEvent event, Emitter<GroceryState> emit) async {
+    emit(
+        GrocerySelectedStoreEventState(productsList: event.productsList ?? []));
   }
 
-  _onClearShoppingList(CleatGroceryEvent event, Emitter<GroceryState> emit) async {
+  _onClearShoppingList(
+      CleatGroceryEvent event, Emitter<GroceryState> emit) async {
     emit(ClearShoppingListLoadingState());
 
     try {
@@ -181,6 +229,23 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
       return false;
     } else {
       return true;
+    }
+  }
+
+  // Get Grocery Item Bloc =================================================================
+  _onGetUserAddress(
+      GetUserAddressEvent event, Emitter<GroceryState> emit) async {
+    emit(GetUserAddressLoadingState());
+
+    try {
+      await _repository.getUserAddressData().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        emit(GetUserAddressSuccessState(userAddress: right.data ?? []));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetUserAddressErrorState());
     }
   }
 }

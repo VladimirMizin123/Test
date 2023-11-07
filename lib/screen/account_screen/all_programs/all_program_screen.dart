@@ -317,11 +317,10 @@ class _AllProgramScreenState extends State<AllProgramScreen> {
                                   height: 55.w,
                                   width: 55.w,
                                   decoration: const BoxDecoration(
-                                    color: AppColors.middleGray,
+                                    // color: AppColors.middleGray,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const SvgImage(
-                                      image: AssetsUtils.appleLogo),
+                                  child: Image.asset(AssetsUtils.user),
                                 ),
                                 title: Text(data?.name ?? ''),
                                 subtitle: Text(data?.author ?? ""),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +10,6 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-
 import '../../../../constant/asset_utils.dart';
 import '../../../../constant/color_utils.dart';
 import '../../../../widget/back_button_widget.dart';
@@ -115,7 +115,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                   CircleAvatar(
                                     radius: 14.w,
                                     backgroundColor: AppColors.whiteColor,
-                                    child: Container(
+                                    child: SizedBox(
                                         height: 17.w,
                                         width: 17.w,
                                         child: const Center(
@@ -201,75 +201,98 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                         SizedBox(
                           height: 8.h,
                         ),
-                        Container(
-                          height: 170.h,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey.shade200,
-                                  spreadRadius: 1,
-                                  blurRadius: 3),
-                            ],
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 8.h,
-                            left: 8.w,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Sample Recipes",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18.sp))
-                                  .paddingOnly(left: 7.w),
-                              SizedBox(
-                                height: 6.h,
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: recipesList.length,
-                                  itemBuilder: (context, index) {
-                                    var data = recipesList[index];
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 180.w,
-                                          height: 90.h,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.w),
-                                            image: DecorationImage(
-                                                image:
-                                                    AssetImage(data["image"]),
-                                                fit: BoxFit.fill),
-                                          ),
-                                        ),
-                                        Text(data["title"],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 16.sp)),
-                                      ],
-                                    ).paddingAll(7.w);
-                                  },
+                        if (data?.sampleMeal?.isNotEmpty ?? false) ...[
+                          Container(
+                            height: 170.h,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: AppColors.whiteColor,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey.shade200,
+                                    spreadRadius: 1,
+                                    blurRadius: 3),
+                              ],
+                            ),
+                            padding: EdgeInsets.only(
+                              top: 8.h,
+                              left: 8.w,
+                            ),
+                            child: Column(
+                              // mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Sample Recipes",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18.sp))
+                                    .paddingOnly(left: 7.w),
+                                SizedBox(
+                                  height: 6.h,
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: data?.sampleMeal?.length,
+                                    itemBuilder: (context, index) {
+                                      var dataOfMeal = data?.sampleMeal?[index];
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          CachedNetworkImage(
+                                            width: 180.w,
+                                            height: 90.h,
+                                            imageUrl:
+                                                dataOfMeal?.mainImage ?? '',
+                                            fit: BoxFit.fill,
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.lightGrey,
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.w),
+                                              child: const Image(
+                                                image: AssetImage(
+                                                    AssetsUtils.food3),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 180.w,
+                                            child: Text(
+                                              dataOfMeal?.name ?? '',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 16.sp,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ).paddingAll(7.w);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 6.h),
+                          SizedBox(height: 6.h)
+                        ],
                         Text(
                           "What to Eat",
                           style: TextStyle(
@@ -286,11 +309,11 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                     indicatorColor: AppColors.primaryBlueColor,
                                     tabs: tabs,
                                   ),
-                                  Container(
+                                  SizedBox(
                                     height: 250.h,
-                                    child: TabBarView(children: [
-                                      Container(
-                                        child: SingleChildScrollView(
+                                    child: TabBarView(
+                                      children: [
+                                        SingleChildScrollView(
                                           child: Column(
                                             children: List.generate(
                                               data?.cpcsIngredientGroups
@@ -319,9 +342,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        child: SingleChildScrollView(
+                                        SingleChildScrollView(
                                           child: Column(
                                             children: List.generate(
                                               data?.cpcsIngredientGroups
@@ -350,9 +371,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        child: SingleChildScrollView(
+                                        SingleChildScrollView(
                                           child: Column(
                                             children: List.generate(
                                               data?.cpcsIngredientGroups?.avoid
@@ -380,8 +399,8 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   )
                                 ],
                               ),

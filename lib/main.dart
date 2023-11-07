@@ -250,9 +250,15 @@ class _MyAppState extends State<MyApp> {
             //   page: () => const BestMatchRestaurantsScreen(),
             // ),
             GetPage(
-              name: '/CheckoutScreen',
-              page: () => const CheckoutScreen(),
-            ),
+                name: '/CheckoutScreen',
+                page: () {
+                  GroceryCartScreenArguments? argument =
+                      (Get.arguments is GroceryCartScreenArguments)
+                          ? Get.arguments
+                          : null;
+                  return CheckoutScreen(arguments: argument);
+                }),
+
             GetPage(
               name: '/PaymentCardSelectionScreen',
               page: () => const PaymentCardSelectionScreen(),

@@ -14,6 +14,9 @@ class GroceryFetchEvent extends GroceryEvent {
   GroceryFetchEvent();
 }
 
+/// Get User Address Event ===============================================================
+class GetUserAddressEvent extends GroceryEvent {}
+
 class GroceryAddToShoppingListEvent extends GroceryEvent {
   final String productID;
   final String productName;
@@ -66,8 +69,6 @@ class GrocerySelectedStoreEvent extends GroceryEvent {
   GrocerySelectedStoreEvent({this.productsList});
 }
 
-
-
 class GroceryProductListEvent extends GroceryEvent {
   final List<Product>? productList;
   final String? productID;
@@ -91,5 +92,6 @@ class AddNewCustomMealEvent extends GroceryEvent {
   final String? calorie;
   final String? type;
 
-  AddNewCustomMealEvent({ this.name,  this.protein,  this.fat,  this.carbs,  this.calorie,  this.type});
+  AddNewCustomMealEvent(
+      {this.name, this.protein, this.fat, this.carbs, this.calorie, this.type});
 }

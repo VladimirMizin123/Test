@@ -668,7 +668,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildDatePicker() => Container(
-        height: 200,
+        height: 300,
         // decoration: BoxDecoration(
         //     color: Colors.grey.shade200,
         //     borderRadius: BorderRadius.only(
@@ -678,7 +678,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: CupertinoDatePicker(
           mode: CupertinoDatePickerMode.date,
           initialDateTime: dateTime,
-          minimumDate: DateTime(2019),
+          minimumDate: DateTime(1900),
           maximumYear: DateTime.now().year,
           backgroundColor: Colors.grey.shade200,
           onDateTimeChanged: (dateTime) => setState(() {

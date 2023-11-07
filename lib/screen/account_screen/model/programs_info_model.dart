@@ -66,6 +66,7 @@ class ProgramInfo {
   String? descriptionShort;
   String? descriptionLong;
   String? backgroundImage;
+  List<SampleMeal>? sampleMeal;
   bool? isPremium;
   CpcsIngredientGroups? cpcsIngredientGroups;
 
@@ -78,6 +79,7 @@ class ProgramInfo {
     this.descriptionShort,
     this.descriptionLong,
     this.backgroundImage,
+    this.sampleMeal,
     this.isPremium,
     this.cpcsIngredientGroups,
   });
@@ -91,6 +93,10 @@ class ProgramInfo {
         descriptionShort: json["descriptionShort"],
         descriptionLong: json["descriptionLong"],
         backgroundImage: json["backgroundImage"],
+        sampleMeal: json["sampleMeal"] == null
+            ? []
+            : List<SampleMeal>.from(
+                json["sampleMeal"]!.map((x) => SampleMeal.fromJson(x))),
         isPremium: json["isPremium"],
         cpcsIngredientGroups: json["cpcsIngredientGroups"] == null
             ? null
@@ -106,6 +112,9 @@ class ProgramInfo {
         "descriptionShort": descriptionShort,
         "descriptionLong": descriptionLong,
         "backgroundImage": backgroundImage,
+        "sampleMeal": sampleMeal == null
+            ? []
+            : List<dynamic>.from(sampleMeal!.map((x) => x.toJson())),
         "isPremium": isPremium,
         "cpcsIngredientGroups": cpcsIngredientGroups?.toJson(),
       };
@@ -124,15 +133,15 @@ class CpcsIngredientGroups {
 
   factory CpcsIngredientGroups.fromJson(Map<String, dynamic> json) =>
       CpcsIngredientGroups(
-        increase: json["increase"] == null || json["increase"] == []
+        increase: json["increase"] == null
             ? []
             : List<Crease>.from(
                 json["increase"]!.map((x) => Crease.fromJson(x))),
-        decrease: json["decrease"] == null || json["decrease"] == []
+        decrease: json["decrease"] == null
             ? []
             : List<Crease>.from(
                 json["decrease"]!.map((x) => Crease.fromJson(x))),
-        avoid: json["avoid"] == null || json["avoid"] == []
+        avoid: json["avoid"] == null
             ? []
             : List<Crease>.from(json["avoid"]!.map((x) => Crease.fromJson(x))),
       );
@@ -171,5 +180,68 @@ class Crease {
         "name": name,
         "benefits": benefits,
         "description": description,
+      };
+}
+
+class SampleMeal {
+  String? id;
+  String? name;
+  dynamic mainImage;
+  NutrientsPerServing? nutrientsPerServing;
+
+  SampleMeal({
+    this.id,
+    this.name,
+    this.mainImage,
+    this.nutrientsPerServing,
+  });
+
+  factory SampleMeal.fromJson(Map<String, dynamic> json) => SampleMeal(
+        id: json["id"],
+        name: json["name"],
+        mainImage: json["mainImage"],
+        nutrientsPerServing: json["nutrientsPerServing"] == null
+            ? null
+            : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "mainImage": mainImage,
+        "nutrientsPerServing": nutrientsPerServing?.toJson(),
+      };
+}
+
+class NutrientsPerServing {
+  double? calories;
+  double? protein;
+  double? fat;
+  double? carbs;
+  int? omega3;
+
+  NutrientsPerServing({
+    this.calories,
+    this.protein,
+    this.fat,
+    this.carbs,
+    this.omega3,
+  });
+
+  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) =>
+      NutrientsPerServing(
+        calories: json["calories"]?.toDouble(),
+        protein: json["protein"]?.toDouble(),
+        fat: json["fat"]?.toDouble(),
+        carbs: json["carbs"]?.toDouble(),
+        omega3: json["omega3"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "calories": calories,
+        "protein": protein,
+        "fat": fat,
+        "carbs": carbs,
+        "omega3": omega3,
       };
 }

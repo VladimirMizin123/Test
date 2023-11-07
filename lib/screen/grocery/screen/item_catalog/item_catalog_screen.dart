@@ -165,10 +165,10 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                 //   fit: BoxFit.cover,
                                 // ),
                                 const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Flexible(
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
                                     child: Text(
                                       groceryResult[index].itemName ?? '',
                                       maxLines: 2,

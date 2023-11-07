@@ -5,6 +5,8 @@ import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 
+import '../../restaurants/model/get_user_address_model.dart';
+
 abstract class GroceryState {}
 
 class InitialState extends GroceryState {}
@@ -41,7 +43,11 @@ class GroceryAddToShoppingSuccessState extends GroceryState {
   final bool? isAdd;
   final bool? isRemove;
 
-  GroceryAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+  GroceryAddToShoppingSuccessState(
+      {required this.recipesAddToGroceryData,
+      required this.isAdd,
+      required this.isAdded,
+      required this.isRemove});
 }
 
 class GroceryAddToShoppingErrorState extends GroceryState {}
@@ -108,7 +114,8 @@ class GroceryDetailsMealInfoLoadingState extends GroceryState {
 class GroceryDetailsMealInfoSuccessState extends GroceryState {
   final List<Product>? groceryMultiSearchProductList;
 
-  GroceryDetailsMealInfoSuccessState({required this.groceryMultiSearchProductList});
+  GroceryDetailsMealInfoSuccessState(
+      {required this.groceryMultiSearchProductList});
 }
 
 class GroceryDetailsMealInfoErrorState extends GroceryState {
@@ -122,9 +129,11 @@ class GroceryNutritionixGetNxMealInfoByNameLoadingState extends GroceryState {
 }
 
 class GroceryNutritionixGetNxMealInfoByNameSuccessState extends GroceryState {
-  final NutritionixGetNxMealInfoByNameModelData nutritionixGetNxMealInfoByNameModelData;
+  final NutritionixGetNxMealInfoByNameModelData
+      nutritionixGetNxMealInfoByNameModelData;
 
-  GroceryNutritionixGetNxMealInfoByNameSuccessState({required this.nutritionixGetNxMealInfoByNameModelData});
+  GroceryNutritionixGetNxMealInfoByNameSuccessState(
+      {required this.nutritionixGetNxMealInfoByNameModelData});
 }
 
 class GroceryNutritionixGetNxMealInfoByNameErrorState extends GroceryState {
@@ -161,10 +170,8 @@ class GroceryProductListState extends GroceryState {
   final List<Product>? productList;
   final String? productID;
 
-  GroceryProductListState({required this.productList,
-    this.productID});
+  GroceryProductListState({required this.productList, this.productID});
 }
-
 
 class ClearShoppingListLoadingState extends GroceryState {}
 
@@ -176,7 +183,6 @@ class ClearShoppingListSuccessState extends GroceryState {
   ClearShoppingListSuccessState({required this.isClear});
 }
 
-
 class BarcodeScannerLoadingState extends GroceryState {}
 
 class BarcodeScannerSuccessState extends GroceryState {
@@ -187,7 +193,6 @@ class BarcodeScannerSuccessState extends GroceryState {
 
 class BarcodeScannerErrorState extends GroceryState {}
 
-
 class AddNewCustomMealLoadingState extends GroceryState {}
 
 class AddNewCustomMealSuccessState extends GroceryState {
@@ -197,3 +202,15 @@ class AddNewCustomMealSuccessState extends GroceryState {
 }
 
 class AddNewCustomMealErrorState extends GroceryState {}
+
+/// Get User Address State ===============================================================
+
+class GetUserAddressSuccessState extends GroceryState {
+  final List<UserAddress> userAddress;
+
+  GetUserAddressSuccessState({required this.userAddress});
+}
+
+class GetUserAddressLoadingState extends GroceryState {}
+
+class GetUserAddressErrorState extends GroceryState {}

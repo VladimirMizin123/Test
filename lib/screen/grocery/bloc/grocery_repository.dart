@@ -15,20 +15,24 @@ import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 
+import '../../restaurants/model/get_user_address_model.dart';
+
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
 
   String userID = PreferenceUtils.getString(prefUserData);
   // String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
 
-  Future<Either<ErrorModel, GetGroceryShoppingListModel>> fetchGroceryShoppingList() async {
+  Future<Either<ErrorModel, GetGroceryShoppingListModel>>
+      fetchGroceryShoppingList() async {
     // String apiURL = '${ApiUrls.getAllItemFromShoppingList}?userId=$userID';
     String apiURL = '${ApiUrls.getShoppingList}/$userID';
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);
     // log(response.body, name: 'API RESPONSE :');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetGroceryShoppingListModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          GetGroceryShoppingListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -64,7 +68,8 @@ class GroceryRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -73,14 +78,16 @@ class GroceryRepository {
   Future<Either<ErrorModel, DeleteGroceryShoppingItemModel>> removeGrocery({
     required String productID,
   }) async {
-    String apiURL = '${ApiUrls.removeProduct}?userId=$userID&productId=$productID';
+    String apiURL =
+        '${ApiUrls.removeProduct}?userId=$userID&productId=$productID';
 
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.delete(apiURL);
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(DeleteGroceryShoppingItemModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          DeleteGroceryShoppingItemModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -111,7 +118,8 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>> groceryDetailsMealInfo({
+  Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>>
+      groceryDetailsMealInfo({
     required String productName,
   }) async {
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
@@ -121,34 +129,43 @@ class GroceryRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(jsonDecode(response.body)));
+      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
+          jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, RecipesAddToGroceryModel>> addToShoppingList({required String databaseIdOfRecipes}) async {
-    final response = await apiServices.post('${ApiUrls.addToShoppingList}/$userID', {
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>> addToShoppingList(
+      {required String databaseIdOfRecipes}) async {
+    final response =
+        await apiServices.post('${ApiUrls.addToShoppingList}/$userID', {
       "databaseIdOfRecipes": [databaseIdOfRecipes]
     });
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, RecipesAddToGroceryModel>> clearShoppingList() async {
-    final response = await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
+  Future<Either<ErrorModel, RecipesAddToGroceryModel>>
+      clearShoppingList() async {
+    final response =
+        await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
-  Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(String barcodeID) async {
-    final response = await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
+  Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(
+      String barcodeID) async {
+    final response =
+        await apiServices.get('${ApiUrls.byBarcodeScan}/$barcodeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(BarcodeScannerModal.fromJson(jsonDecode(response.body)));
     } else {
@@ -156,7 +173,13 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> addNewCustomMeal({String? name, String? protein, String? fat, String? carbs, String? calorie, String? type}) async {
+  Future<Either<ErrorModel, SuccessModel>> addNewCustomMeal(
+      {String? name,
+      String? protein,
+      String? fat,
+      String? carbs,
+      String? calorie,
+      String? type}) async {
     final response = await apiServices.postMultipart(
       url: ApiUrls.addNewCustomMeal,
       body: {
@@ -172,6 +195,22 @@ class GroceryRepository {
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// GetUserGroceryList ====================================================================
+
+  Future<Either<ErrorModel, GetUserAddressModel>> getUserAddressData() async {
+    final response = await apiServices.get(
+      '${ApiUrls.getUserAddress}/$userID',
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetUserAddressModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(GetUserAddressModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
