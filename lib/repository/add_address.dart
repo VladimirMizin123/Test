@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -39,6 +40,8 @@ class AddAddressRepository {
       "isPrimary": isPrimary,
       "userId": userId,
     };
+
+    log('data---------->>>>>> ${data}');
 
     final response = await apiServices.post(ApiUrls.addNewAddress, data);
     if (response.statusCode == 200 || response.statusCode == 201) {

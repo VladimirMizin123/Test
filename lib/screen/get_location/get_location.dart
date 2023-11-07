@@ -699,10 +699,6 @@ class _GetUserAddressState extends State<GetUserAddress>
                             'isPrimary': true,
                           };
 
-                          print(
-                              'argumentsValue---------->>>>>> $argumentsValue');
-                          print('argumentsValue---------->>>>>> $addressData');
-
                           // if (argumentsValue['string'] == 'isFromRegister') {
                           Get.to(
                             () => AddressConfirmation(

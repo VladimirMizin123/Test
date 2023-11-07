@@ -12,6 +12,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_mo
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
@@ -261,6 +262,23 @@ class RestaurantRepository {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Get Order Details====================================================================
+
+  Future<Either<ErrorModel, GetOrderDetails>> getOrderDetails(
+      {required String mealmeId}) async {
+    final response = await apiServices.get(
+      '${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId',
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

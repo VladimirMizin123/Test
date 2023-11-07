@@ -207,23 +207,24 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                 onPressed: () {
                                   UserSignUpDataModel userSignUpDataModel =
                                       UserSignUpDataModel(
-                                          firstName: model.firstName,
-                                          lastName: model.lastName,
-                                          email: model.email,
-                                          password: model.password,
-                                          userName: model.userName,
-                                          confirmPassword:
-                                              model.confirmPassword,
-                                          phoneNumber: model.phoneNumber,
-                                          gender: model.gender,
-                                          age: model.age,
-                                          height: model.height,
-                                          weight: model.weight,
-                                          dietId: model.dietId,
-                                          surveyId: model.surveyId,
-                                          userProfileImage: imageFile,
-                                          options: model.options,
-                                          restrictionID: model.restrictionID);
+                                    firstName: model.firstName,
+                                    lastName: model.lastName,
+                                    email: model.email,
+                                    password: model.password,
+                                    userName: model.userName,
+                                    confirmPassword: model.confirmPassword,
+                                    phoneNumber: model.phoneNumber,
+                                    gender: model.gender,
+                                    age: model.age,
+                                    height: model.height,
+                                    weight: model.weight,
+                                    dietId: model.dietId,
+                                    surveyId: model.surveyId,
+                                    userProfileImage: imageFile,
+                                    options: model.options,
+                                    restrictionID: model.restrictionID,
+                                    addAddressModel: model.addAddressModel,
+                                  );
                                   Get.toNamed('/UserSignUpInfoScreen',
                                       arguments: userSignUpDataModel);
                                 },

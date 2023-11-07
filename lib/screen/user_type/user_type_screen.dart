@@ -251,17 +251,19 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               FocusScope.of(context).unfocus();
                               UserSignUpDataModel userSignUpDataModel =
                                   UserSignUpDataModel(
-                                      firstName: model.firstName,
-                                      lastName: model.lastName,
-                                      email: model.email,
-                                      password: model.password,
-                                      userName: model.userName,
-                                      confirmPassword: model.confirmPassword,
-                                      phoneNumber: model.phoneNumber,
-                                      gender: genderName,
-                                      age: ageController.text,
-                                      height: heightController.text,
-                                      weight: weightController.text);
+                                firstName: model.firstName,
+                                lastName: model.lastName,
+                                email: model.email,
+                                password: model.password,
+                                userName: model.userName,
+                                confirmPassword: model.confirmPassword,
+                                phoneNumber: model.phoneNumber,
+                                gender: genderName,
+                                age: ageController.text,
+                                height: heightController.text,
+                                weight: weightController.text,
+                                addAddressModel: model.addAddressModel,
+                              );
                               Get.toNamed('/UserSurveyScreen',
                                   arguments: userSignUpDataModel);
                               /*ageController.clear();
