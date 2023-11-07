@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart'
@@ -24,7 +26,9 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_m
     as product;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/order_details_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'bloc/restaurant_event.dart';
 import 'bloc/restaurant_state.dart';
@@ -194,12 +198,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   List<product.ProductMealmeItems> productMealMeData = [];
   bool createOrder = false;
   ProductData? productData;
-
+  bool webViewOpen = false;
   @override
   void initState() {
     super.initState();
     restaurantBloc.add(GetUserAddressEvent());
+    cardData['name'] = 'demo';
+    cardData['number'] = '4242424242424242';
+    cardData['valid'] = '12/2034';
+    cardData['cvv'] = '456';
   }
+
+  WebViewController controller = WebViewController();
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool getAddressLoadingState = false;
@@ -255,6 +265,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               if (orderData != null) {
                 createOrder = true;
               }
+
+              log('loadCreateOrder---------->>>>>> $loadCreateOrder');
+
               loadCreateOrder = false;
             }
 
@@ -304,179 +317,308 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             }
             if (state is CreateCheckoutSuccessState) {
               loadCreateOrder = false;
+
+              webViewOpen = true;
+              controller
+                ..setNavigationDelegate(
+                  NavigationDelegate(
+                    onProgress: (int progress) {
+                      // Update loading bar.
+                    },
+                    onPageStarted: (String url) {},
+                    onPageFinished: (String url) {},
+                    onWebResourceError: (WebResourceError error) {},
+                    onNavigationRequest: (NavigationRequest request) {
+                      log('request.url---------->>>>>> ${request.url}');
+
+                      if (request.url
+                          .startsWith('https://gymeats.azurewebsites.net/')) {
+                        Get.to(() => const RestaurantOrderDetailsScreen());
+                        return NavigationDecision.prevent;
+                      } else {
+                        return NavigationDecision.navigate;
+                      }
+                    },
+                  ),
+                )
+                ..loadRequest(
+                  Uri.parse(state.data['confirmUrl']),
+                );
             }
           },
           builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 5,
-                ),
-                Center(
-                  child: Image.asset(
-                    AssetsUtils.gymEatsSpoon,
-                    height: 22.h,
-                    width: 56.w,
-                    color: AppColors.terracotta,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+            return webViewOpen == true
+                ? WebViewWidget(controller: controller)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: const Icon(
-                          Icons.arrow_back_ios,
-                        ),
-                      ),
-                      const Text(
-                        'Checkout',
-                        style: TextStyle(
-                          color: Color(0xFF010101),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 24,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                       const SizedBox(
-                        width: 30,
-                      )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ///Payment method --------------------------------------------------------------------
-                          Padding(
-                            padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
-                            child: Text(
-                              'Payment method',
-                              style: FontUtils.h18(
-                                fontColor: const Color(0xff5F5F5F),
-                                fontWeight: FWT.medium,
+                        height: 5,
+                      ),
+                      Center(
+                        child: Image.asset(
+                          AssetsUtils.gymEatsSpoon,
+                          height: 22.h,
+                          width: 56.w,
+                          color: AppColors.terracotta,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Get.back();
+                              },
+                              child: const Icon(
+                                Icons.arrow_back_ios,
                               ),
                             ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                width: 1,
-                                color: AppColors.terracotta,
+                            const Text(
+                              'Checkout',
+                              style: TextStyle(
+                                color: Color(0xFF010101),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 24,
                               ),
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 16,
-                                )
-                              ],
+                              textAlign: TextAlign.center,
                             ),
-                            child: cardData.isEmpty
-                                ? Row(
+                            const SizedBox(
+                              width: 30,
+                            )
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ///Payment method --------------------------------------------------------------------
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 20.h, bottom: 16.h),
+                                  child: Text(
+                                    'Payment method',
+                                    style: FontUtils.h18(
+                                      fontColor: const Color(0xff5F5F5F),
+                                      fontWeight: FWT.medium,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      width: 1,
+                                      color: AppColors.terracotta,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
+                                      )
+                                    ],
+                                  ),
+                                  child: cardData.isEmpty
+                                      ? Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                                AssetsUtils.debitCard),
+                                            const SizedBox(
+                                              width: 15,
+                                            ),
+                                            const Text(
+                                              'Choose payment\nmethod',
+                                              style: TextStyle(
+                                                color: Color(0xff010101),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                await Get.to(
+                                                  () =>
+                                                      const AddDebitCardScreen(),
+                                                  transition: Transition.fadeIn,
+                                                )!
+                                                    .then((value) {
+                                                  if (value != null) {
+                                                    cardData = value;
+                                                    setState(() {});
+                                                  }
+                                                });
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Text('Edit',
+                                                      style: FontUtils.h14(
+                                                          fontColor: AppColors
+                                                              .terracotta,
+                                                          fontWeight:
+                                                              FWT.lightMedium)),
+                                                  const Icon(
+                                                    Icons
+                                                        .keyboard_arrow_right_sharp,
+                                                    color: AppColors.terracotta,
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                                AssetsUtils.icVisa),
+                                            const SizedBox(
+                                              width: 15,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Visa',
+                                                  style: TextStyle(
+                                                    color: Color(0xff010101),
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'Ending ${cardData['number'].toString().substring(cardData['number'].toString().length - 4)}',
+                                                  style: const TextStyle(
+                                                    color: Color(0xff010101),
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const Spacer(),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                await Get.to(
+                                                  () => AddDebitCardScreen(
+                                                    data: cardData,
+                                                  ),
+                                                  transition: Transition.fadeIn,
+                                                )!
+                                                    .then((value) {
+                                                  if (value != null) {
+                                                    cardData = value;
+                                                    setState(() {});
+                                                  }
+                                                });
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    'Edit',
+                                                    style: FontUtils.h14(
+                                                      fontColor:
+                                                          AppColors.terracotta,
+                                                      fontWeight:
+                                                          FWT.lightMedium,
+                                                    ),
+                                                  ),
+                                                  const Icon(
+                                                    Icons
+                                                        .keyboard_arrow_right_sharp,
+                                                    color: AppColors.terracotta,
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                ),
+
+                                ///Delivery info --------------------------------------------------------------------
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 20.h, bottom: 16.h),
+                                  child: Text(
+                                    'Delivery info',
+                                    style: FontUtils.h18(
+                                      fontColor: const Color(0xff5F5F5F),
+                                      fontWeight: FWT.medium,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
+                                      )
+                                    ],
+                                  ),
+                                  child: Row(
                                     children: [
-                                      SvgPicture.asset(AssetsUtils.debitCard),
+                                      SvgPicture.asset(
+                                          AssetsUtils.deliveryInfo),
                                       const SizedBox(
                                         width: 15,
                                       ),
                                       const Text(
-                                        'Choose payment\nmethod',
+                                        'Bring me the order',
                                         style: TextStyle(
                                           color: Color(0xff010101),
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                       ),
                                       const Spacer(),
                                       GestureDetector(
-                                        onTap: () async {
-                                          await Get.to(
-                                            () => const AddDebitCardScreen(),
-                                            transition: Transition.fadeIn,
-                                          )!
-                                              .then((value) {
-                                            if (value != null) {
-                                              cardData = value;
-                                              setState(() {});
-                                            }
-                                          });
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Text('Edit',
-                                                style: FontUtils.h14(
-                                                    fontColor:
-                                                        AppColors.terracotta,
-                                                    fontWeight:
-                                                        FWT.lightMedium)),
-                                            const Icon(
-                                              Icons.keyboard_arrow_right_sharp,
-                                              color: AppColors.terracotta,
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                : Row(
-                                    children: [
-                                      SvgPicture.asset(AssetsUtils.icVisa),
-                                      const SizedBox(
-                                        width: 15,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            'Visa',
-                                            style: TextStyle(
-                                              color: Color(0xff010101),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
+                                        onTap: () {
+                                          Get.offAll(
+                                            () => const AppManagerScreen(
+                                              selectIndex: 3,
                                             ),
-                                          ),
-                                          Text(
-                                            'Ending ${cardData['number'].toString().substring(cardData['number'].toString().length - 4)}',
-                                            style: const TextStyle(
-                                              color: Color(0xff010101),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          await Get.to(
-                                            () => AddDebitCardScreen(
-                                              data: cardData,
-                                            ),
-                                            transition: Transition.fadeIn,
-                                          )!
-                                              .then((value) {
-                                            if (value != null) {
-                                              cardData = value;
-                                              setState(() {});
-                                            }
-                                          });
+                                          );
+
+                                          // showModalBottomSheet(
+                                          //   context: context,
+                                          //   builder: (context) {
+                                          //     return const DeliverOrderBottomSheet();
+                                          //   },
+                                          //   isDismissible: false,
+                                          //   shape: OutlineInputBorder(
+                                          //     borderRadius: BorderRadius.only(
+                                          //       topLeft: Radius.circular(16.r),
+                                          //       topRight: Radius.circular(16.r),
+                                          //     ),
+                                          //     borderSide: const BorderSide(
+                                          //       color: Colors.transparent,
+                                          //     ),
+                                          //   ),
+                                          // ).then((value) {
+                                          //   setState(() {
+                                          //     result = value;
+                                          //   });
+                                          // });
                                         },
                                         child: Row(
                                           children: [
@@ -493,651 +635,603 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                             )
                                           ],
                                         ),
-                                      )
-                                    ],
-                                  ),
-                          ),
-
-                          ///Delivery info --------------------------------------------------------------------
-                          Padding(
-                            padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
-                            child: Text(
-                              'Delivery info',
-                              style: FontUtils.h18(
-                                fontColor: const Color(0xff5F5F5F),
-                                fontWeight: FWT.medium,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 16,
-                                )
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset(AssetsUtils.deliveryInfo),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                const Text(
-                                  'Bring me the order',
-                                  style: TextStyle(
-                                    color: Color(0xff010101),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                const Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.offAll(
-                                      () => const AppManagerScreen(
-                                        selectIndex: 3,
                                       ),
-                                    );
-
-                                    // showModalBottomSheet(
-                                    //   context: context,
-                                    //   builder: (context) {
-                                    //     return const DeliverOrderBottomSheet();
-                                    //   },
-                                    //   isDismissible: false,
-                                    //   shape: OutlineInputBorder(
-                                    //     borderRadius: BorderRadius.only(
-                                    //       topLeft: Radius.circular(16.r),
-                                    //       topRight: Radius.circular(16.r),
-                                    //     ),
-                                    //     borderSide: const BorderSide(
-                                    //       color: Colors.transparent,
-                                    //     ),
-                                    //   ),
-                                    // ).then((value) {
-                                    //   setState(() {
-                                    //     result = value;
-                                    //   });
-                                    // });
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Edit',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.terracotta,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      ),
-                                      const Icon(
-                                        Icons.keyboard_arrow_right_sharp,
-                                        color: AppColors.terracotta,
-                                      )
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
 
-                          /// Google Map ------------------------------------------------------------------------
+                                /// Google Map ------------------------------------------------------------------------
 
-                          Container(
-                            height: 200.h,
-                            margin: EdgeInsets.symmetric(vertical: 16.h),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 16,
-                                )
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: GoogleMap(
-                                    markers: Set<Marker>.of(markers),
-                                    onMapCreated: _onMapCreated,
-                                    initialCameraPosition: currentPosition,
-                                    myLocationButtonEnabled: true,
-                                    zoomControlsEnabled: false,
-                                    compassEnabled: true,
-                                    onTap: (argument) async {},
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 16),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(AssetsUtils.icHome),
-                                      const SizedBox(
-                                        width: 15,
-                                      ),
-                                      SizedBox(
-                                        width: 200.w,
-                                        child: Text(
-                                          getUserAddress?.streetName ??
-                                              'Where?',
-                                          style: const TextStyle(
-                                            color: AppColors.darkGray,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w300,
-                                          ),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          Get.offAll(
-                                            () => const AppManagerScreen(
-                                              selectIndex: 3,
-                                            ),
-                                          );
-                                        },
-                                        child: const Icon(
-                                          Icons.keyboard_arrow_right_sharp,
-                                          color: AppColors.darkGray,
-                                        ),
+                                Container(
+                                  height: 200.h,
+                                  margin: EdgeInsets.symmetric(vertical: 16.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
                                       )
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          /// Order List ------------------------------------------------------------------------
-
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            clipBehavior: Clip.none,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xff004C63)
-                                        .withOpacity(0.08),
-                                    offset: const Offset(0, 0),
-                                    blurRadius: 16,
-                                  )
-                                ],
-                              ),
-                              child: Theme(
-                                data:
-                                    ThemeData(dividerColor: Colors.transparent),
-                                child: ExpansionTile(
-                                  shape: Border.all(color: Colors.transparent),
-                                  collapsedShape:
-                                      Border.all(color: Colors.transparent),
-                                  title: Row(
+                                  child: Column(
                                     children: [
-                                      Image.asset(
-                                        AssetsUtils.menuIcon,
-                                        height: 16,
-                                        width: 18,
+                                      Expanded(
+                                        child: GoogleMap(
+                                          markers: Set<Marker>.of(markers),
+                                          onMapCreated: _onMapCreated,
+                                          initialCameraPosition:
+                                              currentPosition,
+                                          myLocationButtonEnabled: true,
+                                          zoomControlsEnabled: false,
+                                          compassEnabled: true,
+                                          onTap: (argument) async {},
+                                        ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 15.w, right: 8.w),
-                                        child: const Text(
-                                          'Your Order',
-                                          style: TextStyle(
-                                            color: Color(0xff010101),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 9, vertical: 1),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.terracotta,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '${widget.cartData.length}',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w400),
-                                          ),
+                                            horizontal: 12, vertical: 16),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                                AssetsUtils.icHome),
+                                            const SizedBox(
+                                              width: 15,
+                                            ),
+                                            SizedBox(
+                                              width: 200.w,
+                                              child: Text(
+                                                getUserAddress?.streetName ??
+                                                    'Where?',
+                                                style: const TextStyle(
+                                                  color: AppColors.darkGray,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                Get.offAll(
+                                                  () => const AppManagerScreen(
+                                                    selectIndex: 3,
+                                                  ),
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons
+                                                    .keyboard_arrow_right_sharp,
+                                                color: AppColors.darkGray,
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0xff004C63)
-                                                .withOpacity(0.08),
-                                            offset: const Offset(0, 0),
-                                            blurRadius: 16,
-                                          )
-                                        ],
-                                      ),
-                                      child: Column(
-                                        children: List.generate(
-                                          widget.cartData.length,
-                                          (index) => Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 8),
-                                            margin: const EdgeInsets.only(
-                                                bottom: 0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      '${widget.cartData[index].quantity}x',
-                                                      style: FontUtils.h14(
-                                                        fontColor: Colors.black,
-                                                        fontWeight: FWT.medium,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 230.w,
-                                                      child: Text(
-                                                        '${widget.cartData[index].productName}',
-                                                        style: FontUtils.h15(
-                                                            fontColor: AppColors
-                                                                .darkGray,
-                                                            fontWeight:
-                                                                FWT.regular),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '\$${widget.cartData[index].price! / 100}',
-                                                      style: FontUtils.h15(
-                                                        fontColor: Colors.black,
-                                                        fontWeight: FWT.medium,
-                                                      ),
-                                                    )
-                                                  ],
+                                ),
+
+                                /// Order List ------------------------------------------------------------------------
+
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  clipBehavior: Clip.none,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff004C63)
+                                              .withOpacity(0.08),
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 16,
+                                        )
+                                      ],
+                                    ),
+                                    child: Theme(
+                                      data: ThemeData(
+                                          dividerColor: Colors.transparent),
+                                      child: ExpansionTile(
+                                        shape: Border.all(
+                                            color: Colors.transparent),
+                                        collapsedShape: Border.all(
+                                            color: Colors.transparent),
+                                        title: Row(
+                                          children: [
+                                            Image.asset(
+                                              AssetsUtils.menuIcon,
+                                              height: 16,
+                                              width: 18,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 15.w, right: 8.w),
+                                              child: const Text(
+                                                'Your Order',
+                                                style: TextStyle(
+                                                  color: Color(0xff010101),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
-                                                Container(
-                                                  height: 0.2,
-                                                  color: Colors.black,
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                    vertical: 8,
-                                                  ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 9,
+                                                      vertical: 1),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.terracotta,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${widget.cartData.length}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff004C63)
+                                                      .withOpacity(0.08),
+                                                  offset: const Offset(0, 0),
+                                                  blurRadius: 16,
                                                 )
                                               ],
                                             ),
+                                            child: Column(
+                                              children: List.generate(
+                                                widget.cartData.length,
+                                                (index) => Container(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 8),
+                                                  margin: const EdgeInsets.only(
+                                                      bottom: 0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            '${widget.cartData[index].quantity}x',
+                                                            style:
+                                                                FontUtils.h14(
+                                                              fontColor:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FWT.medium,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 230.w,
+                                                            child: Text(
+                                                              '${widget.cartData[index].productName}',
+                                                              style: FontUtils.h15(
+                                                                  fontColor:
+                                                                      AppColors
+                                                                          .darkGray,
+                                                                  fontWeight: FWT
+                                                                      .regular),
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            '\$${widget.cartData[index].price! / 100}',
+                                                            style:
+                                                                FontUtils.h15(
+                                                              fontColor:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FWT.medium,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      Container(
+                                                        height: 0.2,
+                                                        color: Colors.black,
+                                                        margin: const EdgeInsets
+                                                            .symmetric(
+                                                          vertical: 8,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
 
-                          /// Order Notes--------------------------------------------------------------------
-                          Padding(
-                            padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
-                            child: Text(
-                              ' Order Notes',
-                              style: FontUtils.h18(
-                                fontColor: const Color(0xff000000),
-                                fontWeight: FWT.semiBold,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 0),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 16,
+                                /// Order Notes--------------------------------------------------------------------
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 20.h, bottom: 16.h),
+                                  child: Text(
+                                    ' Order Notes',
+                                    style: FontUtils.h18(
+                                      fontColor: const Color(0xff000000),
+                                      fontWeight: FWT.semiBold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 0),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
+                                      )
+                                    ],
+                                  ),
+                                  child: TextFormField(
+                                    controller: notes,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.all(0),
+                                      hintText: 'Add order Notes.....',
+                                    ),
+                                  ),
+                                ),
+
+                                SizedBox(
+                                  height: 16.h,
                                 )
                               ],
                             ),
-                            child: TextFormField(
-                              controller: notes,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.all(0),
-                                hintText: 'Add order Notes.....',
-                              ),
-                            ),
                           ),
-
-                          SizedBox(
-                            height: 16.h,
-                          )
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xff004C63).withOpacity(0.08),
-                      blurRadius: 16,
-                      offset: const Offset(0, 0),
-                    )
-                  ]),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        createOrder == true
-                            ? Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Subtotal',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '\$${orderData!.finalQuote!.quote!.subtotal! / 100}',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 4.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Delivery fee',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      const Icon(Icons.info_outline, size: 20),
-                                      const Spacer(),
-                                      Text(
-                                        '\$${orderData!.finalQuote!.quote!.deliveryFeeCents! / 100}',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 4),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Service fee',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        const Icon(Icons.info_outline,
-                                            size: 20),
-                                        const Spacer(),
-                                        Text(
-                                          '\$${orderData!.finalQuote!.quote!.serviceFeeCents! / 100}',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Service fee tax',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '\$${orderData!.finalQuote!.quote!.salesTaxCents! / 100}',
-                                        style: FontUtils.h14(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.lightMedium,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 5.h),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Total',
-                                          style: FontUtils.h18(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.medium,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          '\$ ${orderData!.finalQuote!.quote!.totalWithoutTips! / 100}',
-                                          style: FontUtils.h24(
-                                            fontColor: const Color(0xff010101),
-                                            fontWeight: FWT.medium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Padding(
-                                padding: EdgeInsets.only(top: 5.h),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Subtotal',
-                                      style: FontUtils.h18(
-                                        fontColor: AppColors.darkGray,
-                                        fontWeight: FWT.medium,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      '\$${widget.subtotal / 100}',
-                                      style: FontUtils.h24(
-                                        fontColor: const Color(0xff010101),
-                                        fontWeight: FWT.medium,
-                                      ),
-                                    )
-                                  ],
-                                ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration:
+                            BoxDecoration(color: Colors.white, boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xff004C63).withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 0),
+                          )
+                        ]),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
                               ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: loadCreateOrder == true
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : simpleTextBorderButton(
-                                  color: AppColors.terracotta,
-                                  width: MediaQuery.of(context).size.width,
-                                  isFillColor: true,
-                                  height: 40.h,
-                                  isLoadingWidget: false,
-                                  buttonLable: createOrder == true
-                                      ? 'Confirm '
-                                      : 'Create Order',
-                                  lableColor: Colors.white,
-                                  onTap: () {
-                                    if (createOrder == false) {
-                                      List<CreateOrderMealmeItems> data = [];
-
-                                      for (var element in widget.cartData) {
-                                        List<SelectedOptions> optionList = [];
-                                        for (var element1 in element.options!) {
-                                          optionList.add(
-                                            SelectedOptions(
-                                              quantity: element1.quantity,
-                                              markedPrice: element1.markedPrice,
-                                              optionId: element1.optionId,
+                              createOrder == true
+                                  ? Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Subtotal',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
                                             ),
-                                          );
-                                        }
-
-                                        data.add(
-                                          CreateOrderMealmeItems(
-                                            productId: element.productId,
-                                            productType: 1,
-                                            quantity: element.quantity,
-                                            notes: notes.text,
-                                            productMarkedPrice: element.price,
-                                            selectedOptions: optionList,
-                                          ),
-                                        );
-                                      }
-
-                                      restaurantBloc.add(
-                                        CreateOrderEvent(
-                                          createOrderModel: CreateOrderModel(
-                                            userId: userId,
-                                            pickup: false,
-                                            mealmeItems: data,
-                                            userAddress: UserAddress(
-                                              latitude:
-                                                  getUserAddress?.latitude,
-                                              longitude:
-                                                  getUserAddress?.longitude,
-                                              streetName:
-                                                  getUserAddress?.streetName,
-                                              streetNum:
-                                                  getUserAddress?.streetNum,
-                                              city: getUserAddress?.city,
-                                              country: getUserAddress?.country,
-                                              state: getUserAddress?.state,
-                                              zipcode: getUserAddress?.zipcode,
+                                            const Spacer(),
+                                            Text(
+                                              '\$${orderData!.finalQuote!.quote!.subtotal! / 100}',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 4.h,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Delivery fee',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
                                             ),
-                                            userPhone: 1234567890,
-                                            driverTipCents: 0,
-                                            pickupTipCents: 0,
-                                            userDropoffNotes: notes.text,
+                                            const SizedBox(width: 8),
+                                            const Icon(Icons.info_outline,
+                                                size: 20),
+                                            const Spacer(),
+                                            Text(
+                                              '\$${orderData!.finalQuote!.quote!.deliveryFeeCents! / 100}',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Service fee',
+                                                style: FontUtils.h14(
+                                                  fontColor: AppColors.darkGray,
+                                                  fontWeight: FWT.lightMedium,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              const Icon(Icons.info_outline,
+                                                  size: 20),
+                                              const Spacer(),
+                                              Text(
+                                                '\$${orderData!.finalQuote!.quote!.serviceFeeCents! / 100}',
+                                                style: FontUtils.h14(
+                                                  fontColor: AppColors.darkGray,
+                                                  fontWeight: FWT.lightMedium,
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    } else {
-                                      /// Create Product / Create Checkout Api
-
-                                      if (cardData.isEmpty) {
-                                        Fluttertoast.showToast(
-                                          msg: 'Please Select Card For Payment',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          backgroundColor: Colors.black,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0,
-                                        );
-                                      } else {
-                                        for (var element
-                                            in orderData!.finalQuote!.items!) {
-                                          productMealMeData.add(
-                                            product.ProductMealmeItems(
-                                              name: element.name,
-                                              markedPrice: element.markedPrice,
-                                              quantity: element.quantity,
-                                              productType: '1',
-                                              productId: element.productId,
-                                              image: element.image,
-                                              basePrice: element.basePrice,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Service fee tax',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
                                             ),
-                                          );
-                                        }
-
-                                        restaurantBloc.add(
-                                          CreateProductEvent(
-                                            createProductRequestModel: product
-                                                .CreateProductRequestModel(
-                                              userId: userId,
-                                              orderId: orderData?.orderId,
-                                              totalAmount:
-                                                  orderData?.totalPrice,
-                                              mealmeItems: productMealMeData,
+                                            const Spacer(),
+                                            Text(
+                                              '\$${orderData!.finalQuote!.quote!.salesTaxCents! / 100}',
+                                              style: FontUtils.h14(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.lightMedium,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 5.h),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Total',
+                                                style: FontUtils.h18(
+                                                  fontColor: AppColors.darkGray,
+                                                  fontWeight: FWT.medium,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                '\$ ${orderData!.finalQuote!.quote!.totalWithoutTips! / 100}',
+                                                style: FontUtils.h24(
+                                                  fontColor:
+                                                      const Color(0xff010101),
+                                                  fontWeight: FWT.medium,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Padding(
+                                      padding: EdgeInsets.only(top: 5.h),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Subtotal',
+                                            style: FontUtils.h18(
+                                              fontColor: AppColors.darkGray,
+                                              fontWeight: FWT.medium,
                                             ),
                                           ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  context: context,
-                                  isDarkColor: false,
-                                ),
+                                          const Spacer(),
+                                          Text(
+                                            '\$${widget.subtotal / 100}',
+                                            style: FontUtils.h24(
+                                              fontColor:
+                                                  const Color(0xff010101),
+                                              fontWeight: FWT.medium,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: loadCreateOrder == true
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : simpleTextBorderButton(
+                                        color: AppColors.terracotta,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        isFillColor: true,
+                                        height: 40.h,
+                                        isLoadingWidget: false,
+                                        buttonLable: createOrder == true
+                                            ? 'Confirm '
+                                            : 'Create Order',
+                                        lableColor: Colors.white,
+                                        onTap: () {
+                                          if (createOrder == false) {
+                                            List<CreateOrderMealmeItems> data =
+                                                [];
+
+                                            for (var element
+                                                in widget.cartData) {
+                                              List<SelectedOptions> optionList =
+                                                  [];
+                                              for (var element1
+                                                  in element.options!) {
+                                                optionList.add(
+                                                  SelectedOptions(
+                                                    quantity: element1.quantity,
+                                                    markedPrice:
+                                                        element1.markedPrice,
+                                                    optionId: element1.optionId,
+                                                  ),
+                                                );
+                                              }
+
+                                              data.add(
+                                                CreateOrderMealmeItems(
+                                                  productId: element.productId,
+                                                  productType: 1,
+                                                  quantity: element.quantity,
+                                                  notes: notes.text,
+                                                  productMarkedPrice:
+                                                      element.price,
+                                                  selectedOptions: optionList,
+                                                ),
+                                              );
+                                            }
+
+                                            restaurantBloc.add(
+                                              CreateOrderEvent(
+                                                createOrderModel:
+                                                    CreateOrderModel(
+                                                  userId: userId,
+                                                  pickup: false,
+                                                  mealmeItems: data,
+                                                  userAddress: UserAddress(
+                                                    latitude: getUserAddress
+                                                        ?.latitude,
+                                                    longitude: getUserAddress
+                                                        ?.longitude,
+                                                    streetName: getUserAddress
+                                                        ?.streetName,
+                                                    streetNum: getUserAddress
+                                                        ?.streetNum,
+                                                    city: getUserAddress?.city,
+                                                    country:
+                                                        getUserAddress?.country,
+                                                    state:
+                                                        getUserAddress?.state,
+                                                    zipcode:
+                                                        getUserAddress?.zipcode,
+                                                  ),
+                                                  userPhone: 1234567890,
+                                                  driverTipCents: 0,
+                                                  pickupTipCents: 0,
+                                                  userDropoffNotes: notes.text,
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            /// Create Product / Create Checkout Api
+
+                                            if (cardData.isEmpty) {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Please Select Card For Payment',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                backgroundColor: Colors.black,
+                                                textColor: Colors.white,
+                                                fontSize: 16.0,
+                                              );
+                                            } else {
+                                              for (var element in orderData!
+                                                  .finalQuote!.items!) {
+                                                productMealMeData.add(
+                                                  product.ProductMealmeItems(
+                                                    name: element.name,
+                                                    markedPrice:
+                                                        element.markedPrice,
+                                                    quantity: element.quantity,
+                                                    productType: '1',
+                                                    productId:
+                                                        element.productId,
+                                                    image: element.image,
+                                                    basePrice:
+                                                        element.basePrice,
+                                                  ),
+                                                );
+                                              }
+
+                                              restaurantBloc.add(
+                                                CreateProductEvent(
+                                                  createProductRequestModel: product
+                                                      .CreateProductRequestModel(
+                                                    userId: userId,
+                                                    orderId: orderData?.orderId,
+                                                    totalAmount:
+                                                        orderData?.totalPrice,
+                                                    mealmeItems:
+                                                        productMealMeData,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        context: context,
+                                        isDarkColor: false,
+                                      ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            );
+                      )
+                    ],
+                  );
           },
         ),
       ),

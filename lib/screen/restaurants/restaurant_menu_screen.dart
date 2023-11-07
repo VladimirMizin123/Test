@@ -61,6 +61,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   ShoppingListData? selectedCartData;
   List<MenuItemList> menuItem = [];
   bool hasCartData = false;
+  bool iCanEat = false;
 
   @override
   void initState() {
@@ -563,6 +564,12 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                       });
                                                     }
                                                   });
+                                                } else {
+                                                  setState(() {
+                                                    iCanEat = !iCanEat;
+                                                  });
+
+                                                  log('iCanEat---------->>>>>> ${iCanEat}');
                                                 }
                                               },
                                               child: Container(
@@ -573,7 +580,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                         horizontal: 15),
                                                 decoration: BoxDecoration(
                                                   color: index == 1 &&
-                                                          priceValue.isNotEmpty
+                                                              priceValue
+                                                                  .isNotEmpty ||
+                                                          index == 0 &&
+                                                              iCanEat == true
                                                       ? AppColors.coral
                                                       : AppColors.lightGrey,
                                                   borderRadius:
@@ -589,8 +599,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                       mealType[index],
                                                       style: FontUtils.h18(
                                                         fontColor: index == 1 &&
-                                                                priceValue
-                                                                    .isNotEmpty
+                                                                    priceValue
+                                                                        .isNotEmpty ||
+                                                                index == 0 &&
+                                                                    iCanEat ==
+                                                                        true
                                                             ? AppColors
                                                                 .terracotta
                                                             : AppColors
@@ -608,10 +621,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                               Icons
                                                                   .arrow_forward_ios_outlined,
                                                               size: 15,
-                                                              color: index ==
-                                                                          1 &&
-                                                                      priceValue
-                                                                          .isNotEmpty
+                                                              color: index == 1 &&
+                                                                          priceValue
+                                                                              .isNotEmpty ||
+                                                                      index ==
+                                                                              0 &&
+                                                                          iCanEat ==
+                                                                              true
                                                                   ? AppColors
                                                                       .terracotta
                                                                   : AppColors
@@ -637,21 +653,24 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                         if (priceValue.isNotEmpty) {
                                           index = restaurantMenu!
                                               .categories![select].menuItemList
-                                              ?.indexWhere((element) => priceValue ==
-                                                      '40'
-                                                  ? int.parse(priceValue) <=
-                                                      ((element.originalPrice)! /
-                                                          100)
-                                                  : int.parse(priceValue.split('-').first) <=
-                                                          ((element
-                                                                  .originalPrice)! /
-                                                              100) &&
-                                                      int.parse(priceValue
-                                                              .split('-')
-                                                              .last) >=
-                                                          ((element
-                                                                  .originalPrice)! /
-                                                              100));
+                                              ?.indexWhere((element) {
+                                            return priceValue == '40'
+                                                ? int.parse(priceValue) <=
+                                                    ((element.originalPrice)! /
+                                                        100)
+                                                : int.parse(priceValue
+                                                            .split('-')
+                                                            .first) <=
+                                                        ((element
+                                                                .originalPrice)! /
+                                                            100) &&
+                                                    int.parse(priceValue
+                                                            .split('-')
+                                                            .last) >=
+                                                        ((element
+                                                                .originalPrice)! /
+                                                            100);
+                                          });
 
                                           if (index! < 0) {
                                             return Expanded(
@@ -688,8 +707,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               itemBuilder: (context, index) {
                                                 return priceValue.isNotEmpty
                                                     ? (priceValue == "40"
-                                                            ? int.parse(
-                                                                    priceValue) <=
+                                                            ? int.parse(priceValue) <=
                                                                 ((restaurantMenu!
                                                                         .categories![
                                                                             select]
@@ -697,831 +715,32 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                             index]
                                                                         .originalPrice)! /
                                                                     100)
-                                                            : int.parse(priceValue
-                                                                        .split(
-                                                                            '-')
-                                                                        .first) <=
-                                                                    ((restaurantMenu!
-                                                                            .categories![
-                                                                                select]
-                                                                            .menuItemList![
-                                                                                index]
-                                                                            .originalPrice)! /
+                                                            : int.parse(priceValue.split('-').first) <=
+                                                                    ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
                                                                         100) &&
-                                                                int.parse(priceValue
-                                                                        .split(
-                                                                            '-')
-                                                                        .last) >=
-                                                                    ((restaurantMenu!
-                                                                            .categories![select]
-                                                                            .menuItemList![index]
-                                                                            .originalPrice)! /
+                                                                int.parse(priceValue.split('-').last) >=
+                                                                    ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
                                                                         100))
-                                                        ? GestureDetector(
-                                                            onTap: () {
-                                                              for (var element
-                                                                  in cartData) {
-                                                                if (element
-                                                                        .productId ==
-                                                                    restaurantMenu!
-                                                                        .categories![
-                                                                            select]
-                                                                        .menuItemList![
-                                                                            index]
-                                                                        .productId) {
-                                                                  selectedCartData =
-                                                                      element;
-                                                                }
-                                                              }
-
-                                                              selectedCartData ==
-                                                                      null
-                                                                  ? Get.to(
-                                                                          () =>
-                                                                              RestaurantMealDetails(
-                                                                                data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                restaurantId: widget.restaurantId,
-                                                                                cartCount: cartCount,
-                                                                              ),
-                                                                          transition: Transition
-                                                                              .fadeIn)!
-                                                                      .then(
-                                                                          (value) {
-                                                                      if (value ==
-                                                                          true) {
-                                                                        restaurantBloc
-                                                                            .add(GetShoppingListEvent());
-                                                                      }
-                                                                    })
-                                                                  : Get.to(
-                                                                          () =>
-                                                                              RestaurantMealDetails(
-                                                                                data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                restaurantId: widget.restaurantId,
-                                                                                shoppingListData: selectedCartData,
-                                                                                cartCount: cartCount,
-                                                                              ),
-                                                                          transition: Transition
-                                                                              .fadeIn)!
-                                                                      .then(
-                                                                          (value) {
-                                                                      if (value ==
-                                                                          true) {
-                                                                        restaurantBloc
-                                                                            .add(
-                                                                          GetShoppingListEvent(),
-                                                                        );
-                                                                      }
-                                                                    });
-                                                            },
-                                                            child: Column(
-                                                              children: [
-                                                                Container(
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  margin: EdgeInsets
-                                                                      .symmetric(
-                                                                    horizontal:
-                                                                        20.w,
-                                                                  ),
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      restaurantMenu!.categories![select].menuItemList![index].image ==
-                                                                              null
-                                                                          ? Image
-                                                                              .asset(
-                                                                              AssetsUtils.food1,
-                                                                              width: 80.w,
-                                                                            )
-                                                                          : Image
-                                                                              .network(
-                                                                              restaurantMenu!.categories![select].menuItemList![index].image!,
-                                                                              width: 80.w,
-                                                                            ),
-                                                                      Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          SizedBox(
-                                                                            width:
-                                                                                130.w,
-                                                                            child:
-                                                                                Text(
-                                                                              restaurantMenu!.categories![select].menuItemList![index].name!,
-                                                                              style: FontUtils.h16(
-                                                                                fontColor: AppColors.darkGray,
-                                                                                fontWeight: FWT.regular,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                150.w,
-                                                                            child:
-                                                                                Text(
-                                                                              restaurantMenu!.categories![select].menuItemList![index].description ?? '',
-                                                                              style: FontUtils.h14(
-                                                                                fontColor: const Color(0xffA2A4A7),
-                                                                                fontWeight: FWT.light,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index]
-                                                                              .highLightedColor!
-                                                                              .isEmpty
-                                                                          ? const SizedBox()
-                                                                          : Image.asset(
-                                                                              restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Red'
-                                                                                  ? AssetsUtils.canEatRed
-                                                                                  : restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Yellow'
-                                                                                      ? AssetsUtils.canEatYellow
-                                                                                      : AssetsUtils.icCanEat,
-                                                                              width: 25.w,
-                                                                            ),
-                                                                      Column(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.end,
-                                                                        children: [
-                                                                          Text(
-                                                                            restaurantMenu!.categories![select].menuItemList![index].formattedPrice.toString(),
-                                                                            style:
-                                                                                FontUtils.h18(
-                                                                              fontColor: Colors.black,
-                                                                              fontWeight: FWT.medium,
-                                                                            ),
-                                                                          ),
-                                                                          GestureDetector(
-                                                                            onTap:
-                                                                                () async {
-                                                                              for (var element in cartData) {
-                                                                                if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                                  selectedCartData = element;
-                                                                                }
-                                                                              }
-
-                                                                              selectedCartData == null
-                                                                                  ? await Get.to(
-                                                                                      () => RestaurantMenuDetailsScreen(
-                                                                                        data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                        restaurantId: widget.restaurantId,
-                                                                                        cartCount: cartCount,
-                                                                                      ),
-                                                                                      transition: Transition.fadeIn,
-                                                                                    )!
-                                                                                      .then((value) {
-                                                                                      if (value == true) {
-                                                                                        restaurantBloc.add(GetShoppingListEvent());
-                                                                                      }
-                                                                                    })
-                                                                                  : await Get.to(
-                                                                                      () => RestaurantMenuDetailsScreen(
-                                                                                        data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                        restaurantId: widget.restaurantId,
-                                                                                        shoppingListData: selectedCartData,
-                                                                                        cartCount: cartCount,
-                                                                                      ),
-                                                                                      transition: Transition.fadeIn,
-                                                                                    )!
-                                                                                      .then((value) {
-                                                                                      if (value == true) {
-                                                                                        restaurantBloc.add(GetShoppingListEvent());
-                                                                                      }
-                                                                                    });
-                                                                            },
-                                                                            child:
-                                                                                Image.asset(
-                                                                              AssetsUtils.icAdd,
-                                                                              height: 22.h,
-                                                                              alignment: Alignment.bottomRight,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                restaurantMenu!
-                                                                            .categories![select]
-                                                                            .menuItemList![index]
-                                                                            .cartQuantity ==
-                                                                        0
-                                                                    ? const SizedBox()
-                                                                    : Container(
-                                                                        width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width,
-                                                                        height: size.height *
-                                                                            0.08,
-                                                                        padding:
-                                                                            EdgeInsets.symmetric(horizontal: 16.w),
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          boxShadow: [
-                                                                            BoxShadow(
-                                                                                color: const Color(0xff004C63).withOpacity(0.08),
-                                                                                offset: const Offset(0, 0),
-                                                                                blurRadius: 18),
-                                                                          ],
-                                                                        ),
-                                                                        child:
-                                                                            Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Text('\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
-                                                                                style: FontUtils.h18(fontColor: const Color(0xff010101), fontWeight: FWT.semiBold)),
-                                                                            Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                              children: [
-                                                                                GestureDetector(
-                                                                                  onTap: () {
-                                                                                    for (var element in cartData) {
-                                                                                      if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                                        isRemoveUpdate = true;
-
-                                                                                        if (restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1) {
-                                                                                          restaurantBloc.add(RemoveShoppingListItemEvent(productID: restaurantMenu!.categories![select].menuItemList![index].productId!));
-                                                                                        } else {
-                                                                                          restaurantBloc.add(
-                                                                                            UpdateRestaurantCartEvent(
-                                                                                              updateItemList: UpdateRestaurantItemsToShoppingListModel(
-                                                                                                productName: element.productName ?? '',
-                                                                                                oldProductId: element.productId ?? '',
-                                                                                                newProductId: '',
-                                                                                                quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
-                                                                                                price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
-                                                                                                itemOptions: [],
-                                                                                                productType: element.productType ?? 'Restaurant',
-                                                                                                mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
-                                                                                                unitOfMeasurement: element.unitOfMeasurement ?? '',
-                                                                                                recipeId: element.recipeId ?? '',
-                                                                                                userId: element.userId ?? userId,
-                                                                                                brandName: element.brandName ?? '',
-                                                                                                isChecked: element.isChecked ?? false,
-                                                                                                unitSize: element.unitSize ?? 0,
-                                                                                              ),
-                                                                                            ),
-                                                                                          );
-                                                                                        }
-                                                                                      }
-                                                                                    }
-                                                                                  },
-                                                                                  child: Container(
-                                                                                    height: size.height * 0.060,
-                                                                                    width: size.height * 0.060,
-                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.terracotta)),
-                                                                                    child: Center(
-                                                                                      child: restaurantMenu!.categories![select].menuItemList![index].isRemoveUpdated == true
-                                                                                          ? Transform.scale(
-                                                                                              scale: 0.5,
-                                                                                              child: const CircularProgressIndicator(
-                                                                                                color: AppColors.terracotta,
-                                                                                              ),
-                                                                                            )
-                                                                                          : restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1
-                                                                                              ? SvgPicture.asset(
-                                                                                                  AssetsUtils.icDelete,
-                                                                                                  color: AppColors.terracotta,
-                                                                                                )
-                                                                                              : const Icon(
-                                                                                                  Icons.remove,
-                                                                                                  color: AppColors.terracotta,
-                                                                                                ),
-                                                                                    ),
-                                                                                    // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                                                                  ),
-                                                                                ),
-                                                                                SizedBox(width: 8.w),
-                                                                                Container(
-                                                                                  height: size.height * 0.060,
-                                                                                  width: size.height * 0.060,
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border.all(color: AppColors.disable),
-                                                                                    borderRadius: BorderRadius.circular(6),
-                                                                                  ),
-                                                                                  child: Center(
-                                                                                      child: Text(
-                                                                                    '${restaurantMenu!.categories![select].menuItemList![index].cartQuantity}',
-                                                                                    style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
-                                                                                  )),
-                                                                                ),
-                                                                                SizedBox(width: 8.w),
-                                                                                GestureDetector(
-                                                                                  onTap: () {
-                                                                                    for (var element in cartData) {
-                                                                                      if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                                        isAddUpdate = true;
-
-                                                                                        restaurantBloc.add(
-                                                                                          UpdateRestaurantCartEvent(
-                                                                                            updateItemList: UpdateRestaurantItemsToShoppingListModel(
-                                                                                              productName: element.productName ?? '',
-                                                                                              oldProductId: element.productId ?? '',
-                                                                                              newProductId: '',
-                                                                                              quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
-                                                                                              price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
-                                                                                              itemOptions: [],
-                                                                                              productType: element.productType ?? 'Restaurant',
-                                                                                              mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
-                                                                                              unitOfMeasurement: element.unitOfMeasurement ?? '',
-                                                                                              recipeId: element.recipeId ?? '',
-                                                                                              userId: element.userId ?? userId,
-                                                                                              brandName: element.brandName ?? '',
-                                                                                              isChecked: element.isChecked ?? false,
-                                                                                              unitSize: element.unitSize ?? 0,
-                                                                                            ),
-                                                                                          ),
-                                                                                        );
-                                                                                      }
-                                                                                    }
-                                                                                  },
-                                                                                  child: Container(
-                                                                                    height: size.height * 0.060,
-                                                                                    width: size.height * 0.060,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(6),
-                                                                                      color: AppColors.coral,
-                                                                                    ),
-                                                                                    child: Center(
-                                                                                      child: restaurantMenu!.categories![select].menuItemList![index].isAddUpdated == true
-                                                                                          ? Transform.scale(
-                                                                                              scale: 0.5,
-                                                                                              child: const CircularProgressIndicator(
-                                                                                                color: AppColors.terracotta,
-                                                                                              ))
-                                                                                          : const Icon(
-                                                                                              Icons.add,
-                                                                                              size: 27,
-                                                                                              color: AppColors.terracotta,
-                                                                                            ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                Divider(
-                                                                  endIndent:
-                                                                      20.w,
-                                                                  indent: 20.w,
-                                                                  color: AppColors
-                                                                      .disabledColor,
-                                                                  thickness: 1,
-                                                                )
-                                                              ],
-                                                            ),
-                                                          )
+                                                        ? iCanEat == true
+                                                            ? restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
+                                                                    'Green'
+                                                                ? displayData(
+                                                                    index:
+                                                                        index)
+                                                                : const SizedBox()
+                                                            : displayData(
+                                                                index: index)
                                                         : const SizedBox()
-                                                    : GestureDetector(
-                                                        onTap: () {
-                                                          for (var element
-                                                              in cartData) {
-                                                            if (element
-                                                                    .productId ==
-                                                                restaurantMenu!
+                                                    : iCanEat == true
+                                                        ? restaurantMenu!
                                                                     .categories![
                                                                         select]
-                                                                    .menuItemList![
-                                                                        index]
-                                                                    .productId) {
-                                                              selectedCartData =
-                                                                  element;
-                                                            }
-                                                          }
-
-                                                          selectedCartData ==
-                                                                  null
-                                                              ? Get.to(
-                                                                      () =>
-                                                                          RestaurantMealDetails(
-                                                                            data:
-                                                                                restaurantMenu!.categories![select].menuItemList![index],
-                                                                            restaurantId:
-                                                                                widget.restaurantId,
-                                                                            cartCount:
-                                                                                cartCount,
-                                                                          ),
-                                                                      transition:
-                                                                          Transition
-                                                                              .fadeIn)!
-                                                                  .then(
-                                                                      (value) {
-                                                                  if (value ==
-                                                                      true) {
-                                                                    restaurantBloc
-                                                                        .add(
-                                                                            GetShoppingListEvent());
-                                                                  }
-                                                                })
-                                                              : Get.to(
-                                                                      () =>
-                                                                          RestaurantMealDetails(
-                                                                            data:
-                                                                                restaurantMenu!.categories![select].menuItemList![index],
-                                                                            restaurantId:
-                                                                                widget.restaurantId,
-                                                                            shoppingListData:
-                                                                                selectedCartData,
-                                                                            cartCount:
-                                                                                cartCount,
-                                                                          ),
-                                                                      transition:
-                                                                          Transition
-                                                                              .fadeIn)!
-                                                                  .then(
-                                                                      (value) {
-                                                                  if (value ==
-                                                                      true) {
-                                                                    restaurantBloc
-                                                                        .add(
-                                                                      GetShoppingListEvent(),
-                                                                    );
-                                                                  }
-                                                                });
-                                                        },
-                                                        child: Column(
-                                                          children: [
-                                                            Container(
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
-                                                                horizontal:
-                                                                    20.w,
-                                                              ),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  restaurantMenu!
-                                                                              .categories![
-                                                                                  select]
-                                                                              .menuItemList![
-                                                                                  index]
-                                                                              .image ==
-                                                                          null
-                                                                      ? Image
-                                                                          .asset(
-                                                                          AssetsUtils
-                                                                              .food1,
-                                                                          width:
-                                                                              80.w,
-                                                                        )
-                                                                      : Image
-                                                                          .network(
-                                                                          restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index]
-                                                                              .image!,
-                                                                          width:
-                                                                              80.w,
-                                                                        ),
-                                                                  Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      SizedBox(
-                                                                        width:
-                                                                            130.w,
-                                                                        child:
-                                                                            Text(
-                                                                          restaurantMenu!
-                                                                              .categories![select]
-                                                                              .menuItemList![index]
-                                                                              .name!,
-                                                                          style:
-                                                                              FontUtils.h16(
-                                                                            fontColor:
-                                                                                AppColors.darkGray,
-                                                                            fontWeight:
-                                                                                FWT.regular,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            150.w,
-                                                                        child:
-                                                                            Text(
-                                                                          restaurantMenu!.categories![select].menuItemList![index].description ??
-                                                                              '',
-                                                                          style:
-                                                                              FontUtils.h14(
-                                                                            fontColor:
-                                                                                const Color(0xffA2A4A7),
-                                                                            fontWeight:
-                                                                                FWT.light,
-                                                                          ),
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                  restaurantMenu!
-                                                                          .categories![
-                                                                              select]
-                                                                          .menuItemList![
-                                                                              index]
-                                                                          .highLightedColor!
-                                                                          .isEmpty
-                                                                      ? const SizedBox()
-                                                                      : Image
-                                                                          .asset(
-                                                                          restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Red'
-                                                                              ? AssetsUtils.canEatRed
-                                                                              : restaurantMenu!.categories![select].menuItemList![index].highLightedColor == 'Yellow'
-                                                                                  ? AssetsUtils.canEatYellow
-                                                                                  : AssetsUtils.icCanEat,
-                                                                          width:
-                                                                              25.w,
-                                                                        ),
-                                                                  Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .end,
-                                                                    children: [
-                                                                      Text(
-                                                                        restaurantMenu!
-                                                                            .categories![select]
-                                                                            .menuItemList![index]
-                                                                            .formattedPrice
-                                                                            .toString(),
-                                                                        style: FontUtils
-                                                                            .h18(
-                                                                          fontColor:
-                                                                              Colors.black,
-                                                                          fontWeight:
-                                                                              FWT.medium,
-                                                                        ),
-                                                                      ),
-                                                                      GestureDetector(
-                                                                        onTap:
-                                                                            () async {
-                                                                          for (var element
-                                                                              in cartData) {
-                                                                            if (element.productId ==
-                                                                                restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                              selectedCartData = element;
-                                                                            }
-                                                                          }
-
-                                                                          selectedCartData == null
-                                                                              ? await Get.to(
-                                                                                  () => RestaurantMenuDetailsScreen(
-                                                                                    data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                    restaurantId: widget.restaurantId,
-                                                                                    cartCount: cartCount,
-                                                                                  ),
-                                                                                  transition: Transition.fadeIn,
-                                                                                )!
-                                                                                  .then((value) {
-                                                                                  if (value == true) {
-                                                                                    restaurantBloc.add(GetShoppingListEvent());
-                                                                                  }
-                                                                                })
-                                                                              : await Get.to(
-                                                                                  () => RestaurantMenuDetailsScreen(
-                                                                                    data: restaurantMenu!.categories![select].menuItemList![index],
-                                                                                    restaurantId: widget.restaurantId,
-                                                                                    shoppingListData: selectedCartData,
-                                                                                    cartCount: cartCount,
-                                                                                  ),
-                                                                                  transition: Transition.fadeIn,
-                                                                                )!
-                                                                                  .then((value) {
-                                                                                  if (value == true) {
-                                                                                    restaurantBloc.add(GetShoppingListEvent());
-                                                                                  }
-                                                                                });
-                                                                        },
-                                                                        child: Image
-                                                                            .asset(
-                                                                          AssetsUtils
-                                                                              .icAdd,
-                                                                          height:
-                                                                              22.h,
-                                                                          alignment:
-                                                                              Alignment.bottomRight,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            restaurantMenu!
-                                                                        .categories![
-                                                                            select]
-                                                                        .menuItemList![
-                                                                            index]
-                                                                        .cartQuantity ==
-                                                                    0
-                                                                ? const SizedBox()
-                                                                : Container(
-                                                                    width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width,
-                                                                    height: size
-                                                                            .height *
-                                                                        0.08,
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            16.w),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      boxShadow: [
-                                                                        BoxShadow(
-                                                                            color: const Color(0xff004C63).withOpacity(
-                                                                                0.08),
-                                                                            offset: const Offset(0,
-                                                                                0),
-                                                                            blurRadius:
-                                                                                18),
-                                                                      ],
-                                                                    ),
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        Text(
-                                                                            '\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
-                                                                            style:
-                                                                                FontUtils.h18(fontColor: const Color(0xff010101), fontWeight: FWT.semiBold)),
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.center,
-                                                                          children: [
-                                                                            GestureDetector(
-                                                                              onTap: () {
-                                                                                for (var element in cartData) {
-                                                                                  if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                                    isRemoveUpdate = true;
-
-                                                                                    if (restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1) {
-                                                                                      restaurantBloc.add(RemoveShoppingListItemEvent(productID: restaurantMenu!.categories![select].menuItemList![index].productId!));
-                                                                                    } else {
-                                                                                      restaurantBloc.add(
-                                                                                        UpdateRestaurantCartEvent(
-                                                                                          updateItemList: UpdateRestaurantItemsToShoppingListModel(
-                                                                                            productName: element.productName ?? '',
-                                                                                            oldProductId: element.productId ?? '',
-                                                                                            newProductId: '',
-                                                                                            quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1,
-                                                                                            price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! - 1),
-                                                                                            itemOptions: [],
-                                                                                            productType: element.productType ?? 'Restaurant',
-                                                                                            mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
-                                                                                            unitOfMeasurement: element.unitOfMeasurement ?? '',
-                                                                                            recipeId: element.recipeId ?? '',
-                                                                                            userId: element.userId ?? userId,
-                                                                                            brandName: element.brandName ?? '',
-                                                                                            isChecked: element.isChecked ?? false,
-                                                                                            unitSize: element.unitSize ?? 0,
-                                                                                          ),
-                                                                                        ),
-                                                                                      );
-                                                                                    }
-                                                                                  }
-                                                                                }
-                                                                              },
-                                                                              child: Container(
-                                                                                height: size.height * 0.060,
-                                                                                width: size.height * 0.060,
-                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.terracotta)),
-                                                                                child: Center(
-                                                                                  child: restaurantMenu!.categories![select].menuItemList![index].isRemoveUpdated == true
-                                                                                      ? Transform.scale(
-                                                                                          scale: 0.5,
-                                                                                          child: const CircularProgressIndicator(
-                                                                                            color: AppColors.terracotta,
-                                                                                          ),
-                                                                                        )
-                                                                                      : restaurantMenu!.categories![select].menuItemList![index].cartQuantity == 1
-                                                                                          ? SvgPicture.asset(
-                                                                                              AssetsUtils.icDelete,
-                                                                                              color: AppColors.terracotta,
-                                                                                            )
-                                                                                          : const Icon(
-                                                                                              Icons.remove,
-                                                                                              color: AppColors.terracotta,
-                                                                                            ),
-                                                                                ),
-                                                                                // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                                                              ),
-                                                                            ),
-                                                                            SizedBox(width: 8.w),
-                                                                            Container(
-                                                                              height: size.height * 0.060,
-                                                                              width: size.height * 0.060,
-                                                                              decoration: BoxDecoration(
-                                                                                border: Border.all(color: AppColors.disable),
-                                                                                borderRadius: BorderRadius.circular(6),
-                                                                              ),
-                                                                              child: Center(
-                                                                                  child: Text(
-                                                                                '${restaurantMenu!.categories![select].menuItemList![index].cartQuantity}',
-                                                                                style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
-                                                                              )),
-                                                                            ),
-                                                                            SizedBox(width: 8.w),
-                                                                            GestureDetector(
-                                                                              onTap: () {
-                                                                                for (var element in cartData) {
-                                                                                  if (element.productId == restaurantMenu!.categories![select].menuItemList![index].productId) {
-                                                                                    isAddUpdate = true;
-
-                                                                                    restaurantBloc.add(
-                                                                                      UpdateRestaurantCartEvent(
-                                                                                        updateItemList: UpdateRestaurantItemsToShoppingListModel(
-                                                                                          productName: element.productName ?? '',
-                                                                                          oldProductId: element.productId ?? '',
-                                                                                          newProductId: '',
-                                                                                          quantity: restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1,
-                                                                                          price: (restaurantMenu!.categories![select].menuItemList![index].cartPrice! / restaurantMenu!.categories![select].menuItemList![index].cartQuantity!) * (restaurantMenu!.categories![select].menuItemList![index].cartQuantity! + 1),
-                                                                                          itemOptions: [],
-                                                                                          productType: element.productType ?? 'Restaurant',
-                                                                                          mealmeStoreId: element.mealmeStoreId ?? widget.restaurantId,
-                                                                                          unitOfMeasurement: element.unitOfMeasurement ?? '',
-                                                                                          recipeId: element.recipeId ?? '',
-                                                                                          userId: element.userId ?? userId,
-                                                                                          brandName: element.brandName ?? '',
-                                                                                          isChecked: element.isChecked ?? false,
-                                                                                          unitSize: element.unitSize ?? 0,
-                                                                                        ),
-                                                                                      ),
-                                                                                    );
-                                                                                  }
-                                                                                }
-                                                                              },
-                                                                              child: Container(
-                                                                                height: size.height * 0.060,
-                                                                                width: size.height * 0.060,
-                                                                                decoration: BoxDecoration(
-                                                                                  borderRadius: BorderRadius.circular(6),
-                                                                                  color: AppColors.coral,
-                                                                                ),
-                                                                                child: Center(
-                                                                                  child: restaurantMenu!.categories![select].menuItemList![index].isAddUpdated == true
-                                                                                      ? Transform.scale(
-                                                                                          scale: 0.5,
-                                                                                          child: const CircularProgressIndicator(
-                                                                                            color: AppColors.terracotta,
-                                                                                          ))
-                                                                                      : const Icon(
-                                                                                          Icons.add,
-                                                                                          size: 27,
-                                                                                          color: AppColors.terracotta,
-                                                                                        ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                            Divider(
-                                                              endIndent: 20.w,
-                                                              indent: 20.w,
-                                                              color: AppColors
-                                                                  .disabledColor,
-                                                              thickness: 1,
-                                                            )
-                                                          ],
-                                                        ),
-                                                      );
+                                                                    .menuItemList![index]
+                                                                    .highLightedColor ==
+                                                                'Green'
+                                                            ? displayData(index: index)
+                                                            : const SizedBox()
+                                                        : displayData(index: index);
                                               }),
                                         );
                                       },
@@ -1559,6 +778,421 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget displayData({required int index}) {
+    final size = MediaQuery.of(context).size;
+
+    return GestureDetector(
+      onTap: () {
+        for (var element in cartData) {
+          if (element.productId ==
+              restaurantMenu!
+                  .categories![select].menuItemList![index].productId) {
+            selectedCartData = element;
+          }
+        }
+
+        selectedCartData == null
+            ? Get.to(
+                    () => RestaurantMealDetails(
+                          data: restaurantMenu!
+                              .categories![select].menuItemList![index],
+                          restaurantId: widget.restaurantId,
+                          cartCount: cartCount,
+                        ),
+                    transition: Transition.fadeIn)!
+                .then((value) {
+                if (value == true) {
+                  restaurantBloc.add(GetShoppingListEvent());
+                }
+              })
+            : Get.to(
+                    () => RestaurantMealDetails(
+                          data: restaurantMenu!
+                              .categories![select].menuItemList![index],
+                          restaurantId: widget.restaurantId,
+                          shoppingListData: selectedCartData,
+                          cartCount: cartCount,
+                        ),
+                    transition: Transition.fadeIn)!
+                .then((value) {
+                if (value == true) {
+                  restaurantBloc.add(
+                    GetShoppingListEvent(),
+                  );
+                }
+              });
+      },
+      child: Column(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.symmetric(
+              horizontal: 20.w,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                restaurantMenu!
+                            .categories![select].menuItemList![index].image ==
+                        null
+                    ? Image.asset(
+                        AssetsUtils.food1,
+                        width: 80.w,
+                      )
+                    : Image.network(
+                        restaurantMenu!
+                            .categories![select].menuItemList![index].image!,
+                        width: 80.w,
+                      ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 130.w,
+                      child: Text(
+                        restaurantMenu!
+                            .categories![select].menuItemList![index].name!,
+                        style: FontUtils.h16(
+                          fontColor: AppColors.darkGray,
+                          fontWeight: FWT.regular,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 150.w,
+                      child: Text(
+                        restaurantMenu!.categories![select].menuItemList![index]
+                                .description ??
+                            '',
+                        style: FontUtils.h14(
+                          fontColor: const Color(0xffA2A4A7),
+                          fontWeight: FWT.light,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                restaurantMenu!.categories![select].menuItemList![index]
+                        .highLightedColor!.isEmpty
+                    ? const SizedBox()
+                    : Image.asset(
+                        restaurantMenu!.categories![select].menuItemList![index]
+                                    .highLightedColor ==
+                                'Red'
+                            ? AssetsUtils.canEatRed
+                            : restaurantMenu!
+                                        .categories![select]
+                                        .menuItemList![index]
+                                        .highLightedColor ==
+                                    'Yellow'
+                                ? AssetsUtils.canEatYellow
+                                : AssetsUtils.icCanEat,
+                        width: 25.w,
+                      ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      restaurantMenu!.categories![select].menuItemList![index]
+                          .formattedPrice
+                          .toString(),
+                      style: FontUtils.h18(
+                        fontColor: Colors.black,
+                        fontWeight: FWT.medium,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        for (var element in cartData) {
+                          if (element.productId ==
+                              restaurantMenu!.categories![select]
+                                  .menuItemList![index].productId) {
+                            selectedCartData = element;
+                          }
+                        }
+
+                        selectedCartData == null
+                            ? await Get.to(
+                                () => RestaurantMenuDetailsScreen(
+                                  data: restaurantMenu!
+                                      .categories![select].menuItemList![index],
+                                  restaurantId: widget.restaurantId,
+                                  cartCount: cartCount,
+                                ),
+                                transition: Transition.fadeIn,
+                              )!
+                                .then((value) {
+                                if (value == true) {
+                                  restaurantBloc.add(GetShoppingListEvent());
+                                }
+                              })
+                            : await Get.to(
+                                () => RestaurantMenuDetailsScreen(
+                                  data: restaurantMenu!
+                                      .categories![select].menuItemList![index],
+                                  restaurantId: widget.restaurantId,
+                                  shoppingListData: selectedCartData,
+                                  cartCount: cartCount,
+                                ),
+                                transition: Transition.fadeIn,
+                              )!
+                                .then((value) {
+                                if (value == true) {
+                                  restaurantBloc.add(GetShoppingListEvent());
+                                }
+                              });
+                      },
+                      child: Image.asset(
+                        AssetsUtils.icAdd,
+                        height: 22.h,
+                        alignment: Alignment.bottomRight,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+          restaurantMenu!
+                      .categories![select].menuItemList![index].cartQuantity ==
+                  0
+              ? const SizedBox()
+              : Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: size.height * 0.08,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: const Color(0xff004C63).withOpacity(0.08),
+                          offset: const Offset(0, 0),
+                          blurRadius: 18),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          '\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
+                          style: FontUtils.h18(
+                              fontColor: const Color(0xff010101),
+                              fontWeight: FWT.semiBold)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              for (var element in cartData) {
+                                if (element.productId ==
+                                    restaurantMenu!.categories![select]
+                                        .menuItemList![index].productId) {
+                                  isRemoveUpdate = true;
+
+                                  if (restaurantMenu!.categories![select]
+                                          .menuItemList![index].cartQuantity ==
+                                      1) {
+                                    restaurantBloc.add(
+                                        RemoveShoppingListItemEvent(
+                                            productID: restaurantMenu!
+                                                .categories![select]
+                                                .menuItemList![index]
+                                                .productId!));
+                                  } else {
+                                    restaurantBloc.add(
+                                      UpdateRestaurantCartEvent(
+                                        updateItemList:
+                                            UpdateRestaurantItemsToShoppingListModel(
+                                          productName:
+                                              element.productName ?? '',
+                                          oldProductId: element.productId ?? '',
+                                          newProductId: '',
+                                          quantity: restaurantMenu!
+                                                  .categories![select]
+                                                  .menuItemList![index]
+                                                  .cartQuantity! -
+                                              1,
+                                          price: (restaurantMenu!
+                                                      .categories![select]
+                                                      .menuItemList![index]
+                                                      .cartPrice! /
+                                                  restaurantMenu!
+                                                      .categories![select]
+                                                      .menuItemList![index]
+                                                      .cartQuantity!) *
+                                              (restaurantMenu!
+                                                      .categories![select]
+                                                      .menuItemList![index]
+                                                      .cartQuantity! -
+                                                  1),
+                                          itemOptions: [],
+                                          productType: element.productType ??
+                                              'Restaurant',
+                                          mealmeStoreId:
+                                              element.mealmeStoreId ??
+                                                  widget.restaurantId,
+                                          unitOfMeasurement:
+                                              element.unitOfMeasurement ?? '',
+                                          recipeId: element.recipeId ?? '',
+                                          userId: element.userId ?? userId,
+                                          brandName: element.brandName ?? '',
+                                          isChecked: element.isChecked ?? false,
+                                          unitSize: element.unitSize ?? 0,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                            child: Container(
+                              height: size.height * 0.060,
+                              width: size.height * 0.060,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  border:
+                                      Border.all(color: AppColors.terracotta)),
+                              child: Center(
+                                child: restaurantMenu!
+                                            .categories![select]
+                                            .menuItemList![index]
+                                            .isRemoveUpdated ==
+                                        true
+                                    ? Transform.scale(
+                                        scale: 0.5,
+                                        child: const CircularProgressIndicator(
+                                          color: AppColors.terracotta,
+                                        ),
+                                      )
+                                    : restaurantMenu!
+                                                .categories![select]
+                                                .menuItemList![index]
+                                                .cartQuantity ==
+                                            1
+                                        ? SvgPicture.asset(
+                                            AssetsUtils.icDelete,
+                                            color: AppColors.terracotta,
+                                          )
+                                        : const Icon(
+                                            Icons.remove,
+                                            color: AppColors.terracotta,
+                                          ),
+                              ),
+                              // child: const Center(child: Icon(Icons.remove, size: 27)),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Container(
+                            height: size.height * 0.060,
+                            width: size.height * 0.060,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.disable),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                                child: Text(
+                              '${restaurantMenu!.categories![select].menuItemList![index].cartQuantity}',
+                              style: FontUtils.h18(
+                                  fontWeight: FWT.semiBold,
+                                  fontColor: AppColors.darkGray),
+                            )),
+                          ),
+                          SizedBox(width: 8.w),
+                          GestureDetector(
+                            onTap: () {
+                              for (var element in cartData) {
+                                if (element.productId ==
+                                    restaurantMenu!.categories![select]
+                                        .menuItemList![index].productId) {
+                                  isAddUpdate = true;
+
+                                  restaurantBloc.add(
+                                    UpdateRestaurantCartEvent(
+                                      updateItemList:
+                                          UpdateRestaurantItemsToShoppingListModel(
+                                        productName: element.productName ?? '',
+                                        oldProductId: element.productId ?? '',
+                                        newProductId: '',
+                                        quantity: restaurantMenu!
+                                                .categories![select]
+                                                .menuItemList![index]
+                                                .cartQuantity! +
+                                            1,
+                                        price: (restaurantMenu!
+                                                    .categories![select]
+                                                    .menuItemList![index]
+                                                    .cartPrice! /
+                                                restaurantMenu!
+                                                    .categories![select]
+                                                    .menuItemList![index]
+                                                    .cartQuantity!) *
+                                            (restaurantMenu!
+                                                    .categories![select]
+                                                    .menuItemList![index]
+                                                    .cartQuantity! +
+                                                1),
+                                        itemOptions: [],
+                                        productType:
+                                            element.productType ?? 'Restaurant',
+                                        mealmeStoreId: element.mealmeStoreId ??
+                                            widget.restaurantId,
+                                        unitOfMeasurement:
+                                            element.unitOfMeasurement ?? '',
+                                        recipeId: element.recipeId ?? '',
+                                        userId: element.userId ?? userId,
+                                        brandName: element.brandName ?? '',
+                                        isChecked: element.isChecked ?? false,
+                                        unitSize: element.unitSize ?? 0,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Container(
+                              height: size.height * 0.060,
+                              width: size.height * 0.060,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: AppColors.coral,
+                              ),
+                              child: Center(
+                                child: restaurantMenu!
+                                            .categories![select]
+                                            .menuItemList![index]
+                                            .isAddUpdated ==
+                                        true
+                                    ? Transform.scale(
+                                        scale: 0.5,
+                                        child: const CircularProgressIndicator(
+                                          color: AppColors.terracotta,
+                                        ))
+                                    : const Icon(
+                                        Icons.add,
+                                        size: 27,
+                                        color: AppColors.terracotta,
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+          Divider(
+            endIndent: 20.w,
+            indent: 20.w,
+            color: AppColors.disabledColor,
+            thickness: 1,
+          )
+        ],
       ),
     );
   }

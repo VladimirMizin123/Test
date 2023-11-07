@@ -56,6 +56,7 @@ dependencies:
   ml_card_scanner: ^0.0.5
   datepicker_dropdown: ^0.0.8
   flutter_masked_text2: ^0.9.1
+  webview_flutter: ^4.4.2
 
 
   #  camera:

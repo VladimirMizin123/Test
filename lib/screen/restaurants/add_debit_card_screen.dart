@@ -118,6 +118,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                         fontWeight: FontWeight.w300)),
               ),
               commonTextField(
+                  keyboardType: TextInputType.number,
                   label: 'Please Card number',
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -199,6 +200,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                         ),
                         commonTextField(
                           label: '***',
+                          keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Please Enter CVV Number';
