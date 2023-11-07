@@ -34,6 +34,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository.getUserAddressData().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetUserAddressErrorState());
       }, (right) {
         emit(GetUserAddressSuccessState(userAddress: right.data ?? []));
       });
@@ -64,6 +65,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetRestaurantListErrorState());
       }, (right) {
         emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
       });
@@ -87,6 +89,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetRestaurantMenuListErrorState());
       }, (right) {
         emit(
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
@@ -119,6 +122,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetCousinesListErrorState());
       }, (right) {
         emit(GetCousinesListSuccessState(cousinesList: right.data!));
       });
@@ -144,6 +148,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .addMenuToCartRestaurant(addItemsToShoppingList: event.addItemsList)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(AddToRestaurantCartErrorState(
+            productId: event.addItemsList[0].productId!));
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
         emit(AddToRestaurantCartSuccessState(
@@ -167,6 +173,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository.getShoppingList().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetShoppingListErrorState());
       }, (right) {
         emit(
           GetShoppingListSuccessState(
@@ -193,6 +200,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
               updateItemsToShoppingList: event.updateItemList)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(UpdateToRestaurantCartErrorState(
+            productId: event.updateItemList.oldProductId!));
       }, (right) {
         log('----DATA------PRICE--->>>>>>>>${right.data['price']}');
         log('----DATA------QUANTITY--->>>>>>>>${right.data['quantity']}');
@@ -219,6 +228,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       await _repository.removeShoppingListItem(productID: event.productID).fold(
           (left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(RemoveShoppingListItemErrorState(productId: event.productID));
       }, (right) {
         emit(
           RemoveShoppingListItemSuccessState(productId: event.productID),
@@ -245,10 +255,13 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         showToast(isSuccess: false, message: left.errorMessage ?? "");
+
+        emit(CreateOrderErrorState());
       }, (right) {
-        emit(
-          CreateOrderSuccessState(orderData: right.data),
-        );
+        emit(CreateOrderSuccessState(orderData: right.data));
+        showToast(
+            isSuccess: true,
+            message: right.message ?? "Order Created Successfully");
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -269,8 +282,10 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         showToast(isSuccess: false, message: left.errorMessage ?? "");
+        emit(CreateProductErrorState());
       }, (right) {
         emit(CreateProductSuccessState(productData: right.data));
+        // showToast(isSuccess: true, message: right.message ?? "");
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -292,7 +307,8 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         onFailError(emit: emit, text: left.errorMessage!);
         showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
-        emit(CreateCheckoutSuccessState());
+        emit(CreateCheckoutSuccessState(data: right.data));
+        // showToast(isSuccess: true, message: right.message ?? "");
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

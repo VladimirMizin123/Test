@@ -183,6 +183,10 @@ class CreateProductErrorState extends RestaurantState {}
 
 class CreateCheckoutLoadingState extends RestaurantState {}
 
-class CreateCheckoutSuccessState extends RestaurantState {}
+class CreateCheckoutSuccessState extends RestaurantState {
+  final dynamic data;
+
+  CreateCheckoutSuccessState({this.data});
+}
 
 class CreateCheckoutErrorState extends RestaurantState {}
