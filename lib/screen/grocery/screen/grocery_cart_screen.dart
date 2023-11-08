@@ -62,21 +62,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // List<GrocerySearchModel> grocerySearchModalDataList = [];
-    // List<Product>? groceryMultiSearchStoreProductListList = [];
-    // List<Cart> selectedStoreProductList = [];
-    // List<GroceryDetails> edgesList = [];
-    // List<GroceryDetails> onlyProductList = [];
-
-    print(
-        'grocerySearchModalDataList---------->>>>>> ${grocerySearchModalDataList}');
-    print(
-        'groceryMultiSearchStoreProductListList---------->>>>>> ${groceryMultiSearchStoreProductListList}');
-    print(
-        'selectedStoreProductList---------->>>>>> ${selectedStoreProductList}');
-    print('edgesList---------->>>>>> ${edgesList}');
-    print('onlyProductList---------->>>>>> ${onlyProductList}');
-
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: BlocConsumer<GroceryBloc, GroceryState>(
@@ -712,8 +697,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                      print(
-                                          '==edgesList[$index].product ==>${edgesList[index].product}');
                                       return edgesList[index].product != null
                                           ? Column(
                                               children: [

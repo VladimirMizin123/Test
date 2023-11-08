@@ -1,3 +1,6 @@
+import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
@@ -94,4 +97,28 @@ class AddNewCustomMealEvent extends GroceryEvent {
 
   AddNewCustomMealEvent(
       {this.name, this.protein, this.fat, this.carbs, this.calorie, this.type});
+}
+
+/// Create Order ==============================================================================
+
+class CreateOrderEvent extends GroceryEvent {
+  final CreateGroceryOrderModel createGroceryOrderModel;
+
+  CreateOrderEvent({required this.createGroceryOrderModel});
+}
+
+/// Create Product ==============================================================================
+
+class CreateProductEvent extends GroceryEvent {
+  final CreateProductRequestModel createProductRequestModel;
+
+  CreateProductEvent({required this.createProductRequestModel});
+}
+
+/// Create Checkout ==============================================================================
+
+class CreateCheckoutEvent extends GroceryEvent {
+  final CreateCheckOutRequestModel createCheckOutRequestModel;
+
+  CreateCheckoutEvent({required this.createCheckOutRequestModel});
 }

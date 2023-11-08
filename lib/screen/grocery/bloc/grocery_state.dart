@@ -1,4 +1,7 @@
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart'
+    as order;
+import 'package:gymeats_mobile/screen/grocery/modal/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
@@ -214,3 +217,39 @@ class GetUserAddressSuccessState extends GroceryState {
 class GetUserAddressLoadingState extends GroceryState {}
 
 class GetUserAddressErrorState extends GroceryState {}
+
+/// Create Order State
+
+class CreateOrderLoadingState extends GroceryState {}
+
+class CreateOrderSuccessState extends GroceryState {
+  final order.CreateOrderData? orderData;
+
+  CreateOrderSuccessState({this.orderData});
+}
+
+class CreateOrderErrorState extends GroceryState {}
+
+/// Create Product State
+
+class CreateProductLoadingState extends GroceryState {}
+
+class CreateProductSuccessState extends GroceryState {
+  final ProductData? productData;
+
+  CreateProductSuccessState({this.productData});
+}
+
+class CreateProductErrorState extends GroceryState {}
+
+/// Create Checkout State
+
+class CreateCheckoutLoadingState extends GroceryState {}
+
+class CreateCheckoutSuccessState extends GroceryState {
+  final dynamic data;
+
+  CreateCheckoutSuccessState({this.data});
+}
+
+class CreateCheckoutErrorState extends GroceryState {}
