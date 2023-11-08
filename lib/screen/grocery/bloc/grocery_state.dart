@@ -171,9 +171,9 @@ class GroceryAddToGroceryErrorState extends GroceryState {}
 
 class GroceryProductListState extends GroceryState {
   final List<Product>? productList;
-  final String? productID;
+  final int? index;
 
-  GroceryProductListState({required this.productList, this.productID});
+  GroceryProductListState({required this.productList, this.index});
 }
 
 class ClearShoppingListLoadingState extends GroceryState {}

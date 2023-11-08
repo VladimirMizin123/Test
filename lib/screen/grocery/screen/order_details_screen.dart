@@ -7,11 +7,11 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_bg.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
-import 'package:gymeats_mobile/screen/restaurants/restaurant_bg.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -83,7 +83,7 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                                 children: [
                                   GestureDetector(
                                     onTap: () =>
-                                        Get.to(() => const RestaurantBGView()),
+                                        Get.to(() => const GroceryBGView()),
                                     child: Container(
                                       height: 40.h,
                                       width: 40.w,
