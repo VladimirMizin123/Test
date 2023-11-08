@@ -130,8 +130,6 @@ class RestaurantRepository {
       "maximum_miles": maximumMiles
     };
 
-    log('data---------->>>>>> $data');
-
     final response = await apiServices.post(
       ApiUrls.getCousinesList,
       data,
@@ -217,6 +215,26 @@ class RestaurantRepository {
     }
   }
 
+  /// Clear Shopping List Item ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> clearShoppingListItem(
+      {String? productID}) async {
+    final response =
+        await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    }
+    // else if (response.statusCode == 400) {
+    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
+    //
+    //   return Right(
+    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    // }
+    else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   /// Create Order ====================================================================
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
@@ -271,14 +289,46 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, GetOrderDetails>> getOrderDetails(
       {required String mealmeId}) async {
-    final response = await apiServices.get(
-      '${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId',
-    );
+    final response = await apiServices
+        .get('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Get Delivery Status ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> getDeliveryStatus() async {
+    final response =
+        await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      log('response.body---------->>>>>> ${response.body}');
+
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Update Delivery Status ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> updateDeliveryStatus(
+      {bool? pickup}) async {
+    final response = await apiServices
+        .put('${ApiUrls.updateDeliveryStatus}/$userId?isPickUp=$pickup', {});
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

@@ -12,20 +12,24 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/find_address_model.dart';
 import 'package:gymeats_mobile/models/find_latlng_model.dart';
 import 'package:gymeats_mobile/models/search_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 import 'package:gymeats_mobile/screen/get_location/search_location.dart';
-import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
+
 import 'dart:ui' as ui;
-import '../../bloc/google_map/add_address/add_address_event.dart';
-import '../../bloc/google_map/add_address/add_address_state.dart';
+
+import '../restaurants/model/get_user_address_model.dart';
 
 class GetUserAddress extends StatefulWidget {
   const GetUserAddress({super.key});
@@ -44,7 +48,6 @@ class _GetUserAddressState extends State<GetUserAddress>
     mapController = controller;
   }
 
-  static List ofcHomeList = ['Home', 'Office'];
   LatLng? selectedLatLng;
   CameraPosition currentPosition = const CameraPosition(
     target: LatLng(21.2147, 72.8887),
@@ -269,29 +272,13 @@ class _GetUserAddressState extends State<GetUserAddress>
     return value;
   }
 
-  String ofcHomeValue = ofcHomeList.first;
-  int ofcHomeInt = 0;
   final GoogleMapSearchRepository _googleMapSearchRepository =
       GoogleMapSearchRepository();
   List<Prediction> searchList = [];
-
-  Future<void> searchLocation(String value) async {
-    await _googleMapSearchRepository.searchLocation(value).fold((left) {
-      showToast(isSuccess: false, message: left.errorMessage!);
-    }, (right) {
-      // showToast(isSuccess: true, message: right.message!);
-      SearchAddressResponseModel(
-          predictions: right.predictions, status: right.status);
-
-      searchList = right.predictions ?? [];
-      setState(() {});
-    });
-  }
-
   String streetNum = '';
   String streetName = '';
   String city = '';
-  String state = '';
+  String stateName = '';
   String country = '';
   String zipcode = '';
 
@@ -299,7 +286,7 @@ class _GetUserAddressState extends State<GetUserAddress>
     streetNum = '';
     streetName = '';
     city = '';
-    state = '';
+    stateName = '';
     country = '';
     zipcode = '';
 
@@ -357,7 +344,7 @@ class _GetUserAddressState extends State<GetUserAddress>
               [];
 
           if (stateList.isNotEmpty) {
-            state = element.longName ?? "";
+            stateName = element.longName ?? "";
           }
 
           ///country
@@ -438,338 +425,411 @@ class _GetUserAddressState extends State<GetUserAddress>
     });
   }
 
-  addAddress() {}
-
   FocusNode searchTextFocus = FocusNode();
   TextEditingController searchTextController = TextEditingController();
-
+  var argumentsValue;
   @override
   void initState() {
     super.initState();
 
     getCurrentLocation();
-    // WidgetsBinding.instance.addObserver(this);
+    argumentsValue = Get.arguments;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      addressBloc.add(GetUserAddressEvent());
+    });
   }
 
+  MyAddressBloc addressBloc = MyAddressBloc();
+
+  String? selectedAddress;
   bool lifeCycleCall = false;
+  List<UserAddress>? userAddress;
 
   @override
   Widget build(BuildContext context) {
-    var argumentsValue = Get.arguments;
-
     return Scaffold(
-      body: BlocBuilder(
-        bloc: bloc,
-        builder: (context, state) {
-          if (state is AddAddressLoadingState) {
-            return const AppCenterLoader();
-          } else {
-            return Column(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          ///Google Map===========================================
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.43,
+            child: Stack(
               children: [
-                ///Google Map===========================================
+                GoogleMap(
+                  markers: Set<Marker>.of(markers),
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: currentPosition,
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: false,
+                  compassEnabled: true,
+                  onTap: (argument) async {
+                    BitmapDescriptor? customIcon;
 
-                Expanded(
-                  child: Stack(
-                    children: [
-                      GoogleMap(
-                        markers: Set<Marker>.of(markers),
-                        onMapCreated: _onMapCreated,
-                        initialCameraPosition: currentPosition,
-                        myLocationButtonEnabled: true,
-                        zoomControlsEnabled: false,
-                        compassEnabled: true,
-                        onTap: (argument) async {
-                          BitmapDescriptor? customIcon;
+                    customIcon = BitmapDescriptor.fromBytes(
+                      await getBytesFromAsset(AssetsUtils.locationMarker, 150),
+                    );
 
-                          customIcon = BitmapDescriptor.fromBytes(
-                            await getBytesFromAsset(
-                                AssetsUtils.locationMarker, 150),
-                          );
-
-                          if (markers.length > 1) {
-                            markers.removeLast();
-                          }
-                          markers.add(
-                            Marker(
-                              markerId: const MarkerId('1'),
-                              position:
-                                  LatLng(argument.latitude, argument.longitude),
-                              icon: customIcon,
-                            ),
-                          );
-
-                          selectedLatLng =
-                              LatLng(argument.latitude, argument.longitude);
-                          currentPosition = CameraPosition(
-                            target:
-                                LatLng(argument.latitude, argument.longitude),
-                            zoom: 14.4746,
-                          );
-                          mapController.animateCamera(
-                              CameraUpdate.newCameraPosition(currentPosition));
-
-                          findAddressURL(
-                            lat: argument.latitude.toString(),
-                            lng: argument.longitude.toString(),
-                          );
-
-                          setState(() {});
-                        },
+                    if (markers.length > 1) {
+                      markers.removeLast();
+                    }
+                    markers.add(
+                      Marker(
+                        markerId: const MarkerId('1'),
+                        position: LatLng(argument.latitude, argument.longitude),
+                        icon: customIcon,
                       ),
-                      Positioned(
-                          top: 40.h,
-                          left: 10.w,
-                          child: const BackButtonWidget())
-                    ],
-                  ),
+                    );
+
+                    selectedLatLng =
+                        LatLng(argument.latitude, argument.longitude);
+                    currentPosition = CameraPosition(
+                      target: LatLng(argument.latitude, argument.longitude),
+                      zoom: 14.4746,
+                    );
+                    mapController.animateCamera(
+                        CameraUpdate.newCameraPosition(currentPosition));
+
+                    findAddressURL(
+                      lat: argument.latitude.toString(),
+                      lng: argument.longitude.toString(),
+                    );
+
+                    setState(() {});
+                  },
                 ),
+                Positioned(
+                    top: 40.h, left: 10.w, child: const BackButtonWidget())
+              ],
+            ),
+          ),
 
-                Container(
-                  width: Get.width,
-                  color: Colors.white,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 5.h,
+          Expanded(
+            child: Container(
+              width: Get.width,
+              color: Colors.white,
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Text(
+                    'Add delivery address',
+                    style: TextStyle(
+                      color: const Color(0xff010101),
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: '',
+                    ),
+                  ),
+
+                  /// SEARCHBAR========================================
+
+                  GestureDetector(
+                    onTap: () async {
+                      var result = await Get.to(() => const SearchLocation());
+                      if (result != null) {
+                        selectedLocationValue = result.description;
+
+                        findLatLng(result.placeId ?? '');
+                      }
+                    },
+                    child: Container(
+                      width: 335.w,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      margin: EdgeInsets.only(top: 18.h, bottom: 18.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8.r),
+                        boxShadow: [
+                          BoxShadow(
+                              color: const Color(0xff004C63).withOpacity(0.08),
+                              offset: const Offset(0, 0),
+                              spreadRadius: 0,
+                              blurRadius: 16)
+                        ],
                       ),
-                      Text(
-                        'Add delivery address',
-                        style: TextStyle(
-                          color: const Color(0xff010101),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: '',
-                        ),
-                      ),
-
-                      /// SEARCHBAR========================================
-
-                      GestureDetector(
-                        onTap: () async {
-                          var result =
-                              await Get.to(() => const SearchLocation());
-                          if (result != null) {
-                            selectedLocationValue = result.description;
-
-                            findLatLng(result.placeId ?? '');
-                          }
-                        },
-                        child: Container(
-                          width: 335.w,
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                          margin: EdgeInsets.only(top: 18.h, bottom: 18.h),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.r),
-                            boxShadow: [
-                              BoxShadow(
-                                  color:
-                                      const Color(0xff004C63).withOpacity(0.08),
-                                  offset: const Offset(0, 0),
-                                  spreadRadius: 0,
-                                  blurRadius: 16)
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                child: Image.asset(
-                                  AssetsUtils.searchIcon,
-                                  height: 20.h,
-                                  width: 20.w,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 280.w,
-                                child: Text(
-                                  selectedLocationValue ?? 'Search',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: const Color(0xff5F5F5F),
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 14.sp,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      ///Current location======================================================
-                      Row(
+                      child: Row(
                         children: [
-                          Icon(
-                            Icons.my_location_outlined,
-                            color: const Color(0xffCE6B53),
-                            size: 22.w,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            child: Image.asset(
+                              AssetsUtils.searchIcon,
+                              height: 20.h,
+                              width: 20.w,
+                            ),
                           ),
                           SizedBox(
-                            width: 16.w,
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              await getCurrentLocation();
-                            },
+                            width: 280.w,
                             child: Text(
-                              'Current location',
+                              selectedLocationValue ?? 'Search',
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: const Color(0xffCE6B53),
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Avenir',
+                                color: const Color(0xff5F5F5F),
+                                fontWeight: FontWeight.w300,
+                                fontSize: 14.sp,
                               ),
                             ),
                           )
                         ],
                       ),
+                    ),
+                  ),
 
+                  ///Current location======================================================
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.my_location_outlined,
+                        color: const Color(0xffCE6B53),
+                        size: 22.w,
+                      ),
                       SizedBox(
-                        height: 10.h,
+                        width: 16.w,
                       ),
-
-                      ///OFFICE======================================================
-
-                      ...List.generate(
-                        2,
-                        (index) => Padding(
-                          padding: EdgeInsets.only(bottom: 10.h),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                ofcHomeValue = ofcHomeList[index];
-                                ofcHomeInt = index;
-                              });
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Image.asset(
-                                  AssetsUtils.markerFlag,
-                                  height: 15.h,
-                                  width: 22.w,
-                                  color: ofcHomeInt == index
-                                      ? Colors.red
-                                      : Colors.black,
-                                ),
-                                SizedBox(
-                                  width: 16.w,
-                                ),
-                                Text(
-                                  ofcHomeList[index],
-                                  style: TextStyle(
-                                    color: ofcHomeInt == index
-                                        ? Colors.red
-                                        : const Color(0xff373737),
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Avenir',
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
                       GestureDetector(
                         onTap: () async {
-                          await findAddressURL(
-                            lat: selectedLatLng?.latitude.toString(),
-                            lng: selectedLatLng?.longitude.toString(),
-                          );
-
-                          String userID =
-                              PreferenceUtils.getString(prefUserData);
-
-                          Map<String, dynamic> addressData = {
-                            'latitude': selectedLatLng?.latitude,
-                            'longitude': selectedLatLng?.longitude,
-                            'street_Num': streetNum,
-                            'street_Name': streetName,
-                            'city': city,
-                            'state': state.toString(),
-                            'country': country,
-                            'addressType': ofcHomeValue.toLowerCase(),
-                            'zipcode': zipcode,
-                            'isPrimary': true,
-                          };
-
-                          // if (argumentsValue['string'] == 'isFromRegister') {
-                          Get.to(
-                            () => AddressConfirmation(
-                              locationData: addressData,
-                              arguments: argumentsValue,
-                            ),
-                          );
-                          // } else if (argumentsValue['string'] ==
-                          //     'isFromCheckout') {
-                          //   Navigator.pushReplacement(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) => AddressConfirmation(
-                          //           locationData: addressData,
-                          //           arguments: argumentsValue,
-                          //         ),
-                          //       ));
-                          // } else {
-                          //   bloc.add(
-                          //     SaveClickEvent(
-                          //       latitude: selectedLatLng!.latitude,
-                          //       longitude: selectedLatLng!.longitude,
-                          //       streetNum: streetNum,
-                          //       streetName: streetName,
-                          //       city: city,
-                          //       state: state.toString(),
-                          //       country: country,
-                          //       addressType: ofcHomeValue.toLowerCase(),
-                          //       zipcode: zipcode,
-                          //       isPrimary: false,
-                          //       userId: userID,
-                          //     ),
-                          //   );
-                          // }
+                          await getCurrentLocation();
                         },
-                        child: Container(
-                          height: 48.h,
-                          margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
-                          width: Get.width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.r),
+                        child: Text(
+                          'Current location',
+                          style: TextStyle(
                             color: const Color(0xffCE6B53),
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Avenir',
                           ),
-                          child: Center(
-                            child: Text(
-                              'Save',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Avenir',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Center(
-                        child: Image.asset(
-                          AssetsUtils.gymEatsSpoon,
-                          height: 20.h,
-                          width: 56.w,
                         ),
                       )
                     ],
                   ),
-                )
-              ],
-            );
-          }
-        },
+
+                  SizedBox(
+                    height: 10.h,
+                  ),
+
+                  ///OFFICE======================================================
+
+                  Expanded(
+                    child: BlocConsumer(
+                      bloc: addressBloc,
+                      builder: (context, state) {
+                        return userAddress == null
+                            ? const SizedBox()
+                            : ListView.separated(
+                                itemCount: userAddress!.length,
+                                padding: EdgeInsets.zero,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      addressBloc.add(
+                                        SetPrimaryAddressEvent(
+                                            addressId: userAddress![index].id),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Image.asset(
+                                          AssetsUtils.markerFlag,
+                                          height: 15.h,
+                                          width: 22.w,
+                                          color:
+                                              userAddress![index].isPrimary ==
+                                                      true
+                                                  ? AppColors.terracotta
+                                                  : AppColors.darkGray,
+                                        ),
+                                        SizedBox(
+                                          width: 16.w,
+                                        ),
+                                        Text(
+                                          '${userAddress![index].streetName} ',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color:
+                                                userAddress![index].isPrimary ==
+                                                        true
+                                                    ? AppColors.terracotta
+                                                    : AppColors.darkGray,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const Divider(),
+                              );
+                      },
+                      listener: (context, state) {
+                        if (state is SetAddressPrimarySuccessState) {
+                          if (argumentsValue['string'] == 'isFromCheckout') {
+                            Get.offAll(
+                              () => const AppManagerScreen(
+                                selectIndex: 3,
+                              ),
+                            );
+                          } else {
+                            Get.back();
+                          }
+                          // addressBloc.add(GetUserAddressEvent());
+                        }
+
+                        if (state is GetUserAddressSuccessState) {
+                          userAddress = state.userAddress;
+                        }
+                      },
+                    ),
+                  ),
+
+                  ///
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Radio(
+                  //       activeColor: AppColors.primaryBlueColor,
+                  //       value: state.userAddress[index].id,
+                  //       groupValue: selectedAddress,
+                  //       onChanged: (value) {
+                  //         selectedAddress = value;
+                  //
+                  //         addressBloc.add(SetPrimaryAddressEvent(
+                  //             addressId: value));
+                  //
+                  //         // setState(() {});
+                  //       },
+                  //     ),
+                  //     SizedBox(
+                  //       width: 17.w,
+                  //     ),
+                  //     Expanded(
+                  //       child: Text(
+                  //         '${state.userAddress[index].streetName} ',
+                  //         style: const TextStyle(
+                  //           fontSize: 16,
+                  //           fontWeight: FontWeight.w400,
+                  //         ),
+                  //         maxLines: 1,
+                  //         overflow: TextOverflow.ellipsis,
+                  //       ),
+                  //     ),
+                  //     Text(
+                  //       (state.userAddress[index].isPrimary ??
+                  //           false)
+                  //           ? '(default)'
+                  //           : '',
+                  //       style: const TextStyle(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w400,
+                  //       ),
+                  //       maxLines: 1,
+                  //       overflow: TextOverflow.ellipsis,
+                  //     ),
+                  //   ],
+                  // ),
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+
+                  GestureDetector(
+                    onTap: () async {
+                      await findAddressURL(
+                        lat: selectedLatLng?.latitude.toString(),
+                        lng: selectedLatLng?.longitude.toString(),
+                      );
+
+                      String userID = PreferenceUtils.getString(prefUserData);
+
+                      Map<String, dynamic> addressData = {
+                        'latitude': selectedLatLng?.latitude,
+                        'longitude': selectedLatLng?.longitude,
+                        'street_Num': streetNum,
+                        'street_Name': streetName,
+                        'city': city,
+                        'state': stateName.toString(),
+                        'country': country,
+                        'addressType': '',
+                        'zipcode': zipcode,
+                        'isPrimary': true,
+                      };
+
+                      // if (argumentsValue['string'] == 'isFromRegister') {
+                      Get.to(
+                        () => AddressConfirmation(
+                          locationData: addressData,
+                          arguments: argumentsValue,
+                        ),
+                      );
+                      // } else if (argumentsValue['string'] ==
+                      //     'isFromCheckout') {
+                      //   Navigator.pushReplacement(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //         builder: (context) => AddressConfirmation(
+                      //           locationData: addressData,
+                      //           arguments: argumentsValue,
+                      //         ),
+                      //       ));
+                      // } else {
+                      //   bloc.add(
+                      //     SaveClickEvent(
+                      //       latitude: selectedLatLng!.latitude,
+                      //       longitude: selectedLatLng!.longitude,
+                      //       streetNum: streetNum,
+                      //       streetName: streetName,
+                      //       city: city,
+                      //       state: state.toString(),
+                      //       country: country,
+                      //       addressType: ofcHomeValue.toLowerCase(),
+                      //       zipcode: zipcode,
+                      //       isPrimary: false,
+                      //       userId: userID,
+                      //     ),
+                      //   );
+                      // }
+                    },
+                    child: Container(
+                      height: 48.h,
+                      margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: const Color(0xffCE6B53),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Avenir',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Center(
+                    child: Image.asset(
+                      AssetsUtils.gymEatsSpoon,
+                      height: 20.h,
+                      width: 56.w,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

@@ -25,11 +25,13 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.restaurantId,
     this.shoppingListData,
     required this.cartCount,
+    this.pickUp,
   });
   final String restaurantId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
   final int cartCount;
+  final bool? pickUp;
 
   @override
   State<RestaurantMealDetails> createState() => _RestaurantMealDetailsState();

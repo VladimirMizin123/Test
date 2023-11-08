@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 import 'package:gymeats_mobile/models/get_custom_meal_list_model.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/edit_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
@@ -136,7 +137,11 @@ class _JournalScreenState extends State<JournalScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed('ProfileScreen');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountScreen(),
+                          ));
                     },
                     child: Image.asset(
                       AssetsUtils.user,

@@ -152,6 +152,16 @@ class RemoveShoppingListItemErrorState extends RestaurantState {
 
 ///================================================================================================================
 
+/// Clear Restaurant cart State
+
+class ClearShoppingListItemSuccessState extends RestaurantState {}
+
+class ClearShoppingListItemLoadingState extends RestaurantState {}
+
+class ClearShoppingListItemErrorState extends RestaurantState {}
+
+///================================================================================================================
+
 /// Create Order State
 
 class CreateOrderLoadingState extends RestaurantState {}
@@ -205,3 +215,31 @@ class GetOrderSuccessState extends RestaurantState {
 }
 
 class GetOrderErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Get Delivery Status State
+
+class GetDeliveryStatusLoadingState extends RestaurantState {}
+
+class GetDeliveryStatusSuccessState extends RestaurantState {
+  final Map<String, dynamic> data;
+
+  GetDeliveryStatusSuccessState({required this.data});
+}
+
+class GetDeliveryStatusErrorState extends RestaurantState {}
+
+///================================================================================================================
+
+/// Update Delivery Status State
+
+class UpdateDeliveryStatusLoadingState extends RestaurantState {}
+
+class UpdateDeliveryStatusSuccessState extends RestaurantState {
+  final Map<String, dynamic> data;
+
+  UpdateDeliveryStatusSuccessState({required this.data});
+}
+
+class UpdateDeliveryStatusErrorState extends RestaurantState {}

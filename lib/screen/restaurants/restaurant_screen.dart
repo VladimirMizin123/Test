@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
@@ -34,7 +37,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return const DeliverOrderBottomSheet();
+        return DeliverOrderBottomSheet(
+          selectedIndex: selectedIndex,
+        );
       },
       isDismissible: false,
       enableDrag: false,
@@ -51,6 +56,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       if (value != null) {
         setState(() {
           result = value;
+          selectedIndex = result == 'Bring me the order' ? 0 : 1;
         });
 
         if (getUserAddress != null) {
@@ -84,6 +90,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             ),
           );
         } else {}
+
+        restaurantBloc.add(GetShoppingListEvent());
       }
     });
   }
@@ -138,6 +146,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   bool isSearchOn = false;
   int cartCount = 0;
   TextEditingController search = TextEditingController();
+  int selectedIndex = -1;
 
   @override
   void initState() {
@@ -145,6 +154,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       restaurantBloc.add(GetUserAddressEvent());
       restaurantBloc.add(GetShoppingListEvent());
+      restaurantBloc.add(GetDeliveryStatusEvent());
     });
   }
 
@@ -207,6 +217,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                 getAddressLoadingState = false;
               }
 
+              /// Delivery Status state --------------------------------------------------------
+              if (state is GetDeliveryStatusSuccessState) {
+                selectedIndex = state.data['isPickUp'] == true ? 1 : 0;
+              }
+
               /// Restaurant state --------------------------------------------------------
               if (state is GetRestaurantListLoadingState) {
                 getRestaurantMenuLoadingState = true;
@@ -237,7 +252,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               }
 
               /// Shopping list state -----------------------------------------------------
-
               if (state is GetShoppingListSuccessState) {
                 cartCount = state.shoppingListData!.length;
               }
@@ -263,7 +277,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // Get.toNamed('ProfileScreen');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AccountScreen(),
+                                ));
                           },
                           child: Image.asset(
                             AssetsUtils.user,
@@ -401,7 +419,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => const RestaurantCart(),
+                              Get.to(
+                                      () => RestaurantCart(
+                                            pickUp:
+                                                result == 'Bring me the order'
+                                                    ? false
+                                                    : true,
+                                          ),
                                       transition: Transition.fadeIn)!
                                   .then((value) {
                                 restaurantBloc.add(GetShoppingListEvent());
@@ -450,31 +474,41 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     IntrinsicWidth(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 55.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AssetsUtils.icRestaurants,
-                              height: 14,
-                              width: 12,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Expanded(
-                              child: Text(
-                                getUserAddress == null
-                                    ? 'No Location'
-                                    : getUserAddress?.streetName ?? '',
-                                style: FontUtils.h14(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.lightMedium,
-                                ),
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(() => const GetUserAddress(),
+                                transition: Transition.fadeIn,
+                                arguments: {
+                                  "string": 'isFromCheckout',
+                                  "userData": ''
+                                });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                AssetsUtils.icRestaurants,
+                                height: 14,
+                                width: 12,
                               ),
-                            )
-                          ],
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  getUserAddress == null
+                                      ? 'No Location'
+                                      : getUserAddress?.streetName ?? '',
+                                  style: FontUtils.h14(
+                                    fontColor: AppColors.darkGray,
+                                    fontWeight: FWT.lightMedium,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

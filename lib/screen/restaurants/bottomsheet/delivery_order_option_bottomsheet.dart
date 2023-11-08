@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 class DeliverOrderBottomSheet extends StatefulWidget {
-  const DeliverOrderBottomSheet({super.key});
+  const DeliverOrderBottomSheet({super.key, required this.selectedIndex});
+  final int selectedIndex;
 
   @override
   State<DeliverOrderBottomSheet> createState() =>
@@ -18,91 +24,118 @@ class DeliverOrderBottomSheet extends StatefulWidget {
 
 class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
   int selectedIndex = -1;
-
+  int apiIndex = -1;
   List option = ['Bring me the order', 'I will pick it myself'];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectedIndex;
+    apiIndex = widget.selectedIndex;
+    restaurantBloc.add(GetDeliveryStatusEvent());
+  }
+
+  RestaurantBloc restaurantBloc = RestaurantBloc();
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: Material(
-        color: AppColors.whiteColor,
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: IntrinsicHeight(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      height: 3.h,
-                      width: 80.w,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: AppColors.disable),
-                    )),
-                const SizedBox(height: 10),
-                SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
-                const SizedBox(height: 15),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    'How would you like to receive your order?',
-                    style: FontUtils.h20(
-                      fontColor: AppColors.darkGray,
-                      fontWeight: FWT.medium,
+    return BlocConsumer(
+      bloc: restaurantBloc,
+      listener: (context, state) {
+        if (state is UpdateDeliveryStatusSuccessState) {
+          selectedIndex = state.data['isPickUp'] == true ? 1 : 0;
+          apiIndex = state.data['isPickUp'] == true ? 1 : 0;
+        }
+      },
+      builder: (context, state) => WillPopScope(
+        onWillPop: () => Future(() => false),
+        child: Material(
+          color: AppColors.whiteColor,
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        height: 3.h,
+                        width: 80.w,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppColors.disable),
+                      )),
+                  const SizedBox(height: 10),
+                  SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      'How would you like to receive your order?',
+                      style: FontUtils.h20(
+                        fontColor: AppColors.darkGray,
+                        fontWeight: FWT.medium,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 15),
-                myWidget(
-                    title: 'Bring me the order',
-                    isSelected: selectedIndex == 0 ? true : false,
+                  const SizedBox(height: 15),
+                  myWidget(
+                      title: 'Bring me the order',
+                      isSelected: selectedIndex == 0 ? true : false,
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = 0;
+                        });
+                      }),
+                  const SizedBox(height: 10),
+                  myWidget(
+                      title: 'I will pick it myself',
+                      isSelected: selectedIndex == 1 ? true : false,
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = 1;
+                        });
+                      }),
+                  const SizedBox(height: 15),
+                  simpleTextBorderButton(
+                    context: context,
+                    color: AppColors.terracotta,
+                    lableColor: AppColors.terracotta,
+                    buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
+                    height: screenSize.height * 0.065,
+                    width: screenSize.width,
+                    isLoadingWidget: false,
                     onTap: () {
-                      setState(() {
-                        selectedIndex = 0;
-                      });
-                    }),
-                const SizedBox(height: 10),
-                myWidget(
-                    title: 'I will pick it myself',
-                    isSelected: selectedIndex == 1 ? true : false,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 1;
-                      });
-                    }),
-                const SizedBox(height: 15),
-                simpleTextBorderButton(
-                  context: context,
-                  color: AppColors.terracotta,
-                  lableColor: AppColors.terracotta,
-                  buttonLable: selectedIndex == -1 ? 'Back' : 'Confirm',
-                  height: screenSize.height * 0.065,
-                  width: screenSize.width,
-                  isLoadingWidget: false,
-                  onTap: () {
-                    if (selectedIndex == -1) {
-                      Get.back();
-                    } else {
-                      Get.back(result: option[selectedIndex]);
-                      // List<GroceryShoppingData> edgesDummyList = [];
-                      // for (var i = 0; i < widget.edgesList.length; i++) {
-                      //   if (widget.edgesList[i].isActive == true) {
-                      //     edgesDummyList.add(widget.edgesList[i]);
-                      //   }
-                      // }
-                      // if (edgesDummyList.isNotEmpty) {
-                    }
-                  },
-                  isDarkColor: true,
-                  isFillColor: selectedIndex == -1 ? false : true,
-                ),
-                const SizedBox(height: 10),
-              ],
+                      if (selectedIndex == -1) {
+                        Get.back();
+                      } else {
+                        if (selectedIndex == apiIndex) {
+                          Get.back(result: option[selectedIndex]);
+                        } else {
+                          restaurantBloc.add(
+                            UpdateDeliveryStatusEvent(
+                              pickUp:
+                                  option[selectedIndex] == 'Bring me the order'
+                                      ? false
+                                      : true,
+                            ),
+                          );
+
+                          restaurantBloc.add(ClearShoppingListItemEvent());
+
+                          Get.back(result: option[selectedIndex]);
+                        }
+                      }
+                    },
+                    isDarkColor: true,
+                    isFillColor: selectedIndex == -1 ? false : true,
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),

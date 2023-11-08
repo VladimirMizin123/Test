@@ -12,6 +12,7 @@ import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bl
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -142,10 +143,15 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   InkWell(
                     onTap: () async {
                       //Get.toNamed('ProfileScreen');
-                      Get.toNamed('/GoogleMapScreen', arguments: {
-                        "string": 'isFromDashboard',
-                        "userData": ''
-                      });
+                      // Get.toNamed('/GoogleMapScreen', arguments: {
+                      //   "string": 'isFromDashboard',
+                      //   "userData": ''
+                      // });
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountScreen(),
+                          ));
                     },
                     child: Image.asset(
                       AssetsUtils.user,

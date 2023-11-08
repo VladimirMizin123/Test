@@ -30,6 +30,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
   TextEditingController apartmentName = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController zipName = TextEditingController();
+  TextEditingController addressType = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   AddAddressBloc bloc = AddAddressBloc();
@@ -40,6 +41,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
     apartmentName.text = widget.locationData['street_Num'] ?? '';
     city.text = widget.locationData['city'] ?? '';
     zipName.text = widget.locationData['zipcode'] ?? '';
+    addressType.text = widget.locationData['addressType'] ?? '';
   }
 
   @override
@@ -92,6 +94,23 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
+                        child: Text('Address Type',
+                            style: TextStyle(
+                                color: const Color(0xff373737),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w300)),
+                      ),
+                      commonTextField(
+                          controller: addressType,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please Enter Address Type';
+                            } else {
+                              return null;
+                            }
+                          }),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                         child: Text('Street',
                             style: TextStyle(
                                 color: const Color(0xff373737),
@@ -187,9 +206,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                       addAddressModel.state =
                           widget.locationData['state'].toString();
                       addAddressModel.country = widget.locationData['country'];
-                      addAddressModel.addressType =
-                          widget.locationData['addressType'];
-                      addAddressModel.zipcode = widget.locationData['zipcode'];
+                      addAddressModel.addressType = addressType.text;
+                      addAddressModel.zipcode = zipName.text;
                       addAddressModel.isPrimary = true;
 
                       UserSignUpDataModel userData = UserSignUpDataModel(
@@ -215,7 +233,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                           city: city.text.toString(),
                           state: widget.locationData['state'],
                           country: widget.locationData['country'],
-                          addressType: widget.locationData['addressType'],
+                          addressType: addressType.text,
                           zipcode: zipName.text.toString(),
                           isPrimary: true,
                           userId: userID,

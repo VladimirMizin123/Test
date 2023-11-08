@@ -50,6 +50,7 @@ class ApiUrls {
       '${baseUrl}api/ShoppingList/ClearShoppingList';
   static const String removeProduct =
       '${baseUrl}api/ShoppingList/RemoveProduct';
+
   static const String productGroceryMultipleSearch =
       '${baseUrl}api/MealMe/product-groceryMultipleSearch';
 
@@ -173,12 +174,21 @@ class ApiUrls {
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
 
   static const String createOrder = '${baseUrl}api/MealmeOrder/CreateOrder';
+
   static const String createProduct =
       '${baseUrl}api/StripePayment/CreateProduct';
+
   static const String createCheckout =
       '${baseUrl}api/StripePayment/CreateCheckOut';
+
   static const String getOrderDetails =
       '${baseUrl}api/StripePayment/GetOrderById';
+
+  static const String getDeliveryStatus =
+      '${baseUrl}api/UserDetails/GetDeliveryStatus';
+
+  static const String updateDeliveryStatus =
+      '${baseUrl}api/UserDetails/UpdateDeliveryStatus';
 
   ///Account APis---------------------------------------------------------
 

@@ -35,10 +35,15 @@ import 'bloc/restaurant_state.dart';
 import 'model/get_user_address_model.dart' as address;
 
 class CheckOutScreen extends StatefulWidget {
-  const CheckOutScreen(
-      {super.key, required this.cartData, required this.subtotal});
+  const CheckOutScreen({
+    super.key,
+    required this.cartData,
+    required this.subtotal,
+    required this.pickup,
+  });
   final List<ShoppingListData> cartData;
   final int subtotal;
+  final bool pickup;
 
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
@@ -199,15 +204,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   bool createOrder = false;
   ProductData? productData;
   bool webViewOpen = false;
-  @override
-  void initState() {
-    super.initState();
-    restaurantBloc.add(GetUserAddressEvent());
-    cardData['name'] = 'demo';
-    cardData['number'] = '4242424242424242';
-    cardData['valid'] = '12/2034';
-    cardData['cvv'] = '456';
-  }
 
   WebViewController controller = WebViewController();
 
@@ -1154,7 +1150,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 createOrderModel:
                                                     CreateOrderModel(
                                                   userId: userId,
-                                                  pickup: false,
+                                                  pickup: widget.pickup,
                                                   mealmeItems: data,
                                                   userAddress: UserAddress(
                                                     latitude: getUserAddress

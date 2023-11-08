@@ -21,6 +21,9 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<CreateProductEvent>(_onCreateProduct);
     on<CreateCheckoutEvent>(_onCreateCheckout);
     on<GetOrderDetailsEvent>(_onGetOrderDetails);
+    on<GetDeliveryStatusEvent>(_onGetDeliveryStatus);
+    on<UpdateDeliveryStatusEvent>(_onUpdateDeliveryStatus);
+    on<ClearShoppingListItemEvent>(_onClearShoppingList);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -71,7 +74,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
       emit(GetRestaurantListErrorState());
     }
   }
@@ -128,7 +131,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         emit(GetCousinesListSuccessState(cousinesList: right.data!));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
       emit(GetCousinesListErrorState());
     }
   }
@@ -241,6 +244,27 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
+  // Clear Shopping List Item Bloc =========================================================================================
+
+  _onClearShoppingList(
+      ClearShoppingListItemEvent event, Emitter<RestaurantState> emit) async {
+    emit(ClearShoppingListItemLoadingState());
+
+    try {
+      await _repository.clearShoppingListItem().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(ClearShoppingListItemErrorState());
+      }, (right) {
+        emit(
+          ClearShoppingListItemSuccessState(),
+        );
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(ClearShoppingListItemErrorState());
+    }
+  }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -317,6 +341,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
+  // Get Order Details Bloc ==============================================================================
   _onGetOrderDetails(
       GetOrderDetailsEvent event, Emitter<RestaurantState> emit) async {
     emit(GetOrderLoadingState());
@@ -334,6 +359,50 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetOrderErrorState());
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  // Get Delivery Status Bloc ==============================================================================
+
+  _onGetDeliveryStatus(
+      GetDeliveryStatusEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetDeliveryStatusLoadingState());
+
+    try {
+      await _repository.getDeliveryStatus().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetDeliveryStatusErrorState());
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        emit(GetDeliveryStatusSuccessState(data: right.data ?? {}));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetDeliveryStatusErrorState());
+    }
+  }
+
+  // Get Delivery Status Bloc ==============================================================================
+
+  _onUpdateDeliveryStatus(
+      UpdateDeliveryStatusEvent event, Emitter<RestaurantState> emit) async {
+    emit(UpdateDeliveryStatusLoadingState());
+
+    try {
+      await _repository.updateDeliveryStatus(pickup: event.pickUp).fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(UpdateDeliveryStatusErrorState());
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        emit(UpdateDeliveryStatusSuccessState(data: right.data ?? {}));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateDeliveryStatusErrorState());
     }
   }
 

@@ -754,7 +754,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                 RestaurantMealAddButtonWidget(
                                               onTap: () {
                                                 Get.to(
-                                                  () => const RestaurantCart(),
+                                                  () => RestaurantCart(
+                                                      pickUp: widget.pickup),
                                                   // transition: Transition.fadeIn,
                                                 )!
                                                     .then((value) {
@@ -802,6 +803,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                               .categories![select].menuItemList![index],
                           restaurantId: widget.restaurantId,
                           cartCount: cartCount,
+                          pickUp: widget.pickup,
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -816,6 +818,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           restaurantId: widget.restaurantId,
                           shoppingListData: selectedCartData,
                           cartCount: cartCount,
+                          pickUp: widget.pickup,
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -924,6 +927,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                       .categories![select].menuItemList![index],
                                   restaurantId: widget.restaurantId,
                                   cartCount: cartCount,
+                                  pickUp: widget.pickup,
                                 ),
                                 transition: Transition.fadeIn,
                               )!
@@ -939,6 +943,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   restaurantId: widget.restaurantId,
                                   shoppingListData: selectedCartData,
                                   cartCount: cartCount,
+                                  pickUp: widget.pickup,
                                 ),
                                 transition: Transition.fadeIn,
                               )!

@@ -22,17 +22,18 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dar
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
-  const RestaurantMenuDetailsScreen({
-    super.key,
-    required this.data,
-    required this.restaurantId,
-    this.shoppingListData,
-    required this.cartCount,
-  });
+  const RestaurantMenuDetailsScreen(
+      {super.key,
+      required this.data,
+      required this.restaurantId,
+      this.shoppingListData,
+      required this.cartCount,
+      this.pickUp});
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
   final int cartCount;
+  final bool? pickUp;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>
@@ -1327,7 +1328,8 @@ class _RestaurantMenuDetailsScreenState
                                             }
                                           } else {
                                             Get.to(
-                                              () => const RestaurantCart(),
+                                              () => RestaurantCart(
+                                                  pickUp: widget.pickUp),
                                               transition: Transition.fadeIn,
                                             )!
                                                 .then((value) {

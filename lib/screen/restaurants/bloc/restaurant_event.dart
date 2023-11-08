@@ -103,6 +103,10 @@ class RemoveShoppingListItemEvent extends RestaurantEvent {
   RemoveShoppingListItemEvent({required this.productID});
 }
 
+/// Clear Shopping List Item Event ===============================================================
+
+class ClearShoppingListItemEvent extends RestaurantEvent {}
+
 /// Create Order ==============================================================================
 
 class CreateOrderEvent extends RestaurantEvent {
@@ -133,4 +137,16 @@ class GetOrderDetailsEvent extends RestaurantEvent {
   final String mealMeOrderId;
 
   GetOrderDetailsEvent({required this.mealMeOrderId});
+}
+
+/// Get Delivery Status ==============================================================================
+
+class GetDeliveryStatusEvent extends RestaurantEvent {}
+
+/// Update Delivery Status ==============================================================================
+
+class UpdateDeliveryStatusEvent extends RestaurantEvent {
+  final bool pickUp;
+
+  UpdateDeliveryStatusEvent({required this.pickUp});
 }
