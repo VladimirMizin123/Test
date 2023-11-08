@@ -62,21 +62,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // List<GrocerySearchModel> grocerySearchModalDataList = [];
-    // List<Product>? groceryMultiSearchStoreProductListList = [];
-    // List<Cart> selectedStoreProductList = [];
-    // List<GroceryDetails> edgesList = [];
-    // List<GroceryDetails> onlyProductList = [];
-
-    print(
-        'grocerySearchModalDataList---------->>>>>> ${grocerySearchModalDataList}');
-    print(
-        'groceryMultiSearchStoreProductListList---------->>>>>> ${groceryMultiSearchStoreProductListList}');
-    print(
-        'selectedStoreProductList---------->>>>>> ${selectedStoreProductList}');
-    print('edgesList---------->>>>>> ${edgesList}');
-    print('onlyProductList---------->>>>>> ${onlyProductList}');
-
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: BlocConsumer<GroceryBloc, GroceryState>(
@@ -87,18 +72,20 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
               selectedStoreProductList = state.productsList;
             }
             if (state is GroceryProductListState) {
-              for (var i = 0; i < state.productList!.length; i++) {
-                for (var j = 0; j < edgesList.length; j++) {
-                  if (edgesList[j].id == state.productID) {
-                    edgesList[j].product = state.productList![i];
+              print(
+                  '==state.productList!.length===>${state.productList!.length}');
+              if (state.productList?.isNotEmpty ?? false) {
+                if (selectedIndex == 0) {
+                  for (var i = 0; i < edgesList.length; i++) {
+                    if (i == state.index) {
+                      edgesList[i].product = state.productList!.first;
+                    }
                   }
-                }
-              }
-
-              for (var i = 0; i < state.productList!.length; i++) {
-                for (var j = 0; j < onlyProductList.length; j++) {
-                  if (onlyProductList[j].id == state.productID) {
-                    onlyProductList[j].product = state.productList![i];
+                } else {
+                  for (var i = 0; i < onlyProductList.length; i++) {
+                    if (i == state.index) {
+                      onlyProductList[i].product = state.productList!.first;
+                    }
                   }
                 }
               }
@@ -712,8 +699,6 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                      print(
-                                          '==edgesList[$index].product ==>${edgesList[index].product}');
                                       return edgesList[index].product != null
                                           ? Column(
                                               children: [
@@ -905,25 +890,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                           : GestureDetector(
                                                               onTap: () {
                                                                 setState(() {
-                                                                  if (edgesList[
-                                                                              index]
-                                                                          .product!
-                                                                          .cartItemCount ==
-                                                                      1) {
+                                                                  setState(() {
                                                                     edgesList[
                                                                             index]
-                                                                        .product!
-                                                                        .isAddedToShoppingList = false;
-                                                                    // isProductSelect = false;
-                                                                  } else {
-                                                                    edgesList[
-                                                                            index]
-                                                                        .product!
-                                                                        .cartItemCount = edgesList[index]
-                                                                            .product!
-                                                                            .cartItemCount -
-                                                                        1;
-                                                                  }
+                                                                        .product
+                                                                        ?.cartItemCount--;
+                                                                  });
                                                                 });
                                                               },
                                                               child: Container(
@@ -987,12 +959,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                         onTap: () {
                                                           setState(() {
                                                             edgesList[index]
-                                                                    .product!
-                                                                    .cartItemCount =
-                                                                edgesList[index]
-                                                                        .product!
-                                                                        .cartItemCount +
-                                                                    1;
+                                                                .product
+                                                                ?.cartItemCount++;
                                                           });
                                                         },
                                                         child: Container(
@@ -1039,8 +1007,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     selectedStoreProductList:
                                                         selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId:
-                                                        edgesList[index].id!,
+                                                    index: index,
                                                   );
                                                 }));
                                               } else {
@@ -1383,8 +1350,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     selectedStoreProductList:
                                                         selectedStoreProductList,
                                                     groceryBloc: groceryBloc,
-                                                    productId:
-                                                        edgesList[index].id!,
+                                                    index: index,
                                                   );
                                                 }));
                                               } else {

@@ -214,8 +214,14 @@ class _AddressScreenState extends State<AddressScreen> {
                             }
 
                             if (state is GetUserAddressSuccessState) {
-                              if (selectedAddress == null ||
-                                  (selectedAddress?.isEmpty ?? false)) {
+                              if (state.userAddress.isEmpty) {
+                                return const Center(
+                                  child: Text('No Data Found'),
+                                );
+                              }
+
+                              if ((selectedAddress == null ||
+                                  (selectedAddress?.isEmpty ?? false))) {
                                 int index = state.userAddress.indexWhere(
                                     (element) => element.isPrimary == true);
 

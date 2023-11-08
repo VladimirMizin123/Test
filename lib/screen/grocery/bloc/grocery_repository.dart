@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -6,6 +7,11 @@ import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/add_grocery_to_shopping_list_from_suggestic_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
@@ -211,6 +217,59 @@ class GroceryRepository {
       return Right(GetUserAddressModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(GetUserAddressModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Order ====================================================================
+
+  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
+      {required CreateGroceryOrderModel createOrderModel}) async {
+    log('==createOrderModel==${jsonEncode(createOrderModel)}');
+
+    final response = await apiServices.post(
+      ApiUrls.createOrder,
+      createOrderModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Product ====================================================================
+
+  Future<Either<ErrorModel, CreateProductResponseModel>> createProduct(
+      {required CreateProductRequestModel createProductRequestModel}) async {
+    log('===createProductRequestModel===>${jsonEncode(createProductRequestModel)}');
+    final response = await apiServices.post(
+      ApiUrls.createProduct,
+      createProductRequestModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          CreateProductResponseModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Create Checkout====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> createCheckout(
+      {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
+    final response = await apiServices.post(
+      ApiUrls.createCheckout,
+      createCheckOutRequestModel,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

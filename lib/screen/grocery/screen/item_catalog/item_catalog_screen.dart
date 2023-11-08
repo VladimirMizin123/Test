@@ -20,12 +20,12 @@ import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 class ItemCatalogScreen extends StatefulWidget {
   final List<Cart> selectedStoreProductList;
   final GroceryBloc groceryBloc;
-  final String productId;
+  final int? index;
   const ItemCatalogScreen(
       {super.key,
       this.selectedStoreProductList = const [],
       required this.groceryBloc,
-      required this.productId});
+      required this.index});
 
   @override
   State<ItemCatalogScreen> createState() => _ItemCatalogScreenState();
@@ -54,12 +54,20 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
         }
       }
     }
+    for (var i = 0; i < groceryResult.length; i++) {
+      if (groceryResult[i].isAddedToShoppingList == true) {
+        groceryResult[i].isAddedToShoppingList = false;
+        groceryResult[i].cartItemCount = 1;
+        // groceryCartList.add(groceryResult[i]);
+      }
+    }
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    print('==groceryResult.length==>${groceryResult.length}');
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -376,8 +384,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                   }
 
                   widget.groceryBloc.add(GroceryProductListEvent(
-                      productList: groceryCartList,
-                      productID: widget.productId));
+                      productList: groceryCartList, index: widget.index));
                   Navigator.pop(context);
                 },
                 isDarkColor: true,

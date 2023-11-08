@@ -21,6 +21,9 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<BarcodeScanEvent>(_onScanBarcode);
     on<AddNewCustomMealEvent>(_onAddCustomMeal);
     on<GetUserAddressEvent>(_onGetUserAddress);
+    on<CreateOrderEvent>(_onCreateOrder);
+    on<CreateProductEvent>(_onCreateProduct);
+    on<CreateCheckoutEvent>(_onCreateCheckout);
   }
 
   final GroceryRepository _repository = GroceryRepository();
@@ -28,7 +31,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   _onGroceryProductList(
       GroceryProductListEvent event, Emitter<GroceryState> emit) async {
     emit(GroceryProductListState(
-        productList: event.productList, productID: event.productID));
+        productList: event.productList, index: event.index));
   }
 
   _onScanBarcode(BarcodeScanEvent event, Emitter<GroceryState> emit) async {
@@ -77,6 +80,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
 
     try {
       await _repository.fetchGroceryShoppingList().fold((left) {
+        emit(GroceryErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(GroceryFetchSuccessState(
@@ -246,6 +250,79 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetUserAddressErrorState());
+    }
+  }
+
+  // Create Order Bloc ==============================================================================
+
+  _onCreateOrder(CreateOrderEvent event, Emitter<GroceryState> emit) async {
+    emit(CreateOrderLoadingState());
+
+    try {
+      await _repository
+          .createOrder(createOrderModel: event.createGroceryOrderModel)
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+
+        emit(CreateOrderErrorState());
+      }, (right) {
+        emit(CreateOrderSuccessState(orderData: right.data));
+        showToast(
+            isSuccess: true,
+            message: right.message ?? "Order Created Successfully");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateOrderErrorState());
+    }
+  }
+
+  // Create Product Bloc ==============================================================================
+
+  _onCreateProduct(CreateProductEvent event, Emitter<GroceryState> emit) async {
+    emit(CreateProductLoadingState());
+
+    try {
+      await _repository
+          .createProduct(
+              createProductRequestModel: event.createProductRequestModel)
+          .fold((left) {
+        emit(CreateProductErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+        emit(CreateProductErrorState());
+      }, (right) {
+        emit(CreateProductSuccessState(productData: right.data));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateProductErrorState());
+    }
+  }
+
+  // Create Product Bloc ==============================================================================
+
+  _onCreateCheckout(
+      CreateCheckoutEvent event, Emitter<GroceryState> emit) async {
+    emit(CreateCheckoutLoadingState());
+
+    try {
+      await _repository
+          .createCheckout(
+              createCheckOutRequestModel: event.createCheckOutRequestModel)
+          .fold((left) {
+        emit(CreateCheckoutErrorState());
+        onFailError(emit: emit, text: left.errorMessage!);
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        emit(CreateCheckoutSuccessState(data: right.data));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(CreateCheckoutErrorState());
     }
   }
 }
