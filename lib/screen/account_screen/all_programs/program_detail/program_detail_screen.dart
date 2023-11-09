@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../../../constant/asset_utils.dart';
@@ -452,7 +453,11 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
           },
           listener: (context, state) {
             if (state is UpdateDietProgramSuccessState) {
-              // accountBloc.add(GetProgramInfoEvent(widget.programId));
+              Get.offAll(
+                () => const AppManagerScreen(
+                  selectIndex: 0,
+                ),
+              );
             }
 
             if (state is GetProgramInfoLoadingState) {

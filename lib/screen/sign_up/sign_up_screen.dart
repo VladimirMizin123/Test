@@ -88,6 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     context: context,
                     controller: homeController.phoneNumberController,
                     hintText: StringUtils.phone,
+                    textInputType: TextInputType.number,
                   ).paddingOnly(top: 16),
                   commonTextField(
                           context: context,

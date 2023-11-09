@@ -20,12 +20,15 @@ import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 class ItemCatalogScreen extends StatefulWidget {
   final List<Cart> selectedStoreProductList;
   final GroceryBloc groceryBloc;
-  final int? index;
-  const ItemCatalogScreen(
-      {super.key,
-      this.selectedStoreProductList = const [],
-      required this.groceryBloc,
-      required this.index});
+  final String? productId;
+  final String? typeOfProduct;
+  const ItemCatalogScreen({
+    super.key,
+    this.selectedStoreProductList = const [],
+    required this.groceryBloc,
+    required this.productId,
+    required this.typeOfProduct,
+  });
 
   @override
   State<ItemCatalogScreen> createState() => _ItemCatalogScreenState();
@@ -47,18 +50,18 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
           j++) {
         if (widget.selectedStoreProductList[i].groceryResult != null) {
           if (widget.selectedStoreProductList[i].groceryResult![j].products !=
-              []) {
-            groceryResult.addAll(
-                widget.selectedStoreProductList[i].groceryResult![j].products!);
+                  [] &&
+              widget.selectedStoreProductList[i].groceryResult![j]
+                      .searchedItemName ==
+                  widget.typeOfProduct) {
+            widget.selectedStoreProductList[i].groceryResult![j].products
+                ?.forEach((element) {
+              if (!element.isAddedToShoppingList) {
+                groceryResult.add(element);
+              }
+            });
           }
         }
-      }
-    }
-    for (var i = 0; i < groceryResult.length; i++) {
-      if (groceryResult[i].isAddedToShoppingList == true) {
-        groceryResult[i].isAddedToShoppingList = false;
-        groceryResult[i].cartItemCount = 1;
-        // groceryCartList.add(groceryResult[i]);
       }
     }
     setState(() {});
@@ -67,7 +70,6 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    print('==groceryResult.length==>${groceryResult.length}');
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -384,7 +386,8 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                   }
 
                   widget.groceryBloc.add(GroceryProductListEvent(
-                      productList: groceryCartList, index: widget.index));
+                      productList: groceryCartList,
+                      productId: widget.productId));
                   Navigator.pop(context);
                 },
                 isDarkColor: true,

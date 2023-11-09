@@ -25,14 +25,14 @@ Widget unitScreenWidget({String? text, Widget? widget}) {
 }
 
 Widget radioButtonWidget(
-    {String? value1,
-    String? value2,
+    {int? value1,
+    int? value2,
     String? title1,
     String? title2,
-    String? groupValue,
+    int? groupValue,
     // String? groupValue2,
-    Function(String)? onChanged1,
-    Function(String)? onChanged2}) {
+    Function(int)? onChanged1,
+    Function(int)? onChanged2}) {
   return Container(
     decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.w),
@@ -55,9 +55,7 @@ Widget radioButtonWidget(
               activeColor: AppColors.primaryBlueColor,
               value: value1,
               groupValue: groupValue,
-              onChanged: (value) {
-                return onChanged1!(value!);
-              },
+              onChanged: (value) => onChanged1!(value!),
             ),
           ],
         ),
@@ -76,9 +74,7 @@ Widget radioButtonWidget(
                 activeColor: AppColors.primaryBlueColor,
                 value: value2,
                 groupValue: groupValue,
-                onChanged: (value) {
-                  return onChanged2!(value!);
-                },
+                onChanged: (value) => onChanged2!(value!),
               ),
             ),
           ],

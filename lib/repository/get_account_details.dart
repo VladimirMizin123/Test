@@ -9,10 +9,12 @@ import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_mode
 import 'package:gymeats_mobile/screen/account_screen/model/get_current_program_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_details_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_image_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/get_unit_info_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/update_diet_program_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/update_profile_details_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/update_profile_image_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/update_unit_info_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:http/http.dart' as http;
@@ -129,6 +131,7 @@ class AccountRepository {
       updateProfileDetails({
     required String firstName,
     required String lastName,
+    required String phoneNumber,
     required int goal,
     required int weight,
     required int targetWeight,
@@ -139,6 +142,7 @@ class AccountRepository {
     Map<String, dynamic> data = {
       "firstName": firstName,
       "lastName": lastName,
+      "phoneNumber": phoneNumber,
       "goal": goal,
       "weight": weight,
       "targetWeight": targetWeight,
@@ -221,6 +225,52 @@ class AccountRepository {
       return Right(changePasswordResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
       return Right(changePasswordResponseModelFromJson(response.body));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Get Unit Info ====================================================================
+
+  Future<Either<ErrorModel, GetUnitInfoResponseModel>> getUnitInfo() async {
+    final response = await apiServices.get(
+      ApiUrls.getUnitInfo + userID,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(getUnitInfoResponseModelFromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(getUnitInfoResponseModelFromJson(response.body));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  /// Update Unit Info ====================================================================
+
+  Future<Either<ErrorModel, UpdateUnitInfoResponseModel>> updateUnitInfo({
+    required String unitId,
+    required int weightType,
+    required int heightType,
+    required int energyType,
+    required int waterType,
+  }) async {
+    Map<String, dynamic> data = {
+      "unitId": unitId,
+      "weightType": weightType,
+      "heightType": heightType,
+      "energyType": energyType,
+      "waterType": waterType,
+      "userId": userID
+    };
+    print('=data==>${data}');
+
+    final response = await apiServices.put(ApiUrls.updateUnitInfo, data);
+    print('==response==>${response.statusCode}====${response.body}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(updateUnitInfoResponseModelFromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(updateUnitInfoResponseModelFromJson(response.body));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
