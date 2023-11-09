@@ -16,6 +16,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     on<GetDashboardData>(_onGetSurveyData);
     on<GenMealTrackerData>(_onGenMealTrackerData);
     on<AddEatenMealData>(_onAddEatenMeal);
+    on<GetOrderInvoiceList>(_onGetOrderInvoiceList);
   }
 
   final GetDashboardDataRepository _dashboardRepository =
@@ -31,10 +32,8 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
           .getMealLogByDate(DateFormat('yyyy-MM-dd').format(DateTime.now()));
 
       response.fold((left) {}, (right) {
-        data.fold(
-            (left) => {
-                  emit(LoadDashboardData(model: right, data: [])),
-                }, (r) {
+        data.fold((left) => {emit(LoadDashboardData(model: right, data: []))},
+            (r) {
           emit(LoadDashboardData(model: right, data: r.data));
         });
         // emit(LoadDashboardData(model: right));
@@ -51,7 +50,9 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     try {
       emit(LoadingData());
       await _planRepository.fetchMealPlan().fold((left) {
-        emit(ErrorStateData(errMessage: left.errorMessage!,));
+        emit(ErrorStateData(
+          errMessage: left.errorMessage!,
+        ));
       }, (right) {
         right.data!.map((e) {
           if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
@@ -101,6 +102,22 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
+    }
+  }
+
+  _onGetOrderInvoiceList(
+      GetOrderInvoiceList event, Emitter<GetDashboardState> emit) async {
+    emit(GetOrderInvoiceLoadingState());
+
+    try {
+      await _dashboardRepository.getInvoiceOrderList().fold((left) {
+        emit(GetOrderInvoiceErrorState());
+      }, (right) {
+        emit(GetOrderInvoiceSuccessState(invoiceData: right.data ?? []));
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetOrderInvoiceErrorState());
     }
   }
 }

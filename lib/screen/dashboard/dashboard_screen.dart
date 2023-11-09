@@ -15,6 +15,8 @@ import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';

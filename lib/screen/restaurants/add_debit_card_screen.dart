@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
@@ -7,10 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/credit_card.dart';
 import 'package:ml_card_scanner/ml_card_scanner.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddDebitCardScreen extends StatefulWidget {
   const AddDebitCardScreen({super.key, this.data});
@@ -137,6 +133,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                             },
                             controller: cardNumber,
                             maxLength: 16,
+                            keyboardType: TextInputType.number,
                             suffixIcon: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 13),
@@ -214,6 +211,7 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
                                   ),
                                   commonTextField(
                                     label: '***',
+                                    keyboardType: TextInputType.number,
                                     validator: (value) {
                                       if (value!.isEmpty) {
                                         return 'Please Enter CVV Number';

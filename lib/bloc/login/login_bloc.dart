@@ -56,9 +56,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               .getUserDetailsData(right.data?.userId ?? userId);
           getUserDetailsResponse.fold((left) {
             onFailError(emit: emit, text: left.errorMessage!);
-          }, (r) {
+          }, (r) async {
             final getGender = r.data!.gender;
             print('getGender : $getGender');
+            await PreferenceUtils.setString(
+                prefUserMobile, r.data?.phoneNumber ?? '');
             // emit(LoginSuccessfulState());
             Get.toNamed('/RandomLoginScreen',
                 arguments: getGender.toString().capitalizeFirst);

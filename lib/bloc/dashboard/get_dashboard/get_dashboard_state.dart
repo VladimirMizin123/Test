@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
+
 import '../../../models/fetch_meal_plan_model.dart';
 import '../../../models/get_dashboard_model.dart';
 import '../../../models/get_meal_tracker_data_model.dart';
@@ -21,7 +23,9 @@ class LoadMealData extends GetDashboardState {
 class ErrorStateData extends GetDashboardState {
   String errMessage;
 
-  ErrorStateData({required this.errMessage,});
+  ErrorStateData({
+    required this.errMessage,
+  });
 }
 
 class LoadingData extends GetDashboardState {}
@@ -36,3 +40,13 @@ class LoadingDoneState extends GetDashboardState {
 
   LoadingDoneState({required this.mealID});
 }
+
+class GetOrderInvoiceLoadingState extends GetDashboardState {}
+
+class GetOrderInvoiceSuccessState extends GetDashboardState {
+  final List<InvoiceList> invoiceData;
+
+  GetOrderInvoiceSuccessState({required this.invoiceData});
+}
+
+class GetOrderInvoiceErrorState extends GetDashboardState {}

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 
 import '../app/functions.dart';
 import '../bloc/mealLog/get_meallogby_date_event.dart';
@@ -36,8 +37,24 @@ class GetDashboardDataRepository {
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
     print('getMealLogByDate response : ${response.body}');
     print('getMealLogByDate response statusCode : ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201 ) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, GetOrderInvoiceListModel>>
+      getInvoiceOrderList() async {
+    final response =
+        await apiServices.get('${ApiUrls.getOrderInvoiceList}/$userId');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          GetOrderInvoiceListModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(
+          GetOrderInvoiceListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

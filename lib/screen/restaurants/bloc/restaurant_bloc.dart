@@ -186,7 +186,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         );
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
       emit(GetShoppingListErrorState());
     }
   }
@@ -255,12 +255,9 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(ClearShoppingListItemErrorState());
       }, (right) {
-        emit(
-          ClearShoppingListItemSuccessState(),
-        );
+        emit(ClearShoppingListItemSuccessState());
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
       emit(ClearShoppingListItemErrorState());
     }
   }
@@ -353,7 +350,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         emit(GetOrderErrorState());
         showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
-        emit(GetOrderSuccessState(data: right.data ?? []));
+        emit(GetOrderSuccessState(data: right.data!));
         // showToast(isSuccess: true, message: right.message ?? "");
       });
     } catch (e) {
@@ -409,7 +406,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   onFailError({required String text, required Emitter<RestaurantState> emit}) {
-    showToast(isSuccess: false, message: text);
+    // showToast(isSuccess: false, message: text);
     emit(ErrorState());
   }
 }

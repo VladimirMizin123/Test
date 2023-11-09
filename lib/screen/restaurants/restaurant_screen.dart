@@ -253,7 +253,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
               /// Shopping list state -----------------------------------------------------
               if (state is GetShoppingListSuccessState) {
-                cartCount = state.shoppingListData!.length;
+                cartCount = 0;
+                state.shoppingListData?.forEach((element) {
+                  if (element.productType == 'Restaurant') {
+                    cartCount++;
+                  }
+                });
               }
             },
             builder: (context, state) {

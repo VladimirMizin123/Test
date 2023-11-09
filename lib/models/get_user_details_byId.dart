@@ -11,14 +11,14 @@ class GetUserDetailsById {
     success = json['success'];
     message = json['message'];
     errorMessage = json['errorMessage'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['errorMessage'] = this.errorMessage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    data['errorMessage'] = errorMessage;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -29,6 +29,7 @@ class GetUserDetailsById {
 class Data {
   String? firstName;
   String? lastName;
+  String? phoneNumber;
   dynamic goal;
   String? id;
   String? userId;
@@ -41,6 +42,7 @@ class Data {
   Data(
       {this.firstName,
       this.lastName,
+      this.phoneNumber,
       this.goal,
       this.id,
       this.userId,
@@ -53,6 +55,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     firstName = json['firstName'];
     lastName = json['lastName'];
+    phoneNumber = json['phoneNumber'];
     goal = json['goal'];
     id = json['id'];
     userId = json['userId'];
@@ -64,17 +67,18 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['goal'] = this.goal;
-    data['id'] = this.id;
-    data['userId'] = this.userId;
-    data['weightInLb'] = this.weightInLb;
-    data['targetWeightInLb'] = this.targetWeightInLb;
-    data['heightInCm'] = this.heightInCm;
-    data['birthDate'] = this.birthDate;
-    data['gender'] = this.gender;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['phoneNumber'] = phoneNumber;
+    data['goal'] = goal;
+    data['id'] = id;
+    data['userId'] = userId;
+    data['weightInLb'] = weightInLb;
+    data['targetWeightInLb'] = targetWeightInLb;
+    data['heightInCm'] = heightInCm;
+    data['birthDate'] = birthDate;
+    data['gender'] = gender;
     return data;
   }
 }

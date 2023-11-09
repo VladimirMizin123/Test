@@ -57,6 +57,7 @@ dependencies:
   datepicker_dropdown: ^0.0.8
   flutter_masked_text2: ^0.9.1
   webview_flutter: ^4.4.2
+  get_storage: ^2.1.1
 
 
   #  camera:

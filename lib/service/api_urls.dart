@@ -189,6 +189,8 @@ class ApiUrls {
 
   static const String updateDeliveryStatus =
       '${baseUrl}api/UserDetails/UpdateDeliveryStatus';
+  static const String getOrderInvoiceList =
+      '${baseUrl}api/OrderInvoice/GetUserOrderInvoiceList';
 
   ///Account APis---------------------------------------------------------
 

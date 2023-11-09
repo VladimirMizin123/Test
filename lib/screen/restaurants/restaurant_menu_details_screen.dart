@@ -28,12 +28,12 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
       required this.restaurantId,
       this.shoppingListData,
       required this.cartCount,
-      this.pickUp});
+      required this.pickUp});
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
   final int cartCount;
-  final bool? pickUp;
+  final bool pickUp;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>

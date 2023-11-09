@@ -20,8 +20,8 @@ class AddEatenMealData extends GetDashboardEvent {
   AddEatenMealData(
       {required this.mealId,
       required this.userId,
-       this.mealName,
-       this.mealType,
+      this.mealName,
+      this.mealType,
       this.calorie,
       this.noOfServing,
       this.recipeId,
@@ -30,3 +30,5 @@ class AddEatenMealData extends GetDashboardEvent {
       this.carbs,
       this.value});
 }
+
+class GetOrderInvoiceList extends GetDashboardEvent {}

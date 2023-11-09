@@ -3,10 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
@@ -15,6 +19,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_bg.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:livechatt/livechatt.dart';
 
 class RestaurantOrderDetailsScreen extends StatefulWidget {
   const RestaurantOrderDetailsScreen({super.key, required this.mealMeOrderId});
@@ -29,10 +34,14 @@ class _RestaurantOrderDetailsScreenState
   RestaurantBloc restaurantBloc = RestaurantBloc();
   List<OrderData> orderData = [];
   bool loading = false;
+  String fullName = '';
+  AccountBloc accountBloc = AccountBloc();
+
   @override
   void initState() {
     super.initState();
     loading = true;
+    accountBloc.add(GetProfileDetailsEvent());
     Future.delayed(const Duration(seconds: 10)).then((value) {
       restaurantBloc
           .add(GetOrderDetailsEvent(mealMeOrderId: widget.mealMeOrderId));
@@ -130,13 +139,16 @@ class _RestaurantOrderDetailsScreenState
                                       style: textTheme.bodyLarge?.copyWith(
                                           color: const Color(0xFF010101)),
                                     ),
-                                    Text(
-                                      '${orderData[0].deliveryTimeMin}-${orderData[0].deliveryTimeMax} min',
-                                      style: textTheme.displayLarge?.copyWith(
-                                          color: AppColors.darkGray,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: -0.8),
-                                    ),
+                                    orderData.isEmpty
+                                        ? const SizedBox()
+                                        : Text(
+                                            '${orderData[0].deliveryTimeMin}-${orderData[0].deliveryTimeMax} min',
+                                            style: textTheme.displayLarge
+                                                ?.copyWith(
+                                                    color: AppColors.darkGray,
+                                                    fontWeight: FontWeight.w900,
+                                                    letterSpacing: -0.8),
+                                          ),
                                     Text(
                                       StringUtils.estimatedTimeText,
                                       style: textTheme.bodySmall?.copyWith(
@@ -274,14 +286,35 @@ class _RestaurantOrderDetailsScreenState
                               ),
                             ),
                       const Text('Have any questions? Fill free to ask us!'),
-                      buildButton(
-                              context: context,
-                              bgColor: AppColors.primaryBlue,
-                              onPressed: () {},
-                              textColor: AppColors.skyBlue,
-                              title: 'Support')
-                          .paddingOnly(
-                              top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
+                      BlocConsumer(
+                        bloc: accountBloc,
+                        listener: (context, state) {
+                          if (state is GetProfileDetailsSuccessState) {
+                            fullName =
+                                '${state.profileDetails?.firstName} ${state.profileDetails?.lastName}';
+                            setState(() {});
+                          }
+                        },
+                        builder: (context, state) => buildButton(
+                          context: context,
+                          bgColor: AppColors.primaryBlue,
+                          onPressed: () {
+                            Livechat.beginChat(
+                              '16538658',
+                              '0',
+                              'Enter name',
+                              PreferenceUtils.getString(prefUserEmail),
+                              <String, String>{
+                                'org': PreferenceUtils.getString(prefUserData),
+                                'position': 'user'
+                              },
+                            );
+                          },
+                          textColor: AppColors.skyBlue,
+                          title: 'Support',
+                        ).paddingOnly(
+                            top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
+                      ),
                     ],
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -37,7 +38,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   List<MealDataByDate> mealDataByDate = [];
   bool isLoadingData = false;
   bool isReadyToShowWidget = false;
-
   MealPlanBloc mealPlanBloc = MealPlanBloc();
 
   @override
@@ -48,6 +48,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
     });
   }
 
+  final box = GetStorage();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -57,6 +58,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
           listener: (context, state) async {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
+              // box.write('mealData', state.mealPlanList);
+
               isLoadingData = false;
 
               for (var i = 0; i < mealPlanList.length; i++) {

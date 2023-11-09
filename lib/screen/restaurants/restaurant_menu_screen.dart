@@ -133,6 +133,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             }
             if (state is GetShoppingListSuccessState) {
               cartData.clear();
+
               cartData = state.shoppingListData!;
 
               cartCount = cartData.length;

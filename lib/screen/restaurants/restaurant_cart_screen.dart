@@ -17,8 +17,8 @@ import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantCart extends StatefulWidget {
-  const RestaurantCart({super.key, this.pickUp});
-  final bool? pickUp;
+  const RestaurantCart({super.key, required this.pickUp});
+  final bool pickUp;
 
   @override
   State<RestaurantCart> createState() => _RestaurantCartState();
@@ -548,7 +548,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                   () => CheckOutScreen(
                                                     cartData: cartData,
                                                     subtotal: price,
-                                                    pickup: widget.pickUp!,
+                                                    pickup: widget.pickUp,
                                                   ),
                                                   transition: Transition.fadeIn,
                                                 );

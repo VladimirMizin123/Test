@@ -211,6 +211,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   bool getAddressLoadingState = false;
   address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    restaurantBloc.add(GetUserAddressEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1169,7 +1177,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                     zipcode:
                                                         getUserAddress?.zipcode,
                                                   ),
-                                                  userPhone: 1234567890,
+                                                  userPhone: int.parse(
+                                                    PreferenceUtils.getString(
+                                                                prefUserMobile)
+                                                            .isNotEmpty
+                                                        ? PreferenceUtils
+                                                            .getString(
+                                                                prefUserMobile)
+                                                        : '1234567890',
+                                                  ),
                                                   driverTipCents: 0,
                                                   pickupTipCents: 0,
                                                   userDropoffNotes: notes.text,

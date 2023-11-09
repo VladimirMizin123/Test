@@ -404,10 +404,6 @@ class _MyAppState extends State<MyApp> {
               page: () => const BuildMyProfileScreen(),
             ),
             GetPage(
-              name: '/OrderDetailsScreen',
-              page: () => const OrderDetailsScreen(),
-            ),
-            GetPage(
               name: '/GymWorkInfoScreen',
               page: () => const GymWorkInfoScreen(),
             ),
