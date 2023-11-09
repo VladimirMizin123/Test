@@ -6,8 +6,9 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 
-Widget bottomSheetWidget({Widget? buttonWidget}) {
+Widget deleteAccountBottomSheetWidget({Widget? buttonWidget}) {
   return Column(
+    mainAxisSize: MainAxisSize.min,
     children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -54,6 +55,9 @@ Widget bottomSheetWidget({Widget? buttonWidget}) {
         height: 20.h,
       ),
       buttonWidget!,
+      SizedBox(
+        height: 20.h,
+      ),
     ],
   ).paddingOnly(right: 26.w, left: 26.w);
 }

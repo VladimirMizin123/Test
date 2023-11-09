@@ -41,6 +41,7 @@ class GetProfileDetailsResponseModel {
 class ProfileDetails {
   String? firstName;
   String? lastName;
+  String? phoneNumber;
   int? goal;
   String? id;
   String? userId;
@@ -53,6 +54,7 @@ class ProfileDetails {
   ProfileDetails({
     this.firstName,
     this.lastName,
+    this.phoneNumber,
     this.goal,
     this.id,
     this.userId,
@@ -64,11 +66,12 @@ class ProfileDetails {
   });
 
   factory ProfileDetails.fromJson(Map<String, dynamic> json) => ProfileDetails(
-        firstName: json["firstName"],
-        lastName: json["lastName"],
+        firstName: json["firstName"] ?? "",
+        lastName: json["lastName"] ?? "",
+        phoneNumber: json["phoneNumber"] ?? "",
         goal: json["goal"],
-        id: json["id"],
-        userId: json["userId"],
+        id: json["id"] ?? '',
+        userId: json["userId"] ?? '',
         weightInLb: json["weightInLb"].round(),
         targetWeightInLb: json["targetWeightInLb"].round(),
         heightInCm: json["heightInCm"]?.toDouble(),
@@ -79,6 +82,7 @@ class ProfileDetails {
   Map<String, dynamic> toJson() => {
         "firstName": firstName,
         "lastName": lastName,
+        "phoneNumber": phoneNumber,
         "goal": goal,
         "id": id,
         "userId": userId,

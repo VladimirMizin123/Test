@@ -114,6 +114,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                               height: 200.h,
                               child: Text(
                                 StringUtils.profileImage,
+                                textAlign: TextAlign.center,
                                 style: AppTextStyle.gymEatsStyle.copyWith(
                                     color: Colors.white,
                                     fontSize: 18.sp,
@@ -138,6 +139,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                   width: 110.w,
                                   height: 110.h,
                                   child: Text(StringUtils.takePhoto,
+                                      textAlign: TextAlign.center,
                                       style: AppTextStyle.gymEatsStyle.copyWith(
                                           color: Colors.white,
                                           fontSize: 16.sp,
@@ -158,6 +160,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                   width: 110.w,
                                   height: 110.h,
                                   child: Text(StringUtils.uploadPhoto,
+                                      textAlign: TextAlign.center,
                                       style: AppTextStyle.gymEatsStyle.copyWith(
                                           color: Colors.white,
                                           fontSize: 16.sp,

@@ -7,7 +7,7 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/change_password/change_password_screen.dart';
-import 'package:gymeats_mobile/screen/account_screen/setting/bottom_sheet_widget.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/delete_account_bottom_sheet_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -114,7 +114,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       context: context,
                       builder: (context) {
                         return Container(
-                          height: 300,
+                          // height: 300,
                           decoration: BoxDecoration(
                             color: AppColors.whiteColor,
                             borderRadius: BorderRadius.only(
@@ -122,43 +122,39 @@ class _SettingScreenState extends State<SettingScreen> {
                               topLeft: Radius.circular(30.w),
                             ),
                           ),
-                          child: bottomSheetWidget(
+                          child: deleteAccountBottomSheetWidget(
                             buttonWidget: Container(
                               height: 60,
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  /*Container(
-                                    width: 30,
-                                    color: Colors.yellow,
-                                  )*/
-                                  Container(
-                                    width: 145.w,
-                                    child: buildButton(
-                                        context: context,
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        title: "Delete",
-                                        textColor: AppColors.whiteColor,
-                                        bgColor: AppColors.primaryBlueColor),
+                                  Expanded(
+                                    child: Container(
+                                      child: buildButton(
+                                          context: context,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          title: "Delete",
+                                          textColor: AppColors.whiteColor,
+                                          bgColor: AppColors.primaryBlueColor),
+                                    ),
                                   ),
                                   SizedBox(
-                                    width: 5.w,
+                                    width: 10.w,
                                   ),
-                                  Container(
-                                    width: 145.w,
-                                    child: buildBorderButton(
-                                        context: context,
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        title: "Delete",
-                                        textColor: AppColors.primaryBlueColor,
-                                        bgColor: AppColors.whiteColor,
-                                        borderColor:
-                                            AppColors.primaryBlueColor),
+                                  Expanded(
+                                    child: Container(
+                                      child: buildBorderButton(
+                                          context: context,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          title: "Cancel",
+                                          textColor: AppColors.primaryBlueColor,
+                                          bgColor: AppColors.whiteColor,
+                                          borderColor:
+                                              AppColors.primaryBlueColor),
+                                    ),
                                   ),
                                 ],
                               ),

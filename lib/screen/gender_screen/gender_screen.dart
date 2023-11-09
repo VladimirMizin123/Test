@@ -39,7 +39,7 @@ class _GenderScreenState extends State<GenderScreen> {
             ? Column(
                 children: [
                   Text(
-                    '${Get.arguments.firstName}, you did it!',
+                    '${Get.arguments == null ? '' : Get.arguments.firstName}, you did it!',
                     textAlign: TextAlign.center,
                     style: textTheme.displayLarge!.copyWith(
                         color: const Color(0xFF004C63),
@@ -104,7 +104,6 @@ class _GenderScreenState extends State<GenderScreen> {
                     ],
                   )
                 : Column(
-
                     children: [
                       Text(
                         '${Get.arguments.firstName}, you did it!',

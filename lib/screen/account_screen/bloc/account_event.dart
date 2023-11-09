@@ -35,6 +35,7 @@ class GetProfileDetailsEvent extends AccountEvent {}
 class UpdateProfileDetailsEvent extends AccountEvent {
   final String firstName;
   final String lastName;
+  final String phoneNumber;
   final int goal;
   final int weight;
   final int targetWeight;
@@ -45,6 +46,7 @@ class UpdateProfileDetailsEvent extends AccountEvent {
   UpdateProfileDetailsEvent({
     required this.firstName,
     required this.lastName,
+    required this.phoneNumber,
     required this.goal,
     required this.weight,
     required this.targetWeight,
@@ -80,5 +82,25 @@ class ChangeProfilePasswordEvent extends AccountEvent {
     required this.newPassword,
     required this.confirmPassword,
     required this.email,
+  });
+}
+
+/// Get Unit info Event ===============================================================
+class GetUnitInfoEvent extends AccountEvent {}
+
+/// Update Unit info Event ===============================================================
+class UpdateUnitInfoEvent extends AccountEvent {
+  final String unitId;
+  final int weightType;
+  final int heightType;
+  final int energyType;
+  final int waterType;
+
+  UpdateUnitInfoEvent({
+    required this.unitId,
+    required this.weightType,
+    required this.heightType,
+    required this.energyType,
+    required this.waterType,
   });
 }

@@ -88,15 +88,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isProfileDetailsLoader = false;
 
                 firstNameController.text =
-                    state.profileDetails?.firstName.toString() ?? '';
-                lastNameController.text =
-                    state.profileDetails?.lastName.toString() ?? '';
+                    state.profileDetails?.firstName ?? '';
+                lastNameController.text = state.profileDetails?.lastName ?? '';
+                phoneNumberController.text =
+                    state.profileDetails?.phoneNumber ?? '';
                 weightController.text =
                     state.profileDetails?.weightInLb.toString() ?? '';
                 targetWeightController.text =
                     state.profileDetails?.targetWeightInLb.toString() ?? '';
-                heightController.text =
-                    state.profileDetails?.heightInCm.toString() ?? '';
+                heightController.text = state.profileDetails?.heightInCm == null
+                    ? ''
+                    : (state.profileDetails!.heightInCm! / 30.48)
+                        .toStringAsFixed(2);
 
                 if (state.profileDetails?.goal == 1) {
                   goalFocusController.text = goalFocusList.first.toString();
@@ -345,6 +348,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               validator: (value) {
                                                 if (value!.isEmpty) {
                                                   return 'Please Enter Phone Number';
+                                                } else if (value.length != 10) {
+                                                  return 'Please Enter Valid Phone Number';
                                                 } else {
                                                   return null;
                                                 }
@@ -638,6 +643,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 UpdateProfileDetailsEvent(
                                   firstName: firstNameController.text,
                                   lastName: lastNameController.text,
+                                  phoneNumber: phoneNumberController.text,
                                   goal: selectedGoalFocus == goalFocusList.first
                                       ? 1
                                       : selectedGoalFocus == goalFocusList.last

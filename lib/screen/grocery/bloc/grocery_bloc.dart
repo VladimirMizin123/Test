@@ -31,7 +31,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   _onGroceryProductList(
       GroceryProductListEvent event, Emitter<GroceryState> emit) async {
     emit(GroceryProductListState(
-        productList: event.productList, index: event.index));
+        productList: event.productList, productId: event.productId));
   }
 
   _onScanBarcode(BarcodeScanEvent event, Emitter<GroceryState> emit) async {

@@ -17,6 +17,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<UpdateProfileDetailsEvent>(_onUpdateProfileDetails);
     on<UpdateProfileImageEvent>(_onUpdateProfileImage);
     on<ChangeProfilePasswordEvent>(_onChangeProfilePassword);
+    on<GetUnitInfoEvent>(_onGetUnitInfo);
+    on<UpdateUnitInfoEvent>(_onUpdateUnitInfo);
   }
 
   final AccountRepository _repository = AccountRepository();
@@ -137,6 +139,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
           .updateProfileDetails(
         firstName: event.firstName,
         lastName: event.lastName,
+        phoneNumber: event.phoneNumber,
         goal: event.goal,
         weight: event.weight,
         targetWeight: event.targetWeight,
@@ -212,6 +215,60 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(ChangePasswordErrorState(message: e.toString()));
+    }
+  }
+
+  /// Get Unit Info
+
+  _onGetUnitInfo(GetUnitInfoEvent event, Emitter<AccountState> emit) async {
+    emit(GetUnitInfoLoadingState());
+
+    try {
+      await _repository.getUnitInfo().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        if (right.success ?? false) {
+          emit(GetUnitInfoSuccessState(unitData: right.data));
+        } else {
+          showToast(isSuccess: false, message: right.errorMessage.toString());
+          emit(GetUnitInfoErrorState(message: right.errorMessage.toString()));
+        }
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetUnitInfoErrorState(message: e.toString()));
+    }
+  }
+
+  /// Update unit info
+
+  _onUpdateUnitInfo(
+      UpdateUnitInfoEvent event, Emitter<AccountState> emit) async {
+    emit(UpdateUnitInfoLoadingState());
+
+    try {
+      await _repository
+          .updateUnitInfo(
+        unitId: event.unitId,
+        weightType: event.weightType,
+        heightType: event.heightType,
+        energyType: event.energyType,
+        waterType: event.waterType,
+      )
+          .fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+        if (right.success ?? false) {
+          emit(UpdateUnitInfoSuccessState(message: right.message ?? ""));
+        } else {
+          showToast(isSuccess: false, message: right.errorMessage.toString());
+          emit(
+              UpdateUnitInfoErrorState(message: right.errorMessage.toString()));
+        }
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(UpdateUnitInfoErrorState(message: e.toString()));
     }
   }
 

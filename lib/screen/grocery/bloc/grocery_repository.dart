@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/add_grocery_to_shopping_list_from_suggestic_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart';
@@ -226,8 +224,6 @@ class GroceryRepository {
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateGroceryOrderModel createOrderModel}) async {
-    log('==createOrderModel==${jsonEncode(createOrderModel)}');
-
     final response = await apiServices.post(
       ApiUrls.createOrder,
       createOrderModel,
@@ -245,7 +241,6 @@ class GroceryRepository {
 
   Future<Either<ErrorModel, CreateProductResponseModel>> createProduct(
       {required CreateProductRequestModel createProductRequestModel}) async {
-    log('===createProductRequestModel===>${jsonEncode(createProductRequestModel)}');
     final response = await apiServices.post(
       ApiUrls.createProduct,
       createProductRequestModel,

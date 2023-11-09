@@ -24,25 +24,19 @@ Widget AccountTitleWidget({Widget? widget, String? title}) {
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      BackButtonWidget(),
-                    ],
+                  SizedBox(
+                    width: 40.w,
+                    child: const BackButtonWidget(),
+                  ),
+                  Text(
+                    title!,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(
-                    width: 80.w,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        title!,
-                        style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w500),
-                      ),
-                    ],
+                    width: 40.w,
                   ),
                 ],
               ),

@@ -427,7 +427,7 @@ class _GetUserAddressState extends State<GetUserAddress>
 
   FocusNode searchTextFocus = FocusNode();
   TextEditingController searchTextController = TextEditingController();
-  var argumentsValue;
+  dynamic argumentsValue;
   @override
   void initState() {
     super.initState();
@@ -435,7 +435,9 @@ class _GetUserAddressState extends State<GetUserAddress>
     getCurrentLocation();
     argumentsValue = Get.arguments;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      addressBloc.add(GetUserAddressEvent());
+      if (argumentsValue['string'] != 'isFromRegister') {
+        addressBloc.add(GetUserAddressEvent());
+      }
     });
   }
 

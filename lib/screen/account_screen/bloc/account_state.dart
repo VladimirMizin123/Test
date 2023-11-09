@@ -4,6 +4,7 @@ import 'package:gymeats_mobile/screen/account_screen/model/get_all_programs_mode
     as gapm;
 import 'package:gymeats_mobile/screen/account_screen/model/get_current_program_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/get_profile_details_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/model/get_unit_info_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.dart'
     as pim;
 import 'package:gymeats_mobile/screen/account_screen/model/update_profile_details_model.dart';
@@ -155,4 +156,34 @@ class ChangePasswordLoadingState extends AccountState {}
 class ChangePasswordErrorState extends AccountState {
   final String message;
   ChangePasswordErrorState({required this.message});
+}
+
+/// Get Unit info State ===============================================================
+
+class GetUnitInfoSuccessState extends AccountState {
+  final UnitData? unitData;
+
+  GetUnitInfoSuccessState({required this.unitData});
+}
+
+class GetUnitInfoLoadingState extends AccountState {}
+
+class GetUnitInfoErrorState extends AccountState {
+  final String message;
+  GetUnitInfoErrorState({required this.message});
+}
+
+/// Update Unit info State ===============================================================
+
+class UpdateUnitInfoSuccessState extends AccountState {
+  final String message;
+
+  UpdateUnitInfoSuccessState({required this.message});
+}
+
+class UpdateUnitInfoLoadingState extends AccountState {}
+
+class UpdateUnitInfoErrorState extends AccountState {
+  final String message;
+  UpdateUnitInfoErrorState({required this.message});
 }

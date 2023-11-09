@@ -218,4 +218,9 @@ class ApiUrls {
       '${baseUrl}api/UserDetails/AddOrUpdateProfileImage/';
 
   static const String changePassword = '${baseUrl}api/Auth/ChangePassword';
+  static const String getUnitInfo =
+      '${baseUrl}api/UnitConvertInfo/GetUnitInfo/';
+
+  static const String updateUnitInfo =
+      '${baseUrl}api/UnitConvertInfo/UpdateUnitInfo';
 }

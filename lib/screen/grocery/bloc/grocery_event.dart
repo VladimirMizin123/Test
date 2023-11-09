@@ -3,7 +3,6 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.d
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 
 abstract class GroceryEvent {}
 
@@ -74,9 +73,9 @@ class GrocerySelectedStoreEvent extends GroceryEvent {
 
 class GroceryProductListEvent extends GroceryEvent {
   final List<Product>? productList;
-  final int? index;
+  final String? productId;
 
-  GroceryProductListEvent({required this.productList, this.index});
+  GroceryProductListEvent({required this.productList, this.productId});
 }
 
 class CleatGroceryEvent extends GroceryEvent {}
