@@ -54,7 +54,7 @@ class _UnitScreenState extends State<UnitScreen> {
 
               weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
               heightValue = state.unitData?.heightType == 'Inches' ? 1 : 2;
-              energyValue = state.unitData?.energyType == 'Calories' ? 1 : 2;
+              energyValue = state.unitData?.energyType == 'Kilojoules' ? 1 : 2;
               waterValue = state.unitData?.waterType == 'Cup' ? 1 : 2;
               unitId = state.unitData?.unitId;
 
@@ -145,8 +145,8 @@ class _UnitScreenState extends State<UnitScreen> {
                             unitScreenWidget(
                               text: "Energy",
                               widget: radioButtonWidget(
-                                title1: "Calories",
-                                title2: "Kilojoules",
+                                title1: "Kilojoules",
+                                title2: "Calories",
                                 value1: 1,
                                 value2: 2,
                                 onChanged1: (value) {
