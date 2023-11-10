@@ -57,11 +57,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   bool isDoneLoader = false;
   String mealId = '';
   List<MealDataByDate> logData = [];
-
+  MealPlanBloc mealPlanBloc = MealPlanBloc();
   @override
   void initState() {
     super.initState();
     bloc.add(GenMealTrackerData());
+    mealPlanBloc.add(MealPlanFetchEvent());
     /* dateBloc.add(GetMealLogByDateData(
         date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);

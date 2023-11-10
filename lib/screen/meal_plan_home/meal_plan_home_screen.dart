@@ -40,12 +40,15 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   bool isReadyToShowWidget = false;
   MealPlanBloc mealPlanBloc = MealPlanBloc();
 
+  getData() {
+    mealPlanList = box.read('mealPlan');
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      mealPlanBloc.add(MealPlanFetchEvent());
-    });
+    mealPlanBloc.add(MealPlanFetchEvent());
+    print('DATATATATA >>>>> ${box.read('mealPlan')}');
   }
 
   final box = GetStorage();
@@ -58,7 +61,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
           listener: (context, state) async {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
-              // box.write('mealData', state.mealPlanList);
 
               isLoadingData = false;
 

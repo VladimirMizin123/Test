@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
@@ -31,7 +32,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
-
+  final box = GetStorage();
   // _onSwapMealDetails(SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
   //   emit(SwapMealDetailsState(similarMealData: event.similarMealData,dateTime: event.dateTime, day: event.day, mealId: event.mealId));
   // }
@@ -108,6 +109,10 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(FetchMealPlanErrorState());
       }, (right) {
+        print('------>>>>>>DATATATATATATATAT');
+
+        box.write('mealPlan', right.data);
+
         emit(FetchMealPlanSuccessState(
             mealPlanList:
                 right.data == null ? [] : right.data!.reversed.toList()));
