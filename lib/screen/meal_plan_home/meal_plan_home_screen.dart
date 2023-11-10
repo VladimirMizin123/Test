@@ -42,13 +42,21 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
 
   getData() {
     mealPlanList = box.read('mealPlan');
+
+    for (var i = 0; i < mealPlanList.length; i++) {
+      mealPlanBloc.add(GetMealLogByDateEvent(
+          date:
+              "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
+      break;
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    mealPlanBloc.add(MealPlanFetchEvent());
-    print('DATATATATA >>>>> ${box.read('mealPlan')}');
+    getData();
+    // mealPlanBloc.add(MealPlanFetchEvent());
+    // print('DATATATATA >>>>> ${box.read('mealPlan')}');
   }
 
   final box = GetStorage();
@@ -61,9 +69,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
           listener: (context, state) async {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
-
               isLoadingData = false;
-
               for (var i = 0; i < mealPlanList.length; i++) {
                 mealPlanBloc.add(GetMealLogByDateEvent(
                     date:
@@ -248,14 +254,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-                    // state is FetchMealPlanSuccessState
-                    //     ? GestureDetector(
-                    //         onTap: () {
-                    //           mealPlanList.clear();
-                    //           // mealPlanBloc.add(MealPlanFetchEvent());
-                    //         },
-                    //         child: Text(StringUtils.regenerateGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h))
-                    //     : Text(StringUtils.showGroceryList, style: FontUtils.h18(fontColor: AppColors.primaryBlue, fontWeight: FWT.medium)).paddingSymmetric(vertical: 10.h),
 
                     state is ClearGroceryListLoadingState
                         ? Padding(
@@ -274,6 +272,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                 .paddingSymmetric(vertical: 10.h),
                           ),
 
+                    ///
                     // state is ClearGroceryListLoadingState
                     //     ? const Center(
                     //         child: Padding(
@@ -318,29 +317,37 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                         GestureDetector(
                                             onTap: () {
                                               if (selectedDayIndex == 0) {
-                                              } else {
                                                 _pageController.jumpToPage(
-                                                    selectedDayIndex - 1);
-                                              }
-                                            },
-                                            child: arrowButton(
-                                                    icon: AssetsUtils.arrowBack,
-                                                    isDisable:
-                                                        selectedDayIndex == 0)
-                                                .paddingOnly(right: 8.w)),
-                                        GestureDetector(
-                                            onTap: () {
-                                              if (selectedDayIndex ==
-                                                  mealPlanList.length) {
+                                                    selectedDayIndex + 1);
                                               } else {
                                                 _pageController.jumpToPage(
                                                     selectedDayIndex + 1);
                                               }
                                             },
                                             child: arrowButton(
-                                                icon: AssetsUtils.arrowForward,
-                                                isDisable: selectedDayIndex ==
-                                                    mealPlanList.length - 1)),
+                                                    icon: AssetsUtils.arrowBack,
+                                                    isDisable:
+                                                        selectedDayIndex ==
+                                                            mealPlanList
+                                                                    .length -
+                                                                1)
+                                                .paddingOnly(right: 8.w)),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (selectedDayIndex ==
+                                                mealPlanList.length) {
+                                            } else {
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex - 1);
+                                            }
+                                          },
+                                          child: arrowButton(
+                                              icon: AssetsUtils.arrowForward,
+                                              isDisable: selectedDayIndex == 0
+                                              // isDisable: selectedDayIndex ==
+                                              //     mealPlanList.length - 1,
+                                              ),
+                                        ),
                                       ],
                                     )
                                   ],
@@ -380,9 +387,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                 ),
                               ),
                     mealPlanList.isEmpty
-                        ? isLoadingData
-                            ? const Expanded(child: AppCenterLoader())
-                            : const SizedBox()
+                        ? const SizedBox()
                         : Expanded(
                             child: Stack(
                               children: [

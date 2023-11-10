@@ -11,7 +11,6 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
-import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
@@ -93,8 +92,9 @@ class _RestaurantOrderDetailsScreenState
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   GestureDetector(
-                                    onTap: () =>
-                                        Get.to(() => const RestaurantBGView()),
+                                    onTap: () => Get.to(
+                                      () => const RestaurantBGView(),
+                                    ),
                                     child: Container(
                                       height: 40.h,
                                       width: 40.w,
@@ -145,15 +145,17 @@ class _RestaurantOrderDetailsScreenState
                                             '${orderData[0].deliveryTimeMin}-${orderData[0].deliveryTimeMax} min',
                                             style: textTheme.displayLarge
                                                 ?.copyWith(
-                                                    color: AppColors.darkGray,
-                                                    fontWeight: FontWeight.w900,
-                                                    letterSpacing: -0.8),
+                                              color: AppColors.darkGray,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: -0.8,
+                                            ),
                                           ),
                                     Text(
                                       StringUtils.estimatedTimeText,
                                       style: textTheme.bodySmall?.copyWith(
-                                          color: AppColors.middleGray,
-                                          fontWeight: FontWeight.w400),
+                                        color: AppColors.middleGray,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ],
                                 ),

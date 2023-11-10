@@ -60,6 +60,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         });
 
         if (getUserAddress != null) {
+          /// GET RESTAURANT LIST API-----------------------------------------------------------
           restaurantBloc.add(
             GetRestaurantListEvent(
               getUserAddress?.latitude ?? 0,
@@ -75,6 +76,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             ),
           );
 
+          /// GET COUSINES LIST API-----------------------------------------------------------
           restaurantBloc.add(
             GetCousinesEvent(
               getUserAddress?.latitude ?? 0,
@@ -101,17 +103,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return const LogFoodIntakeBottomSheet(
-          isMainScreen: true,
-        );
+        return const LogFoodIntakeBottomSheet(isMainScreen: true);
       },
       isDismissible: false,
       enableDrag: false,
       shape: OutlineInputBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16.r),
-          topRight: Radius.circular(16.r),
-        ),
+            topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
         borderSide: const BorderSide(
           color: Colors.transparent,
         ),
@@ -165,16 +163,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       onWillPop: () => Future(() => false),
       child: Scaffold(
         backgroundColor: Colors.white,
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     Get.to(
-        //       () => const RestaurantMenuScreen(
-        //         restaurantId: '9ef2baaa-9414-4708-be26-93a8b96ed441',
-        //         pickup: false,
-        //       ),
-        //     );
-        //   },
-        // ),
         body: SafeArea(
           child: bloc.BlocConsumer(
             bloc: restaurantBloc,
@@ -340,10 +328,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                             Text(
                               result.isEmpty ? 'Choose delivery type' : result,
                               style: const TextStyle(
-                                  color: AppColors.terracotta,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Avenir'),
+                                color: AppColors.terracotta,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Avenir',
+                              ),
                             ),
                             const Icon(
                               Icons.keyboard_arrow_down_rounded,

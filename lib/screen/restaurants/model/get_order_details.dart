@@ -45,7 +45,8 @@ class GetOrderDetails {
 }
 
 class OrderData {
-  String? id;
+  String? userId;
+  String? orderId;
   String? productId;
   String? productName;
   int? quantity;
@@ -54,16 +55,21 @@ class OrderData {
   String? purchaseDate;
   double? generatedProfit;
   dynamic partnerGeneratedProfit;
-  String? orderId;
-  String? userId;
-  String? trackLink;
   int? deliveryTimeMin;
   int? deliveryTimeMax;
+  String? trackLink;
+  dynamic optionId;
+  bool? isPickUp;
+  dynamic pickUpTime;
+  dynamic expectedTimeOfArrival;
+  dynamic storeId;
   String? storeName;
   dynamic storeLogo;
+  dynamic storeAddress;
 
   OrderData({
-    this.id,
+    this.userId,
+    this.orderId,
     this.productId,
     this.productName,
     this.quantity,
@@ -72,17 +78,22 @@ class OrderData {
     this.purchaseDate,
     this.generatedProfit,
     this.partnerGeneratedProfit,
-    this.orderId,
-    this.userId,
-    this.trackLink,
     this.deliveryTimeMin,
     this.deliveryTimeMax,
+    this.trackLink,
+    this.optionId,
+    this.isPickUp,
+    this.pickUpTime,
+    this.expectedTimeOfArrival,
+    this.storeId,
     this.storeName,
     this.storeLogo,
+    this.storeAddress,
   });
 
   factory OrderData.fromJson(Map<String, dynamic> json) => OrderData(
-        id: json["id"],
+        userId: json["userId"],
+        orderId: json["orderId"],
         productId: json["productId"],
         productName: json["productName"],
         quantity: json["quantity"],
@@ -91,17 +102,22 @@ class OrderData {
         purchaseDate: json["purchaseDate"],
         generatedProfit: json["generatedProfit"]?.toDouble(),
         partnerGeneratedProfit: json["partnerGeneratedProfit"],
-        orderId: json["orderId"],
-        userId: json["userId"],
-        trackLink: json["trackLink"],
         deliveryTimeMin: json["deliveryTimeMin"],
         deliveryTimeMax: json["deliveryTimeMax"],
+        trackLink: json["trackLink"],
+        optionId: json["optionId"],
+        isPickUp: json["isPickUp"],
+        pickUpTime: json["pickUpTime"],
+        expectedTimeOfArrival: json["expectedTimeOfArrival"],
+        storeId: json["storeId"],
         storeName: json["storeName"],
         storeLogo: json["storeLogo"],
+        storeAddress: json["storeAddress"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "userId": userId,
+        "orderId": orderId,
         "productId": productId,
         "productName": productName,
         "quantity": quantity,
@@ -110,12 +126,16 @@ class OrderData {
         "purchaseDate": purchaseDate,
         "generatedProfit": generatedProfit,
         "partnerGeneratedProfit": partnerGeneratedProfit,
-        "orderId": orderId,
-        "userId": userId,
-        "trackLink": trackLink,
         "deliveryTimeMin": deliveryTimeMin,
         "deliveryTimeMax": deliveryTimeMax,
+        "trackLink": trackLink,
+        "optionId": optionId,
+        "isPickUp": isPickUp,
+        "pickUpTime": pickUpTime,
+        "expectedTimeOfArrival": expectedTimeOfArrival,
+        "storeId": storeId,
         "storeName": storeName,
         "storeLogo": storeLogo,
+        "storeAddress": storeAddress,
       };
 }
