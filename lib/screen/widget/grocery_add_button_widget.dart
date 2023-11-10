@@ -31,11 +31,11 @@ class GroceryAddButtonWidget extends StatelessWidget {
             decoration: BoxDecoration(
                 border: Border.all(
                     color: selectedItemCount == 0
-                        ? Color(0xffC7C8CA)
+                        ? const Color(0xffC7C8CA)
                         : AppColors.primaryBlue,
                     width: 1),
                 color: selectedItemCount == 0
-                    ? Color(0xffC7C8CA)
+                    ? const Color(0xffC7C8CA)
                     : AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(8)),
             child: Padding(
@@ -44,7 +44,7 @@ class GroceryAddButtonWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   selectedItemCount == 0
-                      ? SizedBox()
+                      ? const SizedBox()
                       : SvgPicture.asset(AssetsUtils.icShoppingIcon),
                   Center(
                       child: Text(buttonLable,
@@ -52,7 +52,7 @@ class GroceryAddButtonWidget extends StatelessWidget {
                               fontColor: AppColors.whiteColor,
                               fontWeight: FWT.semiBold))),
                   selectedItemCount == 0
-                      ? SizedBox()
+                      ? const SizedBox()
                       : Container(
                           // height: screenSize.height * 0.04,
                           // width: screenSize.height * 0.04,

@@ -11,7 +11,6 @@ import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/edit_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/first_dashboard_bg.dart';
-import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/second_dashboard_bg.dart';
 import 'package:gymeats_mobile/screen/dashboard/third_dashboard_bg.dart';
@@ -45,13 +44,11 @@ import 'package:gymeats_mobile/screen/journal/first_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/fourth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
-import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/journal/second_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/sixth_journal_bg.dart';
 import 'package:gymeats_mobile/screen/journal/third_journal_bg.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/food_preferences/food_preferences_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/invite_friend_screen/invite_friend_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_details/meal_details_screen.dart';
@@ -112,7 +109,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key, this.forgotPasswordToken, this.isFromConfirm});
+  const MyApp({super.key, this.forgotPasswordToken, this.isFromConfirm});
   final String? forgotPasswordToken;
   final bool? isFromConfirm;
 
@@ -127,8 +124,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("Call initDynamicLinks");
-      final _appLinks = AppLinks();
-      _appLinks.allUriLinkStream.listen((uri) {
+      final appLinks = AppLinks();
+      appLinks.allUriLinkStream.listen((uri) {
         print("uri.path ${uri.path}");
 
         if (uri.path == '/auth/setNewPassword') {

@@ -13,7 +13,6 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_state.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 import 'package:gymeats_mobile/models/find_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
@@ -468,7 +467,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                     Expanded(
                       child: Stack(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 330,
                             child: GoogleMap(
                               myLocationButtonEnabled: true,
@@ -553,7 +552,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                               ),
                                             ),
                                           ),
-                                          underline: SizedBox(),
+                                          underline: const SizedBox(),
                                           isExpanded: true,
                                           onChanged: (value) {
                                             streetNameController.text =

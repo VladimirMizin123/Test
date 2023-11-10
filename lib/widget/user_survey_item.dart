@@ -17,8 +17,6 @@ class UserSurveyItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Color:- ${data.color}");
-    print("ID:- ${data.restrictionId}");
     return InkWell(
       onTap: () {
         onClick();

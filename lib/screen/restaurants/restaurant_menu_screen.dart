@@ -570,7 +570,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                     iCanEat = !iCanEat;
                                                   });
 
-                                                  log('iCanEat---------->>>>>> ${iCanEat}');
+                                                  log('iCanEat---------->>>>>> $iCanEat');
                                                 }
                                               },
                                               child: Container(

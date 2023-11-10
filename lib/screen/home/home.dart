@@ -2,9 +2,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:gymeats_mobile/models/sign_up_model.dart';
 import 'package:video_player/video_player.dart';
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
@@ -35,8 +33,8 @@ class _HomeState extends State<Home> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final _appLinks = AppLinks();
-      _appLinks.allUriLinkStream.listen((uri) {
+      final appLinks = AppLinks();
+      appLinks.allUriLinkStream.listen((uri) {
         print("uri.path ${uri.path}");
 
         if (uri.path == '/auth/setNewPassword') {

@@ -8,7 +8,7 @@ class AppTransparentLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white.withOpacity(0.5),
-      child: Stack(
+      child: const Stack(
         children: [
 
         ],

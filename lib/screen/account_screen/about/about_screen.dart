@@ -20,12 +20,12 @@ class _AboutScreenState extends State<AboutScreen> {
     {
       "title": "Privacy Policy",
       "color": AppColors.disable,
-      "screen": PolicyScreen(),
+      "screen": const PolicyScreen(),
     },
     {
       "title": "Terms and Conditions",
       "color": AppColors.transparentColor,
-      "screen": ConditionScreen(),
+      "screen": const ConditionScreen(),
     },
   ];
 

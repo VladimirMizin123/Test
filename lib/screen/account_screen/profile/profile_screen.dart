@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isUpdateProfileDetailsLoader = false;
 
   List<String> goalFocusList = ["lose weight", "gain weight"];
-  List<String> genderList = ["Male", "Female"];
+  List<String> genderList = ["Male", "Female", "Non-binary"];
 
   String? selectedGoalFocus;
   String? selectedGender;
@@ -159,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isUpdateProfileImageLoader = false;
                 setState(() {});
               }
-              print('==state=>${state}');
+              print('==state=>$state');
               if (state is UpdateProfileDetailsSuccessState ||
                   state is UpdateProfileDetailsErrorState) {
                 isUpdateProfileDetailsLoader = false;
@@ -674,7 +674,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildDatePicker() => Container(
+  Widget buildDatePicker() => SizedBox(
         height: 300,
         // decoration: BoxDecoration(
         //     color: Colors.grey.shade200,

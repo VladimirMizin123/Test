@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:get/get.dart';
 // import 'package:credit_card_scanner/credit_card_scanner.dart';
 import 'package:ml_card_scanner/ml_card_scanner.dart';
@@ -43,7 +41,7 @@ class _CreditCardState extends State<CreditCard> {
           _cardInfo = value;
 
           Get.back(result: _cardInfo);
-          print('==_cardInfo====>${_cardInfo}');
+          print('==_cardInfo====>$_cardInfo');
         });
       })
       ..setErrorListener((exception) {

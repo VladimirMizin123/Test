@@ -11,12 +11,9 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
-import '../../bloc/forgot_password/forgot_password_bloc.dart';
 import '../../bloc/sign_up/sign_up_bloc.dart';
 import '../../bloc/sign_up/sign_up_event.dart';
 import '../../bloc/sign_up/sign_up_state.dart';
-import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
-import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

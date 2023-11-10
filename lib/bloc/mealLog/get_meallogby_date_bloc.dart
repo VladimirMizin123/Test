@@ -17,7 +17,7 @@ class GetMealLogByDateBloc
       GetMealLogByDateData event, Emitter<GetMealLogByDateState> emit) async {
     try {
       final response = await _dashboardRepository.getMealLogByDate(event.date);
-      print('response3434343434 : ${response}');
+      print('response3434343434 : $response');
       response.fold((left) {
         emit(ErrorByDateStateData(errMessage: left.errorMessage!));
         emit(LoadGetMealLogByDateData(modelData: GetMealLogByDate(

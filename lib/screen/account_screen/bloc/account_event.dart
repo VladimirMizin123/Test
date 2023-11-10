@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 
 abstract class AccountEvent {}
 

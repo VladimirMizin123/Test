@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/screen/account_screen/model/programs_info_model.d
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../../../constant/asset_utils.dart';
 import '../../../../constant/color_utils.dart';
 import '../../../../widget/back_button_widget.dart';
@@ -455,7 +456,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
             if (state is UpdateDietProgramSuccessState) {
               Get.offAll(
                 () => const AppManagerScreen(
-                  selectIndex: 0,
+                  selectIndex: 2,
                 ),
               );
             }

@@ -7,9 +7,6 @@ import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
-import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
-import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 
 import '../../bloc/google_map/add_address/add_address_event.dart';

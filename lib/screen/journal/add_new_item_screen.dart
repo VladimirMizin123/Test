@@ -13,7 +13,6 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import 'package:http/http.dart' as http;
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../constant/color_utils.dart';

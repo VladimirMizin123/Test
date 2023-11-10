@@ -55,7 +55,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   void initState() {
     super.initState();
     getData();
-    // mealPlanBloc.add(MealPlanFetchEvent());
+    //mealPlanBloc.add(MealPlanFetchEvent());
     // print('DATATATATA >>>>> ${box.read('mealPlan')}');
   }
 

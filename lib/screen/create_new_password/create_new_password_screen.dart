@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 
-import '../../app/firebase_deep_link.dart';
 import '../../bloc/reset_password/reset_password_bloc.dart';
 import '../../bloc/reset_password/reset_password_event.dart';
 import '../../bloc/reset_password/reset_password_state.dart';

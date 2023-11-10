@@ -105,6 +105,7 @@ class StringUtils {
   static const pleaseEnterFirstName = 'Please enter first name';
   static const pleaseEnterLastName = 'Please enter last name';
   static const pleaseEnterEmail = 'Please enter email';
+  static const pleaseEnterValidPhoneNumber = 'Please enter valid phone number';
   static const alreadyRegisterEmail = 'Email address is already registered';
   static const enterValidEmail = 'Enter valid email';
   static const pleaseEnterPassword = 'Please enter password';

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 
 import '../../app/functions.dart';
-import '../../app/sharedPrefrence.dart';
 import '../../repository/forgot_password.dart';
 import '../../widget/app_widget.dart';
 import 'forgot_password_event.dart';

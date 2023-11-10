@@ -415,25 +415,25 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                         } else {
                                           List indexx = [];
                                           bool isMatch = false;
-                                          searchDietList.forEach((element) {
-                                            listOptions.forEach((element1) {
+                                          for (var element in searchDietList) {
+                                            for (var element1 in listOptions) {
                                               if (element.dietName ==
                                                   element1.optionName) {
                                                 isMatch = true;
 
-                                                log('isMatch---------->>>>>> ${isMatch}');
+                                                log('isMatch---------->>>>>> $isMatch');
 
                                                 indexx.add(listOptions
                                                     .indexOf(element1));
                                               } else {
-                                                log('isMatch------fde---->>>>>> ${isMatch}');
+                                                log('isMatch------fde---->>>>>> $isMatch');
                                               }
-                                            });
-                                          });
+                                            }
+                                          }
                                           if (isMatch == true) {
-                                            indexx.forEach((element) {
+                                            for (var element in indexx) {
                                               listOptions.removeAt(element);
-                                            });
+                                            }
                                           } else {}
                                           listOptions.add(CustomOptions(
                                               optionColor: searchDietList[index]
@@ -446,7 +446,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                       .dietName ??
                                                   ''));
                                         }
-                                        log('listOptions---------->>>>>> ${listOptions}');
+                                        log('listOptions---------->>>>>> $listOptions');
                                       },
                                       // onTap: () {
                                       //   setState(() {
@@ -521,25 +521,25 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                   } else {
                                     List indexx = [];
                                     bool isMatch = false;
-                                    getSurveyData!.options!.forEach((element) {
-                                      listOptions.forEach((element1) {
+                                    for (var element in getSurveyData!.options!) {
+                                      for (var element1 in listOptions) {
                                         if (element.label ==
                                             element1.optionName) {
                                           isMatch = true;
 
-                                          log('isMatch---------->>>>>> ${isMatch}');
+                                          log('isMatch---------->>>>>> $isMatch');
 
                                           indexx.add(
                                               listOptions.indexOf(element1));
                                         } else {
-                                          log('isMatch------fde---->>>>>> ${isMatch}');
+                                          log('isMatch------fde---->>>>>> $isMatch');
                                         }
-                                      });
-                                    });
+                                      }
+                                    }
                                     if (isMatch == true) {
-                                      indexx.forEach((element) {
+                                      for (var element in indexx) {
                                         listOptions.removeAt(element);
-                                      });
+                                      }
                                     } else {}
                                     listOptions.add(CustomOptions(
                                         optionColor: getSurveyData!
@@ -549,7 +549,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                 .options![index].label ??
                                             ''));
                                   }
-                                  log('listOptions---------->>>>>> ${listOptions}');
+                                  log('listOptions---------->>>>>> $listOptions');
 
                                   bloc.add(
                                     CheckSurveyData(
@@ -594,7 +594,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                       }
                                     }
                                   });
-                                  log('listOptions---------->>>>>> ${listOptions}');
+                                  log('listOptions---------->>>>>> $listOptions');
                                 }
                               },
                             );

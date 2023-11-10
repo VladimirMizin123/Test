@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
-import 'package:gymeats_mobile/screen/restaurants/restaurant_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../constant/asset_utils.dart';

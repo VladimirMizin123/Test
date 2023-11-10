@@ -5,7 +5,6 @@ import 'package:either_dart/either.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -73,7 +72,6 @@ class SignUpRepository {
       "UserAddress.Country": model.addAddressModel!.country!,
       "UserAddress.Zipcode": model.addAddressModel!.zipcode!,
     };
-    print('======DATA======>${data}');
     final response = await apiServices.postMultipart(
         url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {

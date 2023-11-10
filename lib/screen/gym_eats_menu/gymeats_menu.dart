@@ -5,7 +5,6 @@ import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
-import 'package:gymeats_mobile/screen/sign_up/sign_up_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GymEatsMenuScreen extends StatefulWidget {
@@ -54,7 +53,7 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
                 }),
               );
             }),
-            Spacer(),
+            const Spacer(),
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               width: double.infinity.w,
@@ -69,7 +68,7 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
                   Text(
                     "Choose the option that best reflects your current\ngoals",
                     textAlign: TextAlign.center,
-                    style: AppTextStyle.gymEatsStyle.copyWith(color: Color(0xFF336633)),
+                    style: AppTextStyle.gymEatsStyle.copyWith(color: const Color(0xFF336633)),
                   ),
                   SizedBox(height: 16.h),
                   Image.asset(

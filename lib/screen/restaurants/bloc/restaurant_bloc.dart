@@ -160,7 +160,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             isAdded: right.success ?? true, data: right.data));
       });
     } catch (e) {
-      log('e---------->>>>>> ${e}');
+      log('e---------->>>>>> $e');
 
       showToast(isSuccess: false, message: e.toString());
       emit(AddToRestaurantCartErrorState(
@@ -214,7 +214,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             isAdded: right.success ?? true, data: right.data));
       });
     } catch (e) {
-      log('e---------->>>>>> ${e}');
+      log('e---------->>>>>> $e');
 
       showToast(isSuccess: false, message: e.toString());
       emit(UpdateToRestaurantCartErrorState(

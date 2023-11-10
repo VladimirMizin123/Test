@@ -28,9 +28,9 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                 ? const AssetImage(AssetsUtils.malePersonalized4)
                 : finalGetGender == 'Female'
                     ? const AssetImage(AssetsUtils.feMalePersonalized4)
-                    : finalGetGender == 'Non'
+                    : finalGetGender == 'Non-binary'
                         ? const AssetImage(AssetsUtils.nonPersonalized4)
-                        : const AssetImage('AppStrings.mindyBG'),
+                        : const AssetImage(AssetsUtils.nonPersonalized4),
             fit: BoxFit.cover,
           ),
         ),
@@ -124,7 +124,7 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
                   )
-                : finalGetGender == 'Non'
+                : finalGetGender == 'Non-binary'
                     ? Column(
                         children: [
                           Image.asset(
@@ -166,7 +166,47 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                               bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
                         ],
                       )
-                    : Container(),
+                    : Column(
+                        children: [
+                          Image.asset(
+                            AssetsUtils.gymEatsLogo,
+                            height: 60.h,
+                            width: 168.w,
+                            color: AppColors.green,
+                          ).paddingOnly(top: 35.h),
+                          const Spacer(),
+                          buildGymEatsHeader(
+                              bgColor: Colors.transparent,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    StringUtils.welcomeBack,
+                                    style: textTheme.displayMedium
+                                        ?.copyWith(color: Colors.white),
+                                  ).paddingOnly(bottom: 10.h),
+                                  Text(
+                                    StringUtils.livingPresent,
+                                    textAlign: TextAlign.center,
+                                    style: textTheme.displayMedium?.copyWith(
+                                        color: Colors.white, height: 1.1),
+                                  ),
+                                ],
+                              )).paddingOnly(right: 20.w, left: 20.w),
+                          buildButton(
+                            context: context,
+                            bgColor: AppColors.green,
+                            onPressed: () {
+                              Get.toNamed('/AppManagerScreen',
+                                  arguments: finalGetGender,
+                                  preventDuplicates: false);
+                            },
+                            textColor: AppColors.mint,
+                            title: StringUtils.iAmReady,
+                            hasImage: false,
+                          ).paddingOnly(
+                              bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
+                        ],
+                      ),
       ),
     );
   }

@@ -6,11 +6,9 @@ import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/all_programs/all_program_screen.dart';
-import 'package:gymeats_mobile/screen/account_screen/all_programs/program_detail/program_detail_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
-import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 import '../account/account_scrren_widget.dart';
 

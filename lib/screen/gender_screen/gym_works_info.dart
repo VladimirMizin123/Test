@@ -61,21 +61,21 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                             textAlign: TextAlign.center,
                             style: textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF004C63)),
+                                color: const Color(0xFF004C63)),
                           ).paddingOnly(bottom: 15.h),
                           Text(
                             StringUtils.header2,
                             textAlign: TextAlign.center,
                             style: textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF004C63)),
+                                color: const Color(0xFF004C63)),
                           ).paddingOnly(bottom: 15.h),
                           Text(
                             StringUtils.header3,
                             textAlign: TextAlign.center,
                             style: textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF004C63)),
+                                color: const Color(0xFF004C63)),
                           ).paddingOnly(),
                         ],
                       ).paddingOnly(
@@ -121,21 +121,21 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFFC58575)),
+                                    color: const Color(0xFFC58575)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header2,
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFFC58575)),
+                                    color: const Color(0xFFC58575)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header3,
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFFC58575)),
+                                    color: const Color(0xFFC58575)),
                               ).paddingOnly(),
                             ],
                           ).paddingOnly(
@@ -178,21 +178,21 @@ class _GymWorkInfoScreenState extends State<GymWorkInfoScreen> {
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFF336633)),
+                                    color: const Color(0xFF336633)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header2,
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFF336633)),
+                                    color: const Color(0xFF336633)),
                               ).paddingOnly(bottom: 15.h),
                               Text(
                                 StringUtils.header3,
                                 textAlign: TextAlign.center,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFF336633)),
+                                    color: const Color(0xFF336633)),
                               ).paddingOnly(),
                             ],
                           ).paddingOnly(

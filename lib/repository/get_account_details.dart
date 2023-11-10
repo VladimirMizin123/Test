@@ -263,7 +263,7 @@ class AccountRepository {
       "waterType": waterType,
       "userId": userID
     };
-    print('=data==>${data}');
+    print('=data==>$data');
 
     final response = await apiServices.put(ApiUrls.updateUnitInfo, data);
     print('==response==>${response.statusCode}====${response.body}');

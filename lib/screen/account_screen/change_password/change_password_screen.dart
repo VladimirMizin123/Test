@@ -88,14 +88,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                           },
                                           child: isOb
                                               ? const Icon(Icons.visibility_off)
-                                              : Icon(Icons.remove_red_eye)),
+                                              : const Icon(Icons.remove_red_eye)),
                                       width: double.infinity,
                                       hintText: "Old Password",
                                       obscureText: isOb,
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),
-                                      style: TextStyle(),
+                                      style: const TextStyle(),
                                       vertical: 15.h,
                                       horizontal: 20.w),
                                   SizedBox(
@@ -200,7 +200,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           onPressed: () {
                             String email =
                                 PreferenceUtils.getString(prefUserEmail);
-                            print('=email===>${email}');
+                            print('=email===>$email');
 
                             if (!formKey.currentState!.validate()) {
                               return;

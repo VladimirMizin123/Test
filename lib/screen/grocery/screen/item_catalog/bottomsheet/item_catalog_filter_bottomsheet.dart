@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/country_selection_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/price_selection_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -135,7 +134,7 @@ class _ItemCatalogFilterBottomSheetState
                     },
                     isDismissible: false,
                   ).then((value) {
-                    log('value---------->>>>>> ${value}');
+                    log('value---------->>>>>> $value');
 
                     if (value != null) {
                       priceRange = value['priceRange'];

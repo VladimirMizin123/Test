@@ -45,7 +45,7 @@ class _CustomMealListState extends State<CustomMealList> {
 
   @override
   Widget build(BuildContext context) {
-    log('DATATATA>>>>${customMealList}');
+    log('DATATATA>>>>$customMealList');
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: BlocConsumer(

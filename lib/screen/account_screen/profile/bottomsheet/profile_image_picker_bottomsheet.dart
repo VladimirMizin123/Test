@@ -89,7 +89,7 @@ class _ProfileImagePickerBottomSheetState
                                     GetSelectedImagePathEvent(
                                         imagePath: image));
                               } catch (e) {
-                                print('=eee====>${e}');
+                                print('=eee====>$e');
                               }
                             }
                           },
@@ -124,7 +124,7 @@ class _ProfileImagePickerBottomSheetState
                                     GetSelectedImagePathEvent(
                                         imagePath: image));
                               } catch (e) {
-                                print('=eee====>${e}');
+                                print('=eee====>$e');
                               }
                             }
                           },

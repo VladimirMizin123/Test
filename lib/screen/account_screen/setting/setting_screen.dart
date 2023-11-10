@@ -123,7 +123,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             ),
                           ),
                           child: deleteAccountBottomSheetWidget(
-                            buttonWidget: Container(
+                            buttonWidget: SizedBox(
                               height: 60,
                               child: Row(
                                 children: [

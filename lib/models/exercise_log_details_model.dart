@@ -41,17 +41,17 @@ class ExerciseData {
     if (json['exerciseLogList'] != null) {
       exerciseLogList = <ExerciseLogList>[];
       json['exerciseLogList'].forEach((v) {
-        exerciseLogList!.add(new ExerciseLogList.fromJson(v));
+        exerciseLogList!.add(ExerciseLogList.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalCaloriesBurned'] = this.totalCaloriesBurned;
-    if (this.exerciseLogList != null) {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['totalCaloriesBurned'] = totalCaloriesBurned;
+    if (exerciseLogList != null) {
       data['exerciseLogList'] =
-          this.exerciseLogList!.map((v) => v.toJson()).toList();
+          exerciseLogList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -77,11 +77,11 @@ class ExerciseLogList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['exerciseName'] = this.exerciseName;
-    data['workoutTime'] = this.workoutTime;
-    data['caloriesBurned'] = this.caloriesBurned;
-    data['exerciseLogDate'] = this.exerciseLogDate;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['exerciseName'] = exerciseName;
+    data['workoutTime'] = workoutTime;
+    data['caloriesBurned'] = caloriesBurned;
+    data['exerciseLogDate'] = exerciseLogDate;
     return data;
   }
 }

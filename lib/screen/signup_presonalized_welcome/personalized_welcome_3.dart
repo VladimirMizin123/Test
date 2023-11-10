@@ -8,7 +8,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
-  const ThirdPersonalizedWelcomeScreen({super.key,this.gender = 'Male'});
+  const ThirdPersonalizedWelcomeScreen({super.key, this.gender = 'Male'});
   final String gender;
 
   final routeName = '/ThirdPersonalizedWelcome';
@@ -28,9 +28,9 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                 ? const AssetImage(AssetsUtils.malePersonalized3)
                 : Gender == 'Female'
                     ? const AssetImage(AssetsUtils.feMalePersonalized3)
-                    : Gender == 'Non'
+                    : Gender == 'Non-binary'
                         ? const AssetImage(AssetsUtils.nonPersonalized3)
-                        : const AssetImage('AppStrings.mindyBG'),
+                        : const AssetImage(AssetsUtils.nonPersonalized3),
             fit: BoxFit.cover,
           ),
         ),
@@ -66,8 +66,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
                       Get.toNamed('/AppManagerScreen',
-                          arguments: gender,
-                          preventDuplicates: false);
+                          arguments: gender, preventDuplicates: false);
                     },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
@@ -110,8 +109,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                         bgColor: AppColors.terracotta,
                         onPressed: () {
                           Get.toNamed('/AppManagerScreen',
-                              arguments: gender,
-                              preventDuplicates: false);
+                              arguments: gender, preventDuplicates: false);
                         },
                         textColor: AppColors.coral,
                         title: StringUtils.iAmReady,
@@ -119,7 +117,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
                   )
-                : Gender == 'Non'
+                : Gender == 'Non-binary'
                     ? Column(
                         children: [
                           Image.asset(
@@ -155,8 +153,7 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                             bgColor: AppColors.green,
                             onPressed: () {
                               Get.toNamed('/AppManagerScreen',
-                                  arguments: gender,
-                                  preventDuplicates: false);
+                                  arguments: gender, preventDuplicates: false);
                             },
                             textColor: AppColors.mint,
                             title: StringUtils.iAmReady,
@@ -165,7 +162,50 @@ class ThirdPersonalizedWelcomeScreen extends StatelessWidget {
                               bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
                         ],
                       )
-                    : Container(),
+                    : Column(
+                        children: [
+                          Image.asset(
+                            AssetsUtils.gymEatsLogo,
+                            height: 60.h,
+                            width: 168.w,
+                            color: AppColors.green,
+                          ).paddingOnly(top: 35.h),
+                          const Spacer(),
+                          buildGymEatsHeader(
+                                  bgColor: Colors.transparent,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        StringUtils.welcomeBack,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(color: Colors.white),
+                                      ).paddingOnly(bottom: 10.h),
+                                      Text(
+                                        StringUtils.neverUnderestimate,
+                                        textAlign: TextAlign.center,
+                                        style: textTheme.displayMedium
+                                            ?.copyWith(
+                                                color: Colors.white,
+                                                height: 1.1),
+                                      ),
+                                    ],
+                                  ))
+                              .paddingOnly(
+                                  bottom: 10.h, right: 20.w, left: 20.w),
+                          buildButton(
+                            context: context,
+                            bgColor: AppColors.green,
+                            onPressed: () {
+                              Get.toNamed('/AppManagerScreen',
+                                  arguments: gender, preventDuplicates: false);
+                            },
+                            textColor: AppColors.mint,
+                            title: StringUtils.iAmReady,
+                            hasImage: false,
+                          ).paddingOnly(
+                              bottom: 20.h, right: 20.w, left: 20.w, top: 10.h),
+                        ],
+                      ),
       ),
     );
   }

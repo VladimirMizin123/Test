@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/app/firebase_deep_link.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 import '../../bloc/forgot_password/forgot_password_bloc.dart';

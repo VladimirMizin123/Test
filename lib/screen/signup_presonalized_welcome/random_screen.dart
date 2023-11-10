@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';

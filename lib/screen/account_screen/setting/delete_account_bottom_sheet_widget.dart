@@ -26,7 +26,7 @@ Widget deleteAccountBottomSheetWidget({Widget? buttonWidget}) {
               SizedBox(
                 height: 13.h,
               ),
-              SvgImage(image: AssetsUtils.questionRounded),
+              const SvgImage(image: AssetsUtils.questionRounded),
               SizedBox(
                 height: 10.h,
               ),

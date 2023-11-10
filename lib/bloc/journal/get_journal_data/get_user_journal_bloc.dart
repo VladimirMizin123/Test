@@ -1,7 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
-import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/functions.dart';

@@ -1,6 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/sign_up_model.dart';
 
 String userId = '';
 

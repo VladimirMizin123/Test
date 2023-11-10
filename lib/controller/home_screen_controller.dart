@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
 import '../app/functions.dart';
-import '../models/sign_up_data_navigate_model.dart';
 
 class HomeScreenController extends GetxController {
   final fNameController = TextEditingController();
@@ -45,7 +45,7 @@ class HomeScreenController extends GetxController {
       );
       print(credential.email);
     } catch (e) {
-      print("Error:- " + e.toString());
+      print("Error:- $e");
     }
   }
 
@@ -56,6 +56,10 @@ class HomeScreenController extends GetxController {
       showToast(message: StringUtils.pleaseEnterLastName, isSuccess: false);
     } else if (emailController.text.isEmpty) {
       showToast(message: StringUtils.pleaseEnterEmail, isSuccess: false);
+    } else if (phoneNumberController.text.isEmpty ||
+        phoneNumberController.text.length != 10) {
+      showToast(
+          message: StringUtils.pleaseEnterValidPhoneNumber, isSuccess: false);
     } else if (!validateEmail(emailController.text)) {
       showToast(message: StringUtils.enterValidEmail, isSuccess: false);
     } else if (passwordController.text.isEmpty) {

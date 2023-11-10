@@ -10,14 +10,14 @@ class CheckEmailExist {
     success = json['success'];
     message = json['message'];
     errorMessage = json['errorMessage'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['errorMessage'] = this.errorMessage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    data['errorMessage'] = errorMessage;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -35,8 +35,8 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['isEmailExist'] = this.isEmailExist;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['isEmailExist'] = isEmailExist;
     return data;
   }
 }

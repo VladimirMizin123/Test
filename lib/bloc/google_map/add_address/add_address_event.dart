@@ -1,4 +1,3 @@
-import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
 
 abstract class AddressEvent {}
 

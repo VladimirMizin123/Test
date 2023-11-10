@@ -47,7 +47,7 @@ Widget radioButtonWidget(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title1!,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
             SizedBox(
               width: 17.w,
             ),
@@ -64,7 +64,7 @@ Widget radioButtonWidget(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title2!,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
             SizedBox(
               width: 17.w,
             ),

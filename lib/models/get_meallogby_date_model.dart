@@ -101,7 +101,7 @@ class MealDataByDate {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['mealName'] = mealName;
     data['mealId'] = mealId;
     data['calorie'] = calorie;

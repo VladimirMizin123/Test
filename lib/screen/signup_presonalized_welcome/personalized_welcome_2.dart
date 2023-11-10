@@ -8,7 +8,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class SecondPersonalizedWelcomeScreen extends StatelessWidget {
-  const SecondPersonalizedWelcomeScreen({super.key,this.gender = 'Male'});
+  const SecondPersonalizedWelcomeScreen({super.key, this.gender = 'Male'});
   final String gender;
 
   final routeName = '/SecondPersonalizedWelcome';
@@ -17,6 +17,7 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    print('Gender:- $gender');
 
     return Scaffold(
       body: Container(
@@ -29,9 +30,9 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                 ? const AssetImage(AssetsUtils.malePersonalized2)
                 : gender == 'Female'
                     ? const AssetImage(AssetsUtils.feMalePersonalized2)
-                    : gender == 'Non'
+                    : gender == 'Non-binary'
                         ? const AssetImage(AssetsUtils.nonPersonalized2)
-                        : const AssetImage('AppStrings.mindyBG'),
+                        : const AssetImage(AssetsUtils.nonPersonalized2),
             fit: BoxFit.cover,
           ),
         ),
@@ -67,8 +68,7 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
                       Get.toNamed('/AppManagerScreen',
-                          arguments: gender,
-                          preventDuplicates: false);
+                          arguments: gender, preventDuplicates: false);
                     },
                     textColor: AppColors.skyBlue,
                     title: StringUtils.iAmReady,
@@ -111,8 +111,7 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                           bgColor: AppColors.terracotta,
                           onPressed: () {
                             Get.toNamed('/AppManagerScreen',
-                                arguments: gender,
-                                preventDuplicates: false);
+                                arguments: gender, preventDuplicates: false);
                           },
                           textColor: AppColors.coral,
                           title: StringUtils.iAmReady,
@@ -122,7 +121,7 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                       ],
                     ),
                   )
-                : gender == 'Non'
+                : gender == 'Non-binary'
                     ? SingleChildScrollView(
                         child: Column(
                           children: [
@@ -176,7 +175,59 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                           ],
                         ),
                       )
-                    : Container(),
+                    : SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              AssetsUtils.gymEatsLogo,
+                              height: 60.h,
+                              width: 168.w,
+                              color: AppColors.green,
+                            ).paddingOnly(top: 35.h),
+                            buildGymEatsHeader(
+                                    bgColor: Colors.white.withOpacity(0.8),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          StringUtils.welcomeBack,
+                                          style: textTheme.displayMedium
+                                              ?.copyWith(
+                                                  color: AppColors.green),
+                                        ).paddingOnly(bottom: 10.h),
+                                        Text(
+                                          StringUtils.eachMeal,
+                                          textAlign: TextAlign.center,
+                                          style: textTheme.displayMedium
+                                              ?.copyWith(
+                                                  color: AppColors.green,
+                                                  height: 1.1),
+                                        ),
+                                      ],
+                                    ))
+                                .paddingOnly(
+                                    bottom: 10.h,
+                                    right: 20.w,
+                                    left: 20.w,
+                                    top: 370.h),
+                            buildButton(
+                              context: context,
+                              bgColor: AppColors.green,
+                              onPressed: () {
+                                Get.toNamed('/AppManagerScreen',
+                                    arguments: gender,
+                                    preventDuplicates: false);
+                              },
+                              textColor: AppColors.mint,
+                              title: StringUtils.iAmReady,
+                              hasImage: false,
+                            ).paddingOnly(
+                                bottom: 10.h,
+                                right: 20.w,
+                                left: 20.w,
+                                top: 10.h),
+                          ],
+                        ),
+                      ),
       ),
     );
   }

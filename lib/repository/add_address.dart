@@ -41,7 +41,7 @@ class AddAddressRepository {
       "userId": userId,
     };
 
-    log('data---------->>>>>> ${data}');
+    log('data---------->>>>>> $data');
 
     final response = await apiServices.post(ApiUrls.addNewAddress, data);
     if (response.statusCode == 200 || response.statusCode == 201) {

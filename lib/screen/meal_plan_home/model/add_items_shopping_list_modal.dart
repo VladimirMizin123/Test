@@ -2,7 +2,6 @@
 //
 //     final addItemsToShoppingListModal = addItemsToShoppingListModalFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 AddItemsToShoppingListModal addItemsToShoppingListModalFromJson(String str) => AddItemsToShoppingListModal.fromJson(json.decode(str));

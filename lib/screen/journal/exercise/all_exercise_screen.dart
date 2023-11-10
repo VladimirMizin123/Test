@@ -7,7 +7,6 @@ import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_ev
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';

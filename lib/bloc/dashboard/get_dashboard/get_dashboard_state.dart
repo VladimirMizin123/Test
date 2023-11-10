@@ -2,7 +2,6 @@ import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 
 import '../../../models/fetch_meal_plan_model.dart';
 import '../../../models/get_dashboard_model.dart';
-import '../../../models/get_meal_tracker_data_model.dart';
 import '../../../models/get_meallogby_date_model.dart';
 
 abstract class GetDashboardState {}

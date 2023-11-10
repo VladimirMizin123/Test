@@ -34,7 +34,7 @@ Widget mapDetailWidget({
         hintText: title ?? "",
         vertical: 10,
         obscureText: false,
-        hintStyle: TextStyle(),
+        hintStyle: const TextStyle(),
         horizontal: 10,
         width: double.infinity,
         suffixIcon: suffixIcon,

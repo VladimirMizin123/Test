@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../screen/create_new_password/create_new_password_screen.dart';
 
 String apiKey = "AIzaSyAcB_GmcECnoEZ5dg373aOezNEVZCxUn98"; //from google json
 String appId = '1:1041946139722:android:4ab099b1807f65c6555ab3'; //from firebase

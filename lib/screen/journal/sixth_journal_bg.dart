@@ -62,7 +62,7 @@ class SixJournalBGView extends StatelessWidget {
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: TextStyle(height: 1.1),
+                        style: const TextStyle(height: 1.1),
                         children: [
                           TextSpan(
                             text: StringUtils.eatingBetter,

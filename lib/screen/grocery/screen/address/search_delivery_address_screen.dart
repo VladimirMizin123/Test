@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
@@ -45,7 +44,7 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   boxShadow: boxShadowWidget,
                 ),
                 child: TextFormField(
@@ -73,7 +72,7 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
                 child: Container(
                   decoration:  BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     boxShadow: boxShadowWidget,
                   ),
                   child: Padding(

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/models/get_user_details_byId.dart';
 
-import '../app/sharedPrefrence.dart';
 import '../models/error_model.dart';
 import '../service/api_urls.dart';
 import '../service/apis.dart';

@@ -2,7 +2,6 @@
 //
 //     final addUserRestrictionModal = addUserRestrictionModalFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 AddUserRestrictionModal addUserRestrictionModalFromJson(String str) => AddUserRestrictionModal.fromJson(json.decode(str));

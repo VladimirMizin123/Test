@@ -1,5 +1,4 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
-import 'package:gymeats_mobile/models/get_dashboard_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
