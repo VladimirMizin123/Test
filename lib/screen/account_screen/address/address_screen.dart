@@ -225,7 +225,9 @@ class _AddressScreenState extends State<AddressScreen> {
                                 int index = state.userAddress.indexWhere(
                                     (element) => element.isPrimary == true);
 
-                                selectedAddress = state.userAddress[index].id;
+                                if (index >= 0) {
+                                  selectedAddress = state.userAddress[index].id;
+                                }
                               }
                               return ListView.separated(
                                 shrinkWrap: true,

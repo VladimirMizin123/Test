@@ -155,7 +155,9 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                                             FontWeight.w800))
                                             .paddingOnly(top: 5)
                                             .marginOnly(left: 90),
-                                        Text(model.height!,
+                                        Text(
+                                                (model.height ?? "")
+                                                    .replaceAll(".", "'"),
                                                 style: AppTextStyle.gymEatsStyle
                                                     .copyWith(
                                                         color: Colors.white,

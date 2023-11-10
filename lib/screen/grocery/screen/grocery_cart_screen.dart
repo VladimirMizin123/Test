@@ -102,14 +102,17 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const BackButtonWidget(),
+                      SizedBox(
+                        width: 40.w,
+                        child: const BackButtonWidget(),
+                      ),
                       Text('Grocery List',
                           style: FontUtils.h20(
                               fontColor: AppColors.oxFF010101,
                               fontWeight: FWT.semiBold)),
-                      Text('Edit',
-                          style:
-                              FontUtils.h16(fontColor: AppColors.oxFF010101)),
+                      SizedBox(
+                        width: 40.w,
+                      ),
                     ],
                   ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                   GestureDetector(

@@ -6,21 +6,35 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/custom_radio_button_widget.dart';
 
 class ItemCatalogSortByBottomSheet extends StatefulWidget {
-  const ItemCatalogSortByBottomSheet({super.key});
+  final String? selectedSort;
+  const ItemCatalogSortByBottomSheet({super.key, this.selectedSort});
 
   @override
-  State<ItemCatalogSortByBottomSheet> createState() => _ItemCatalogSortByBottomSheetState();
+  State<ItemCatalogSortByBottomSheet> createState() =>
+      _ItemCatalogSortByBottomSheetState();
 }
 
-class _ItemCatalogSortByBottomSheetState extends State<ItemCatalogSortByBottomSheet> {
+class _ItemCatalogSortByBottomSheetState
+    extends State<ItemCatalogSortByBottomSheet> {
   String selectedValue = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      selectedValue = widget.selectedSort ?? '';
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return Material(
       color: AppColors.whiteColor,
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(
@@ -32,10 +46,17 @@ class _ItemCatalogSortByBottomSheetState extends State<ItemCatalogSortByBottomSh
                   child: Container(
                     height: 3.h,
                     width: 80.w,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.disable),
                   )),
               const SizedBox(height: 10),
-              Align(alignment: Alignment.centerLeft, child: Text('Sort by', style: FontUtils.h22(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold))),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Sort by',
+                      style: FontUtils.h22(
+                          fontColor: AppColors.darkGray,
+                          fontWeight: FWT.semiBold))),
               const SizedBox(height: 10),
               myFilterWidget('Cheapest first', () {}),
               myFilterWidget('Popular', () {}),
@@ -48,7 +69,9 @@ class _ItemCatalogSortByBottomSheetState extends State<ItemCatalogSortByBottomSh
                 height: screenSize.height * 0.065,
                 width: screenSize.width,
                 isLoadingWidget: false,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context, selectedValue);
+                },
                 isDarkColor: true,
                 isFillColor: true,
               ),

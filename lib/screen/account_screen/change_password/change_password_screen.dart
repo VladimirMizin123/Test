@@ -114,6 +114,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please Enter New Password';
+                                        } else if (!RegExp(
+                                                r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                            .hasMatch(value)) {
+                                          return 'Enter valid password';
                                         } else {
                                           return null;
                                         }
@@ -148,6 +152,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please Enter Confirm Password';
+                                        } else if (!RegExp(
+                                                r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                            .hasMatch(value)) {
+                                          return 'Enter valid password';
+                                        } else if (newPasswordController.text !=
+                                            value) {
+                                          return 'Confirm password doesn\'t match new password ';
                                         } else {
                                           return null;
                                         }

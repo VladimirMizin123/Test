@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -98,9 +99,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     state.profileDetails?.targetWeightInLb.toString() ?? '';
                 heightController.text = state.profileDetails?.heightInCm == null
                     ? ''
-                    : (state.profileDetails!.heightInCm! / 30.48)
-                        .toStringAsFixed(2);
-
+                    : state.profileDetails?.heightInCm.toString() ?? '';
+                heightController.text =
+                    heightController.text.replaceAll('.', "'");
                 if (state.profileDetails?.goal == 1) {
                   goalFocusController.text = goalFocusList.first.toString();
                   selectedGoalFocus = goalFocusList.first.toString();
@@ -493,10 +494,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontWeight: FontWeight.w300,
                                               color: AppColors.middleGray,
                                             ),
-                                            textInputType: const TextInputType
-                                                .numberWithOptions(
-                                              decimal: true,
-                                            ),
+                                            inputFormatters: <TextInputFormatter>[
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r"^\d+\'?\d{0,2}")),
+                                            ],
                                           ),
                                         ),
                                         SizedBox(
@@ -652,8 +653,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   weight: int.parse(weightController.text),
                                   targetWeight:
                                       int.parse(targetWeightController.text),
-                                  heightInCm:
-                                      double.parse(heightController.text),
+                                  heightInCm: double.parse(heightController.text
+                                      .replaceAll("'", ".")),
                                   birthDate: selectedDOB!,
                                   gender: selectedGender ?? '',
                                 ),

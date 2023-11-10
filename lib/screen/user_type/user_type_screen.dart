@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -207,7 +208,10 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             fontSize: 13,
                                             fontWeight: FontWeight.w900,
                                             hintText: StringUtils.required,
-                                            textInputType: TextInputType.number,
+                                            inputFormatters: <TextInputFormatter>[
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r"^\d+\'?\d{0,2}")),
+                                            ],
                                             context: context,
                                             onChange: (String value) {
                                               bloc.add(TextChangeEvent(
@@ -260,7 +264,8 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                 phoneNumber: model.phoneNumber,
                                 gender: genderName,
                                 age: ageController.text,
-                                height: heightController.text,
+                                height:
+                                    heightController.text.replaceAll("'", "."),
                                 weight: weightController.text,
                                 addAddressModel: model.addAddressModel,
                               );
