@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -147,21 +148,23 @@ Widget commonTextField({
   );
 }
 
-Widget commonUserTypeTextField(
-    {required String hintText,
-    required TextEditingController controller,
-    required BuildContext context,
-    required double width,
-    required double fontSize,
-    required FontWeight? fontWeight,
-    required Color fontColor,
-    required Color valueColor,
-    Color? borderColor,
-    required Color cursorColor,
-    required TextInputType textInputType,
-    required Function(String value) onChange,
-    bool isSuffix = false,
-    bool isReadOnly = false}) {
+Widget commonUserTypeTextField({
+  required String hintText,
+  required TextEditingController controller,
+  required BuildContext context,
+  required double width,
+  required double fontSize,
+  required FontWeight? fontWeight,
+  required Color fontColor,
+  required Color valueColor,
+  Color? borderColor,
+  required Color cursorColor,
+  TextInputType? textInputType,
+  required Function(String value) onChange,
+  bool isSuffix = false,
+  bool isReadOnly = false,
+  List<TextInputFormatter>? inputFormatters,
+}) {
   return Container(
     height: 48.h,
     width: width.w,
@@ -183,6 +186,7 @@ Widget commonUserTypeTextField(
               onChange(value);
             },
             readOnly: isReadOnly,
+            inputFormatters: inputFormatters,
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,

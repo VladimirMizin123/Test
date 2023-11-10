@@ -31,21 +31,21 @@ class _AccountScreenState extends State<AccountScreen> {
       "title": "Profile",
       "subtitle": "",
       "color": AppColors.disable,
-      "screen": ProfileScreen()
+      "screen": const ProfileScreen()
     },
     {
       "image": AssetsUtils.icHome,
-      "title": "Me Address",
+      "title": "My Address",
       "subtitle": "",
       "color": AppColors.disable,
-      "screen": AddressScreen()
+      "screen": const AddressScreen()
     },
     {
       "image": AssetsUtils.icMealPlan,
-      "title": "Programme",
+      "title": "Program",
       "subtitle": "Diet",
       "color": AppColors.transparentColor,
-      "screen": ProgramScreen()
+      "screen": const ProgramScreen()
     },
   ];
 
@@ -54,7 +54,7 @@ class _AccountScreenState extends State<AccountScreen> {
       "image": AssetsUtils.about,
       "title": "About",
       "color": AppColors.disable,
-      "screen": AboutScreen()
+      "screen": const AboutScreen()
     },
     {
       "image": AssetsUtils.chat,
@@ -66,7 +66,7 @@ class _AccountScreenState extends State<AccountScreen> {
       "image": AssetsUtils.setting,
       "title": "Settings",
       "color": AppColors.transparentColor,
-      "screen": SettingScreen()
+      "screen": const SettingScreen()
     },
   ];
   AccountBloc accountBloc = AccountBloc();
@@ -119,7 +119,16 @@ class _AccountScreenState extends State<AccountScreen> {
                                 },
                                 color: data["color"],
                                 leading: SvgImage(image: data["image"]),
-                                title: Text(data["title"]),
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        data["title"],
+                                      ),
+                                    ),
+                                    Text(data["subtitle"]),
+                                  ],
+                                ),
                                 trailing: const SvgImage(
                                   image: AssetsUtils.forwardArrow,
                                 ),

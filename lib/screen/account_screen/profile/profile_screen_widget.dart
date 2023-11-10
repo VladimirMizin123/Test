@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -36,6 +37,7 @@ Widget commonTextFormField({
   String? Function(String?)? validator,
   VoidCallback? onTap,
   TextInputType? textInputType,
+  List<TextInputFormatter>? inputFormatters,
 }) {
   return SizedBox(
     // width: 140.w,
@@ -50,6 +52,7 @@ Widget commonTextFormField({
       cursorColor: AppColors.primaryBlueColor,
       keyboardType: textInputType,
       onTap: onTap,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         hintStyle: hintStyle,

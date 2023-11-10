@@ -53,7 +53,7 @@ class SignUpRepository {
       "UserName": model.email!,
       "Password": model.password!,
       "ConfirmPassword": model.confirmPassword!,
-      "PoneNumber": model.phoneNumber!,
+      "PhoneNumber": model.phoneNumber!,
       "UserDetail.Age": model.age!,
       "UserDetail.Height": model.height!,
       "UserDetail.Weight": model.weight!,
@@ -73,7 +73,7 @@ class SignUpRepository {
       "UserAddress.Country": model.addAddressModel!.country!,
       "UserAddress.Zipcode": model.addAddressModel!.zipcode!,
     };
-
+    print('======DATA======>${data}');
     final response = await apiServices.postMultipart(
         url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
