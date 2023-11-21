@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -16,13 +20,16 @@ import '../../../bloc/journal/get_journal_data/get_user_journal_event.dart';
 import '../../../bloc/journal/get_journal_data/get_user_journal_state.dart';
 
 class LogFoodIntakeBottomSheet extends StatefulWidget {
-  const LogFoodIntakeBottomSheet(
-      {super.key,
-      this.nutritionixGetNxMealInfoByNameModelData,
-      required this.isMainScreen});
+  const LogFoodIntakeBottomSheet({
+    super.key,
+    this.nutritionixGetNxMealInfoByNameModelData,
+    required this.isMainScreen,
+    this.name,
+  });
   final NutritionixGetNxMealInfoByNameModelData?
       nutritionixGetNxMealInfoByNameModelData;
   final bool isMainScreen;
+  final String? name;
   @override
   State<LogFoodIntakeBottomSheet> createState() =>
       _LogFoodIntakeBottomSheetState();
@@ -32,6 +39,7 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
   int selectedIndex = -1;
   List option = ['BreakFast', 'Lunch', 'Snack', 'Dinner'];
   GetUserJournalBloc bloc = GetUserJournalBloc();
+  AddNewMealBloc getAddNewMealBloc = AddNewMealBloc();
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -136,10 +144,7 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                                 bloc.add(
                                   AddEatenMealData(
                                     value: 1,
-                                    mealName: widget
-                                            .nutritionixGetNxMealInfoByNameModelData!
-                                            .foodName ??
-                                        '',
+                                    mealName: widget.name ?? '',
                                     recipeId: widget
                                             .nutritionixGetNxMealInfoByNameModelData!
                                             .nixItemId ??
@@ -167,6 +172,50 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                                             .nutritionixGetNxMealInfoByNameModelData!
                                             .nfProtein ??
                                         0,
+                                  ),
+                                );
+
+                                getAddNewMealBloc.add(
+                                  AddNewMeal(
+                                    name: widget.name ?? '',
+                                    protein: widget
+                                                .nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfProtein ==
+                                            null
+                                        ? '0'
+                                        : widget.nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfProtein
+                                                .toString() ??
+                                            '',
+                                    fat: widget.nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfTotalFat ==
+                                            null
+                                        ? '0'
+                                        : widget.nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfTotalFat
+                                                .toString() ??
+                                            '',
+                                    carbs: widget
+                                                .nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfTotalCarbohydrate ==
+                                            null
+                                        ? '0'
+                                        : widget.nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfTotalCarbohydrate
+                                                .toString() ??
+                                            '',
+                                    calorie: widget
+                                                .nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfCalories ==
+                                            null
+                                        ? '0'
+                                        : widget.nutritionixGetNxMealInfoByNameModelData
+                                                ?.nfCalories
+                                                .toString() ??
+                                            '',
+                                    type: option[selectedIndex],
+                                    userId: userId,
+                                    quantity: '1',
                                   ),
                                 );
                               }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -42,7 +44,8 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
           // showToast(isSuccess: true, message: right.message!);
           emit(AddAddressSuccessfulState());
 
-          if (event.isFrom == 'isFromCheckout') {
+          if (event.isFrom == 'isFromRestaurant' ||
+              event.isFrom == 'isFromCheckout') {
             Get.offAll(
               () => const AppManagerScreen(
                 selectIndex: 3,
@@ -58,6 +61,13 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
           }
           if (event.isFrom == 'isFromProfile') {
             Get.back(result: true);
+          }
+          if (event.isFrom == 'isFromGroceryCheckout') {
+            Get.offAll(
+              () => const AppManagerScreen(
+                selectIndex: 1,
+              ),
+            );
           }
         },
       );
@@ -92,7 +102,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
           // showToast(isSuccess: true, message: right.message!);
           emit(AddAddressSuccessfulState());
 
-          if (event.isFrom == 'isFromCheckout') {
+          if (event.isFrom == 'isFromRestaurant') {
             Get.offAll(
               () => const AppManagerScreen(
                 selectIndex: 3,
@@ -132,7 +142,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
           // showToast(isSuccess: true, message: right.message!);
           emit(AddAddressSuccessfulState());
 
-          if (event.isFrom == 'isFromCheckout') {
+          if (event.isFrom == 'isFromRestaurant') {
             Get.offAll(
               () => const AppManagerScreen(
                 selectIndex: 3,

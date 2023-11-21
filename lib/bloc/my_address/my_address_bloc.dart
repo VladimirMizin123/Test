@@ -35,18 +35,19 @@ class MyAddressBloc extends Bloc<MyAddressEvent, MyAddressState> {
 
   _onSetPrimaryAddress(
       SetPrimaryAddressEvent event, Emitter<MyAddressState> emit) async {
-    emit(GetUserAddressLoadingState());
+    emit(SetAddressPrimaryLoadingState(id: event.addressId));
 
     try {
       await _repository.setUserAddressPrimary(event.addressId ?? '').fold(
           (left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        emit(SetAddressPrimaryErrorState(id: event.addressId));
       }, (right) {
-        emit(SetAddressPrimarySuccessState());
+        emit(SetAddressPrimarySuccessState(id: event.addressId));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
-      emit(GetUserAddressErrorState());
+      emit(SetAddressPrimaryErrorState(id: event.addressId));
     }
   }
 

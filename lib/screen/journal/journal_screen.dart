@@ -155,11 +155,16 @@ class _JournalScreenState extends State<JournalScreen> {
                     style: textTheme.displayMedium
                         ?.copyWith(color: const Color(0xFF010101)),
                   ),
-                  Image.asset(
-                    AssetsUtils.notification,
-                    height: 25.h,
-                    width: 25.w,
-                    color: AppColors.darkGray,
+                  InkWell(
+                    onTap: () {
+                      Get.toNamed('/OrderHistoryScreen');
+                    },
+                    child: Image.asset(
+                      AssetsUtils.notification,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
+                    ),
                   )
                 ],
               ).paddingSymmetric(horizontal: 6, vertical: 5.h),

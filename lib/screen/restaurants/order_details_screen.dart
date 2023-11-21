@@ -19,6 +19,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_bg.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:livechatt/livechatt.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantOrderDetailsScreen extends StatefulWidget {
   const RestaurantOrderDetailsScreen({super.key, required this.mealMeOrderId});
@@ -168,7 +169,12 @@ class _RestaurantOrderDetailsScreenState
                         width: double.infinity.w,
                         height: 48.h,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (orderData.isNotEmpty) {
+                              await launchUrl(
+                                  Uri.parse(orderData[0].trackLink!));
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.coral,
                             shape: RoundedRectangleBorder(

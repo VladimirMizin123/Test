@@ -14,8 +14,10 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart'
     as checkout;
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
@@ -64,17 +66,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   /// Get Current location ---------------------------------------------------------
   Future getCurrentLocation({dynamic latitude, dynamic longitude}) async {
-    // bool serviceEnabled = await _handleLocationPermission();
-    // if (!serviceEnabled) return;
-
     BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
     customIcon = BitmapDescriptor.fromBytes(
         await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
-
-    // Position position = await GeolocatorPlatform.instance.getCurrentPosition();
-
     selectedLatLng = LatLng(latitude, longitude);
 
     currentPosition = CameraPosition(
@@ -108,92 +104,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         .asUint8List();
   }
 
-  /// Permission Handler for location ---------------------------------------------------------
-  // Future<bool> _handleLocationPermission() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-  //
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     await Geolocator.openLocationSettings().then((value) async {
-  //       permission = await Geolocator.checkPermission();
-  //       if (permission == LocationPermission.denied) {
-  //         permission = await Geolocator.requestPermission();
-  //         if (permission == LocationPermission.denied) {
-  //           Navigator.pop(context);
-  //           showToast(
-  //               message: 'Location permissions are denied', isSuccess: false);
-  //           return false;
-  //         }
-  //       }
-  //       if (permission == LocationPermission.deniedForever) {
-  //         permission = await Geolocator.requestPermission();
-  //         if (permission == LocationPermission.deniedForever) {
-  //           Get.back();
-  //           showToast(
-  //               message:
-  //                   'Location permissions are permanently denied, we cannot request permissions.',
-  //               isSuccess: false);
-  //           return false;
-  //         }
-  //       }
-  //     });
-  //     return false;
-  //   } else {
-  //     permission = await Geolocator.checkPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       permission = await Geolocator.requestPermission();
-  //       if (permission == LocationPermission.denied) {
-  //         Navigator.pop(context);
-  //         showToast(
-  //             message: 'Location permissions are denied', isSuccess: false);
-  //         return false;
-  //       }
-  //     }
-  //     if (permission == LocationPermission.deniedForever) {
-  //       // await appSettingDialogBox();
-  //
-  //       permission = await Geolocator.checkPermission();
-  //       if (permission == LocationPermission.deniedForever) {
-  //         if (Get.arguments['string'] == 'isFromDashboard') {
-  //           Get.back();
-  //           showToast(
-  //               message:
-  //                   'Location permissions are permanently denied, we cannot request permissions.',
-  //               isSuccess: false);
-  //         } else {
-  //           Get.offNamed('/PremiumScreen');
-  //           showToast(
-  //               message:
-  //                   'Location permissions are permanently denied, we cannot request permissions.',
-  //               isSuccess: false);
-  //         }
-  //         showToast(
-  //             message:
-  //                 'Location permissions are permanently denied, we cannot request permissions.',
-  //             isSuccess: false);
-  //         return false;
-  //       }
-  //       if (permission == LocationPermission.denied) {
-  //         if (Get.arguments['string'] == 'isFromDashboard') {
-  //           Get.back();
-  //           showToast(
-  //               message: 'Location permissions are denied', isSuccess: false);
-  //         } else {
-  //           Get.offNamed('/PremiumScreen');
-  //           showToast(
-  //               message: 'Location permissions are denied', isSuccess: false);
-  //         }
-  //         showToast(
-  //             message: 'Location permissions are denied', isSuccess: false);
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //
-  //   return true;
-  // }
-
   String result = '';
   List<dynamic> data = [];
   Map<String, dynamic> cardData = {};
@@ -210,12 +120,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   bool getAddressLoadingState = false;
   address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
-
+  int selectedIndex = -1;
   @override
   void initState() {
     super.initState();
-
     restaurantBloc.add(GetUserAddressEvent());
+    restaurantBloc.add(GetDeliveryStatusEvent());
   }
 
   @override
@@ -319,9 +229,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               loadCreateOrder = false;
             }
             if (state is CreateCheckoutSuccessState) {
-              log('state.data['
-                  ']---------->>>>>> ${state.data['confirmUrl']}');
-
               loadCreateOrder = false;
 
               webViewOpen = true;
@@ -353,6 +260,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ..loadRequest(
                   Uri.parse(state.data['confirmUrl']),
                 );
+            }
+
+            /// Update Delivery Status ---------------------------------------------------
+
+            if (state is GetDeliveryStatusSuccessState) {
+              selectedIndex = state.data['isPickUp'] == true ? 1 : 0;
             }
           },
           builder: (context, state) {
@@ -591,9 +504,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       const SizedBox(
                                         width: 15,
                                       ),
-                                      const Text(
-                                        'Bring me the order',
-                                        style: TextStyle(
+                                      Text(
+                                        selectedIndex == 0
+                                            ? 'Bring me the order'
+                                            : 'I will pick it myself',
+                                        style: const TextStyle(
                                           color: Color(0xff010101),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400,
@@ -602,32 +517,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       const Spacer(),
                                       GestureDetector(
                                         onTap: () {
-                                          Get.offAll(
-                                            () => const AppManagerScreen(
-                                              selectIndex: 3,
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (context) {
+                                              return DeliverOrderBottomSheet(
+                                                isFrom: 'isFromCheckout',
+                                                selectedIndex: selectedIndex,
+                                              );
+                                            },
+                                            isDismissible: false,
+                                            enableDrag: false,
+                                            showDragHandle: false,
+                                            shape: OutlineInputBorder(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(16.r),
+                                                topRight: Radius.circular(16.r),
+                                              ),
+                                              borderSide: const BorderSide(
+                                                color: Colors.transparent,
+                                              ),
                                             ),
                                           );
-
-                                          // showModalBottomSheet(
-                                          //   context: context,
-                                          //   builder: (context) {
-                                          //     return const DeliverOrderBottomSheet();
-                                          //   },
-                                          //   isDismissible: false,
-                                          //   shape: OutlineInputBorder(
-                                          //     borderRadius: BorderRadius.only(
-                                          //       topLeft: Radius.circular(16.r),
-                                          //       topRight: Radius.circular(16.r),
-                                          //     ),
-                                          //     borderSide: const BorderSide(
-                                          //       color: Colors.transparent,
-                                          //     ),
-                                          //   ),
-                                          // ).then((value) {
-                                          //   setState(() {
-                                          //     result = value;
-                                          //   });
-                                          // });
                                         },
                                         child: Row(
                                           children: [
@@ -707,11 +617,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                             const Spacer(),
                                             GestureDetector(
                                               onTap: () async {
-                                                Get.offAll(
-                                                  () => const AppManagerScreen(
-                                                    selectIndex: 3,
-                                                  ),
-                                                );
+                                                Get.to(
+                                                    () =>
+                                                        const GetUserAddress(),
+                                                    transition:
+                                                        Transition.fadeIn,
+                                                    arguments: {
+                                                      "string":
+                                                          'isFromCheckout',
+                                                      "userData": ''
+                                                    });
                                               },
                                               child: const Icon(
                                                 Icons

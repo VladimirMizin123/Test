@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-FetchMealDetailsModel fetchMealDetailsModelFromJson(String str) => FetchMealDetailsModel.fromJson(json.decode(str));
+FetchMealDetailsModel fetchMealDetailsModelFromJson(String str) =>
+    FetchMealDetailsModel.fromJson(json.decode(str));
 
-String fetchMealDetailsModelToJson(FetchMealDetailsModel data) => json.encode(data.toJson());
+String fetchMealDetailsModelToJson(FetchMealDetailsModel data) =>
+    json.encode(data.toJson());
 
 class FetchMealDetailsModel {
   final bool? success;
@@ -21,11 +23,13 @@ class FetchMealDetailsModel {
     this.data,
   });
 
-  factory FetchMealDetailsModel.fromJson(Map<String, dynamic> json) => FetchMealDetailsModel(
+  factory FetchMealDetailsModel.fromJson(Map<String, dynamic> json) =>
+      FetchMealDetailsModel(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? null : FetchModelData.fromJson(json["data"]),
+        data:
+            json["data"] == null ? null : FetchModelData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -72,7 +76,7 @@ class Recipe {
   final num? weightInGrams;
   final num? servingWeight;
   final List<String>? instructions;
-   final Nutri? nutritionalInfo;
+  final Nutri? nutritionalInfo;
 
   Recipe({
     this.id,
@@ -95,52 +99,76 @@ class Recipe {
     this.servingWeight,
     this.instructions,
     this.nutritionalInfo,
-    
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
         id: json["id"],
-        nutrientsPerServing: json["nutrientsPerServing"] == null ? null : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
-        parsedIngredientLines: json["parsedIngredientLines"] == null ? [] : List<ParsedIngredientLine>.from(json["parsedIngredientLines"]!.map((x) => ParsedIngredientLine.fromJson(x))),
+        nutrientsPerServing: json["nutrientsPerServing"] == null
+            ? null
+            : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
+        parsedIngredientLines: json["parsedIngredientLines"] == null
+            ? []
+            : List<ParsedIngredientLine>.from(json["parsedIngredientLines"]!
+                .map((x) => ParsedIngredientLine.fromJson(x))),
         databaseId: json["databaseId"],
         totalTime: json["totalTime"],
         totalTimeInSeconds: json["totalTimeInSeconds"],
         name: json["name"],
         serving: json["serving"],
-        ingredientLines: json["ingredientLines"] == null ? [] : List<String>.from(json["ingredientLines"]!.map((x) => x)),
-        ingredients: json["ingredients"] == null ? [] : List<Ingredient>.from(json["ingredients"]!.map((x) => Ingredient.fromJson(x))),
+        ingredientLines: json["ingredientLines"] == null
+            ? []
+            : List<String>.from(json["ingredientLines"]!.map((x) => x)),
+        ingredients: json["ingredients"] == null
+            ? []
+            : List<Ingredient>.from(
+                json["ingredients"]!.map((x) => Ingredient.fromJson(x))),
         language: json["language"],
-        courses: json["courses"] == null ? [] : List<dynamic>.from(json["courses"]!.map((x) => x)),
+        courses: json["courses"] == null
+            ? []
+            : List<dynamic>.from(json["courses"]!.map((x) => x)),
         cuisines: json["cuisines"],
         source: json["source"],
         mainImage: json["mainImage"],
         ingredientsCount: json["ingredientsCount"],
         weightInGrams: json["weightInGrams"],
         servingWeight: json["servingWeight"],
-        instructions: json["instructions"] == null ? [] : List<String>.from(json["instructions"]!.map((x) => x)),
-        nutritionalInfo: json["nutritionalInfo"] == null ? null : Nutri.fromJson(json["nutritionalInfo"]),
+        instructions: json["instructions"] == null
+            ? []
+            : List<String>.from(json["instructions"]!.map((x) => x)),
+        nutritionalInfo: json["nutritionalInfo"] == null
+            ? null
+            : Nutri.fromJson(json["nutritionalInfo"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "nutrientsPerServing": nutrientsPerServing?.toJson(),
-        "parsedIngredientLines": parsedIngredientLines == null ? [] : List<dynamic>.from(parsedIngredientLines!.map((x) => x.toJson())),
+        "parsedIngredientLines": parsedIngredientLines == null
+            ? []
+            : List<dynamic>.from(parsedIngredientLines!.map((x) => x.toJson())),
         "databaseId": databaseId,
         "totalTime": totalTime,
         "totalTimeInSeconds": totalTimeInSeconds,
         "name": name,
         "serving": serving,
-        "ingredientLines": ingredientLines == null ? [] : List<dynamic>.from(ingredientLines!.map((x) => x)),
-        "ingredients": ingredients == null ? [] : List<dynamic>.from(ingredients!.map((x) => x.toJson())),
+        "ingredientLines": ingredientLines == null
+            ? []
+            : List<dynamic>.from(ingredientLines!.map((x) => x)),
+        "ingredients": ingredients == null
+            ? []
+            : List<dynamic>.from(ingredients!.map((x) => x.toJson())),
         "language": language,
-        "courses": courses == null ? [] : List<dynamic>.from(courses!.map((x) => x)),
+        "courses":
+            courses == null ? [] : List<dynamic>.from(courses!.map((x) => x)),
         "cuisines": cuisines,
         "source": source,
         "mainImage": mainImage,
         "ingredientsCount": ingredientsCount,
         "weightInGrams": weightInGrams,
         "servingWeight": servingWeight,
-        "instructions": instructions == null ? [] : List<dynamic>.from(instructions!.map((x) => x)),
+        "instructions": instructions == null
+            ? []
+            : List<dynamic>.from(instructions!.map((x) => x)),
         "nutritionalInfo": nutritionalInfo?.toJson(),
       };
 }
@@ -177,7 +205,7 @@ class Ingredient {
   final String? name;
   bool isSelected;
 
-  Ingredient( {
+  Ingredient({
     this.name,
     this.isSelected = false,
   });
@@ -204,7 +232,8 @@ class NutrientsPerServing {
     this.carbs,
   });
 
-  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) => NutrientsPerServing(
+  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) =>
+      NutrientsPerServing(
         calories: json["calories"],
         fat: json["fat"],
         protein: json["protein"],
@@ -225,16 +254,18 @@ class ParsedIngredientLine {
   final String? quantity;
   final String? unit;
   final String? other;
-
+  bool isSelected;
   ParsedIngredientLine({
     this.ingredientLine,
     this.ingredient,
     this.quantity,
     this.unit,
     this.other,
+    this.isSelected = false,
   });
 
-  factory ParsedIngredientLine.fromJson(Map<String, dynamic> json) => ParsedIngredientLine(
+  factory ParsedIngredientLine.fromJson(Map<String, dynamic> json) =>
+      ParsedIngredientLine(
         ingredientLine: json["ingredientLine"],
         ingredient: json["ingredient"],
         quantity: json["quantity"],

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
@@ -13,8 +16,10 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 class DeliverOrderBottomSheet extends StatefulWidget {
-  const DeliverOrderBottomSheet({super.key, required this.selectedIndex});
+  const DeliverOrderBottomSheet(
+      {super.key, required this.selectedIndex, required this.isFrom});
   final int selectedIndex;
+  final String isFrom;
 
   @override
   State<DeliverOrderBottomSheet> createState() =>
@@ -125,7 +130,15 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
 
                           restaurantBloc.add(ClearShoppingListItemEvent());
 
-                          Get.back(result: option[selectedIndex]);
+                          if (widget.isFrom == 'isFromCheckout') {
+                            Get.offAll(
+                              () => const AppManagerScreen(
+                                selectIndex: 3,
+                              ),
+                            );
+                          } else {
+                            Get.back(result: option[selectedIndex]);
+                          }
                         }
                       }
                     },

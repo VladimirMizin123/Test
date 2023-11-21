@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:either_dart/either.dart';
@@ -60,10 +61,13 @@ class AddNewMealRepository {
       'UserId': userId.toString(),
       'Quantity': quantity.toString()
     };
+
+    log('data----CUSTOM------>>>>>> $data');
+
     final response = await apiServices.postMultipart(
         url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('SUCESSBODYYY--${response.body}');
+      print('SUCCESS BODY--${response.body}');
 
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
