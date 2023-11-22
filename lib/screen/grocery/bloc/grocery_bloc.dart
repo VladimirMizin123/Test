@@ -25,6 +25,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<CreateOrderEvent>(_onCreateOrder);
     on<CreateProductEvent>(_onCreateProduct);
     on<CreateCheckoutEvent>(_onCreateCheckout);
+    on<GetDeliveryStatusEvent>(_onGetDeliveryStatus);
   }
 
   final GroceryRepository _repository = GroceryRepository();
@@ -328,6 +329,27 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(CreateCheckoutErrorState());
+    }
+  }
+
+  // Get Delivery Status Bloc ==============================================================================
+
+  _onGetDeliveryStatus(
+      GetDeliveryStatusEvent event, Emitter<GroceryState> emit) async {
+    emit(GetDeliveryStatusLoadingState());
+
+    try {
+      await _repository.getDeliveryStatus().fold((left) {
+        onFailError(emit: emit, text: left.errorMessage!);
+        emit(GetDeliveryStatusErrorState());
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        emit(GetDeliveryStatusSuccessState(data: right.data ?? {}));
+        // showToast(isSuccess: true, message: right.message ?? "");
+      });
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetDeliveryStatusErrorState());
     }
   }
 }

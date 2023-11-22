@@ -121,3 +121,7 @@ class CreateCheckoutEvent extends GroceryEvent {
 
   CreateCheckoutEvent({required this.createCheckOutRequestModel});
 }
+
+/// Get Delivery Status ==============================================================================
+
+class GetDeliveryStatusEvent extends GroceryEvent {}

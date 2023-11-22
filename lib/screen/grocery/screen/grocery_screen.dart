@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +8,9 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart'
+    as addressevent;
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -36,13 +38,14 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
+  MyAddressBloc myAddressBloc = MyAddressBloc();
   List<GroceryDetails> groceryDetails = [];
   List<GroceryDetails> searchGroceryDetails = [];
   bool isListClearByClick = false;
   bool isGroceryFetchLoadingState = true;
   bool isSearchOn = false;
   List<Map<String, dynamic>> checkbox = [];
-
+  int selectedIndex = -1;
   @override
   void initState() {
     super.initState();
@@ -51,6 +54,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
       //     latitude: '41.881832', longitude: '-87.623177'));
       // groceryBloc.add(GroceryFetchEvent());
       addNewGroceryItemBloc.add(GetGroceryItemEvent());
+      myAddressBloc.add(addressevent.GetUserAddressEvent());
     });
   }
 
@@ -941,6 +945,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 addNewGroceryItemBloc: addNewGroceryItemBloc,
                                 groceryBloc: groceryBloc,
                                 selectedEdgesList: edgesDummyList,
+                                isFrom: 'isFromGrocery',
+                                selectedIndex: selectedIndex,
                               );
                             },
                             isDismissible: false,

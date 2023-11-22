@@ -41,7 +41,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   GetMealLogByDate mealDateModel = GetMealLogByDate();
   GetUserJournalBloc journalBloc = GetUserJournalBloc();
-  MyAddressBloc myAddressBloc = MyAddressBloc();
 
   // String recipeIdView = '';
   // List<MealDataByDate> idDataList = [];
@@ -64,7 +63,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     super.initState();
     bloc.add(GenMealTrackerData());
     mealPlanBloc.add(MealPlanFetchEvent());
-    myAddressBloc.add(GetUserAddressEvent());
+
     /* dateBloc.add(GetMealLogByDateData(
         date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);

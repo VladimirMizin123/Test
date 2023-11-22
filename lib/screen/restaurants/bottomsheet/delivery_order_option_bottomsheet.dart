@@ -89,7 +89,7 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.warning_amber_rounded,
                             color: Colors.amber,
                             size: 16,

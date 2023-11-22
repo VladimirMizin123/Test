@@ -27,6 +27,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/order_details_screen.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
@@ -115,6 +116,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     widget.arguments?.groceryBloc?.add(GetUserAddressEvent());
+    widget.arguments?.groceryBloc?.add(GetDeliveryStatusEvent());
+    selectedIndex = widget.arguments!.askReceiveOrder.index;
   }
 
   bool webViewOpen = false;
@@ -123,6 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool createOrder = false;
   bool loadCreateOrder = false;
   ProductData? productData;
+  int selectedIndex = -1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,684 +264,661 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Uri.parse(state.data['confirmUrl']),
                 );
             }
+
+            /// Update Delivery Status ---------------------------------------------------
+
+            if (state is GetDeliveryStatusSuccessState) {
+              selectedIndex = state.data['isPickUp'] == true ? 1 : 0;
+            }
           },
           builder: (BuildContext context, state) {
-            return webViewOpen == true
-                ? WebViewWidget(controller: controller)
-                : Column(
+            if (webViewOpen == true) {
+              return WebViewWidget(controller: controller);
+            } else {
+              return Column(
+                children: [
+                  Image.asset(
+                    AssetsUtils.gymEatsLogo,
+                    height: 20.h,
+                    width: 56.w,
+                    color: AppColors.primaryBlue,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(
-                        AssetsUtils.gymEatsLogo,
-                        height: 20.h,
-                        width: 56.w,
-                        color: AppColors.primaryBlue,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const BackButtonWidget(),
-                          Text('Checkout',
-                              style: FontUtils.h20(
-                                  fontColor: AppColors.oxFF010101,
-                                  fontWeight: FWT.semiBold)),
-                          Opacity(
-                              opacity: 0,
-                              child: Text('Edit',
-                                  style: FontUtils.h16(
-                                      fontColor: AppColors.oxFF010101))),
-                        ],
-                      ).paddingSymmetric(horizontal: 6, vertical: 5.h),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Payment method',
-                                    style: FontUtils.h20(
-                                        fontColor: AppColors.middleGray),
-                                  ),
+                      const BackButtonWidget(),
+                      Text('Checkout',
+                          style: FontUtils.h20(
+                              fontColor: AppColors.oxFF010101,
+                              fontWeight: FWT.semiBold)),
+                      Opacity(
+                          opacity: 0,
+                          child: Text('Edit',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.oxFF010101))),
+                    ],
+                  ).paddingSymmetric(horizontal: 6, vertical: 5.h),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Payment method',
+                                style: FontUtils.h20(
+                                    fontColor: AppColors.middleGray),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  width: 1,
+                                  color: AppColors.terracotta,
                                 ),
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      width: 1,
-                                      color: AppColors.terracotta,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xff004C63)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 16,
-                                      )
-                                    ],
-                                  ),
-                                  child: cardData.isEmpty
-                                      ? Row(
-                                          children: [
-                                            SvgPicture.asset(
-                                                AssetsUtils.debitCard),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            const Text(
-                                              'Choose payment\nmethod',
-                                              style: TextStyle(
-                                                color: Color(0xff010101),
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xff004C63)
+                                        .withOpacity(0.08),
+                                    offset: const Offset(0, 0),
+                                    blurRadius: 16,
+                                  )
+                                ],
+                              ),
+                              child: cardData.isEmpty
+                                  ? Row(
+                                      children: [
+                                        SvgPicture.asset(AssetsUtils.debitCard),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        const Text(
+                                          'Choose payment\nmethod',
+                                          style: TextStyle(
+                                            color: Color(0xff010101),
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final value = await Get.to(
+                                              () => AddDebitCardScreen(
+                                                data: cardData,
                                               ),
-                                            ),
-                                            const Spacer(),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                final value = await Get.to(
-                                                  () => AddDebitCardScreen(
-                                                    data: cardData,
-                                                  ),
-                                                );
-                                                if (value != null) {
-                                                  cardData = value;
-                                                  setState(() {});
-                                                }
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Text('Edit',
-                                                      style: FontUtils.h14(
-                                                          fontColor: AppColors
-                                                              .terracotta,
-                                                          fontWeight:
-                                                              FWT.lightMedium)),
-                                                  const Icon(
-                                                    Icons
-                                                        .keyboard_arrow_right_sharp,
-                                                    color: AppColors.terracotta,
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      : Row(
-                                          children: [
-                                            SvgPicture.asset(
-                                                AssetsUtils.icVisa),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text(
-                                                  'Visa',
-                                                  style: TextStyle(
-                                                    color: Color(0xff010101),
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'Ending ${cardData['number'].toString().substring(cardData['number'].toString().length - 4)}',
-                                                  style: const TextStyle(
-                                                    color: Color(0xff010101),
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const Spacer(),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                final value = await Get.to(
-                                                  () => AddDebitCardScreen(
-                                                    data: cardData,
-                                                  ),
-                                                );
-                                                if (value != null) {
-                                                  cardData = value;
-                                                  setState(() {});
-                                                }
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    'Edit',
-                                                    style: FontUtils.h14(
+                                            );
+                                            if (value != null) {
+                                              cardData = value;
+                                              setState(() {});
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Text('Edit',
+                                                  style: FontUtils.h14(
                                                       fontColor:
                                                           AppColors.terracotta,
                                                       fontWeight:
-                                                          FWT.lightMedium,
-                                                    ),
-                                                  ),
-                                                  const Icon(
-                                                    Icons
-                                                        .keyboard_arrow_right_sharp,
-                                                    color: AppColors.terracotta,
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                ),
-                                const SizedBox(height: 15),
-
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Delivery info',
-                                    style: FontUtils.h20(
-                                        fontColor: AppColors.middleGray),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: AppColors.whiteColor,
-                                    boxShadow: boxShadowWidget,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 12),
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(AssetsUtils.icLocation,
-                                            color: AppColors.green, height: 25),
-                                        const SizedBox(width: 15),
-                                        Expanded(
-                                            child: Text(
-                                          widget.arguments!.askReceiveOrder
-                                                      .index ==
-                                                  0
-                                              ? 'Bring me the order'
-                                              : 'I will pick it myself',
-                                          style: FontUtils.h18(
-                                              fontColor: AppColors.black,
-                                              fontWeight: FWT.medium),
-                                        )),
-                                        InkWell(
-                                          onTap: () {
-                                            Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const AppManagerScreen(
-                                                          selectIndex: 1),
-                                                ),
-                                                (route) => false);
-                                          },
-                                          child: Text(
-                                            'Edit',
-                                            style: FontUtils.h16(
-                                                fontColor:
-                                                    AppColors.terracotta),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        const Icon(Icons.chevron_right_rounded,
-                                            color: AppColors.terracotta),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-
-                                /// Google Map ------------------------------------------------------------------------
-
-                                Container(
-                                  height: 200.h,
-                                  margin: EdgeInsets.symmetric(vertical: 16.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xff004C63)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 16,
-                                      )
-                                    ],
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              const BorderRadius.vertical(
-                                                  top: Radius.circular(8)),
-                                          child: GoogleMap(
-                                            markers: Set<Marker>.of(markers),
-                                            onMapCreated: _onMapCreated,
-                                            initialCameraPosition:
-                                                currentPosition,
-                                            myLocationButtonEnabled: true,
-                                            zoomControlsEnabled: false,
-                                            compassEnabled: true,
-                                            onTap: (argument) async {},
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 16),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SvgPicture.asset(
-                                                AssetsUtils.icHome),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            SizedBox(
-                                              width: 200.w,
-                                              child: Text(
-                                                getUserAddress?.streetName ??
-                                                    'Where?',
-                                                style: const TextStyle(
-                                                  color: AppColors.darkGray,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                Get.to(
-                                                    () =>
-                                                        const GetUserAddress(),
-                                                    arguments: {
-                                                      "string":
-                                                          'isFromGroceryCheckout',
-                                                      "userData": ''
-                                                    });
-                                              },
-                                              child: const Icon(
+                                                          FWT.lightMedium)),
+                                              const Icon(
                                                 Icons
                                                     .keyboard_arrow_right_sharp,
-                                                color: AppColors.darkGray,
+                                                color: AppColors.terracotta,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        SvgPicture.asset(AssetsUtils.icVisa),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'Visa',
+                                              style: TextStyle(
+                                                color: Color(0xff010101),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
                                               ),
-                                            )
+                                            ),
+                                            Text(
+                                              'Ending ${cardData['number'].toString().substring(cardData['number'].toString().length - 4)}',
+                                              style: const TextStyle(
+                                                color: Color(0xff010101),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                /// Order List ------------------------------------------------------------------------
-
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  clipBehavior: Clip.none,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xff004C63)
-                                              .withOpacity(0.08),
-                                          offset: const Offset(0, 0),
-                                          blurRadius: 16,
+                                        const Spacer(),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final value = await Get.to(
+                                              () => AddDebitCardScreen(
+                                                data: cardData,
+                                              ),
+                                            );
+                                            if (value != null) {
+                                              cardData = value;
+                                              setState(() {});
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Edit',
+                                                style: FontUtils.h14(
+                                                  fontColor:
+                                                      AppColors.terracotta,
+                                                  fontWeight: FWT.lightMedium,
+                                                ),
+                                              ),
+                                              const Icon(
+                                                Icons
+                                                    .keyboard_arrow_right_sharp,
+                                                color: AppColors.terracotta,
+                                              )
+                                            ],
+                                          ),
                                         )
                                       ],
                                     ),
-                                    child: Theme(
-                                      data: ThemeData(
-                                          dividerColor: Colors.transparent),
-                                      child: ExpansionTile(
-                                        shape: Border.all(
-                                            color: Colors.transparent),
-                                        collapsedShape: Border.all(
-                                            color: Colors.transparent),
-                                        title: Row(
-                                          children: [
-                                            Image.asset(
-                                              AssetsUtils.menuIcon,
-                                              height: 16,
-                                              width: 18,
+                            ),
+                            const SizedBox(height: 15),
+
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Delivery info',
+                                style: FontUtils.h20(
+                                    fontColor: AppColors.middleGray),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: AppColors.whiteColor,
+                                boxShadow: boxShadowWidget,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(AssetsUtils.icLocation,
+                                        color: AppColors.green, height: 25),
+                                    const SizedBox(width: 15),
+                                    Expanded(
+                                        child: Text(
+                                      selectedIndex == 0
+                                          ? 'Bring me the order'
+                                          : 'I will pick it myself',
+                                      style: FontUtils.h18(
+                                          fontColor: AppColors.black,
+                                          fontWeight: FWT.medium),
+                                    )),
+                                    InkWell(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) {
+                                            return ReceiveOrderAskBottomSheet(
+                                              groceryBloc:
+                                                  widget.arguments?.groceryBloc,
+                                              isFrom: 'isFromCheckout',
+                                              selectedIndex: selectedIndex,
+                                            );
+                                          },
+                                          isDismissible: false,
+                                          enableDrag: false,
+                                          showDragHandle: false,
+                                          shape: OutlineInputBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(16.r),
+                                              topRight: Radius.circular(16.r),
                                             ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 15.w, right: 8.w),
-                                              child: const Text(
-                                                'Your Order',
-                                                style: TextStyle(
-                                                  color: Color(0xff010101),
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
+                                            borderSide: const BorderSide(
+                                              color: Colors.transparent,
                                             ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 9,
-                                                      vertical: 1),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.terracotta,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  '${widget.arguments?.edgesList.length}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Edit',
+                                        style: FontUtils.h16(
+                                            fontColor: AppColors.terracotta),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(Icons.chevron_right_rounded,
+                                        color: AppColors.terracotta),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            /// Google Map ------------------------------------------------------------------------
+
+                            Container(
+                              height: 200.h,
+                              margin: EdgeInsets.symmetric(vertical: 16.h),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xff004C63)
+                                        .withOpacity(0.08),
+                                    offset: const Offset(0, 0),
+                                    blurRadius: 16,
+                                  )
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                          top: Radius.circular(8)),
+                                      child: GoogleMap(
+                                        markers: Set<Marker>.of(markers),
+                                        onMapCreated: _onMapCreated,
+                                        initialCameraPosition: currentPosition,
+                                        myLocationButtonEnabled: true,
+                                        zoomControlsEnabled: false,
+                                        compassEnabled: true,
+                                        onTap: (argument) async {},
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 16),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.to(() => const GetUserAddress(),
+                                            arguments: {
+                                              "string": 'isFromGroceryCheckout',
+                                              "userData": ''
+                                            });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff004C63)
-                                                      .withOpacity(0.08),
-                                                  offset: const Offset(0, 0),
-                                                  blurRadius: 16,
-                                                )
-                                              ],
-                                            ),
-                                            child: Column(
-                                              children: List.generate(
-                                                widget.arguments?.edgesList
-                                                        .length ??
-                                                    0,
-                                                (index) => Container(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 8),
-                                                  margin: const EdgeInsets.only(
-                                                      bottom: 0),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            '${widget.arguments?.edgesList[index].product?.cartItemCount}x',
-                                                            style:
-                                                                FontUtils.h14(
-                                                              fontColor:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FWT.medium,
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 230.w,
-                                                            child: Text(
-                                                              '${widget.arguments?.edgesList[index].itemName}',
-                                                              style: FontUtils.h15(
-                                                                  fontColor:
-                                                                      AppColors
-                                                                          .darkGray,
-                                                                  fontWeight: FWT
-                                                                      .regular),
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '\$${((widget.arguments!.edgesList[index].product!.price! / 100) * widget.arguments!.edgesList[index].product!.cartItemCount).toStringAsFixed(2)}',
-                                                            style:
-                                                                FontUtils.h15(
-                                                              fontColor:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FWT.medium,
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      Container(
-                                                        height: 0.2,
-                                                        color: Colors.black,
-                                                        margin: const EdgeInsets
-                                                            .symmetric(
-                                                          vertical: 8,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
+                                          SvgPicture.asset(AssetsUtils.icHome),
+                                          const SizedBox(
+                                            width: 15,
+                                          ),
+                                          SizedBox(
+                                            width: 200.w,
+                                            child: Text(
+                                              getUserAddress?.streetName ??
+                                                  'Where?',
+                                              style: const TextStyle(
+                                                color: AppColors.darkGray,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w300,
                                               ),
                                             ),
                                           ),
+                                          const Spacer(),
+                                          const Icon(
+                                            Icons.keyboard_arrow_right_sharp,
+                                            color: AppColors.darkGray,
+                                          )
                                         ],
                                       ),
                                     ),
                                   ),
-                                ),
-
-                                const SizedBox(height: 15),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Order Notes',
-                                    style: FontUtils.h20(
-                                      fontColor: AppColors.middleGray,
-                                      fontWeight: FWT.semiBold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xff004C63)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 16,
-                                      )
-                                    ],
-                                  ),
-                                  child: TextFormField(
-                                    controller: notes,
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      contentPadding: const EdgeInsets.all(0),
-                                      hintText: 'Add order Notes.....',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration:
-                            BoxDecoration(color: Colors.white, boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xff004C63).withOpacity(0.08),
-                            blurRadius: 16,
-                            offset: const Offset(0, 0),
-                          )
-                        ]),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
+                                ],
                               ),
-                              createOrder == true
-                                  ? Column(
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            /// Order List ------------------------------------------------------------------------
+
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              clipBehavior: Clip.none,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xff004C63)
+                                          .withOpacity(0.08),
+                                      offset: const Offset(0, 0),
+                                      blurRadius: 16,
+                                    )
+                                  ],
+                                ),
+                                child: Theme(
+                                  data: ThemeData(
+                                      dividerColor: Colors.transparent),
+                                  child: ExpansionTile(
+                                    shape:
+                                        Border.all(color: Colors.transparent),
+                                    collapsedShape:
+                                        Border.all(color: Colors.transparent),
+                                    title: Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Subtotal',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            Text(
-                                              '\$${orderData!.finalQuote!.quote!.subtotal! / 100}',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 4.h,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Delivery fee',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            const Icon(Icons.info_outline,
-                                                size: 20),
-                                            const Spacer(),
-                                            Text(
-                                              '\$${orderData!.finalQuote!.quote!.deliveryFeeCents! / 100}',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            )
-                                          ],
+                                        Image.asset(
+                                          AssetsUtils.menuIcon,
+                                          height: 16,
+                                          width: 18,
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Service fee',
-                                                style: FontUtils.h14(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.lightMedium,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              const Icon(Icons.info_outline,
-                                                  size: 20),
-                                              const Spacer(),
-                                              Text(
-                                                '\$${orderData!.finalQuote!.quote!.serviceFeeCents! / 100}',
-                                                style: FontUtils.h14(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.lightMedium,
-                                                ),
-                                              )
-                                            ],
+                                          padding: EdgeInsets.only(
+                                              left: 15.w, right: 8.w),
+                                          child: const Text(
+                                            'Your Order',
+                                            style: TextStyle(
+                                              color: Color(0xff010101),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                            ),
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Service fee tax',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 9, vertical: 1),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.terracotta,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${widget.arguments?.edgesList.length}',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w400),
                                             ),
-                                            const Spacer(),
-                                            Text(
-                                              '\$${orderData!.finalQuote!.quote!.salesTaxCents! / 100}',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.darkGray,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 5.h),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Total',
-                                                style: FontUtils.h18(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium,
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                '\$ ${orderData!.finalQuote!.quote!.totalWithoutTips! / 100}',
-                                                style: FontUtils.h24(
-                                                  fontColor:
-                                                      const Color(0xff010101),
-                                                  fontWeight: FWT.medium,
-                                                ),
-                                              )
-                                            ],
                                           ),
                                         ),
                                       ],
-                                    )
-                                  : Padding(
+                                    ),
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(0xff004C63)
+                                                  .withOpacity(0.08),
+                                              offset: const Offset(0, 0),
+                                              blurRadius: 16,
+                                            )
+                                          ],
+                                        ),
+                                        child: Column(
+                                          children: List.generate(
+                                            widget.arguments?.edgesList
+                                                    .length ??
+                                                0,
+                                            (index) => Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 8),
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        '${widget.arguments?.edgesList[index].product?.cartItemCount}x',
+                                                        style: FontUtils.h14(
+                                                          fontColor:
+                                                              Colors.black,
+                                                          fontWeight:
+                                                              FWT.medium,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 230.w,
+                                                        child: Text(
+                                                          '${widget.arguments?.edgesList[index].itemName}',
+                                                          style: FontUtils.h15(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray,
+                                                              fontWeight:
+                                                                  FWT.regular),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '\$${((widget.arguments!.edgesList[index].product!.price! / 100) * widget.arguments!.edgesList[index].product!.cartItemCount).toStringAsFixed(2)}',
+                                                        style: FontUtils.h15(
+                                                          fontColor:
+                                                              Colors.black,
+                                                          fontWeight:
+                                                              FWT.medium,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    height: 0.2,
+                                                    color: Colors.black,
+                                                    margin: const EdgeInsets
+                                                        .symmetric(
+                                                      vertical: 8,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 15),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Order Notes',
+                                style: FontUtils.h20(
+                                  fontColor: AppColors.middleGray,
+                                  fontWeight: FWT.semiBold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 0),
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xff004C63)
+                                        .withOpacity(0.08),
+                                    offset: const Offset(0, 0),
+                                    blurRadius: 16,
+                                  )
+                                ],
+                              ),
+                              child: TextFormField(
+                                controller: notes,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.all(0),
+                                  hintText: 'Add order Notes.....',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xff004C63).withOpacity(0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 0),
+                      )
+                    ]),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          createOrder == true
+                              ? Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Subtotal',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          '\$${orderData!.finalQuote!.quote!.subtotal! / 100}',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 4.h,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Delivery fee',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        const Icon(Icons.info_outline,
+                                            size: 20),
+                                        const Spacer(),
+                                        Text(
+                                          '\$${orderData!.finalQuote!.quote!.deliveryFeeCents! / 100}',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Service fee',
+                                            style: FontUtils.h14(
+                                              fontColor: AppColors.darkGray,
+                                              fontWeight: FWT.lightMedium,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          const Icon(Icons.info_outline,
+                                              size: 20),
+                                          const Spacer(),
+                                          Text(
+                                            '\$${orderData!.finalQuote!.quote!.serviceFeeCents! / 100}',
+                                            style: FontUtils.h14(
+                                              fontColor: AppColors.darkGray,
+                                              fontWeight: FWT.lightMedium,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Service fee tax',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          '\$${orderData!.finalQuote!.quote!.salesTaxCents! / 100}',
+                                          style: FontUtils.h14(
+                                            fontColor: AppColors.darkGray,
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Padding(
                                       padding: EdgeInsets.only(top: 5.h),
                                       child: Row(
                                         children: [
                                           Text(
-                                            'Subtotal',
+                                            'Total',
                                             style: FontUtils.h18(
                                               fontColor: AppColors.darkGray,
                                               fontWeight: FWT.medium,
@@ -945,7 +926,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           ),
                                           const Spacer(),
                                           Text(
-                                            '\$ ${totalAmount(widget.arguments?.edgesList ?? []).toStringAsFixed(2)}',
+                                            '\$ ${orderData!.finalQuote!.quote!.totalWithoutTips! / 100}',
                                             style: FontUtils.h24(
                                               fontColor:
                                                   const Color(0xff010101),
@@ -955,269 +936,285 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         ],
                                       ),
                                     ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: loadCreateOrder == true
-                                    ? const Center(
-                                        child: CircularProgressIndicator(),
+                                  ],
+                                )
+                              : Padding(
+                                  padding: EdgeInsets.only(top: 5.h),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Subtotal',
+                                        style: FontUtils.h18(
+                                          fontColor: AppColors.darkGray,
+                                          fontWeight: FWT.medium,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        '\$ ${totalAmount(widget.arguments?.edgesList ?? []).toStringAsFixed(2)}',
+                                        style: FontUtils.h24(
+                                          fontColor: const Color(0xff010101),
+                                          fontWeight: FWT.medium,
+                                        ),
                                       )
-                                    : simpleTextBorderButton(
-                                        color: AppColors.terracotta,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        isFillColor: true,
-                                        height: 40.h,
-                                        isLoadingWidget: false,
-                                        buttonLable: createOrder == true
-                                            ? 'Confirm '
-                                            : 'Create Order',
-                                        lableColor: Colors.white,
-                                        onTap: () {
-                                          print(
-                                              '-===getUserAddress?.streetName.isEmpty==>${getUserAddress == null}');
-                                          if (getUserAddress == null) {
-                                            Fluttertoast.showToast(
-                                              msg:
-                                                  'Please Select Address For Order',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              backgroundColor: Colors.black,
-                                              textColor: Colors.white,
-                                              fontSize: 16.0,
-                                            );
-                                            return;
-                                          }
+                                    ],
+                                  ),
+                                ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: loadCreateOrder == true
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : simpleTextBorderButton(
+                                    color: AppColors.terracotta,
+                                    width: MediaQuery.of(context).size.width,
+                                    isFillColor: true,
+                                    height: 40.h,
+                                    isLoadingWidget: false,
+                                    buttonLable: createOrder == true
+                                        ? 'Confirm '
+                                        : 'Create Order',
+                                    lableColor: Colors.white,
+                                    onTap: () {
+                                      print(
+                                          '-===getUserAddress?.streetName.isEmpty==>${getUserAddress == null}');
+                                      if (getUserAddress == null) {
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Please Select Address For Order',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          backgroundColor: Colors.black,
+                                          textColor: Colors.white,
+                                          fontSize: 16.0,
+                                        );
+                                        return;
+                                      }
 
-                                          if (createOrder == false) {
-                                            List<CreateOrderGroceryItems> data =
-                                                [];
+                                      if (createOrder == false) {
+                                        List<CreateOrderGroceryItems> data = [];
 
-                                            for (var element in widget
-                                                .arguments!.edgesList) {
-                                              data.add(
-                                                CreateOrderGroceryItems(
-                                                  productId: element
-                                                      .product?.productId,
-                                                  productType: 2,
-                                                  quantity: element
-                                                      .product?.cartItemCount,
-                                                  notes: notes.text,
-                                                  productMarkedPrice: element
-                                                      .product?.originalPrice,
-                                                  selectedOptions: [],
-                                                ),
-                                              );
-                                            }
+                                        for (var element
+                                            in widget.arguments!.edgesList) {
+                                          data.add(
+                                            CreateOrderGroceryItems(
+                                              productId:
+                                                  element.product?.productId,
+                                              productType: 2,
+                                              quantity: element
+                                                  .product?.cartItemCount,
+                                              notes: notes.text,
+                                              productMarkedPrice: element
+                                                  .product?.originalPrice,
+                                              selectedOptions: [],
+                                            ),
+                                          );
+                                        }
 
-                                            widget.arguments?.groceryBloc?.add(
-                                              CreateOrderEvent(
-                                                createGroceryOrderModel:
-                                                    CreateGroceryOrderModel(
-                                                  userId: userId,
-                                                  pickup: widget
-                                                              .arguments!
-                                                              .askReceiveOrder
-                                                              .index ==
-                                                          0
-                                                      ? false
-                                                      : true,
-                                                  groceryItems: data,
-                                                  userAddress: UserAddress(
-                                                    latitude: getUserAddress
-                                                        ?.latitude,
-                                                    longitude: getUserAddress
-                                                        ?.longitude,
-                                                    streetName: getUserAddress
-                                                        ?.streetName,
-                                                    streetNum: getUserAddress
-                                                        ?.streetNum,
-                                                    city: getUserAddress?.city,
-                                                    country:
-                                                        getUserAddress?.country,
-                                                    state:
-                                                        getUserAddress?.state,
-                                                    zipcode:
-                                                        getUserAddress?.zipcode,
-                                                  ),
-                                                  userPhone: 1234567890,
-                                                  driverTipCents: 0,
-                                                  pickupTipCents: 0,
-                                                  userDropoffNotes: notes.text,
-                                                ),
+                                        widget.arguments?.groceryBloc?.add(
+                                          CreateOrderEvent(
+                                            createGroceryOrderModel:
+                                                CreateGroceryOrderModel(
+                                              userId: userId,
+                                              pickup: widget
+                                                          .arguments!
+                                                          .askReceiveOrder
+                                                          .index ==
+                                                      0
+                                                  ? false
+                                                  : true,
+                                              groceryItems: data,
+                                              userAddress: UserAddress(
+                                                latitude:
+                                                    getUserAddress?.latitude,
+                                                longitude:
+                                                    getUserAddress?.longitude,
+                                                streetName:
+                                                    getUserAddress?.streetName,
+                                                streetNum:
+                                                    getUserAddress?.streetNum,
+                                                city: getUserAddress?.city,
+                                                country:
+                                                    getUserAddress?.country,
+                                                state: getUserAddress?.state,
+                                                zipcode:
+                                                    getUserAddress?.zipcode,
+                                              ),
+                                              userPhone: 1234567890,
+                                              driverTipCents: 0,
+                                              pickupTipCents: 0,
+                                              userDropoffNotes: notes.text,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        /// Create Product / Create Checkout Api
+
+                                        if (cardData.isEmpty) {
+                                          Fluttertoast.showToast(
+                                            msg:
+                                                'Please Select Card For Payment',
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            backgroundColor: Colors.black,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0,
+                                          );
+                                        } else {
+                                          for (var element in orderData!
+                                              .finalQuote!.items!) {
+                                            print(
+                                                '==element.image==>${element.image}');
+                                            productMealMeData.add(
+                                              product.ProductMealmeItems(
+                                                name: element.name,
+                                                markedPrice:
+                                                    element.markedPrice,
+                                                quantity: element.quantity,
+                                                productType: '2',
+                                                productId: element.productId,
+                                                image: (element.image
+                                                                ?.isEmpty ??
+                                                            false) ||
+                                                        element.image == null
+                                                    ? 'https://img.freepik.com/premium-photo/shopping-bag-full-fresh-fruits-vegetables-with-assorted-ingredients_8087-2232.jpg'
+                                                    : element.image,
+                                                basePrice: element.basePrice,
                                               ),
                                             );
-                                          } else {
-                                            /// Create Product / Create Checkout Api
 
-                                            if (cardData.isEmpty) {
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    'Please Select Card For Payment',
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                                backgroundColor: Colors.black,
-                                                textColor: Colors.white,
-                                                fontSize: 16.0,
-                                              );
-                                            } else {
-                                              for (var element in orderData!
-                                                  .finalQuote!.items!) {
-                                                print(
-                                                    '==element.image==>${element.image}');
-                                                productMealMeData.add(
-                                                  product.ProductMealmeItems(
-                                                    name: element.name,
-                                                    markedPrice:
-                                                        element.markedPrice,
-                                                    quantity: element.quantity,
-                                                    productType: '2',
-                                                    productId:
-                                                        element.productId,
-                                                    image: (element.image
-                                                                    ?.isEmpty ??
-                                                                false) ||
-                                                            element.image ==
-                                                                null
-                                                        ? 'https://img.freepik.com/premium-photo/shopping-bag-full-fresh-fruits-vegetables-with-assorted-ingredients_8087-2232.jpg'
-                                                        : element.image,
-                                                    basePrice:
-                                                        element.basePrice,
-                                                  ),
-                                                );
-
-                                                print(
-                                                    '==productMealMeData===>${productMealMeData.last.image}');
-                                              }
-
-                                              widget.arguments?.groceryBloc
-                                                  ?.add(
-                                                CreateProductEvent(
-                                                  createProductRequestModel: product
-                                                      .CreateProductRequestModel(
-                                                    userId: userId,
-                                                    orderId: orderData?.orderId,
-                                                    totalAmount:
-                                                        orderData?.totalPrice,
-                                                    mealmeItems:
-                                                        productMealMeData,
-                                                  ),
-                                                ),
-                                              );
-                                            }
+                                            print(
+                                                '==productMealMeData===>${productMealMeData.last.image}');
                                           }
-                                        },
-                                        context: context,
-                                        isDarkColor: false,
-                                      ),
-                              ),
-                            ],
+
+                                          widget.arguments?.groceryBloc?.add(
+                                            CreateProductEvent(
+                                              createProductRequestModel: product
+                                                  .CreateProductRequestModel(
+                                                userId: userId,
+                                                orderId: orderData?.orderId,
+                                                totalAmount:
+                                                    orderData?.totalPrice,
+                                                mealmeItems: productMealMeData,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    context: context,
+                                    isDarkColor: false,
+                                  ),
                           ),
-                        ),
-                      )
-                      // Container(
-                      //   color: AppColors.whiteColor,
-                      //   child: Column(
-                      //     children: [
-                      //       const SizedBox(height: 10),
-                      //       Padding(
-                      //         padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //         child: Row(
-                      //           children: [
-                      //             Text(
-                      //               'Delivery fee',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //             const SizedBox(width: 10),
-                      //             const Icon(Icons.info_outline),
-                      //             const Spacer(),
-                      //             Text(
-                      //               'FREE',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //       const SizedBox(height: 10),
-                      //       Padding(
-                      //         padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //         child: Row(
-                      //           children: [
-                      //             Text(
-                      //               'Service fee',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //             const SizedBox(width: 10),
-                      //             const Icon(Icons.info_outline),
-                      //             const Spacer(),
-                      //             Text(
-                      //               '\$4.00',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //       const SizedBox(height: 10),
-                      //       Padding(
-                      //         padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //         child: Row(
-                      //           children: [
-                      //             Text(
-                      //               'Service fee tax',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //             const Spacer(),
-                      //             Text(
-                      //               '\$0.30',
-                      //               style: FontUtils.h14(fontColor: AppColors.black),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //       const SizedBox(height: 20),
-                      //       Padding(
-                      //         padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //         child: Row(
-                      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //           children: [
-                      //             Text(
-                      //               'Total',
-                      //               style: FontUtils.h22(
-                      //                   fontColor: AppColors.black,
-                      //                   fontWeight: FWT.semiBold),
-                      //             ),
-                      //             Text(
-                      //               '\$ 14.97',
-                      //               style: FontUtils.h22(
-                      //                   fontColor: AppColors.black,
-                      //                   fontWeight: FWT.semiBold),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //       const SizedBox(height: 20),
-                      //       Padding(
-                      //         padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //         child: simpleTextBorderButton(
-                      //           context: context,
-                      //           color: AppColors.green,
-                      //           buttonLable: 'Checkout ',
-                      //           height: screenSize.height * 0.065,
-                      //           width: screenSize.width,
-                      //           isLoadingWidget: false,
-                      //           onTap: () {
-                      //             Get.toNamed('/PaymentCardSelectionScreen');
-                      //           },
-                      //           isDarkColor: true,
-                      //           isFillColor: true,
-                      //         ),
-                      //       ),
-                      //       const SizedBox(height: 30),
-                      //     ],
-                      //   ),
-                      // ),
-                    ],
-                  );
+                        ],
+                      ),
+                    ),
+                  )
+                  // Container(
+                  //   color: AppColors.whiteColor,
+                  //   child: Column(
+                  //     children: [
+                  //       const SizedBox(height: 10),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: Row(
+                  //           children: [
+                  //             Text(
+                  //               'Delivery fee',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //             const SizedBox(width: 10),
+                  //             const Icon(Icons.info_outline),
+                  //             const Spacer(),
+                  //             Text(
+                  //               'FREE',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 10),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: Row(
+                  //           children: [
+                  //             Text(
+                  //               'Service fee',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //             const SizedBox(width: 10),
+                  //             const Icon(Icons.info_outline),
+                  //             const Spacer(),
+                  //             Text(
+                  //               '\$4.00',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 10),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: Row(
+                  //           children: [
+                  //             Text(
+                  //               'Service fee tax',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //             const Spacer(),
+                  //             Text(
+                  //               '\$0.30',
+                  //               style: FontUtils.h14(fontColor: AppColors.black),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 20),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             Text(
+                  //               'Total',
+                  //               style: FontUtils.h22(
+                  //                   fontColor: AppColors.black,
+                  //                   fontWeight: FWT.semiBold),
+                  //             ),
+                  //             Text(
+                  //               '\$ 14.97',
+                  //               style: FontUtils.h22(
+                  //                   fontColor: AppColors.black,
+                  //                   fontWeight: FWT.semiBold),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 20),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: simpleTextBorderButton(
+                  //           context: context,
+                  //           color: AppColors.green,
+                  //           buttonLable: 'Checkout ',
+                  //           height: screenSize.height * 0.065,
+                  //           width: screenSize.width,
+                  //           isLoadingWidget: false,
+                  //           onTap: () {
+                  //             Get.toNamed('/PaymentCardSelectionScreen');
+                  //           },
+                  //           isDarkColor: true,
+                  //           isFillColor: true,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 30),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              );
+            }
           },
         ),
       ),

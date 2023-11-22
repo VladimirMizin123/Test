@@ -253,3 +253,15 @@ class CreateCheckoutSuccessState extends GroceryState {
 }
 
 class CreateCheckoutErrorState extends GroceryState {}
+
+/// Get Delivery Status State
+
+class GetDeliveryStatusLoadingState extends GroceryState {}
+
+class GetDeliveryStatusSuccessState extends GroceryState {
+  final Map<String, dynamic> data;
+
+  GetDeliveryStatusSuccessState({required this.data});
+}
+
+class GetDeliveryStatusErrorState extends GroceryState {}

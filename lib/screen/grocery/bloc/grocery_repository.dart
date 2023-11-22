@@ -275,4 +275,21 @@ class GroceryRepository {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
+
+  /// Get Delivery Status ====================================================================
+
+  Future<Either<ErrorModel, SuccessModel>> getDeliveryStatus() async {
+    final response =
+        await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      log('response.body---------->>>>>> ${response.body}');
+
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
 }
