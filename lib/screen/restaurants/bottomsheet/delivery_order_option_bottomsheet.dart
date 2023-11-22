@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -85,6 +83,26 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                       ),
                     ),
                   ),
+                  if (widget.isFrom == 'isFromCheckout') ...[
+                    //const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.amber,
+                            size: 16,
+                          ),
+                          Text(
+                              ' You order will be reset if you change this option',
+                              style: FontUtils.h12(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.regular)),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 15),
                   myWidget(
                       title: 'Bring me the order',

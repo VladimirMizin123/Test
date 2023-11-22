@@ -159,7 +159,7 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'Flutter Demo',
+          title: 'Gym Eats',
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,

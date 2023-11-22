@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
@@ -25,8 +25,6 @@ import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
-
-import 'dart:ui' as ui;
 
 import '../restaurants/model/get_user_address_model.dart';
 
@@ -623,11 +621,14 @@ class _GetUserAddressState extends State<GetUserAddress>
                                         )
                                       : GestureDetector(
                                           onTap: () {
-                                            addressBloc.add(
-                                              SetPrimaryAddressEvent(
-                                                  addressId:
-                                                      userAddress![index].id),
-                                            );
+                                            if (userAddress![index].isPrimary ==
+                                                false) {
+                                              addressBloc.add(
+                                                SetPrimaryAddressEvent(
+                                                    addressId:
+                                                        userAddress![index].id),
+                                              );
+                                            }
                                           },
                                           child: Row(
                                             mainAxisAlignment:
