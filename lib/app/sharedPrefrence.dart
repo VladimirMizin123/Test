@@ -1,6 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 String userId = '';
 
 const String prefIsLogin = 'isLogin';
@@ -9,6 +8,8 @@ const String prefUserData = 'userData';
 const String prefUserEmail = 'userEmail';
 const String prefUserMobile = 'userPhone';
 const String prefToken = 'token';
+const String latitude = 'latitude';
+const String longitude = 'longitude';
 const String prefPasswordResetToken = 'passwordResetToken';
 const String userMealPlanCountState = 'userMealPlanCountState';
 const String prefWaterML = 'waterML';

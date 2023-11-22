@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -407,14 +408,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
         addressTypeList.contains((widget.userAddress?.addressType ?? ""))
             ? widget.userAddress?.addressType ?? ""
             : addressTypeList.first;
-    streetName = widget.userAddress?.streetName?.split(',').first ?? '';
-    streetDetailsController.text =
-        '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
-
-    '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
+    streetName = widget.userAddress?.streetName ?? '';
+    streetDetailsController.text = streetName.isNotEmpty ? streetName : '';
+    // streetDetailsController.text =
+    //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
+    // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
     apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
-    floorNumberController.text =
-        widget.userAddress?.streetName?.split(',').last.split(' ').last ?? '';
+    floorNumberController.text = '';
     zipCodeController.text = widget.userAddress?.zipcode ?? "";
 
     currentPosition = CameraPosition(
@@ -629,13 +629,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
 
                               if (widget.userAddress != null) {
                                 /// Update existing address
+
                                 bloc.add(
                                   UpdateClickEvent(
                                     latitude: selectedLatLng!.latitude,
                                     longitude: selectedLatLng!.longitude,
                                     streetNum: apartmentNumberController.text,
-                                    streetName:
-                                        '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}',
+                                    streetName: streetDetailsController.text,
                                     city: city,
                                     state: stateData,
                                     country: country,
@@ -656,8 +656,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     latitude: selectedLatLng!.latitude,
                                     longitude: selectedLatLng!.longitude,
                                     streetNum: apartmentNumberController.text,
-                                    streetName:
-                                        '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}',
+                                    streetName: streetDetailsController.text,
                                     city: city,
                                     state: stateData,
                                     country: country,
@@ -669,6 +668,8 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     isFrom: 'isFromProfile',
                                   ),
                                 );
+
+                                // '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}'
                               }
                             },
                             textColor: AppColors.whiteColor,

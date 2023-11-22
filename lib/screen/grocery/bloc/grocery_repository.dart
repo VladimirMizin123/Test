@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -113,6 +114,11 @@ class GroceryRepository {
         "groceries": grocerySearchModal,
       },
     );
+
+    log('latitude---------->>>>>> ${latitude}');
+
+    log('longitude---------->>>>>> ${longitude}');
+
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
@@ -151,8 +152,12 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     try {
       await _repository
           .grocerySearch(
-              latitude: '41.881832',
-              longitude: '-87.623177',
+              latitude: PreferenceUtils.getString(latitude).isNotEmpty
+                  ? PreferenceUtils.getString(latitude)
+                  : '41.881832',
+              longitude: PreferenceUtils.getString(longitude).isNotEmpty
+                  ? PreferenceUtils.getString(longitude)
+                  : '-87.623177',
               grocerySearchModal: event.grocerySearchModelList!)
           .fold((left) {
         emit(GrocerySearchErrorState());

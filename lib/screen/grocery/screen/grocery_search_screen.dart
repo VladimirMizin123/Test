@@ -156,13 +156,15 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                       child: TextField(
                         controller: searchController,
                         onSubmitted: (String value) {
-                          groceryBloc.add(GrocerySearchEvent(
-                            grocerySearchModelList: [
-                              GrocerySearchModel(
-                                  groceryName: searchController.text,
-                                  quantity: 0)
-                            ],
-                          ));
+                          groceryBloc.add(
+                            GrocerySearchEvent(
+                              grocerySearchModelList: [
+                                GrocerySearchModel(
+                                    groceryName: searchController.text,
+                                    quantity: 0)
+                              ],
+                            ),
+                          );
                         },
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.search),

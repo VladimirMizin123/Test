@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -8,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
+import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
@@ -40,6 +41,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   GetMealLogByDate mealDateModel = GetMealLogByDate();
   GetUserJournalBloc journalBloc = GetUserJournalBloc();
+  MyAddressBloc myAddressBloc = MyAddressBloc();
 
   // String recipeIdView = '';
   // List<MealDataByDate> idDataList = [];
@@ -62,6 +64,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     super.initState();
     bloc.add(GenMealTrackerData());
     mealPlanBloc.add(MealPlanFetchEvent());
+    myAddressBloc.add(GetUserAddressEvent());
     /* dateBloc.add(GetMealLogByDateData(
         date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);
