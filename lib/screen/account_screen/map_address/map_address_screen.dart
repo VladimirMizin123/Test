@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -414,7 +413,8 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
     //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
     // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
     apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
-    floorNumberController.text = '';
+    floorNumberController.text =
+        widget.userAddress?.streetName?.split(',').last.split(' ').last ?? '';
     zipCodeController.text = widget.userAddress?.zipcode ?? "";
 
     currentPosition = CameraPosition(
@@ -592,7 +592,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                               ),
                               mapDetailWidget(
                                 title: "Flour",
-                                // initialValue: floorNumberController.text,
+                                //initialValue: floorNumberController.text,
                                 textEditingController: floorNumberController,
                                 validator: (value) {
                                   if (value!.isEmpty) {

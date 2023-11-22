@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,14 +148,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               title: StringUtils.logIn)
                           .paddingOnly(top: 25.h);
                     }),
-                Align(
+                /*Align(
                   alignment: Alignment.center,
                   child: Text(
                     StringUtils.or,
                     style: textTheme.headlineSmall,
                   ).paddingSymmetric(vertical: 15.h),
-                ),
-                kIsWeb
+                ),*/
+                /* kIsWeb
                     ? const SizedBox()
                     : Platform.isIOS
                         ? buildButton(
@@ -178,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {},
                             textColor: Colors.white,
                             bgColor: Colors.black,
-                            title: StringUtils.google),
+                            title: StringUtils.google),*/
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

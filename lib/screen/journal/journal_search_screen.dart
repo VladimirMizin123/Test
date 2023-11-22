@@ -537,7 +537,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                                       return Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .symmetric(
+                                                                .symmetric(
                                                                 horizontal: 12,
                                                                 vertical: 6),
                                                         child: GestureDetector(
@@ -645,12 +645,12 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                                                       Row(
                                                                         children: [
                                                                           Text(
-                                                                            '1 slice, Dave’s Killer Bread - ',
+                                                                            '${groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitSize ?? ''} ${groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].unitOfMeasurement ?? ''}, ',
                                                                             style:
                                                                                 FontUtils.h12(fontColor: AppColors.middleGray, fontWeight: FWT.medium),
                                                                           ),
                                                                           Text(
-                                                                            '110 cal',
+                                                                            '${groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie ?? 0} cal',
                                                                             style:
                                                                                 FontUtils.h12(fontColor: AppColors.black, fontWeight: FWT.medium),
                                                                           ),

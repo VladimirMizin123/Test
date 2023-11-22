@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -156,11 +153,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 title: StringUtils.joinGymEats)
                             .paddingOnly(top: 25.h);
                       }),
-                  Text(
+                  /*Text(
                     StringUtils.or,
                     style: textTheme.bodyLarge?.copyWith(fontSize: 20.sp),
-                  ).paddingSymmetric(vertical: 12.h),
-                  kIsWeb
+                  ).paddingSymmetric(vertical: 12.h),*/
+                  /*kIsWeb
                       ? const SizedBox()
                       : Platform.isIOS
                           ? buildButton(
@@ -181,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               textColor: Colors.white,
                               bgColor: Colors.black,
                               title: StringUtils.google,
-                            ),
+                            ),*/
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(

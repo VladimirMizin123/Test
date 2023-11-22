@@ -339,7 +339,17 @@ class _JournalScreenState extends State<JournalScreen> {
                       bloc.add(JournalGetDashboardDataEvent(
                           dateTime: DateTime.now()));
                       logData.add(MealDataByDate(mealId: state.mealID));
-
+                      bloc.add(GetUserJournalData(date: dateTimeNow()));
+                      if (dateTimeYYYYMMDD(
+                              dateTimeVal: selectedDateTime.toString()) ==
+                          dateTimeNow()) {
+                        PreferenceUtils.setInt(userMealPlanCountState, 0);
+                        bloc.add(GenMealData());
+                      } else {
+                        bloc.add(MealTrackerData(
+                            date: dateTimeYYYYMMDD(
+                                dateTimeVal: selectedDateTime.toString())));
+                      }
                       setState(() {});
                       //
                       // addNewMealBloc.add(GetCustomListEvent());
@@ -1451,7 +1461,7 @@ class _JournalScreenState extends State<JournalScreen> {
         commonBorderView(
           child: InkWell(
             onTap: () {
-              Get.toNamed("/ForthJournalBGView");
+              //Get.toNamed("/ForthJournalBGView");
             },
             child: commonJournalFoodData(
               title: dataList![0].recipe!.name!,
@@ -1513,7 +1523,7 @@ class _JournalScreenState extends State<JournalScreen> {
           (index) => commonBorderView(
             child: InkWell(
               onTap: () {
-                Get.toNamed("/ForthJournalBGView");
+                // Get.toNamed("/ForthJournalBGView");
               },
               child: commonJournalFoodData(
                 title: customDataList![index].name!,

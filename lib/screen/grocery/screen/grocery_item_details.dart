@@ -576,7 +576,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                       fontColor:
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
-                                              Text('2g',
+                                              Text(
+                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfCalories.toStringAsFixed(2)} cal',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -597,7 +598,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                       fontColor:
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
-                                              Text('2g',
+                                              Text(
+                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfProtein?.toStringAsFixed(2)} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -618,7 +620,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                       fontColor:
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
-                                              Text('2g',
+                                              Text(
+                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate?.toStringAsFixed(2)} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -639,7 +642,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                       fontColor:
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
-                                              Text('2g',
+                                              Text(
+                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfTotalFat?.toStringAsFixed(2) ?? 0} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
