@@ -722,7 +722,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                     ListView.builder(
                                                       itemCount: fetchModelData!
                                                           .recipe!
-                                                          .ingredients!
+                                                          .parsedIngredientLines!
                                                           .length,
                                                       shrinkWrap: true,
                                                       physics:
@@ -745,22 +745,23 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               const SizedBox(
                                                                   width: 20),
                                                               Text(
-                                                                  fetchModelData!
-                                                                          .recipe!
-                                                                          .ingredients![
-                                                                              index]
-                                                                          .name ??
-                                                                      '',
-                                                                  style: FontUtils.h14(
-                                                                      fontWeight:
-                                                                          FWT.regular)),
+                                                                fetchModelData!
+                                                                        .recipe!
+                                                                        .parsedIngredientLines![
+                                                                            index]
+                                                                        .ingredientLine ??
+                                                                    '',
+                                                                style: FontUtils.h14(
+                                                                    fontWeight:
+                                                                        FWT.regular),
+                                                              ),
                                                               const Spacer(),
                                                               Transform.scale(
                                                                 scale: 1.2,
                                                                 child: Checkbox(
                                                                   value: fetchModelData!
                                                                       .recipe!
-                                                                      .ingredients![
+                                                                      .parsedIngredientLines![
                                                                           index]
                                                                       .isSelected,
                                                                   onChanged:
@@ -770,29 +771,29 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                         () {
                                                                       fetchModelData!
                                                                           .recipe!
-                                                                          .ingredients![
+                                                                          .parsedIngredientLines![
                                                                               index]
-                                                                          .isSelected = !fetchModelData!.recipe!.ingredients![index].isSelected;
+                                                                          .isSelected = !fetchModelData!.recipe!.parsedIngredientLines![index].isSelected;
 
                                                                       if (value ==
                                                                           false) {
                                                                         grocerySearchList.removeWhere((element) =>
                                                                             element.groceryName ==
-                                                                            fetchModelData!.recipe!.ingredients![index].name);
+                                                                            fetchModelData!.recipe!.parsedIngredientLines![index].ingredient);
                                                                       } else {
                                                                         grocerySearchList.add(GrocerySearchModel(
                                                                             groceryName:
-                                                                                fetchModelData!.recipe!.ingredients![index].name,
+                                                                                fetchModelData!.recipe!.parsedIngredientLines![index].ingredient,
                                                                             quantity: 1));
                                                                       }
 
                                                                       for (var i =
                                                                               0;
-                                                                          i < fetchModelData!.recipe!.ingredients!.length;
+                                                                          i < fetchModelData!.recipe!.parsedIngredientLines!.length;
                                                                           i++) {
                                                                         if (fetchModelData!
                                                                             .recipe!
-                                                                            .ingredients![i]
+                                                                            .parsedIngredientLines![i]
                                                                             .isSelected) {
                                                                           isAddButtonEnable =
                                                                               true;

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
@@ -13,8 +14,10 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
 class DeliverOrderBottomSheet extends StatefulWidget {
-  const DeliverOrderBottomSheet({super.key, required this.selectedIndex});
+  const DeliverOrderBottomSheet(
+      {super.key, required this.selectedIndex, required this.isFrom});
   final int selectedIndex;
+  final String isFrom;
 
   @override
   State<DeliverOrderBottomSheet> createState() =>
@@ -80,6 +83,26 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                       ),
                     ),
                   ),
+                  if (widget.isFrom == 'isFromCheckout') ...[
+                    //const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.amber,
+                            size: 16,
+                          ),
+                          Text(
+                              ' You order will be reset if you change this option',
+                              style: FontUtils.h12(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.regular)),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 15),
                   myWidget(
                       title: 'Bring me the order',
@@ -125,7 +148,15 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
 
                           restaurantBloc.add(ClearShoppingListItemEvent());
 
-                          Get.back(result: option[selectedIndex]);
+                          if (widget.isFrom == 'isFromCheckout') {
+                            Get.offAll(
+                              () => const AppManagerScreen(
+                                selectIndex: 3,
+                              ),
+                            );
+                          } else {
+                            Get.back(result: option[selectedIndex]);
+                          }
                         }
                       }
                     },

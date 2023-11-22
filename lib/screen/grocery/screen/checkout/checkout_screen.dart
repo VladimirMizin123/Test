@@ -14,6 +14,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart'
@@ -558,11 +559,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                             const Spacer(),
                                             GestureDetector(
                                               onTap: () async {
-                                                Get.offAll(
-                                                  () => const AppManagerScreen(
-                                                    selectIndex: 1,
-                                                  ),
-                                                );
+                                                Get.to(
+                                                    () =>
+                                                        const GetUserAddress(),
+                                                    arguments: {
+                                                      "string":
+                                                          'isFromGroceryCheckout',
+                                                      "userData": ''
+                                                    });
                                               },
                                               child: const Icon(
                                                 Icons

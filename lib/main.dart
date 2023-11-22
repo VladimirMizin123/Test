@@ -27,7 +27,7 @@ import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/add_delivery_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/map_address_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/address/search_delivery_address_screen.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkoput_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/checkout/checkout_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
@@ -159,7 +159,7 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'Flutter Demo',
+          title: 'Gym Eats',
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,

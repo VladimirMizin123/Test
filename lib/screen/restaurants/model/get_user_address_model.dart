@@ -58,6 +58,7 @@ class UserAddress {
   bool? isPrimary;
   bool? isDeleted;
   String? userId;
+  bool isSelected;
 
   UserAddress({
     this.id,
@@ -73,6 +74,7 @@ class UserAddress {
     this.isPrimary,
     this.isDeleted,
     this.userId,
+    this.isSelected = false,
   });
 
   factory UserAddress.fromJson(Map<String, dynamic> json) => UserAddress(

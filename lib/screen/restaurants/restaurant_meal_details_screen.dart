@@ -407,6 +407,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                     nutritionixGetNxMealInfoByNameModelData:
                                                         nutritionixGetNxMealInfoByNameModelData,
                                                     isMainScreen: false,
+                                                    name: widget.data.name,
                                                   );
                                                 },
                                                 isDismissible: false,

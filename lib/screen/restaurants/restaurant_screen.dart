@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,6 +37,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       builder: (context) {
         return DeliverOrderBottomSheet(
           selectedIndex: selectedIndex,
+          isFrom: 'isFromRestaurant',
         );
       },
       isDismissible: false,
@@ -170,7 +170,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                 if (state.userAddress.isEmpty) {
                   Get.to(() => const GetUserAddress(),
                       transition: Transition.fadeIn,
-                      arguments: {"string": 'isFromCheckout', "userData": ''});
+                      arguments: {
+                        "string": 'isFromRestaurant',
+                        "userData": ''
+                      });
                 } else {
                   /// address is primary then primary will be taken
                   for (var i = 0; i < state.userAddress.length; i++) {
@@ -188,7 +191,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     Get.to(() => const GetUserAddress(),
                         transition: Transition.fadeIn,
                         arguments: {
-                          "string": 'isFromCheckout',
+                          "string": 'isFromRestaurant',
                           "userData": ''
                         });
                   } else {
@@ -289,11 +292,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               fontWeight: FontWeight.w500,
                               fontSize: 24),
                         ),
-                        Image.asset(
-                          AssetsUtils.notification,
-                          height: 25.h,
-                          width: 25.w,
-                          color: AppColors.darkGray,
+                        InkWell(
+                          onTap: () {
+                            Get.toNamed('/OrderHistoryScreen');
+                          },
+                          child: Image.asset(
+                            AssetsUtils.notification,
+                            height: 25.h,
+                            width: 25.w,
+                            color: AppColors.darkGray,
+                          ),
                         )
                       ],
                     ),
@@ -472,7 +480,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                             Get.to(() => const GetUserAddress(),
                                 transition: Transition.fadeIn,
                                 arguments: {
-                                  "string": 'isFromCheckout',
+                                  "string": 'isFromRestaurant',
                                   "userData": ''
                                 });
                           },

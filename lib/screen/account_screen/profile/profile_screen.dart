@@ -250,12 +250,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               100.r),
-                                                      child: SvgPicture.asset(
-                                                          AssetsUtils.appleLogo,
-                                                          fit: BoxFit.fill,
-                                                          height: 80.w,
-                                                          width: 80.w,
-                                                          color: Colors.yellow),
+                                                      child: Image.asset(
+                                                        AssetsUtils
+                                                            .personProfileImage,
+                                                        fit: BoxFit.fill,
+                                                        height: 80.w,
+                                                        width: 80.w,
+                                                        color: Colors.grey,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

@@ -882,7 +882,12 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   ],
                 ),
                 restaurantMenu!.categories![select].menuItemList![index]
-                        .highLightedColor!.isEmpty
+                                .highLightedColor ==
+                            null ||
+                        restaurantMenu!.categories![select].menuItemList![index]
+                            .highLightedColor
+                            .toString()
+                            .isEmpty
                     ? const SizedBox()
                     : Image.asset(
                         restaurantMenu!.categories![select].menuItemList![index]

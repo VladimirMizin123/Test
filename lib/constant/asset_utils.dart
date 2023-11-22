@@ -1,4 +1,3 @@
-
 class AssetsUtils {
   /// Images
   static const String defaultImage = "assets/image/defaultImage.png";
@@ -97,6 +96,7 @@ class AssetsUtils {
   static const vegetable = "assets/image/vegetable.png";
   static const ratingStar = "assets/image/rating_star.png";
   static const greyCircle = "assets/image/grey_circle.png";
+  static const personProfileImage = "assets/image/person_profile_image.png";
 
   /// SVG
   static const svgPath = 'assets/svg/';

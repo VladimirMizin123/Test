@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
@@ -25,8 +25,6 @@ import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
-
-import 'dart:ui' as ui;
 
 import '../restaurants/model/get_user_address_model.dart';
 
@@ -233,14 +231,8 @@ class _GetUserAddressState extends State<GetUserAddress>
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        // setState(() {
-                        //   lifeCycleCall = true;
-                        // });
                         var permissionValue = await Geolocator.openAppSettings()
                             .then((value) async {});
-                        // setState(() {
-                        //   lifeCycleCall = false;
-                        // });
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -443,7 +435,6 @@ class _GetUserAddressState extends State<GetUserAddress>
   MyAddressBloc addressBloc = MyAddressBloc();
 
   String? selectedAddress;
-  bool lifeCycleCall = false;
   List<UserAddress>? userAddress;
 
   @override
@@ -513,9 +504,8 @@ class _GetUserAddressState extends State<GetUserAddress>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 5.h,
-                  ),
+                  SizedBox(height: 5.h),
+
                   Text(
                     'Add delivery address',
                     style: TextStyle(
@@ -579,7 +569,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                     ),
                   ),
 
-                  ///Current location======================================================
+                  ///CURRENT LOCATION======================================================
                   Row(
                     children: [
                       Icon(
@@ -607,11 +597,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                     ],
                   ),
 
-                  SizedBox(
-                    height: 10.h,
-                  ),
+                  SizedBox(height: 10.h),
 
-                  ///OFFICE======================================================
+                  /// ADDRESS LIST ======================================================
 
                   Expanded(
                     child: BlocConsumer(
@@ -623,47 +611,59 @@ class _GetUserAddressState extends State<GetUserAddress>
                                 itemCount: userAddress!.length,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      addressBloc.add(
-                                        SetPrimaryAddressEvent(
-                                            addressId: userAddress![index].id),
-                                      );
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Image.asset(
-                                          AssetsUtils.markerFlag,
-                                          height: 15.h,
-                                          width: 22.w,
-                                          color:
-                                              userAddress![index].isPrimary ==
-                                                      true
-                                                  ? AppColors.terracotta
-                                                  : AppColors.darkGray,
-                                        ),
-                                        SizedBox(
-                                          width: 16.w,
-                                        ),
-                                        Text(
-                                          '${userAddress![index].streetName} ',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                            color:
-                                                userAddress![index].isPrimary ==
+                                  return userAddress?[index].isSelected == true
+                                      ? Center(
+                                          child: Transform.scale(
+                                            scale: 0.5,
+                                            child:
+                                                const CircularProgressIndicator(),
+                                          ),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () {
+                                            if (userAddress![index].isPrimary ==
+                                                false) {
+                                              addressBloc.add(
+                                                SetPrimaryAddressEvent(
+                                                    addressId:
+                                                        userAddress![index].id),
+                                              );
+                                            }
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Image.asset(
+                                                AssetsUtils.markerFlag,
+                                                height: 15.h,
+                                                width: 22.w,
+                                                color: userAddress![index]
+                                                            .isPrimary ==
                                                         true
                                                     ? AppColors.terracotta
                                                     : AppColors.darkGray,
+                                              ),
+                                              SizedBox(
+                                                width: 16.w,
+                                              ),
+                                              Text(
+                                                '${userAddress![index].streetName} ',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: userAddress![index]
+                                                              .isPrimary ==
+                                                          true
+                                                      ? AppColors.terracotta
+                                                      : AppColors.darkGray,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                        );
                                 },
                                 separatorBuilder: (context, index) =>
                                     const Divider(),
@@ -671,74 +671,59 @@ class _GetUserAddressState extends State<GetUserAddress>
                       },
                       listener: (context, state) {
                         if (state is SetAddressPrimarySuccessState) {
-                          if (argumentsValue['string'] == 'isFromCheckout') {
+                          if (argumentsValue['string'] == 'isFromRestaurant' ||
+                              argumentsValue['string'] == 'isFromCheckout') {
                             Get.offAll(
                               () => const AppManagerScreen(
                                 selectIndex: 3,
                               ),
                             );
+                          } else if (argumentsValue['string'] ==
+                              'isFromGroceryCheckout') {
+                            Get.offAll(
+                              () => const AppManagerScreen(
+                                selectIndex: 1,
+                              ),
+                            );
                           } else {
                             Get.back();
                           }
-                          // addressBloc.add(GetUserAddressEvent());
+                          if (userAddress != null) {
+                            for (var element in userAddress!) {
+                              if (element.id == state.id) {
+                                element.isSelected = false;
+                              }
+                            }
+                          }
                         }
 
                         if (state is GetUserAddressSuccessState) {
                           userAddress = state.userAddress;
                         }
+
+                        if (state is SetAddressPrimaryLoadingState) {
+                          if (userAddress != null) {
+                            for (var element in userAddress!) {
+                              if (element.id == state.id) {
+                                element.isSelected = true;
+                              }
+                            }
+                          }
+                        }
+                        if (state is SetAddressPrimaryErrorState) {
+                          if (userAddress != null) {
+                            for (var element in userAddress!) {
+                              if (element.id == state.id) {
+                                element.isSelected = false;
+                              }
+                            }
+                          }
+                        }
                       },
                     ),
                   ),
 
-                  ///
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     Radio(
-                  //       activeColor: AppColors.primaryBlueColor,
-                  //       value: state.userAddress[index].id,
-                  //       groupValue: selectedAddress,
-                  //       onChanged: (value) {
-                  //         selectedAddress = value;
-                  //
-                  //         addressBloc.add(SetPrimaryAddressEvent(
-                  //             addressId: value));
-                  //
-                  //         // setState(() {});
-                  //       },
-                  //     ),
-                  //     SizedBox(
-                  //       width: 17.w,
-                  //     ),
-                  //     Expanded(
-                  //       child: Text(
-                  //         '${state.userAddress[index].streetName} ',
-                  //         style: const TextStyle(
-                  //           fontSize: 16,
-                  //           fontWeight: FontWeight.w400,
-                  //         ),
-                  //         maxLines: 1,
-                  //         overflow: TextOverflow.ellipsis,
-                  //       ),
-                  //     ),
-                  //     Text(
-                  //       (state.userAddress[index].isPrimary ??
-                  //           false)
-                  //           ? '(default)'
-                  //           : '',
-                  //       style: const TextStyle(
-                  //         fontSize: 16,
-                  //         fontWeight: FontWeight.w400,
-                  //       ),
-                  //       maxLines: 1,
-                  //       overflow: TextOverflow.ellipsis,
-                  //     ),
-                  //   ],
-                  // ),
-
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
 
                   GestureDetector(
                     onTap: () async {
@@ -746,8 +731,6 @@ class _GetUserAddressState extends State<GetUserAddress>
                         lat: selectedLatLng?.latitude.toString(),
                         lng: selectedLatLng?.longitude.toString(),
                       );
-
-                      String userID = PreferenceUtils.getString(prefUserData);
 
                       Map<String, dynamic> addressData = {
                         'latitude': selectedLatLng?.latitude,
@@ -762,40 +745,12 @@ class _GetUserAddressState extends State<GetUserAddress>
                         'isPrimary': true,
                       };
 
-                      // if (argumentsValue['string'] == 'isFromRegister') {
                       Get.to(
                         () => AddressConfirmation(
                           locationData: addressData,
                           arguments: argumentsValue,
                         ),
                       );
-                      // } else if (argumentsValue['string'] ==
-                      //     'isFromCheckout') {
-                      //   Navigator.pushReplacement(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //         builder: (context) => AddressConfirmation(
-                      //           locationData: addressData,
-                      //           arguments: argumentsValue,
-                      //         ),
-                      //       ));
-                      // } else {
-                      //   bloc.add(
-                      //     SaveClickEvent(
-                      //       latitude: selectedLatLng!.latitude,
-                      //       longitude: selectedLatLng!.longitude,
-                      //       streetNum: streetNum,
-                      //       streetName: streetName,
-                      //       city: city,
-                      //       state: state.toString(),
-                      //       country: country,
-                      //       addressType: ofcHomeValue.toLowerCase(),
-                      //       zipcode: zipcode,
-                      //       isPrimary: false,
-                      //       userId: userID,
-                      //     ),
-                      //   );
-                      // }
                     },
                     child: Container(
                       height: 48.h,
