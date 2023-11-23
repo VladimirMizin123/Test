@@ -32,6 +32,8 @@ import '../../models/fetch_meal_plan_model.dart';
 import '../../models/get_dashboard_model.dart';
 import '../../models/water_log_details_model.dart';
 import '../../widget/app_center_loader.dart';
+import '../grocery/screen/grocery_item_details.dart';
+import '../meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 
 class JournalScreen extends StatefulWidget {
   const JournalScreen({super.key});
@@ -1461,6 +1463,12 @@ class _JournalScreenState extends State<JournalScreen> {
         commonBorderView(
           child: InkWell(
             onTap: () {
+              Get.toNamed('/MealDetailsScreen',
+                  arguments: MealPlanArguments(
+                      mealData: MealData(
+                          recipe: Recipe(
+                    id: dataList![0].recipe!.id,
+                  ))));
               //Get.toNamed("/ForthJournalBGView");
             },
             child: commonJournalFoodData(
@@ -1523,6 +1531,13 @@ class _JournalScreenState extends State<JournalScreen> {
           (index) => commonBorderView(
             child: InkWell(
               onTap: () {
+                Get.toNamed(
+                  '/GroceryItemDetails',
+                  arguments: GroceryItemDetailsArguments(
+                    productName: customDataList[index].name ?? '',
+                    isFromJournalScreen: true,
+                  ),
+                );
                 // Get.toNamed("/ForthJournalBGView");
               },
               child: commonJournalFoodData(

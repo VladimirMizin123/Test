@@ -192,25 +192,33 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   isButtonEnable = false;
                                 } else if (weightController.text.isEmpty) {
                                   isButtonEnable = false;
-                                } else if (calController.text.isEmpty ||
+                                } else if (calController.text
+                                        .isEmpty /*||
                                     (double.parse(calController.text) >
                                         double.parse(PreferenceUtils.getString(
-                                            totalCalorie)))) {
+                                            totalCalorie)))*/
+                                    ) {
                                   isButtonEnable = false;
-                                } else if (fatController.text.isEmpty ||
+                                } else if (fatController.text
+                                        .isEmpty /*||
                                     (double.parse(fatController.text) >
                                         double.parse(PreferenceUtils.getString(
-                                            totalFat)))) {
+                                            totalFat)))*/
+                                    ) {
                                   isButtonEnable = false;
-                                } else if (carbsController.text.isEmpty ||
+                                } else if (carbsController.text
+                                        .isEmpty /*||
                                     (double.parse(carbsController.text) >
                                         double.parse(PreferenceUtils.getString(
-                                            totalCarbs)))) {
+                                            totalCarbs)))*/
+                                    ) {
                                   isButtonEnable = false;
-                                } else if (proteinController.text.isEmpty ||
+                                } else if (proteinController.text
+                                        .isEmpty /*||
                                     (double.parse(proteinController.text) >
                                         double.parse(PreferenceUtils.getString(
-                                            totalProtein)))) {
+                                            totalProtein)))*/
+                                    ) {
                                   isButtonEnable = false;
                                 } else {
                                   isButtonEnable = true;
@@ -268,30 +276,37 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                         } else if (weightController
                                             .text.isEmpty) {
                                           isButtonEnable = false;
-                                        } else if (calController.text.isEmpty ||
+                                        } else if (calController.text
+                                                .isEmpty /*||
                                             (double.parse(calController.text) >
                                                 double.parse(
                                                     PreferenceUtils.getString(
-                                                        totalCalorie)))) {
+                                                        totalCalorie)))*/
+                                            ) {
                                           isButtonEnable = false;
-                                        } else if (fatController.text.isEmpty ||
+                                        } else if (fatController.text
+                                                .isEmpty /*||
                                             (double.parse(fatController.text) >
                                                 double.parse(
                                                     PreferenceUtils.getString(
-                                                        totalFat)))) {
+                                                        totalFat)))*/
+                                            ) {
                                           isButtonEnable = false;
-                                        } else if (carbsController.text.isEmpty ||
+                                        } else if (carbsController.text
+                                                .isEmpty /*||
                                             (double.parse(carbsController.text) >
                                                 double.parse(
                                                     PreferenceUtils.getString(
-                                                        totalCarbs)))) {
+                                                        totalCarbs)))*/
+                                            ) {
                                           isButtonEnable = false;
-                                        } else if (proteinController
-                                                .text.isEmpty ||
+                                        } else if (proteinController.text
+                                                .isEmpty /*||
                                             (double.parse(proteinController.text) >
                                                 double.parse(
                                                     PreferenceUtils.getString(
-                                                        totalProtein)))) {
+                                                        totalProtein)))*/
+                                            ) {
                                           isButtonEnable = false;
                                         } else {
                                           isButtonEnable = true;
@@ -618,38 +633,38 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             onChanged: (String? value) {
               if (value != null && value != '') {
                 setState(() {
-                  List<String> myData = totalGram!.split(' ');
-
-                  if (double.parse(value) > double.parse(myData[0])) {
-                    showToast(
-                        message: 'Value Can\'t be more than ${myData[0]}',
-                        isSuccess: false);
-                  }
-
                   if (pickedImageFilePath.isEmpty) {
                     isButtonEnable = false;
                   } else if (nameController.text.isEmpty) {
                     isButtonEnable = false;
                   } else if (weightController.text.isEmpty) {
                     isButtonEnable = false;
-                  } else if (calController.text.isEmpty ||
+                  } else if (calController.text
+                          .isEmpty /*||
                       (double.parse(calController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalCalorie)))) {
+                              PreferenceUtils.getString(totalCalorie)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (fatController.text.isEmpty ||
+                  } else if (fatController.text
+                          .isEmpty /*||
                       (double.parse(fatController.text) >
-                          double.parse(PreferenceUtils.getString(totalFat)))) {
+                          double.parse(PreferenceUtils.getString(totalFat)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (carbsController.text.isEmpty ||
+                  } else if (carbsController.text
+                          .isEmpty /*||
                       (double.parse(carbsController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalCarbs)))) {
+                              PreferenceUtils.getString(totalCarbs)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (proteinController.text.isEmpty ||
+                  } else if (proteinController.text
+                          .isEmpty /*||
                       (double.parse(proteinController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalProtein)))) {
+                              PreferenceUtils.getString(totalProtein)))*/
+                      ) {
                     isButtonEnable = false;
                   } else {
                     isButtonEnable = true;
@@ -663,24 +678,32 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                     isButtonEnable = false;
                   } else if (weightController.text.isEmpty) {
                     isButtonEnable = false;
-                  } else if (calController.text.isEmpty ||
+                  } else if (calController.text
+                          .isEmpty /*||
                       (double.parse(calController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalCalorie)))) {
+                              PreferenceUtils.getString(totalCalorie)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (fatController.text.isEmpty ||
+                  } else if (fatController.text
+                          .isEmpty /*||
                       (double.parse(fatController.text) >
-                          double.parse(PreferenceUtils.getString(totalFat)))) {
+                          double.parse(PreferenceUtils.getString(totalFat)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (carbsController.text.isEmpty ||
-                      (double.parse(carbsController.text) >
+                  } else if (carbsController.text
+                          .isEmpty /*||
+                     (double.parse(carbsController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalCarbs)))) {
+                              PreferenceUtils.getString(totalCarbs)))*/
+                      ) {
                     isButtonEnable = false;
-                  } else if (proteinController.text.isEmpty ||
+                  } else if (proteinController.text
+                          .isEmpty /*||
                       (double.parse(proteinController.text) >
                           double.parse(
-                              PreferenceUtils.getString(totalProtein)))) {
+                              PreferenceUtils.getString(totalProtein)))*/
+                      ) {
                     isButtonEnable = false;
                   } else {
                     isButtonEnable = true;
