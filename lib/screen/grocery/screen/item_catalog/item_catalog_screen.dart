@@ -24,12 +24,14 @@ class ItemCatalogScreen extends StatefulWidget {
   final GroceryBloc groceryBloc;
   final String? productId;
   final String? typeOfProduct;
+  final String? storeName;
   const ItemCatalogScreen({
     super.key,
     this.selectedStoreProductList = const [],
     required this.groceryBloc,
     required this.productId,
     required this.typeOfProduct,
+    required this.storeName,
   });
 
   @override
@@ -274,7 +276,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                                 fontWeight: FWT.semiBold),
                                           ),
                                           Text(
-                                            'Wallmart',
+                                            widget.storeName ?? '',
                                             style: FontUtils.h12(
                                                 fontColor: AppColors.black,
                                                 fontWeight: FWT.semiBold),
@@ -544,7 +546,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                                 fontWeight: FWT.semiBold),
                                           ),
                                           Text(
-                                            'Wallmart',
+                                            widget.storeName ?? '',
                                             style: FontUtils.h12(
                                                 fontColor: AppColors.black,
                                                 fontWeight: FWT.semiBold),

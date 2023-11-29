@@ -118,6 +118,11 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
               isReadyToShowWidget = false;
             });
           }
+          if (state is OnGetMealLogByDateErrorState) {
+            setState(() {
+              isReadyToShowWidget = true;
+            });
+          }
 
           if (state is JournalSwapMealDetailsState) {
             Get.back();

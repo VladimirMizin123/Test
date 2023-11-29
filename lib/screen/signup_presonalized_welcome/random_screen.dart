@@ -13,7 +13,11 @@ class RandomLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? gender = Get.arguments;
+    String? gender = 'Male';
+    if (Get.arguments.runtimeType == String) {
+      gender = Get.arguments;
+    }
+
     return randomNumber == 0
         ? FirstPersonalizedWelcomeScreen(
             gender: gender.toString().capitalizeFirst ?? 'Male',

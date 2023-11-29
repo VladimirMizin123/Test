@@ -1077,9 +1077,13 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   screenSize, displayData[index].itemName ?? '', () {
                   // Get.toNamed('/ItemCatalogScreen');
                   if (selectedStoreProductList.isNotEmpty) {
+                    print(
+                        "StoreName:- ${selectedStoreProductList[0].store!.name ?? ''}");
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return ItemCatalogScreen(
+                        storeName:
+                            selectedStoreProductList[0].store!.name ?? '',
                         selectedStoreProductList: selectedStoreProductList,
                         groceryBloc: groceryBloc,
                         productId: displayData[index].id,
