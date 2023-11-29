@@ -222,9 +222,15 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  nutritionixGetNxMealInfoByNameModelData!
-                                                          .foodName ??
-                                                      '',
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? widget.arguments
+                                                              ?.productName ??
+                                                          ''
+                                                      : nutritionixGetNxMealInfoByNameModelData!
+                                                              .foodName ??
+                                                          '',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.black,
@@ -243,75 +249,80 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                               //             .quantity! >
                                               //         1
                                               //     ?
-                                              GestureDetector(
-                                                onTap: () {
-                                                  if (productCount != 1) {
-                                                    setState(
-                                                      () {
-                                                        if (remove == false) {
-                                                          if (widget.arguments!
-                                                                  .isFromGroceryScreen ==
-                                                              true) {
-                                                          } else {
-                                                            addNewGroceryItemBloc
-                                                                .add(
-                                                              UpdateRemoveNewGroceryItem(
-                                                                userId: userId,
-                                                                id: widget
+                                              if (widget
+                                                      .arguments?.isShowData !=
+                                                  true)
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    if (productCount != 1) {
+                                                      setState(
+                                                        () {
+                                                          if (remove == false) {
+                                                            if (widget
                                                                     .arguments!
-                                                                    .groceryShoppingData!
-                                                                    .id!,
-                                                                itemName: widget
-                                                                    .arguments!
-                                                                    .groceryShoppingData!
-                                                                    .itemName!
-                                                                    .toString(),
-                                                                quantity: widget
-                                                                        .arguments!
-                                                                        .groceryShoppingData!
-                                                                        .quantity -
-                                                                    1,
-                                                                measurementType: widget
-                                                                    .arguments!
-                                                                    .groceryShoppingData!
-                                                                    .measurementType!
-                                                                    .toString(),
-                                                                measurementValue: widget
-                                                                    .arguments!
-                                                                    .groceryShoppingData!
-                                                                    .measurementValue!
-                                                                    .toString(),
-                                                              ),
-                                                            );
+                                                                    .isFromGroceryScreen ==
+                                                                true) {
+                                                            } else {
+                                                              addNewGroceryItemBloc
+                                                                  .add(
+                                                                UpdateRemoveNewGroceryItem(
+                                                                  userId:
+                                                                      userId,
+                                                                  id: widget
+                                                                      .arguments!
+                                                                      .groceryShoppingData!
+                                                                      .id!,
+                                                                  itemName: widget
+                                                                      .arguments!
+                                                                      .groceryShoppingData!
+                                                                      .itemName!
+                                                                      .toString(),
+                                                                  quantity: widget
+                                                                          .arguments!
+                                                                          .groceryShoppingData!
+                                                                          .quantity -
+                                                                      1,
+                                                                  measurementType: widget
+                                                                      .arguments!
+                                                                      .groceryShoppingData!
+                                                                      .measurementType!
+                                                                      .toString(),
+                                                                  measurementValue: widget
+                                                                      .arguments!
+                                                                      .groceryShoppingData!
+                                                                      .measurementValue!
+                                                                      .toString(),
+                                                                ),
+                                                              );
+                                                            }
                                                           }
-                                                        }
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                                child: Container(
-                                                  height: size.height * 0.070,
-                                                  width: size.height * 0.070,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                    color: AppColors.skyBlue,
+                                                        },
+                                                      );
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.070,
+                                                    width: size.height * 0.070,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
+                                                      color: AppColors.skyBlue,
+                                                    ),
+                                                    child: Center(
+                                                      child: remove == true
+                                                          ? Transform.scale(
+                                                              scale: 0.5,
+                                                              child:
+                                                                  const CircularProgressIndicator())
+                                                          : const Icon(
+                                                              Icons.remove,
+                                                              size: 27,
+                                                            ),
+                                                    ),
+                                                    // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                   ),
-                                                  child: Center(
-                                                    child: remove == true
-                                                        ? Transform.scale(
-                                                            scale: 0.5,
-                                                            child:
-                                                                const CircularProgressIndicator())
-                                                        : const Icon(
-                                                            Icons.remove,
-                                                            size: 27,
-                                                          ),
-                                                  ),
-                                                  // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                 ),
-                                              ),
                                               // : GestureDetector(
                                               //     onTap: () {
                                               //       // groceryBloc.add(
@@ -384,97 +395,112 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                               ),
 
                                               SizedBox(width: 8.w),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      if (add == false) {
-                                                        if (widget.arguments!
-                                                                .isFromGroceryScreen ==
-                                                            true) {
-                                                        } else {
-                                                          addNewGroceryItemBloc
-                                                              .add(
-                                                            UpdateAddNewGroceryItem(
-                                                              userId: userId,
-                                                              id: widget
-                                                                  .arguments!
-                                                                  .groceryShoppingData!
-                                                                  .id!,
-                                                              itemName: widget
-                                                                  .arguments!
-                                                                  .groceryShoppingData!
-                                                                  .itemName!
-                                                                  .toString(),
-                                                              quantity: widget
-                                                                      .arguments!
-                                                                      .groceryShoppingData!
-                                                                      .quantity +
-                                                                  1,
-                                                              measurementType: widget
-                                                                  .arguments!
-                                                                  .groceryShoppingData!
-                                                                  .measurementType!
-                                                                  .toString(),
-                                                              measurementValue: widget
-                                                                  .arguments!
-                                                                  .groceryShoppingData!
-                                                                  .measurementValue!
-                                                                  .toString(),
-                                                            ),
-                                                          );
+                                              if (widget
+                                                      .arguments?.isShowData !=
+                                                  true)
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                        if (add == false) {
+                                                          if (widget.arguments!
+                                                                  .isFromGroceryScreen ==
+                                                              true) {
+                                                          } else {
+                                                            addNewGroceryItemBloc
+                                                                .add(
+                                                              UpdateAddNewGroceryItem(
+                                                                userId: userId,
+                                                                id: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .id!,
+                                                                itemName: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .itemName!
+                                                                    .toString(),
+                                                                quantity: widget
+                                                                        .arguments!
+                                                                        .groceryShoppingData!
+                                                                        .quantity +
+                                                                    1,
+                                                                measurementType: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .measurementType!
+                                                                    .toString(),
+                                                                measurementValue: widget
+                                                                    .arguments!
+                                                                    .groceryShoppingData!
+                                                                    .measurementValue!
+                                                                    .toString(),
+                                                              ),
+                                                            );
+                                                          }
                                                         }
-                                                      }
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  height: size.height * 0.070,
-                                                  width: size.height * 0.070,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                    color: AppColors.skyBlue,
-                                                  ),
-                                                  child: Center(
-                                                    child: add == true
-                                                        ? Transform.scale(
-                                                            scale: 0.5,
-                                                            child:
-                                                                const CircularProgressIndicator())
-                                                        : const Icon(Icons.add,
-                                                            size: 27),
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.070,
+                                                    width: size.height * 0.070,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
+                                                      color: AppColors.skyBlue,
+                                                    ),
+                                                    child: Center(
+                                                      child: add == true
+                                                          ? Transform.scale(
+                                                              scale: 0.5,
+                                                              child:
+                                                                  const CircularProgressIndicator())
+                                                          : const Icon(
+                                                              Icons.add,
+                                                              size: 27),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
                                               SizedBox(width: 8.w),
-                                              Expanded(
-                                                flex: 2,
-                                                child: DropdownButtonFormField(
-                                                    decoration: const InputDecoration(
-                                                        border: OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: Colors
-                                                                    .black))),
-                                                    padding: EdgeInsets.zero,
-                                                    value: _selectProduct,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    items: productList
-                                                        .map((e) =>
-                                                            DropdownMenuItem(
-                                                              value: e,
-                                                              child: Text(e),
-                                                            ))
-                                                        .toList(),
-                                                    onChanged: (val) {
-                                                      setState(() {
-                                                        _selectProduct = val!;
-                                                      });
-                                                    }),
-                                              ),
+                                              widget.arguments?.isShowData ==
+                                                      true
+                                                  ? SizedBox()
+                                                  : Expanded(
+                                                      flex: 2,
+                                                      child:
+                                                          DropdownButtonFormField(
+                                                              decoration: const InputDecoration(
+                                                                  border: OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: Colors
+                                                                              .black))),
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .zero,
+                                                              value:
+                                                                  _selectProduct,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12),
+                                                              items: productList
+                                                                  .map((e) =>
+                                                                      DropdownMenuItem(
+                                                                        value:
+                                                                            e,
+                                                                        child:
+                                                                            Text(e),
+                                                                      ))
+                                                                  .toList(),
+                                                              onChanged: (val) {
+                                                                setState(() {
+                                                                  _selectProduct =
+                                                                      val!;
+                                                                });
+                                                              }),
+                                                    ),
                                             ],
                                           ),
 
@@ -492,14 +518,19 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                             children: [
                                               myProgressBarCardView(
                                                   'Cal',
-                                                  nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfCalories ==
-                                                          null
-                                                      ? 0
-                                                      : double.parse(
-                                                          nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfCalories
-                                                              .toString()),
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? widget.arguments?.cal ??
+                                                          0.0
+                                                      : nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfCalories ==
+                                                              null
+                                                          ? 0
+                                                          : double.parse(
+                                                              nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfCalories
+                                                                  .toString()),
                                                   double.parse(double.parse(
                                                           PreferenceUtils
                                                               .getString(
@@ -508,14 +539,19 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                   AppColors.primaryBlue),
                                               myProgressBarCardView(
                                                   'Fat',
-                                                  nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalFat ==
-                                                          null
-                                                      ? 0
-                                                      : double.parse(
-                                                          nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalFat
-                                                              .toString()),
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? widget.arguments?.fat ??
+                                                          0.0
+                                                      : nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalFat ==
+                                                              null
+                                                          ? 0
+                                                          : double.parse(
+                                                              nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalFat
+                                                                  .toString()),
                                                   double.parse(double.parse(
                                                           PreferenceUtils
                                                               .getString(
@@ -524,14 +560,20 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                   AppColors.coral),
                                               myProgressBarCardView(
                                                   'Carbs',
-                                                  nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalCarbohydrate ==
-                                                          null
-                                                      ? 0
-                                                      : double.parse(
-                                                          nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalCarbohydrate
-                                                              .toString()),
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? widget.arguments
+                                                              ?.carbs ??
+                                                          0.0
+                                                      : nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalCarbohydrate ==
+                                                              null
+                                                          ? 0
+                                                          : double.parse(
+                                                              nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalCarbohydrate
+                                                                  .toString()),
                                                   double.parse(double.parse(
                                                           PreferenceUtils
                                                               .getString(
@@ -540,14 +582,20 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                   AppColors.mint),
                                               myProgressBarCardView(
                                                   'Protein',
-                                                  nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalFat ==
-                                                          null
-                                                      ? 0
-                                                      : double.parse(
-                                                          nutritionixGetNxMealInfoByNameModelData!
-                                                              .nfTotalFat
-                                                              .toString()),
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? widget.arguments
+                                                              ?.protein ??
+                                                          0.0
+                                                      : nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalFat ==
+                                                              null
+                                                          ? 0
+                                                          : double.parse(
+                                                              nutritionixGetNxMealInfoByNameModelData!
+                                                                  .nfTotalFat
+                                                                  .toString()),
                                                   double.parse(double.parse(
                                                           PreferenceUtils
                                                               .getString(
@@ -577,7 +625,11 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
                                               Text(
-                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfCalories.toStringAsFixed(2)} cal',
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? '${widget.arguments?.cal ?? 0} cal'
+                                                      : '${(nutritionixGetNxMealInfoByNameModelData?.nfCalories ?? 0.00).toStringAsFixed(2)} cal',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -599,7 +651,11 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
                                               Text(
-                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfProtein?.toStringAsFixed(2)} g',
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? '${widget.arguments?.protein ?? 0} g'
+                                                      : '${(nutritionixGetNxMealInfoByNameModelData?.nfProtein ?? 0).toStringAsFixed(2)} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -621,7 +677,11 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
                                               Text(
-                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate?.toStringAsFixed(2)} g',
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? '${widget.arguments?.carbs ?? 0} g'
+                                                      : '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate ?? 0)?.toStringAsFixed(2)} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -643,7 +703,11 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           AppColors.darkGray,
                                                       fontWeight: FWT.medium)),
                                               Text(
-                                                  '${nutritionixGetNxMealInfoByNameModelData?.nfTotalFat?.toStringAsFixed(2) ?? 0} g',
+                                                  widget.arguments
+                                                              ?.isShowData ==
+                                                          true
+                                                      ? '${widget.arguments?.fat ?? 0} g'
+                                                      : '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalFat ?? 0)?.toStringAsFixed(2) ?? 0} g',
                                                   style: FontUtils.h16(
                                                       fontColor:
                                                           AppColors.darkGray,
@@ -895,15 +959,26 @@ class GroceryItemDetailsArguments {
   final String? productID;
   final String? type;
   final Map<String, dynamic>? groceryDetails;
+  final bool isShowData;
+  final double? cal;
+  final double? fat;
+  final double? carbs;
+  final double? protein;
+  final int? quantity;
 
-  GroceryItemDetailsArguments({
-    this.groceryShoppingData,
-    this.isFromGroceryScreen = false,
-    this.isFromCustomMealScreen = false,
-    this.isFromJournalScreen = false,
-    this.productName,
-    this.productID,
-    this.type,
-    this.groceryDetails,
-  });
+  GroceryItemDetailsArguments(
+      {this.groceryShoppingData,
+      this.isFromGroceryScreen = false,
+      this.isFromCustomMealScreen = false,
+      this.isFromJournalScreen = false,
+      this.productName,
+      this.productID,
+      this.type,
+      this.groceryDetails,
+      this.isShowData = false,
+      this.cal,
+      this.fat,
+      this.carbs,
+      this.protein,
+      this.quantity});
 }

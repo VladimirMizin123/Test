@@ -1535,7 +1535,14 @@ class _JournalScreenState extends State<JournalScreen> {
                   '/GroceryItemDetails',
                   arguments: GroceryItemDetailsArguments(
                     productName: customDataList[index].name ?? '',
-                    isFromJournalScreen: true,
+                    //isFromJournalScreen: true,
+                    isFromCustomMealScreen: true,
+                    isShowData: true,
+                    protein: customDataList[index].protein ?? 0.0,
+                    fat: customDataList[index].fat ?? 0.0,
+                    carbs: customDataList[index].carbs ?? 0.0,
+                    cal: customDataList[index].calorie ?? 0.0,
+                    quantity: customDataList[index].quantity ?? 0,
                   ),
                 );
                 // Get.toNamed("/ForthJournalBGView");

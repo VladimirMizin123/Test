@@ -613,6 +613,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                     child: Transform.scale(
                                                       scale: 1.2,
                                                       child: Checkbox(
+                                                        checkColor:
+                                                            Colors.white,
                                                         activeColor:
                                                             AppColors.appColor,
                                                         materialTapTargetSize:
@@ -695,8 +697,11 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                               .map((e) =>
                                                                   DropdownMenuItem(
                                                                     value: e,
-                                                                    child:
-                                                                        Text(e),
+                                                                    child: Text(
+                                                                        e,
+                                                                        style: FontUtils.h16(
+                                                                            fontColor:
+                                                                                AppColors.black)),
                                                                   ))
                                                               .toList(),
                                                           onChanged: (val) {

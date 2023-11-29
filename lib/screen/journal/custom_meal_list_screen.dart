@@ -154,6 +154,9 @@ class _CustomMealListState extends State<CustomMealList> {
                             });
                           }
                         },
+                        style: FontUtils.h16(
+                            fontColor: AppColors.black,
+                            fontWeight: FWT.regular),
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                           prefixIcon: const Icon(Icons.search),
@@ -269,6 +272,19 @@ class _CustomMealListState extends State<CustomMealList> {
                                                 '/GroceryItemDetails',
                                                 arguments:
                                                     GroceryItemDetailsArguments(
+                                                  isShowData: true,
+                                                  fat: searchCustomMealList[
+                                                          index]
+                                                      .fat,
+                                                  carbs: searchCustomMealList[
+                                                          index]
+                                                      .carbs,
+                                                  cal: searchCustomMealList[
+                                                          index]
+                                                      .calorie,
+                                                  protein: searchCustomMealList[
+                                                          index]
+                                                      .protein,
                                                   productName:
                                                       customMealList[index]
                                                           .name,
@@ -331,7 +347,11 @@ class _CustomMealListState extends State<CustomMealList> {
                                       },
                                     ),
                                   )
-                                : const Text('No Search Found!')
+                                : Center(
+                                    child: const Text('No Search Found!',
+                                        style: TextStyle(
+                                            color: AppColors.middleGray)),
+                                  )
 
                             ///Regular Data Display ===================================================
                             : SingleChildScrollView(
@@ -350,6 +370,14 @@ class _CustomMealListState extends State<CustomMealList> {
                                             '/GroceryItemDetails',
                                             arguments:
                                                 GroceryItemDetailsArguments(
+                                              isShowData: true,
+                                              fat: customMealList[index].fat,
+                                              carbs:
+                                                  customMealList[index].carbs,
+                                              cal:
+                                                  customMealList[index].calorie,
+                                              protein:
+                                                  customMealList[index].protein,
                                               productName:
                                                   customMealList[index].name,
                                               isFromCustomMealScreen: true,

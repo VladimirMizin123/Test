@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
-
 import 'package:gymeats_mobile/repository/get_new_meal_details.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -39,7 +39,7 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
           showToast(isSuccess: true, message: right.message!);
           emit(AddNewMealSuccessfulState(productId: event.id));
 
-          // Get.offAllNamed('/JournalScreen');
+          Get.offAllNamed('/JournalScreen');
         },
       );
     } catch (e) {

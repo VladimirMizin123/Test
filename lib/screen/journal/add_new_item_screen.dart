@@ -375,7 +375,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                                 double.parse(
                                                     PreferenceUtils.getString(
                                                         totalCalorie)))
-                                            ? 0
+                                            ? 1
                                             : (double.parse(
                                                     calController.text) /
                                                 double.parse(
@@ -405,7 +405,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                                 double.parse(
                                                     PreferenceUtils.getString(
                                                         totalFat)))
-                                            ? 0
+                                            ? 1
                                             : (double.parse(
                                                     fatController.text) /
                                                 double.parse(
@@ -446,7 +446,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                                 double.parse(
                                                     PreferenceUtils.getString(
                                                         totalCarbs)))
-                                            ? 0
+                                            ? 1
                                             : (double.parse(
                                                     carbsController.text) /
                                                 double.parse(
@@ -484,7 +484,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                                 double.parse(
                                                     PreferenceUtils.getString(
                                                         totalProtein)))
-                                            ? 0
+                                            ? 1
                                             : (double.parse(
                                                     proteinController.text) /
                                                 double.parse(
@@ -536,28 +536,36 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           } else if (weightController.text.isEmpty) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Weight value');
-                          } else if (calController.text.isEmpty ||
+                          } else if (calController.text
+                                  .isEmpty /*||
                               (double.parse(calController.text) >
                                   double.parse(PreferenceUtils.getString(
-                                      totalCalorie)))) {
+                                      totalCalorie)))*/
+                              ) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Cal value');
-                          } else if (fatController.text.isEmpty ||
+                          } else if (fatController.text
+                                  .isEmpty /*||
                               (double.parse(fatController.text) >
                                   double.parse(
-                                      PreferenceUtils.getString(totalFat)))) {
+                                      PreferenceUtils.getString(totalFat)))*/
+                              ) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Fat value');
-                          } else if (carbsController.text.isEmpty ||
+                          } else if (carbsController.text
+                                  .isEmpty /*||
                               (double.parse(carbsController.text) >
                                   double.parse(
-                                      PreferenceUtils.getString(totalCarbs)))) {
+                                      PreferenceUtils.getString(totalCarbs)))*/
+                              ) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Carbs value');
-                          } else if (proteinController.text.isEmpty ||
+                          } else if (proteinController.text
+                                  .isEmpty /*||
                               (double.parse(proteinController.text) >
                                   double.parse(PreferenceUtils.getString(
-                                      totalProtein)))) {
+                                      totalProtein)))*/
+                              ) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Protein value');
                           } else {

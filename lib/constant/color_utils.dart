@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppColors {
   static const letsEatButton = Color(0xFFCE6B53);
   static const letsEat = Color(0xFFF9D5C5);
-  static const appColor = Color(0xFF336633);
+  static const appColor = Color(0xFF004C63);
   static const disabledColor = Color(0xFFC7C8CA);
   static const grayColor = Color(0xFFA2A4A7);
   static const switchColor = Color(0xFF34C759);
@@ -32,6 +32,27 @@ class AppColors {
         surface: Color(0xFFFFFFFF),
         onSurface: Color(0xFFFFFFFF),
       ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.all(const Color(0xFF004C63)),
+        checkColor: MaterialStateProperty.all(Colors.white),
+      ),
+      dropdownMenuTheme: const DropdownMenuThemeData(
+          textStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            height: 1.5,
+            color: Color(0xFF373737), //#
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            fillColor: Color(0xFFFFFFFF),
+            filled: true,
+            labelStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+              height: 1.5,
+              color: Color(0xFF5F5F5F),
+            ),
+          )),
       buttonTheme: const ButtonThemeData(
         buttonColor: Color(0xFF004C63),
         textTheme: ButtonTextTheme.primary,
