@@ -49,7 +49,7 @@ class NutritionixGetNxMealInfoByNameModelData {
   final String? brandName;
   final num? servingQty;
   final String? servingUnit;
-  final num? servingWeightGrams;
+  final String? servingWeightGrams;
   final num? nfMetricQty;
   final String? nfMetricUom;
   final dynamic nfCalories;
@@ -126,50 +126,50 @@ class NutritionixGetNxMealInfoByNameModelData {
   factory NutritionixGetNxMealInfoByNameModelData.fromJson(
           Map<String, dynamic> json) =>
       NutritionixGetNxMealInfoByNameModelData(
-        foodName: json["food_name"],
-        brandName: json["brand_name"],
-        servingQty: json["serving_qty"],
-        servingUnit: json["serving_unit"],
-        servingWeightGrams: json["serving_weight_grams"],
-        nfMetricQty: json["nf_metric_qty"],
-        nfMetricUom: json["nf_metric_uom"],
-        nfCalories: json["nf_calories"],
-        nfTotalFat: json["nf_total_fat"],
-        nfSaturatedFat: json["nf_saturated_fat"],
-        nfCholesterol: json["nf_cholesterol"],
-        nfSodium: json["nf_sodium"],
-        nfTotalCarbohydrate: json["nf_total_carbohydrate"],
-        nfDietaryFiber: json["nf_dietary_fiber"],
-        nfSugars: json["nf_sugars"],
-        nfProtein: json["nf_protein"],
-        nfPotassium: json["nf_potassium"],
-        nfP: json["nf_p"],
-        fullNutrients: json["full_nutrients"] == null
+        foodName: json["foodName"],
+        brandName: json["brandName"],
+        servingQty: json["servingQuantity"],
+        servingUnit: json["servingUnit"],
+        servingWeightGrams: json["servingWeightInGram"],
+        nfMetricQty: json["nfMetricQuantity"],
+        nfMetricUom: json["nfMetricUom"],
+        nfCalories: json["nfCalories"],
+        nfTotalFat: json["nfTotalFat"],
+        nfSaturatedFat: json["nfSaturatedFat"],
+        nfCholesterol: json["nfCholesterol"],
+        nfSodium: json["nfSodium"],
+        nfTotalCarbohydrate: json["nfTotalCabohydrate"],
+        nfDietaryFiber: json["nfDietaryFiber"],
+        nfSugars: json["nfSugar"],
+        nfProtein: json["nfProtein"],
+        nfPotassium: json["nfPotassium"],
+        nfP: json["nf_P"],
+        fullNutrients: json["nfFullNutrients"] == null
             ? []
             : List<FullNutrient>.from(
-                json["full_nutrients"]!.map((x) => FullNutrient.fromJson(x))),
-        nixBrandName: json["nix_brand_name"],
-        nixBrandId: json["nix_brand_id"],
-        nixItemName: json["nix_item_name"],
-        nixItemId: json["nix_item_id"],
+                json["nfFullNutrients"]!.map((x) => FullNutrient.fromJson(x))),
+        nixBrandName: json["nxBrandname"],
+        nixBrandId: json["nxBrandId"],
+        nixItemName: json["nxItemName"],
+        nixItemId: json["nxItemId"],
         metadata: json["metadata"] == null
             ? null
             : Metadata.fromJson(json["metadata"]),
         source: json["source"],
-        ndbNo: json["ndb_no"],
+        ndbNo: json["ndb_No"],
         tags: json["tags"],
-        altMeasures: json["alt_measures"],
+        altMeasures: json["alt_Measure"],
         lat: json["lat"],
         lng: json["lng"],
         photo: json["photo"] == null ? null : Photo.fromJson(json["photo"]),
         note: json["note"],
-        classCode: json["class_code"],
-        brickCode: json["brick_code"],
-        tagId: json["tag_id"],
-        updatedAt: json["updated_at"] == null
+        classCode: json["class_Code"],
+        brickCode: json["brick_Code"],
+        tagId: json["tag_Id"],
+        updatedAt: json["updated_At"] == null
             ? null
-            : DateTime.parse(json["updated_at"]),
-        nfIngredientStatement: json["nf_ingredient_statement"],
+            : DateTime.parse(json["updated_At"]),
+        nfIngredientStatement: json["nf_Ingredient_Statement"],
       );
 
   Map<String, dynamic> toJson() => {

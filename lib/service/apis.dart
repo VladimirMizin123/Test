@@ -260,4 +260,29 @@ class ApiServices {
             'Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
+
+  Future<dynamic> getNutritionix(String url) async {
+    token = PreferenceUtils.getString(prefToken);
+    try {
+      Map<String, String>? headers;
+      headers = {
+        'x-app-id': '10f24f16',
+        'x-app-key': 'f6b94efc0c0a331c85d37a78368dea7d',
+      };
+      log(url, name: 'GET API URL');
+      log(headers.toString(), name: 'GET API HEADER');
+      final response = await http.get(Uri.parse(url), headers: headers);
+      log(response.body, name: 'GET API RESPONSE');
+      return _returnResponse(response);
+    } on SocketException {
+      throw NoInternetException('No Internet connection');
+    } on HttpException {
+      throw FetchDataException('No Service found');
+    } on FormatException {
+      throw InvalidInputException('Bad response format');
+    } catch (e) {
+      throw FetchDataException(e.toString());
+    }
+  }
+
 }

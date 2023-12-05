@@ -546,9 +546,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           0.0
                                                       : nutritionixGetNxMealInfoByNameModelData!
                                                                   .nfTotalFat ==
-                                                              null
-                                                          ? 0
-                                                          : double.parse(
+                                                              null ? 0 : double.parse(
                                                               nutritionixGetNxMealInfoByNameModelData!
                                                                   .nfTotalFat
                                                                   .toString()),

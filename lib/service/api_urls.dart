@@ -1,5 +1,6 @@
 class ApiUrls {
   static const String baseUrl = 'https://gymeats.azurewebsites.net/';
+  static const String nutritionixBaseUrl = 'https://trackapi.nutritionix.com/v2/search/';
   static const String apiKey = 'peONDsofens8dfs6sfYi4RvtTwlEXpQBwo==';
   static const String login = '${baseUrl}api/Auth/login';
   static const String register = '${baseUrl}api/Auth/signup-form';
@@ -55,8 +56,13 @@ class ApiUrls {
       '${baseUrl}api/MealMe/product-groceryMultipleSearch';
 
   //Nutritionix
-  static const String getNxMealInfoByName =
-      '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
+  // static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
+
+  static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
+  static const String addNutritionDataToDb = '${baseUrl}api/Nutritionix/AddNutritionDataToDb';
+  static const String getNxSearchData = '${nutritionixBaseUrl}instant';
+  static const String getNxItemInfoData = '${nutritionixBaseUrl}item';
+
 
   //For dashboard use apis
   static const String getDashboardData =
