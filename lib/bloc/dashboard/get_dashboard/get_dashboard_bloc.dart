@@ -113,7 +113,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       await _dashboardRepository.getInvoiceOrderList().fold((left) {
         emit(GetOrderInvoiceErrorState());
       }, (right) {
-        emit(GetOrderInvoiceSuccessState(invoiceData: right.data ?? []));
+        emit(GetOrderInvoiceSuccessState(invoiceData: right.data?.orderedItems ?? []));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

@@ -79,10 +79,14 @@ class AccountRepository {
   /// Update Programs Info ====================================================================
 
   Future<Either<ErrorModel, UpdateDietProgramResponseModel>>
-      updateDietProgramInfo({String programId = ''}) async {
+      updateDietProgramInfo({String programId = "", String dietId = ""}) async {
+    String data = programId == "" ? "dietId=$dietId" : "programId=$programId";
+    print(
+        "URL:----------> ${ApiUrls.updateDietProgramByProgramId}$userID?$data");
     final response = await apiServices.put(
-        '${ApiUrls.updateDietProgramByProgramId}$userID?programId=$programId',
-        {});
+      '${ApiUrls.updateDietProgramByProgramId}$userID?$data',
+      {},
+    );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateDietProgramResponseModelFromJson(response.body));

@@ -92,6 +92,7 @@ Widget commonTextField({
   bool eyeShow = false,
   Function()? onTap,
   Widget? suffixIcon,
+  int? maxLength,
   TextEditingController? controller,
   required BuildContext context,
   TextInputType? textInputType,
@@ -112,7 +113,9 @@ Widget commonTextField({
           : false,
       keyboardType: textInputType,
       onChanged: onChanged,
+      maxLength: maxLength ?? 10000,
       decoration: InputDecoration(
+        counterText: '',
         hintText: hintText,
         isDense: true,
         hintStyle: TextStyle(

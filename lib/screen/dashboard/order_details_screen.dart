@@ -10,13 +10,15 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:livechatt/livechatt.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   const OrderDetailsScreen({super.key, required this.data});
-  final InvoiceList data;
+
+  final OrderedItem data;
 
   @override
   State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
@@ -27,6 +29,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   bool isTap = true;
   String fullName = '';
   AccountBloc accountBloc = AccountBloc();
+
   @override
   void initState() {
     super.initState();
@@ -115,9 +118,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   ?.copyWith(color: const Color(0xFF010101)),
                             ),
                             Text(
-                              widget.data.deliveryTimeMin.toString().isEmpty
-                                  ? ''
-                                  : '${widget.data.deliveryTimeMin}-${widget.data.deliveryTimeMax} min',
+                              getMaxValue(),
+                              // widget.data.deliveryTimeMin.toString().isEmpty
+                              //     ? ''
+                              //     : '${widget.data.deliveryTimeMin}-${widget.data.deliveryTimeMax} min',
                               style: textTheme.displayLarge?.copyWith(
                                   color: AppColors.darkGray,
                                   fontWeight: FontWeight.w900,
@@ -140,7 +144,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 width: double.infinity.w,
                 height: 48.h,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    launchUrlForTracking(0);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isTap ? AppColors.coral : AppColors.mint,
                     shape: RoundedRectangleBorder(
@@ -174,131 +180,164 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ),
                 ),
               ).paddingSymmetric(horizontal: 20.w, vertical: 20.h),
-              dashBoardCardView(
-                child: isTap
-                    ? Column(
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                AssetsUtils.defaultLogo,
-                                height: 37.h,
-                                width: 37.w,
-                              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: dashBoardCardView(
+                          child: /*isTap ? */
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.65,
-                                    child: Text(
-                                      '${widget.data.storeName}',
-                                      style: textTheme.headlineSmall?.copyWith(
-                                          color: const Color(0xFF010101)),
+                    children: [
+                      ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.data.items?.length ?? 0,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              launchUrlForTracking(index);
+                            },
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      AssetsUtils.defaultLogo,
+                                      height: 37.h,
+                                      width: 37.w,
                                     ),
-                                  ),
-                                  Text(
-                                    'Order #${widget.data.orderId}',
-                                    style: textTheme.bodySmall?.copyWith(
-                                        color: AppColors.middleGray,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.2),
-                                  ),
-                                ],
-                              ).paddingOnly(left: 10.w)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.65,
+                                          child: Text(
+                                            widget.data.items?[index].stores
+                                                    ?.storeName ??
+                                                '',
+                                            style: textTheme.headlineSmall
+                                                ?.copyWith(
+                                                    color: const Color(
+                                                        0xFF010101)),
+                                          ),
+                                        ),
+                                        Text(
+                                          'Order #${widget.data.orderId}',
+                                          style: textTheme.bodySmall?.copyWith(
+                                              color: AppColors.middleGray,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.2),
+                                        ),
+                                      ],
+                                    ).paddingOnly(left: 10.w)
+                                  ],
+                                ),
+                                commonRowData(
+                                  title:
+                                      '${widget.data.items?[index].quantity}x ${widget.data.items?[index].productName} ',
+                                  value:
+                                      '\$ ${(widget.data.items?[index].price ?? 0) / 100}',
+                                  textTheme: textTheme.bodyMedium!
+                                      .copyWith(color: Colors.black),
+                                  valueTextTheme: textTheme.bodyLarge!
+                                      .copyWith(color: Colors.black),
+                                ),
+                                commonRowData(
+                                  title: 'Total',
+                                  value:
+                                      '\$ ${(widget.data.items?[index].price ?? 0) / 100}',
+                                  textTheme: textTheme.bodyLarge!
+                                      .copyWith(color: AppColors.darkGray),
+                                  valueTextTheme: textTheme.headlineSmall!
+                                      .copyWith(color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider();
+                        },
+                      )
+                    ],
+                  ).paddingAll(12)
+                          /*: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Wallmart',
+                                  style: textTheme.bodyLarge
+                                      ?.copyWith(color: const Color(0xFF000000))),
+                              Text(
+                                'Order #123456',
+                                style: textTheme.bodySmall?.copyWith(
+                                    color: AppColors.green,
+                                    fontSize: 10.sp,
+                                    letterSpacing: -0.2,
+                                    fontWeight: FontWeight.w800),
+                              ),
+                              commonRowData(
+                                title: '1x Potatoes',
+                                value: '5,99',
+                                textTheme: textTheme.bodyMedium!
+                                    .copyWith(color: Colors.black),
+                                valueTextTheme: textTheme.bodyLarge!
+                                    .copyWith(color: Colors.black),
+                              ),
+                              commonRowData(
+                                title: '1x Mushrooms small packs (20 oz)',
+                                value: '5,99',
+                                textTheme: textTheme.bodyMedium!
+                                    .copyWith(color: Colors.black),
+                                valueTextTheme: textTheme.bodyLarge!
+                                    .copyWith(color: Colors.black),
+                              ),
+                              commonRowData(
+                                title: 'Total',
+                                value: '\$ 11.98',
+                                textTheme: textTheme.bodyLarge!
+                                    .copyWith(color: AppColors.darkGray),
+                                valueTextTheme: textTheme.headlineSmall!
+                                    .copyWith(color: Colors.black),
+                              ),
+                              Divider(height: 5.h, color: AppColors.darkGray),
+                              Text(
+                                'Tesco',
+                                style: textTheme.bodyLarge
+                                    ?.copyWith(color: const Color(0xFF000000)),
+                              ).paddingOnly(top: 8.h),
+                              Text(
+                                'Order #123456',
+                                style: textTheme.bodySmall?.copyWith(
+                                    color: AppColors.green,
+                                    fontSize: 10.sp,
+                                    letterSpacing: -0.2,
+                                    fontWeight: FontWeight.w800),
+                              ),
+                              commonRowData(
+                                title: '1x Milk Almond Breeze 500ml, 1.5% fat',
+                                value: '5,99',
+                                textTheme: textTheme.bodyMedium!
+                                    .copyWith(color: Colors.black),
+                                valueTextTheme: textTheme.bodyLarge!
+                                    .copyWith(color: Colors.black),
+                              ),
+                              commonRowData(
+                                title: 'Total',
+                                value: '\$ 5.99',
+                                textTheme: textTheme.bodyLarge!
+                                    .copyWith(color: AppColors.darkGray),
+                                valueTextTheme: textTheme.headlineSmall!
+                                    .copyWith(color: Colors.black),
+                              ),
                             ],
-                          ),
-                          commonRowData(
-                            title:
-                                '${widget.data.quantity}x ${widget.data.productName} ',
-                            value: '\$ ${widget.data.price! / 100}',
-                            textTheme: textTheme.bodyMedium!
-                                .copyWith(color: Colors.black),
-                            valueTextTheme: textTheme.bodyLarge!
-                                .copyWith(color: Colors.black),
-                          ),
-                          commonRowData(
-                            title: 'Total',
-                            value: '\$ ${widget.data.price! / 100}',
-                            textTheme: textTheme.bodyLarge!
-                                .copyWith(color: AppColors.darkGray),
-                            valueTextTheme: textTheme.headlineSmall!
-                                .copyWith(color: Colors.black),
-                          ),
-                        ],
-                      ).paddingAll(12)
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Wallmart',
-                              style: textTheme.bodyLarge
-                                  ?.copyWith(color: const Color(0xFF000000))),
-                          Text(
-                            'Order #123456',
-                            style: textTheme.bodySmall?.copyWith(
-                                color: AppColors.green,
-                                fontSize: 10.sp,
-                                letterSpacing: -0.2,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          commonRowData(
-                            title: '1x Potatoes',
-                            value: '5,99',
-                            textTheme: textTheme.bodyMedium!
-                                .copyWith(color: Colors.black),
-                            valueTextTheme: textTheme.bodyLarge!
-                                .copyWith(color: Colors.black),
-                          ),
-                          commonRowData(
-                            title: '1x Mushrooms small packs (20 oz)',
-                            value: '5,99',
-                            textTheme: textTheme.bodyMedium!
-                                .copyWith(color: Colors.black),
-                            valueTextTheme: textTheme.bodyLarge!
-                                .copyWith(color: Colors.black),
-                          ),
-                          commonRowData(
-                            title: 'Total',
-                            value: '\$ 11.98',
-                            textTheme: textTheme.bodyLarge!
-                                .copyWith(color: AppColors.darkGray),
-                            valueTextTheme: textTheme.headlineSmall!
-                                .copyWith(color: Colors.black),
-                          ),
-                          Divider(height: 5.h, color: AppColors.darkGray),
-                          Text(
-                            'Tesco',
-                            style: textTheme.bodyLarge
-                                ?.copyWith(color: const Color(0xFF000000)),
-                          ).paddingOnly(top: 8.h),
-                          Text(
-                            'Order #123456',
-                            style: textTheme.bodySmall?.copyWith(
-                                color: AppColors.green,
-                                fontSize: 10.sp,
-                                letterSpacing: -0.2,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          commonRowData(
-                            title: '1x Milk Almond Breeze 500ml, 1.5% fat',
-                            value: '5,99',
-                            textTheme: textTheme.bodyMedium!
-                                .copyWith(color: Colors.black),
-                            valueTextTheme: textTheme.bodyLarge!
-                                .copyWith(color: Colors.black),
-                          ),
-                          commonRowData(
-                            title: 'Total',
-                            value: '\$ 5.99',
-                            textTheme: textTheme.bodyLarge!
-                                .copyWith(color: AppColors.darkGray),
-                            valueTextTheme: textTheme.headlineSmall!
-                                .copyWith(color: Colors.black),
-                          ),
-                        ],
-                      ).paddingAll(15.r),
-              ).paddingSymmetric(horizontal: 20.w),
-              const Spacer(),
+                          ).paddingAll(15.r),*/
+                          )
+                      .paddingSymmetric(horizontal: 20.w, vertical: 5.w),
+                ),
+              ),
+              // const Spacer(),
               const Text('Have any questions? Fill free to ask us!'),
               buildButton(
                       context: context,
@@ -325,6 +364,31 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
+  getMaxValue() {
+    int maxIndex = (widget.data.items ?? [])
+        .map<int>((jsonObject) => jsonObject.deliveryTimeMax as int)
+        .reduce((max, current) => max > current ? max : current);
+
+    int minIndex = 0;
+    for (var data in widget.data.items!) {
+      if (data.deliveryTimeMax == maxIndex) {
+        minIndex = data.deliveryTimeMin ?? 0;
+      }
+    }
+
+    return "$minIndex-$maxIndex min";
+  }
+
+  launchUrlForTracking(int index) async {
+    try {
+      await launchUrl(
+        Uri.parse(
+          widget.data.items![index].trackLink ?? "",
+        ),
+      );
+    } catch (e) {}
+  }
+
   Widget commonRowData({
     required String title,
     required String value,
@@ -334,7 +398,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: textTheme),
+        Expanded(child: Text(title, style: textTheme, maxLines: 1)),
         Text(value, style: valueTextTheme),
       ],
     ).paddingSymmetric(vertical: 5);

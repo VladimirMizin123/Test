@@ -61,17 +61,21 @@ class SignUpRepository {
           : model.gender! == StringUtils.female
               ? 'Female'
               : 'Non-binary',
-      "UserDetail.SurveyId": model.surveyId!,
-      "UserDetail.DietId": model.dietId!,
-      "UserAddress.Latitude": model.addAddressModel!.latitude!.toString(),
-      "UserAddress.Longitude": model.addAddressModel!.longitude!.toString(),
-      "UserAddress.Street_Num": model.addAddressModel!.streetNum!,
-      "UserAddress.Street_Name": model.addAddressModel!.streetName!,
-      "UserAddress.City": model.addAddressModel!.city!,
-      "UserAddress.State": model.addAddressModel!.state!,
-      "UserAddress.Country": model.addAddressModel!.country!,
-      "UserAddress.Zipcode": model.addAddressModel!.zipcode!,
+      "UserDetail.SurveyId": model.surveyId ?? '',
+      "UserDetail.DietId": model.dietId ?? "",
+      "UserAddress.Latitude":
+          model.addAddressModel?.latitude.toString() ?? model.latitude ?? '0.0',
+      "UserAddress.Longitude": model.addAddressModel?.longitude?.toString() ??
+          model.longitude ??
+          "0.0",
+      "UserAddress.Street_Num": model.addAddressModel?.streetNum ?? "",
+      "UserAddress.Street_Name": model.addAddressModel?.streetName ?? "",
+      "UserAddress.City": model.addAddressModel?.city ?? "",
+      "UserAddress.State": model.addAddressModel?.state ?? "",
+      "UserAddress.Country": model.addAddressModel?.country ?? "",
+      "UserAddress.Zipcode": model.addAddressModel?.zipcode ?? "",
     };
+    log("DATA:----------> ${jsonEncode(data)}");
     final response = await apiServices.postMultipart(
         url: ApiUrls.register, body: data, files: profileImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -125,6 +129,8 @@ class SignUpRepository {
       {List<String> restrictionList = const [], String? userid}) async {
     final response = await apiServices.post(
         '${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
+    print("restrictionList:---------> ${restrictionList}");
+    print("URL:---------> ${ApiUrls.addRestrictionAndGetMealPlan}/$userid");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

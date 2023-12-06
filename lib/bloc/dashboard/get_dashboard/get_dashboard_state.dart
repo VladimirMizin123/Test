@@ -43,7 +43,7 @@ class LoadingDoneState extends GetDashboardState {
 class GetOrderInvoiceLoadingState extends GetDashboardState {}
 
 class GetOrderInvoiceSuccessState extends GetDashboardState {
-  final List<InvoiceList> invoiceData;
+  final List<OrderedItem> invoiceData;
 
   GetOrderInvoiceSuccessState({required this.invoiceData});
 }

@@ -531,7 +531,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                       const SizedBox(height: 10),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
@@ -545,11 +545,13 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                                 fontColor: AppColors.middleGray,
                                                 fontWeight: FWT.semiBold),
                                           ),
-                                          Text(
-                                            widget.storeName ?? '',
-                                            style: FontUtils.h12(
-                                                fontColor: AppColors.black,
-                                                fontWeight: FWT.semiBold),
+                                          Flexible(
+                                            child: Text(
+                                              widget.storeName ?? '',
+                                              style: FontUtils.h12(
+                                                  fontColor: AppColors.black,
+                                                  fontWeight: FWT.semiBold),
+                                            ),
                                           ),
                                         ],
                                       ),

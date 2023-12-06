@@ -37,8 +37,15 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const BackButtonWidget(),
-                  Text('Item Details', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                  Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                  Text('Item Details',
+                      style: FontUtils.h20(
+                          fontColor: AppColors.oxFF010101,
+                          fontWeight: FWT.semiBold)),
+                  Opacity(
+                      opacity: 0,
+                      child: Text('Edit',
+                          style:
+                              FontUtils.h16(fontColor: AppColors.oxFF010101))),
                 ],
               ).paddingSymmetric(horizontal: 6, vertical: 5.h),
               Expanded(
@@ -56,22 +63,42 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Align(alignment: Alignment.centerLeft, child: Text('General Information', style: FontUtils.h22(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold))),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('General Information',
+                              style: FontUtils.h22(
+                                  fontColor: AppColors.oxFF010101,
+                                  fontWeight: FWT.semiBold))),
                       const SizedBox(height: 10),
-                      myGeneralInformationWidget('Brand', 'Almond Breeze'),
-                      myGeneralInformationWidget('Manufacturer', 'Almond Breeze'),
-                      myGeneralInformationWidget('Country', 'USA'),
+                      myGeneralInformationWidget(
+                          'Brand', widget.product.itemName ?? ''),
+                      myGeneralInformationWidget(
+                          'Manufacturer', 'Almond Breeze'),
+                      myGeneralInformationWidget('Country', 'N/A'),
                       myGeneralInformationWidget('Weight', '450 g'),
-                      myGeneralInformationWidget('Fat', '1.5%'),
-                      myGeneralInformationWidget('Expiration date', '45 days'),
+                      myGeneralInformationWidget(
+                          'Fat', widget.product.fat ?? 'N/A'),
+                      myGeneralInformationWidget(
+                          'Expiration date', widget.product.day ?? 'N/A'),
                       const SizedBox(height: 20),
-                      Align(alignment: Alignment.centerLeft, child: Text('Nutritional Information', style: FontUtils.h24(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold))),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Nutritional Information',
+                              style: FontUtils.h24(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.semiBold))),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Calories', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text(widget.product.calorie ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text('Calories',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text(widget.product.calorie ?? 'N/A',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -80,8 +107,14 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Protein', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text(widget.product.protein ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text('Protein',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text(widget.product.protein ?? 'N/A',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -90,8 +123,14 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Carbs', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text(widget.product.carbs ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text('Carbs',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text(widget.product.carbs ?? 'N/A',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -100,8 +139,14 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                          Text(widget.product.fat ?? '2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                          Text('Fat',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text(widget.product.fat ?? 'N/A',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -237,8 +282,13 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                             child: Container(
                               height: screenSize.height * 0.065,
                               width: screenSize.height * 0.065,
-                              decoration: BoxDecoration(border: Border.all(color: AppColors.green), borderRadius: BorderRadius.circular(10)),
-                              child: Center(child: SvgPicture.asset(AssetsUtils.icShoppingIcon, color: AppColors.green)),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: AppColors.green),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: SvgPicture.asset(
+                                      AssetsUtils.icShoppingIcon,
+                                      color: AppColors.green)),
                             ),
                           )
                         : Row(
@@ -255,20 +305,34 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                                       child: Container(
                                         height: screenSize.height * 0.065,
                                         width: screenSize.height * 0.065,
-                                        decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                        child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: AppColors.mint,
+                                                width: 2),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Center(
+                                            child: SvgPicture.asset(
+                                                AssetsUtils.icDelete,
+                                                color: AppColors.green)),
                                       ),
                                     )
                                   : GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          widget.product.cartItemCount = widget.product.cartItemCount - 1;
+                                          widget.product.cartItemCount =
+                                              widget.product.cartItemCount - 1;
                                         });
                                       },
                                       child: Container(
                                         height: screenSize.height * 0.065,
                                         width: screenSize.height * 0.065,
-                                        decoration: BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: AppColors.mint,
+                                                width: 2),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
                                         child: const Center(
                                           child: Icon(Icons.remove, size: 27),
                                         ),
@@ -278,18 +342,24 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                               Container(
                                 height: screenSize.height * 0.065,
                                 width: screenSize.height * 0.065,
-                                decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.disable),
+                                    borderRadius: BorderRadius.circular(10)),
                                 child: Center(
                                     child: Text(
                                   widget.product.cartItemCount.toString(),
-                                  style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                  style: FontUtils.h18(
+                                      fontWeight: FWT.semiBold,
+                                      fontColor: AppColors.darkGray),
                                 )),
                               ),
                               SizedBox(width: 8.w),
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    widget.product.cartItemCount = widget.product.cartItemCount + 1;
+                                    widget.product.cartItemCount =
+                                        widget.product.cartItemCount + 1;
                                   });
                                 },
                                 child: Container(
@@ -299,7 +369,9 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                                     borderRadius: BorderRadius.circular(10),
                                     color: AppColors.mint,
                                   ),
-                                  child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                  child: const Center(
+                                      child: Icon(Icons.add,
+                                          color: AppColors.green, size: 27)),
                                 ),
                               ),
                             ],
@@ -320,9 +392,13 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
       children: [
         Row(
           children: [
-            Text(title, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+            Text(title,
+                style: FontUtils.h16(
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
             const Spacer(),
-            Text(value, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+            Text(value,
+                style: FontUtils.h16(
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
           ],
         ),
         const DividerWidget(),

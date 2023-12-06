@@ -5,10 +5,12 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/all_programs/all_program_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 import '../account/account_scrren_widget.dart';
 
@@ -25,7 +27,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
       "image": AssetsUtils.pencil,
       "title": "Retake Assessment",
       "color": AppColors.disable,
-      "screen": ''
+      "screen": const UserSurveyScreen(isProfile: true),
     },
     {
       "image": AssetsUtils.globalIcn,
@@ -134,7 +136,15 @@ class _ProgramScreenState extends State<ProgramScreen> {
                             if (data["screen"].toString().isEmpty) {
                               return;
                             }
-                            await Get.to(data["screen"]);
+                            if (data["title"] == "Retake Assessment") {
+                              UserSignUpDataModel userSignUpDataModel =
+                                  UserSignUpDataModel();
+                              await Get.to(data["screen"],
+                                  arguments: userSignUpDataModel);
+                              accountBloc.add(GetCurrentProgramEvent());
+                            } else {
+                              await Get.to(data["screen"]);
+                            }
                             accountBloc.add(GetCurrentProgramEvent());
                           },
                           color: data["color"],

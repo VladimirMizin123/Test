@@ -58,8 +58,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   String country = '';
   String zipcode = '';
 
-  TextEditingController streetNameController =
-      TextEditingController(text: addressTypeList.first);
+  TextEditingController addressNameController = TextEditingController();
   TextEditingController streetDetailsController = TextEditingController();
   TextEditingController apartmentNumberController = TextEditingController();
   TextEditingController floorNumberController = TextEditingController();
@@ -326,7 +325,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
           ///streetName
 
           List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'sublocality_level_2')
+                  ?.where((element1) => element1 == 'route')
                   .toList() ??
               [];
 
@@ -403,10 +402,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
     selectedLatLng =
         LatLng(widget.userAddress!.latitude!, widget.userAddress!.longitude!);
 
-    streetNameController.text =
-        addressTypeList.contains((widget.userAddress?.addressType ?? ""))
-            ? widget.userAddress?.addressType ?? ""
-            : addressTypeList.first;
+    addressNameController.text = widget.userAddress?.addressType ?? "";
     streetName = widget.userAddress?.streetName ?? '';
     streetDetailsController.text = streetName.isNotEmpty ? streetName : '';
     // streetDetailsController.text =
@@ -532,37 +528,12 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                             children: [
                               mapDetailWidget(
                                 title: "Name",
-                                // initialValue: streetNameController.text,
-                                // textEditingController: streetNameController,
-                                readOnly: true,
+                                //initialValue: addressNameController.text,
+                                textEditingController: addressNameController,
+                                readOnly: false,
                                 suffixIcon: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: DropdownButton(
-                                          value: streetNameController.text,
-                                          items: List.generate(
-                                            addressTypeList.length,
-                                            (index) => DropdownMenuItem(
-                                              value: addressTypeList[index],
-                                              child: Text(
-                                                addressTypeList[index],
-                                              ),
-                                            ),
-                                          ),
-                                          underline: const SizedBox(),
-                                          isExpanded: true,
-                                          onChanged: (value) {
-                                            streetNameController.text =
-                                                value ?? "";
-                                            setState(() {});
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ),
                               mapDetailWidget(
@@ -641,7 +612,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     city: city,
                                     state: stateData,
                                     country: country,
-                                    addressType: streetNameController.text,
+                                    addressType: addressNameController.text,
                                     zipcode: zipCodeController.text,
                                     isPrimary:
                                         widget.userAddress?.isPrimary ?? false,
@@ -662,7 +633,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     city: city,
                                     state: stateData,
                                     country: country,
-                                    addressType: streetNameController.text,
+                                    addressType: addressNameController.text,
                                     zipcode: zipCodeController.text,
                                     isPrimary: true,
                                     userId:

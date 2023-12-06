@@ -82,9 +82,9 @@ class UserSignUpInfoBloc
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);
 
-        userID = right.data!.userId!;
+        userID = right.data?.userId ?? '';
 
-        await PreferenceUtils.setString(prefUserData, right.data!.userId!);
+        await PreferenceUtils.setString(prefUserData, userID);
         await PreferenceUtils.setString(
             prefUserEmail, event.model.email?.trim() ?? "");
         await PreferenceUtils.setString(
@@ -113,7 +113,7 @@ class UserSignUpInfoBloc
         // }
 
         try {
-          await _repository.fetchMealPlan(right.data!.userId!).fold((left) {
+          await _repository.fetchMealPlan(userID).fold((left) {
             showToast(isSuccess: false, message: left.message!);
           }, (right) async {});
         } catch (e) {
