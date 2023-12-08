@@ -58,7 +58,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             barcode: widget.mealDataArguments!.barcodeNumber!));
       } else {
         mealPlanBloc.add(FetchMealDetailsEvent(
-            recipeID: widget.mealDataArguments!.mealData!.recipe!.id));
+            recipeID: widget.mealDataArguments!.mealData!.recipe!.id,recipeName: widget.mealDataArguments!.mealData!.recipe!.name));
       }
     });
   }

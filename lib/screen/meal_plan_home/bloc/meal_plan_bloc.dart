@@ -302,7 +302,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       await _repository
           .fetchMealDetails(
-        recipeID: event.recipeID!,
+        recipeID: event.recipeID!,recipeName:  event.recipeName!
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);

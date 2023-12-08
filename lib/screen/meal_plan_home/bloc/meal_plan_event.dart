@@ -68,9 +68,9 @@ class FetchSwapMealItemEvent extends MealPlanEvent {
 }
 
 class FetchMealDetailsEvent extends MealPlanEvent {
-  final String? recipeID;
+  final String? recipeID,recipeName;
 
-  FetchMealDetailsEvent({this.recipeID});
+  FetchMealDetailsEvent({this.recipeID,this.recipeName});
 }
 
 class FetchMealDetailsByNameEvent extends MealPlanEvent {
