@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -30,7 +31,7 @@ class GetUserJournalDataRepository {
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
     print(
         'getMealLogByDate URL : ${'${ApiUrls.getMealLogByDate}/$userId?date=$date'}');
-    print('getMealLogByDate response : ${response.body}');
+    log('getMealLogByDate response : ${response.body}');
     print('getMealLogByDate response statusCode : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(

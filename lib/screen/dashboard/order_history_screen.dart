@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -302,6 +301,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder:
                                           (BuildContext context, int index) {
+                                        print(
+                                            "TracklINk: ${invoiceData[index].items?.first.trackLink}");
                                         return Container(
                                           width: double.infinity.w,
                                           // padding: const EdgeInsets.all(12),

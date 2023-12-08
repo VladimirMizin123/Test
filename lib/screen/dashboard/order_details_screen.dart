@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:livechatt/livechatt.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
@@ -386,7 +387,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           widget.data.items![index].trackLink ?? "",
         ),
       );
-    } catch (e) {}
+    } catch (e) {
+      print("PAYMENT LINK:- $e");
+    }
   }
 
   Widget commonRowData({

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:get/get.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -7,6 +8,7 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   GroceryBloc() : super(InitialState()) {
@@ -274,6 +276,12 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
         emit(CreateOrderErrorState());
       }, (right) {
         emit(CreateOrderSuccessState(orderData: right.data));
+
+        /// After order success
+        Get.offAll(
+          () => const AppManagerScreen(selectIndex: 2),
+        );
+        Get.toNamed('/OrderHistoryScreen');
         showToast(
             isSuccess: true,
             message: right.message ?? "Order Created Successfully");

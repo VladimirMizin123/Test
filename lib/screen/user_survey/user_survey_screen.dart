@@ -55,6 +55,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   bool isPreference = false;
   bool isNext = false;
   bool isListen = true;
+  String restrictionName = "";
+  bool noneSelected = false;
 
   List<Color> colorList = [
     Colors.indigoAccent.withOpacity(0.8),
@@ -630,17 +632,20 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                 getSurveyData!.options![index].isSelect = false;
 
                                 listOptions.forEach((element) {
-                                  if (element.optionName
-                                          .replaceAll(" Diet", "")
-                                          .toLowerCase() ==
-                                      getSurveyData!.options![index].label
-                                          ?.replaceAll(" Diet", "")
-                                          .toLowerCase()) {
-                                    getSurveyData!.options![index].isSelect =
-                                        true;
-                                  } else {
-                                    getSurveyData!.options![index].isSelect =
-                                        false;
+                                  if (getSurveyData!.options![index].label !=
+                                      "None") {
+                                    if (element.optionName
+                                            .replaceAll(" Diet", "")
+                                            .toLowerCase() ==
+                                        getSurveyData!.options![index].label
+                                            ?.replaceAll(" Diet", "")
+                                            .toLowerCase()) {
+                                      getSurveyData!.options![index].isSelect =
+                                          true;
+                                    } else {
+                                      getSurveyData!.options![index].isSelect =
+                                          false;
+                                    }
                                   }
                                 });
 
@@ -653,95 +658,208 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                               }
                               return UserSurveyItems(
                                 data: getSurveyData!.options![index],
-                                onClick: () {
-                                  optionIndex = index;
-                                  if (getSurveyData!
-                                          .options![index].optionType ==
-                                      "preferences") {
-                                    if (listOptions.isEmpty) {
-                                      getSurveyData!.options![index].isSelect =
-                                          true;
-                                      listOptions.add(CustomOptions(
-                                          optionColor: getSurveyData!
-                                                  .options![index].color ??
-                                              AppColors.primaryBlue,
-                                          optionName: getSurveyData!
-                                                  .options![index].label ??
-                                              ''));
-                                      bloc.add(CheckSurveyData(index: index));
-                                    } else {
-                                      if (getSurveyData!
-                                          .options![index].isSelect) {
-                                        dietId = "";
-                                        getSurveyData!
-                                            .options![index].isSelect = false;
-                                        listOptions.removeWhere((element) =>
-                                            getSurveyData!
-                                                .options![index].isSelect ==
-                                            false);
-                                      } else {
-                                        dietId = getSurveyData!
-                                            .options![index].restrictionId!;
-                                        print(
-                                            "DIET:-----> ${dietId}\nREID:-----> ${getSurveyData!.options![index].restrictionId!}");
-
-                                        getSurveyData!
-                                            .options![index].isSelect = true;
-
-                                        listOptions.add(CustomOptions(
-                                            optionColor: getSurveyData!
-                                                    .options![index].color ??
-                                                AppColors.primaryBlue,
-                                            optionName: getSurveyData!
+                                onClick: noneSelected == true &&
+                                        (getSurveyData!.options![index].label ??
+                                                '') !=
+                                            "None"
+                                    ? () {
+                                        return null;
+                                      }
+                                    : () {
+                                        if ((getSurveyData!
                                                     .options![index].label ??
-                                                ''));
-                                        bloc.add(CheckSurveyData(index: index));
-                                      }
-                                    }
+                                                '') ==
+                                            "None") {
+                                          getSurveyData!
+                                                  .options![index].isSelect =
+                                              !getSurveyData!
+                                                  .options![index].isSelect;
+                                          print("none:-----> ${noneSelected}");
 
-                                    setState(() {});
-                                  } else {
-                                    if (getSurveyData!
-                                        .options![index].isSelect) {
-                                      listOptions.removeWhere((element) =>
-                                          element.optionName ==
-                                          getSurveyData!.options![index].label);
-                                    } else {
-                                      listOptions.add(CustomOptions(
-                                          optionColor: getSurveyData!
-                                                  .options![index].color ??
-                                              AppColors.primaryBlue,
-                                          optionName: getSurveyData!
-                                                  .options![index].label ??
-                                              ''));
-                                    }
+                                          noneSelected = getSurveyData!
+                                              .options![index].isSelect;
 
-                                    /// ID
-                                    bloc.add(CheckSurveyData(index: index));
-                                    setState(() {
-                                      if (getSurveyData!
-                                              .options![index].restrictionId !=
-                                          null) {
-                                        if (restrictionIDList.contains(
-                                            getSurveyData!.options![index]
-                                                .restrictionId)) {
-                                          restrictionIDList.remove(
-                                              getSurveyData!.options![index]
-                                                  .restrictionId);
+                                          for (int i = 0;
+                                              i <
+                                                  (getSurveyData!.options ?? [])
+                                                      .length;
+                                              i++) {
+                                            if (i != 0) {
+                                              getSurveyData!
+                                                  .options![i].isSelect = false;
+                                            }
+                                          }
+
+                                          for (int surveyIndex = 0;
+                                              surveyIndex <
+                                                  getSurveyData!
+                                                      .options!.length;
+                                              surveyIndex++) {
+                                            for (int indexL = 0;
+                                                indexL < listOptions.length;
+                                                indexL++) {
+                                              print(
+                                                "object:----->  ${listOptions[indexL].optionName == getSurveyData!.options![surveyIndex].label}",
+                                              );
+                                              if (listOptions[indexL]
+                                                      .optionName ==
+                                                  getSurveyData!
+                                                      .options![surveyIndex]
+                                                      .label) {
+                                                listOptions.removeAt(indexL);
+                                              }
+                                            }
+                                          }
+
+                                          for (int i = 0;
+                                              i <
+                                                  getSurveyData!
+                                                      .options!.length;
+                                              i++) {
+                                            for (int ind = 0;
+                                                ind < restrictionIDList.length;
+                                                ind++) {
+                                              if (getSurveyData!.options![i]
+                                                      .restrictionId ==
+                                                  restrictionIDList[ind]) {
+                                                restrictionIDList.removeAt(ind);
+                                              }
+                                            }
+                                          }
+
+                                          setState(() {});
                                         } else {
-                                          restrictionIDList.add(getSurveyData!
-                                              .options![index].restrictionId!);
-                                        }
-                                      }
-                                    });
+                                          noneSelected = false;
+                                          restrictionName = '';
 
-                                    log(dietId, name: "dietId");
-                                    for (var d in restrictionIDList) {
-                                      log(d, name: "restrictionIDList");
-                                    }
-                                    log('listOptions---------->>>>>> $listOptions');
-                                  }
-                                },
+                                          optionIndex = index;
+                                          if (getSurveyData!
+                                                  .options![index].optionType ==
+                                              "preferences") {
+                                            if (listOptions.isEmpty) {
+                                              getSurveyData!.options![index]
+                                                  .isSelect = true;
+                                              listOptions.add(CustomOptions(
+                                                  optionColor: getSurveyData!
+                                                          .options![index]
+                                                          .color ??
+                                                      AppColors.primaryBlue,
+                                                  optionName: getSurveyData!
+                                                          .options![index]
+                                                          .label ??
+                                                      ''));
+                                              bloc.add(CheckSurveyData(
+                                                  index: index));
+                                            } else {
+                                              if (getSurveyData!
+                                                  .options![index].isSelect) {
+                                                dietId = "";
+                                                getSurveyData!.options![index]
+                                                    .isSelect = false;
+                                                listOptions.removeWhere(
+                                                    (element) =>
+                                                        getSurveyData!
+                                                            .options![index]
+                                                            .isSelect ==
+                                                        false);
+                                                print(
+                                                    "listOptions:----------> ${listOptions}");
+                                              } else {
+                                                dietId = getSurveyData!
+                                                    .options![index]
+                                                    .restrictionId!;
+
+                                                print(
+                                                    "add second time in first screen:----------> ${listOptions}");
+                                                getSurveyData!.options![index]
+                                                    .isSelect = true;
+
+                                                getSurveyData!.options
+                                                    ?.forEach((element) {
+                                                  for (int loIndex = 0;
+                                                      loIndex <
+                                                          listOptions.length;
+                                                      loIndex++) {
+                                                    if (element.label ==
+                                                        listOptions[loIndex]
+                                                            .optionName) {
+                                                      print("Match");
+                                                      listOptions
+                                                          .removeAt(loIndex);
+                                                    }
+                                                  }
+                                                });
+
+                                                listOptions.add(CustomOptions(
+                                                    optionColor: getSurveyData!
+                                                            .options![index]
+                                                            .color ??
+                                                        AppColors.primaryBlue,
+                                                    optionName: getSurveyData!
+                                                            .options![index]
+                                                            .label ??
+                                                        ''));
+
+                                                print(
+                                                  "listOptions:------------> ${listOptions.length}",
+                                                );
+                                                bloc.add(CheckSurveyData(
+                                                    index: index));
+                                              }
+                                            }
+
+                                            setState(() {});
+                                          } else {
+                                            print(
+                                                "add second time in 2nd screen:----------> ${listOptions}");
+                                            if (getSurveyData!
+                                                .options![index].isSelect) {
+                                              listOptions.removeWhere(
+                                                  (element) =>
+                                                      element.optionName ==
+                                                      getSurveyData!
+                                                          .options![index]
+                                                          .label);
+                                            } else {
+                                              listOptions.add(CustomOptions(
+                                                  optionColor: getSurveyData!
+                                                          .options![index]
+                                                          .color ??
+                                                      AppColors.primaryBlue,
+                                                  optionName: getSurveyData!
+                                                          .options![index]
+                                                          .label ??
+                                                      ''));
+                                            }
+
+                                            /// ID
+                                            bloc.add(
+                                                CheckSurveyData(index: index));
+                                            setState(() {
+                                              if (getSurveyData!.options![index]
+                                                      .restrictionId !=
+                                                  null) {
+                                                if (restrictionIDList.contains(
+                                                    getSurveyData!
+                                                        .options![index]
+                                                        .restrictionId)) {
+                                                  restrictionIDList.remove(
+                                                      getSurveyData!
+                                                          .options![index]
+                                                          .restrictionId);
+                                                } else {
+                                                  restrictionIDList.add(
+                                                      getSurveyData!
+                                                          .options![index]
+                                                          .restrictionId!);
+                                                }
+                                              }
+                                            });
+
+                                            log('listOptions---------->>>>>> $listOptions');
+                                          }
+                                        }
+                                      },
                               );
                             });
                           },
@@ -798,10 +916,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                     );
 
                                     if (isPreference == false) {
-                                      setState(() {
-                                        isPreference = true;
-                                      });
+                                      isPreference = true;
                                     }
+                                    noneSelected = false;
+                                    setState(() {});
                                   },
                                   textColor: Colors.white,
                                   bgColor: setColor(gender: model.gender ?? ''),

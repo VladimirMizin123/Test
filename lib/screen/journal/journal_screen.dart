@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,6 +34,7 @@ import '../../models/fetch_meal_plan_model.dart';
 import '../../models/get_dashboard_model.dart';
 import '../../models/water_log_details_model.dart';
 import '../../widget/app_center_loader.dart';
+import '../dashboard/add_entry_screen.dart';
 import '../grocery/screen/grocery_item_details.dart';
 import '../meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 
@@ -327,7 +330,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       logData = state.data ?? [];
                       logData.map((e) {
                         customMealData.map((e1) {
-                          if (e.mealId == e1.id) {
+                          if (e.mealId == e1.id || e.recipeId == e1.id) {
                             if (e.value == 'ATE') {
                               e1.isEaten = true;
                             }
@@ -387,11 +390,11 @@ class _JournalScreenState extends State<JournalScreen> {
                       dinnerDataList!.clear();
                       snackDataList!.clear();
                       mealTrackerDataList!.map((e) {
-                        if (e.meal == 'breakfast') {
+                        if (e.meal?.toLowerCase() == 'breakfast') {
                           breakFastList.add(e);
-                        } else if (e.meal == 'lunch') {
+                        } else if (e.meal?.toLowerCase() == 'lunch') {
                           lunchDataList!.add(e);
-                        } else if (e.meal == 'dinner') {
+                        } else if (e.meal?.toLowerCase() == 'dinner') {
                           dinnerDataList!.add(e);
                         } else {
                           snackDataList!.add(e);
@@ -428,13 +431,15 @@ class _JournalScreenState extends State<JournalScreen> {
                         if (state is GetCustomMealListSuccessState) {
                           customMealData = state.customMealDetails!;
 
+                          print("Hellllllo");
                           breakFastCustomList.clear();
                           lunchDataCustomList!.clear();
                           dinnerDataCustomList!.clear();
                           snackDataCustomList!.clear();
                           customMealData.map((e) {
-                            if (e.type!.trim() == 'Breakfast' ||
-                                e.type!.trim() == 'breakfast') {
+                            log(e.type.toString(), name: "customMealData");
+                            if (e.type!.trim() == 'BreakFast' ||
+                                e.type!.trim().toLowerCase() == 'breakfast') {
                               breakFastCustomList.add(e);
                             } else if (e.type!.trim() == 'Lunch' ||
                                 e.type!.trim() == 'lunch') {
@@ -1011,68 +1016,96 @@ class _JournalScreenState extends State<JournalScreen> {
                                                     .isNotEmpty &&
                                                 exerciseData!
                                                     .exerciseLogList!.isNotEmpty
-                                            ? commonJournalFoodData(
-                                                // title: StringUtils.running,
-                                                title: exerciseData!
-                                                    .exerciseLogList![0]
-                                                    .exerciseName!,
-                                                subTitle: exerciseData!
-                                                    .exerciseLogList![0]
-                                                    .caloriesBurned!
-                                                    .toString(),
-                                                child: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 13.h,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                                textTheme: textTheme.bodySmall
-                                                    ?.copyWith(
-                                                        color:
-                                                            AppColors.darkGray,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                                subTextTheme: textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                        color: AppColors
-                                                            .terracotta,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                              ).paddingOnly(
-                                                top: 10.h, bottom: 10.h)
+                                            ? InkWell(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                    "/AddEntryScreen",
+                                                    arguments:
+                                                        AddEntryArguments(
+                                                      exerciseLogList:
+                                                          exerciseData!
+                                                              .exerciseLogList![0],
+                                                      isFromHistory: true,
+                                                    ),
+                                                  );
+                                                },
+                                                child: commonJournalFoodData(
+                                                  // title: StringUtils.running,
+                                                  title: exerciseData!
+                                                      .exerciseLogList![0]
+                                                      .exerciseName!,
+                                                  subTitle: exerciseData!
+                                                      .exerciseLogList![0]
+                                                      .caloriesBurned!
+                                                      .toString(),
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 13.h,
+                                                    color: AppColors.darkGray,
+                                                  ),
+                                                  textTheme: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                          color: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FontWeight.w400),
+                                                  subTextTheme: textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                          color: AppColors
+                                                              .terracotta,
+                                                          fontWeight:
+                                                              FontWeight.w400),
+                                                ).paddingOnly(
+                                                    top: 10.h, bottom: 10.h),
+                                              )
                                             : const Offstage(),
                                         exerciseData!.exerciseLogList!
                                                     .isNotEmpty &&
                                                 exerciseData!.exerciseLogList!
                                                         .length >
                                                     1
-                                            ? commonJournalFoodData(
-                                                title: exerciseData!
-                                                    .exerciseLogList![1]
-                                                    .exerciseName!,
-                                                subTitle: exerciseData!
-                                                    .exerciseLogList![1]
-                                                    .caloriesBurned!
-                                                    .toString(),
-                                                child: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 13.h,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                                textTheme: textTheme.bodySmall
-                                                    ?.copyWith(
-                                                        color:
-                                                            AppColors.darkGray,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                                subTextTheme: textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                        color: AppColors
-                                                            .terracotta,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                              ).paddingOnly(bottom: 10.h)
+                                            ? InkWell(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                    "/AddEntryScreen",
+                                                    arguments:
+                                                        AddEntryArguments(
+                                                      exerciseLogList:
+                                                          exerciseData!
+                                                              .exerciseLogList![1],
+                                                      isFromHistory: true,
+                                                    ),
+                                                  );
+                                                },
+                                                child: commonJournalFoodData(
+                                                  title: exerciseData!
+                                                      .exerciseLogList![1]
+                                                      .exerciseName!,
+                                                  subTitle: exerciseData!
+                                                      .exerciseLogList![1]
+                                                      .caloriesBurned!
+                                                      .toString(),
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 13.h,
+                                                    color: AppColors.darkGray,
+                                                  ),
+                                                  textTheme: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                          color: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FontWeight.w400),
+                                                  subTextTheme: textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                          color: AppColors
+                                                              .terracotta,
+                                                          fontWeight:
+                                                              FontWeight.w400),
+                                                ).paddingOnly(bottom: 10.h),
+                                              )
                                             : const Offstage(),
                                       ],
                                     ),
@@ -1405,8 +1438,9 @@ class _JournalScreenState extends State<JournalScreen> {
     }).toList();
 
     logData.map((e) {
+      log("${e.mealName}", name: "MEAT ID FROM logData");
       customDataList?.forEach((element) {
-        if (e.mealId == element.id) {
+        if (e.mealName == element.name || e.mealId == element.id) {
           if (e.value.toString() == 'ATE') {
             element.isEaten = true;
           }
@@ -1550,7 +1584,7 @@ class _JournalScreenState extends State<JournalScreen> {
               child: commonJournalFoodData(
                 title: customDataList![index].name!,
                 subTitle:
-                    '${customDataList[index].calorie} ${StringUtils.calCount}',
+                    '${customDataList[index].calorie?.toStringAsFixed(2)} ${StringUtils.calCount}',
                 child: InkWell(
                   onTap: () async {
                     bloc.add(

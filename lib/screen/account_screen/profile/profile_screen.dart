@@ -45,7 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<String> genderList = ["Male", "Female", "Non-binary"];
 
   String? selectedGoalFocus;
-  String? selectedGender;
+
+  // String? selectedGender;
   DateTime? selectedDOB;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -123,13 +124,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         .toLowerCase()
                         .capitalizeFirst ??
                     '';
-
-                if (genderController.text == genderList.first) {
-                  selectedGender = genderList.first;
-                } else if (genderController.text == genderList.last) {
-                  selectedGender = genderList.last;
-                }
-
                 setState(() {});
               }
 
@@ -591,8 +585,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 8.0),
                                               child: DropdownButton(
-                                                value: selectedGender,
-                                                hint: const Text("Gender"),
+                                                hint: Text(
+                                                  genderController.text == ""
+                                                      ? "Gender"
+                                                      : genderController.text,
+                                                  style: TextStyle(
+                                                    color: genderController
+                                                                .text ==
+                                                            ""
+                                                        ? Colors.grey.shade200
+                                                        : Colors.black,
+                                                  ),
+                                                ),
                                                 items: List.generate(
                                                   genderList.length,
                                                   (index) => DropdownMenuItem(
@@ -607,7 +611,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 onChanged: (value) {
                                                   genderController.text =
                                                       value ?? "";
-                                                  selectedGender = value;
                                                   setState(() {});
                                                 },
                                               ),
@@ -658,7 +661,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   heightInCm: double.parse(heightController.text
                                       .replaceAll("'", ".")),
                                   birthDate: selectedDOB!,
-                                  gender: selectedGender ?? '',
+                                  gender: genderController.text,
                                 ),
                               );
 

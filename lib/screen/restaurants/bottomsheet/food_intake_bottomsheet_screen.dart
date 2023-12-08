@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -145,6 +143,10 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                                   AddEatenMealData(
                                     value: 1,
                                     mealName: widget.name ?? '',
+                                    mealId: widget
+                                            .nutritionixGetNxMealInfoByNameModelData!
+                                            .nixItemId ??
+                                        '',
                                     recipeId: widget
                                             .nutritionixGetNxMealInfoByNameModelData!
                                             .nixItemId ??
@@ -174,7 +176,6 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                                         0,
                                   ),
                                 );
-
                                 getAddNewMealBloc.add(
                                   AddNewMeal(
                                     name: widget.name ?? '',

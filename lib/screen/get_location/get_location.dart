@@ -647,19 +647,22 @@ class _GetUserAddressState extends State<GetUserAddress>
                                               SizedBox(
                                                 width: 16.w,
                                               ),
-                                              Text(
-                                                '${userAddress![index].streetName} ',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: userAddress![index]
-                                                              .isPrimary ==
-                                                          true
-                                                      ? AppColors.terracotta
-                                                      : AppColors.darkGray,
+                                              Flexible(
+                                                child: Text(
+                                                  '${userAddress![index].streetName} ',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: userAddress![index]
+                                                                .isPrimary ==
+                                                            true
+                                                        ? AppColors.terracotta
+                                                        : AppColors.darkGray,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
