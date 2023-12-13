@@ -849,7 +849,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                           double.parse(
                                                               fetchModelData!
                                                                   .recipe!
-                                                                  .nutrientsPerServing!
+                                                                  .nutritionalInfo!
                                                                   .calories!
                                                                   .toString()),
                                                           double.parse(PreferenceUtils
@@ -858,13 +858,13 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               .floor()
                                                               .toDouble(),
                                                           AppColors
-                                                              .primaryBlue),
+                                                              .primaryBlue,'cal'),
                                                       myProgressBarCardView(
                                                           'Fat',
                                                           double.parse(
                                                               fetchModelData!
                                                                   .recipe!
-                                                                  .nutrientsPerServing!
+                                                                  .nutritionalInfo!
                                                                   .fat!
                                                                   .toString()),
                                                           double.parse(PreferenceUtils
@@ -872,13 +872,13 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                       totalFat))
                                                               .floor()
                                                               .toDouble(),
-                                                          AppColors.coral),
+                                                          AppColors.coral,'g'),
                                                       myProgressBarCardView(
                                                           'Carbs',
                                                           double.parse(
                                                               fetchModelData!
                                                                   .recipe!
-                                                                  .nutrientsPerServing!
+                                                                  .nutritionalInfo!
                                                                   .carbs!
                                                                   .toString()),
                                                           double.parse(PreferenceUtils
@@ -886,13 +886,13 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                       totalCarbs))
                                                               .floor()
                                                               .toDouble(),
-                                                          AppColors.mint),
+                                                          AppColors.mint,'g'),
                                                       myProgressBarCardView(
                                                           'Protein',
                                                           double.parse(
                                                               fetchModelData!
                                                                   .recipe!
-                                                                  .nutrientsPerServing!
+                                                                  .nutritionalInfo!
                                                                   .protein!
                                                                   .toString()),
                                                           double.parse(PreferenceUtils
@@ -900,7 +900,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                                       totalProtein))
                                                               .floor()
                                                               .toDouble(),
-                                                          AppColors.skyBlue),
+                                                          AppColors.skyBlue,'g'),
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10),
@@ -921,7 +921,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text('Calories',
+                                                      Text('Saturated Fat',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -929,7 +929,8 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               fontWeight:
                                                                   FWT.medium)),
                                                       Text(
-                                                          '${fetchModelData!.recipe!.nutritionalInfo!.calories}g',
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                                          //'${fetchModelData!.recipe!.nutritionalInfo!.nfSaturatedFat} g',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -949,7 +950,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text('Protein',
+                                                      Text('Cholesterol',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -957,7 +958,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               fontWeight:
                                                                   FWT.medium)),
                                                       Text(
-                                                          '${fetchModelData!.recipe!.nutritionalInfo!.protein}g',
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -977,7 +978,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text('Carbs',
+                                                      Text('Sodium',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -985,7 +986,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               fontWeight:
                                                                   FWT.medium)),
                                                       Text(
-                                                          '${fetchModelData!.recipe!.nutritionalInfo!.carbs}g',
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -1005,7 +1006,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text('Fat',
+                                                      Text('Dietary Fiber',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -1013,7 +1014,63 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               fontWeight:
                                                                   FWT.medium)),
                                                       Text(
-                                                          '${fetchModelData!.recipe!.nutritionalInfo!.fat}g',
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                                                          style: FontUtils.h16(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray,
+                                                              fontWeight:
+                                                                  FWT.medium)),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Divider(
+                                                      color: AppColors
+                                                          .disabledColor,
+                                                      height: 2.h),
+                                                  const SizedBox(height: 10),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text('Sugar',
+                                                          style: FontUtils.h16(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray,
+                                                              fontWeight:
+                                                                  FWT.medium)),
+                                                      Text(
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                                          style: FontUtils.h16(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray,
+                                                              fontWeight:
+                                                                  FWT.medium)),
+                                                    ],
+                                                  ),
+                                                const SizedBox(height: 10),
+                                                  Divider(
+                                                      color: AppColors
+                                                          .disabledColor,
+                                                      height: 2.h),
+                                                  const SizedBox(height: 10),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text('Potassium',
+                                                          style: FontUtils.h16(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .darkGray,
+                                                              fontWeight:
+                                                                  FWT.medium)),
+                                                      Text(
+                                                          '${(fetchModelData?.recipe?.nutritionalInfo?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
                                                           style: FontUtils.h16(
                                                               fontColor:
                                                                   AppColors
@@ -1530,7 +1587,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   }
 
   Widget myProgressBarCardView(
-      String title, double value, double totalValue, Color progressBarColor) {
+      String title, double value, double totalValue, Color progressBarColor,String unit) {
     final screenSize = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -1559,7 +1616,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                     percent: value / totalValue),
               ],
             ),
-            Text('$value / $totalValue cal',
+            Text('$value / $totalValue $unit',
                 style: FontUtils.h15(
                     fontColor: AppColors.darkGray,
                     fontWeight: FWT.lightMedium)),

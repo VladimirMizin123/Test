@@ -277,6 +277,12 @@ class MealPlanRepository {
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNutritionixItemInfo['foods'][0]['nf_protein'];
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'];
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = jsonNutritionixItemInfo['foods'][0]['nf_total_fat'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = jsonNutritionixItemInfo['foods'][0]['nf_sodium'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = jsonNutritionixItemInfo['foods'][0]['nf_sugars'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = jsonNutritionixItemInfo['foods'][0]['nf_potassium'];
             String updatedJsonData = json.encode(recipeDetailsMap);
             return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
           }
@@ -285,7 +291,10 @@ class MealPlanRepository {
               return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
             }
 
-        }else {return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));}
+        }
+        else {
+          return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
+        }
       }
       else
         {
@@ -293,6 +302,14 @@ class MealPlanRepository {
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNxInfo["data"]["nfProtein"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNxInfo["data"]["nfTotalCabohydrate"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = jsonNxInfo["data"]["nfTotalFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = jsonNxInfo["data"]["nfSaturatedFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = jsonNxInfo["data"]["nfCholesterol"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = jsonNxInfo["data"]["nfSodium"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = jsonNxInfo["data"]["nfDietaryFiber"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = jsonNxInfo["data"]["nfSugar"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = jsonNxInfo["data"]["nfPotassium"] ?? 0;
+
+
           String updatedJsonData = json.encode(recipeDetailsMap);
           return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
         }
