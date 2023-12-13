@@ -11,9 +11,9 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/repository/get_account_details.dart';
 import 'package:gymeats_mobile/repository/sign_up.dart';
-import 'package:gymeats_mobile/screen/account_screen/program/program_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_diet_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
+
 import '../../app/functions.dart';
 import '../../bloc/user_survey/user_survey_bloc.dart';
 import '../../bloc/user_survey/user_survey_event.dart';
@@ -40,6 +40,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   double percentage = 0.0;
   final searchController = TextEditingController();
   int optionIndex = 0;
+  int pageIndex = 0;
   List<int> listIndex = [];
   List<CustomOptions> listOptions = [];
   List<Edge> edgesRestrictionList = [];
@@ -139,6 +140,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                       optionName: getSurveyData!.options![0].label ?? '',
                     ),
                   );
+                  dietId = getSurveyData?.options?[0].restrictionId ?? '';
+                  log(dietId);
                   bloc.add(CheckSurveyData(index: 0));
                   isListen = false;
                 }
@@ -321,12 +324,25 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   if (value!.isNotEmpty) {
                     isSearchOn = true;
                     if (isPreference == true) {
+                      log("MULTIPLE SEARCH");
+
                       searchEdgesRestrictionList = edgesRestrictionList
                           .where((item) => item.node.name
                               .toLowerCase()
                               .contains(value.toLowerCase()))
                           .toList();
+                      searchEdgesRestrictionList.forEach((ele) {
+                        getSurveyData?.options?.forEach((element) {
+                          if (element.isSelect == true) {
+                            ele.node.isRestricted = true;
+                          }
+                        });
+                      });
                     } else {
+                      log("SINGLE SEARCH");
+                      dietList.forEach((element) {
+                        log(element.dietName ?? '', name: "DIET NAME");
+                      });
                       searchDietList = dietList
                           .where((item) => item.dietName
                               .toString()
@@ -503,6 +519,12 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                           } else {
                                             searchDietList[index].select = true;
                                           }
+                                          setState(() {});
+                                          log(
+                                              searchDietList[index]
+                                                  .select
+                                                  .toString(),
+                                              name: "SELECT");
 
                                           ///new code
                                           if (searchDietList[index].select ==
@@ -554,20 +576,24 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                             .dietName ??
                                                         ''));
                                           } else {
+                                            dietId = '';
                                             int indexAt = listOptions
                                                 .indexWhere((element) =>
                                                     element.optionName
-                                                        .replaceAll(" Diet", "")
+                                                        .replaceAll("Diet", "")
+                                                        .trim()
                                                         .toLowerCase() ==
                                                     searchDietList[index]
                                                         .dietName
-                                                        ?.replaceAll(
-                                                            " Diet", "")
+                                                        ?.replaceAll("Diet", "")
+                                                        .trim()
                                                         .toLowerCase());
-
+                                            log(listOptions[indexAt].optionName,
+                                                name: "DEIT");
                                             indexAt >= 0
                                                 ? listOptions.removeAt(indexAt)
                                                 : null;
+                                            setState(() {});
                                             bloc.add(CheckSurveyData(
                                                 index: indexAt));
                                           }
@@ -629,17 +655,26 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                             return Builder(builder: (context) {
                               if (getSurveyData!.options![index].optionType ==
                                   "preferences") {
+                                log("message");
+
                                 getSurveyData!.options![index].isSelect = false;
 
                                 listOptions.forEach((element) {
                                   if (getSurveyData!.options![index].label !=
                                       "None") {
                                     if (element.optionName
-                                            .replaceAll(" Diet", "")
+                                            .replaceAll("Diet", "")
+                                            .trim()
                                             .toLowerCase() ==
                                         getSurveyData!.options![index].label
-                                            ?.replaceAll(" Diet", "")
+                                            ?.replaceAll("Diet", "")
+                                            .trim()
                                             .toLowerCase()) {
+                                      log(
+                                          getSurveyData!
+                                              .options![index].isSelect
+                                              .toString(),
+                                          name: "isSelect");
                                       getSurveyData!.options![index].isSelect =
                                           true;
                                     } else {
@@ -649,9 +684,11 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                   }
                                 });
 
-                                if (dietId ==
-                                    getSurveyData!
-                                        .options![index].restrictionId!) {
+                                log(dietId, name: "dietId");
+                                if (dietId != '' &&
+                                    dietId ==
+                                        getSurveyData!
+                                            .options![index].restrictionId!) {
                                   getSurveyData!.options![index].isSelect =
                                       true;
                                 }
@@ -756,6 +793,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                 dietId = "";
                                                 getSurveyData!.options![index]
                                                     .isSelect = false;
+                                                setState(() {});
                                                 listOptions.removeWhere(
                                                     (element) =>
                                                         getSurveyData!
@@ -882,12 +920,22 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                           listIndex[listIndex.length - 1];
                                       listIndex.removeLast();
                                     }
+
+                                    if (pageIndex >= 1) {
+                                      pageIndex = pageIndex - 1;
+                                    }
                                     if (optionIndex == 0) {
                                       setState(() {
                                         isPreference = false;
                                       });
                                     }
 
+                                    ///make isPreference == true when it comes to first index
+                                    if (pageIndex == 0) {
+                                      setState(() {
+                                        isPreference = true;
+                                      });
+                                    }
                                     bloc.add(NextPrevSurveyClick(
                                         index: optionIndex, isNext: false));
                                   },
@@ -907,6 +955,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                     optionIndex = getSurveyData!.options!
                                         .indexWhere((value) => value.isSelect);
                                     listIndex.add(optionIndex);
+
+                                    pageIndex = pageIndex + 1;
 
                                     bloc.add(
                                       NextPrevSurveyClick(

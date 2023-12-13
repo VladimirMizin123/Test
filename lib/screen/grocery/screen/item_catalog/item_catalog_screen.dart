@@ -21,17 +21,18 @@ import 'bottomsheet/item_catalog_sort_by_bottomsheet.dart';
 
 class ItemCatalogScreen extends StatefulWidget {
   final List<Cart> selectedStoreProductList;
+  final List<Product>? productList;
   final GroceryBloc groceryBloc;
   final String? productId;
   final String? typeOfProduct;
-  final String? storeName;
+
   const ItemCatalogScreen({
     super.key,
     this.selectedStoreProductList = const [],
+    this.productList = const [],
     required this.groceryBloc,
     required this.productId,
     required this.typeOfProduct,
-    required this.storeName,
   });
 
   @override
@@ -43,7 +44,6 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
   List<Product> filterResult = [];
   bool isProductSelect = false;
   bool isFilter = false;
-
   String? selectedSorting;
 
   @override
@@ -53,22 +53,31 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
   }
 
   fillData() {
-    for (var i = 0; i < widget.selectedStoreProductList.length; i++) {
-      for (var j = 0;
-          j < widget.selectedStoreProductList[i].groceryResult!.length;
-          j++) {
-        if (widget.selectedStoreProductList[i].groceryResult != null) {
-          if (widget.selectedStoreProductList[i].groceryResult![j].products !=
-                  [] &&
-              widget.selectedStoreProductList[i].groceryResult![j]
-                      .searchedItemName ==
-                  widget.typeOfProduct) {
-            widget.selectedStoreProductList[i].groceryResult![j].products
-                ?.forEach((element) {
-              if (!element.isAddedToShoppingList) {
-                groceryResult.add(element);
-              }
-            });
+    if ((widget.productList ?? []).isNotEmpty) {
+      groceryResult = widget.productList!;
+    } else {
+      for (var i = 0; i < widget.selectedStoreProductList.length; i++) {
+        log(widget.selectedStoreProductList[i].store!.name.toString(),
+            name: "STORE NAME");
+        for (var j = 0;
+            j < widget.selectedStoreProductList[i].groceryResult!.length;
+            j++) {
+          if (widget.selectedStoreProductList[i].groceryResult != null) {
+            if (widget.selectedStoreProductList[i].groceryResult![j].products !=
+                    [] &&
+                widget.selectedStoreProductList[i].groceryResult![j]
+                        .searchedItemName ==
+                    widget.typeOfProduct) {
+              widget.selectedStoreProductList[i].groceryResult![j].products
+                  ?.forEach((element) {
+                if (!element.isAddedToShoppingList) {
+                  element.storeName =
+                      widget.selectedStoreProductList[i].store!.name ?? '';
+
+                  groceryResult.add(element);
+                }
+              });
+            }
           }
         }
       }
@@ -140,10 +149,21 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                         isFilter = value['isFilter'];
 
                         filterResult.clear();
+
                         if (isFilter) {
                           for (var element in groceryResult) {
-                            if ((element.originalPrice!) > priceRange!.start &&
-                                (element.originalPrice!) < priceRange!.end) {
+                            log("${element.unitOfMeasurement}",
+                                name: "unitOfMeasurement");
+                            double value = double.parse(
+                                (element.formattedPrice ?? '0')
+                                    .replaceAll("\$", "")
+                                    .trim());
+                            log("${value}", name: "formattedPrice");
+                            log("${priceRange!.start}   ${priceRange!.end}",
+                                name: "originalPrice");
+
+                            if ((value) > priceRange!.start &&
+                                (value) < priceRange!.end) {
                               filterResult.add(element);
                             }
                           }
@@ -250,6 +270,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 10),
+
                                       Text(
                                         filterResult[index].formattedPrice ??
                                             '',
@@ -276,7 +297,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                                 fontWeight: FWT.semiBold),
                                           ),
                                           Text(
-                                            widget.storeName ?? '',
+                                            filterResult[index].storeName ?? '',
                                             style: FontUtils.h12(
                                                 fontColor: AppColors.black,
                                                 fontWeight: FWT.semiBold),
@@ -463,6 +484,16 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                             physics: const BouncingScrollPhysics(),
                             padding: const EdgeInsets.all(12),
                             itemBuilder: (context, index) {
+                              int indexAt = widget.selectedStoreProductList
+                                  .indexWhere((element) =>
+                                      element.groceryResult![0].products ==
+                                      groceryResult);
+                              String? name = widget
+                                  .selectedStoreProductList[
+                                      indexAt >= 0 ? indexAt : 0]
+                                  .store
+                                  ?.name;
+
                               return GestureDetector(
                                 onTap: () {
                                   // Get.toNamed('/GroceryProductDetails');
@@ -520,9 +551,11 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 10),
+
                                       Text(
-                                        groceryResult[index].formattedPrice ??
-                                            '',
+                                        (groceryResult[index].formattedPrice ??
+                                                '')
+                                            .toString(),
                                         style: FontUtils.h17(
                                             fontColor: AppColors.darkGray,
                                             fontWeight: FWT.semiBold),
@@ -547,7 +580,8 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                           ),
                                           Flexible(
                                             child: Text(
-                                              widget.storeName ?? '',
+                                              groceryResult[index].storeName ??
+                                                  '',
                                               style: FontUtils.h12(
                                                   fontColor: AppColors.black,
                                                   fontWeight: FWT.semiBold),

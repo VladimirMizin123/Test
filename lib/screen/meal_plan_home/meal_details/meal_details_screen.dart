@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -52,13 +54,22 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    log(widget.mealDataArguments!.productName.toString(),
+        name: "mealDataArguments");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.mealDataArguments!.isFromScanner == true) {
         mealPlanBloc.add(BarcodeScanEvent(
             barcode: widget.mealDataArguments!.barcodeNumber!));
       } else {
+        log(widget.mealDataArguments?.mealData?.recipe?.id ?? "null".toString(),
+            name: "RECIPE ID");
+        log(
+            widget.mealDataArguments?.mealData?.recipe?.name ??
+                "null".toString(),
+            name: "RECIPE NAME");
         mealPlanBloc.add(FetchMealDetailsEvent(
-            recipeID: widget.mealDataArguments!.mealData!.recipe!.id,recipeName: widget.mealDataArguments!.mealData!.recipe!.name));
+            recipeID: widget.mealDataArguments!.mealData!.recipe!.id,
+            recipeName: widget.mealDataArguments?.mealData?.recipe?.name));
       }
     });
   }
@@ -732,7 +743,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                         return Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                      .only(
+                                                                  .only(
                                                                   top: 10),
                                                           child: Row(
                                                             children: [
@@ -744,18 +755,20 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                               ),
                                                               const SizedBox(
                                                                   width: 20),
-                                                              Text(
-                                                                fetchModelData!
-                                                                        .recipe!
-                                                                        .parsedIngredientLines![
-                                                                            index]
-                                                                        .ingredientLine ??
-                                                                    '',
-                                                                style: FontUtils.h14(
-                                                                    fontWeight:
-                                                                        FWT.regular),
+                                                              Expanded(
+                                                                child: Text(
+                                                                  fetchModelData!
+                                                                          .recipe!
+                                                                          .parsedIngredientLines![
+                                                                              index]
+                                                                          .ingredientLine ??
+                                                                      '',
+                                                                  style: FontUtils.h14(
+                                                                      fontWeight:
+                                                                          FWT.regular),
+                                                                ),
                                                               ),
-                                                              const Spacer(),
+                                                              // const Spacer(),
                                                               Transform.scale(
                                                                 scale: 1.2,
                                                                 child: Checkbox(

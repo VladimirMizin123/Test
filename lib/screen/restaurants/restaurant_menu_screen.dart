@@ -616,7 +616,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                         ? Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .only(
+                                                                    .only(
                                                                     left: 10),
                                                             child: Icon(
                                                               Icons
@@ -708,13 +708,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               itemBuilder: (context, index) {
                                                 return priceValue.isNotEmpty
                                                     ? (priceValue == "40"
-                                                            ? int.parse(priceValue) <=
-                                                                ((restaurantMenu!
-                                                                        .categories![
-                                                                            select]
-                                                                        .menuItemList![
-                                                                            index]
-                                                                        .originalPrice)! /
+                                                            ? int.parse(
+                                                                    priceValue) <=
+                                                                ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
                                                                     100)
                                                             : int.parse(priceValue.split('-').first) <=
                                                                     ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
@@ -724,7 +720,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                         100))
                                                         ? iCanEat == true
                                                             ? restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
-                                                                    'Green'
+                                                                        'Green' ||
+                                                                    restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
+                                                                        'Yellow'
                                                                 ? displayData(
                                                                     index:
                                                                         index)
@@ -733,12 +731,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                                 index: index)
                                                         : const SizedBox()
                                                     : iCanEat == true
-                                                        ? restaurantMenu!
-                                                                    .categories![
-                                                                        select]
-                                                                    .menuItemList![index]
-                                                                    .highLightedColor ==
-                                                                'Green'
+                                                        ? restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
+                                                                    'Green' ||
+                                                                restaurantMenu!
+                                                                        .categories![select]
+                                                                        .menuItemList![index]
+                                                                        .highLightedColor ==
+                                                                    'Yellow'
                                                             ? displayData(index: index)
                                                             : const SizedBox()
                                                         : displayData(index: index);
@@ -894,13 +893,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     .highLightedColor ==
                                 'Red'
                             ? AssetsUtils.canEatRed
-                            : restaurantMenu!
+                            :
+                            /*: restaurantMenu!
                                         .categories![select]
                                         .menuItemList![index]
                                         .highLightedColor ==
                                     'Yellow'
                                 ? AssetsUtils.canEatYellow
-                                : AssetsUtils.icCanEat,
+                                : */
+                            AssetsUtils.icCanEat,
                         width: 25.w,
                       ),
                 Column(

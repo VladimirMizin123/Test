@@ -27,6 +27,7 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.cartCount,
     required this.pickUp,
   });
+
   final String restaurantId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
@@ -124,10 +125,15 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                         const SizedBox(
                           width: 5,
                         ),
-                        Image.asset(
-                          AssetsUtils.icCanEat,
-                          height: 22.h,
-                        )
+                        widget.data.highLightedColor == null ||
+                                widget.data.highLightedColor.toString().isEmpty
+                            ? const SizedBox()
+                            : Image.asset(
+                                widget.data.highLightedColor == 'Red'
+                                    ? AssetsUtils.canEatRed
+                                    : AssetsUtils.icCanEat,
+                                width: 25.w,
+                              ),
                       ],
                     ),
                     Expanded(
@@ -288,7 +294,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
-                                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfCalories ?? 0.00).toStringAsFixed(2)} cal',
+                                          Text(
+                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfCalories ?? 0.00).toStringAsFixed(2)} cal',
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
@@ -307,7 +314,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
-                                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfProtein ?? 0).toStringAsFixed(2)} g',
+                                          Text(
+                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfProtein ?? 0).toStringAsFixed(2)} g',
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
@@ -326,7 +334,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
-                                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate ?? 0)?.toStringAsFixed(2)} g',
+                                          Text(
+                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate ?? 0)?.toStringAsFixed(2)} g',
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
@@ -345,7 +354,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),
-                                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfTotalFat ?? 0)?.toStringAsFixed(2) ?? 0} g',
+                                          Text(
+                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalFat ?? 0)?.toStringAsFixed(2) ?? 0} g',
                                               style: FontUtils.h16(
                                                   fontColor: AppColors.darkGray,
                                                   fontWeight: FWT.medium)),

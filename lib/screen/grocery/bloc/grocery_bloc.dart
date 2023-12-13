@@ -274,7 +274,9 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
         showToast(isSuccess: false, message: left.errorMessage ?? "");
 
         emit(CreateOrderErrorState());
-      }, (right) {
+      }, (right) async {
+        print('After order success');
+
         emit(CreateOrderSuccessState(orderData: right.data));
 
         /// After order success

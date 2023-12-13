@@ -40,17 +40,19 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           bloc: getDashboardBloc,
           listener: (context, state) {
             if (state is GetOrderInvoiceSuccessState) {
-              for (var element in state.invoiceData) {
-                bool isAdded = false;
-                for (int i = 0; i < (element.items ?? []).length; i++) {
-                  if (element.items?[i].type == "1") {
-                    isAdded = true;
-                  }
-                }
-                if (isAdded == true) {
-                  invoiceData.add(element);
-                }
-              }
+              invoiceData = state.invoiceData;
+
+              // for (var element in state.invoiceData) {
+              //   bool isAdded = false;
+              //   for (int i = 0; i < (element.items ?? []).length; i++) {
+              //     if (element.items?[i].type == "1") {
+              //       isAdded = true;
+              //     }
+              //   }
+              //   if (isAdded == true) {
+              //     invoiceData.add(element);
+              //   }
+              // }
               loading = false;
             }
             if (state is GetOrderInvoiceLoadingState) {
@@ -301,8 +303,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        print(
-                                            "TracklINk: ${invoiceData[index].items?.first.trackLink}");
                                         return Container(
                                           width: double.infinity.w,
                                           // padding: const EdgeInsets.all(12),

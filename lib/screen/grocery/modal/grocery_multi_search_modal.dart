@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-GroceryMultiSearchModel groceryMultiSearchModelFromJson(String str) => GroceryMultiSearchModel.fromJson(json.decode(str));
+GroceryMultiSearchModel groceryMultiSearchModelFromJson(String str) =>
+    GroceryMultiSearchModel.fromJson(json.decode(str));
 
-String groceryMultiSearchModelToJson(GroceryMultiSearchModel data) => json.encode(data.toJson());
+String groceryMultiSearchModelToJson(GroceryMultiSearchModel data) =>
+    json.encode(data.toJson());
 
 class GroceryMultiSearchModel {
   final bool? success;
@@ -21,7 +23,8 @@ class GroceryMultiSearchModel {
     this.data,
   });
 
-  factory GroceryMultiSearchModel.fromJson(Map<String, dynamic> json) => GroceryMultiSearchModel(
+  factory GroceryMultiSearchModel.fromJson(Map<String, dynamic> json) =>
+      GroceryMultiSearchModel(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
@@ -44,11 +47,15 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        carts: json["carts"] == null ? [] : List<Cart>.from(json["carts"]!.map((x) => Cart.fromJson(x))),
+        carts: json["carts"] == null
+            ? []
+            : List<Cart>.from(json["carts"]!.map((x) => Cart.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "carts": carts == null ? [] : List<dynamic>.from(carts!.map((x) => x.toJson())),
+        "carts": carts == null
+            ? []
+            : List<dynamic>.from(carts!.map((x) => x.toJson())),
       };
 }
 
@@ -66,14 +73,19 @@ class Cart {
   });
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
-        groceryResult: json["groceryResult"] == null ? [] : List<GroceryResult>.from(json["groceryResult"]!.map((x) => GroceryResult.fromJson(x))),
+        groceryResult: json["groceryResult"] == null
+            ? []
+            : List<GroceryResult>.from(
+                json["groceryResult"]!.map((x) => GroceryResult.fromJson(x))),
         menuId: json["menu_id"],
         grandTotal: json["grand_total"],
         store: json["store"] == null ? null : Store.fromJson(json["store"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "groceryResult": groceryResult == null ? [] : List<dynamic>.from(groceryResult!.map((x) => x.toJson())),
+        "groceryResult": groceryResult == null
+            ? []
+            : List<dynamic>.from(groceryResult!.map((x) => x.toJson())),
         "menu_id": menuId,
         "grand_total": grandTotal,
         "store": store?.toJson(),
@@ -91,18 +103,24 @@ class GroceryResult {
 
   factory GroceryResult.fromJson(Map<String, dynamic> json) => GroceryResult(
         searchedItemName: json["searchedItemName"],
-        products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
+        products: json["products"] == null
+            ? []
+            : List<Product>.from(
+                json["products"]!.map((x) => Product.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "searchedItemName": searchedItemName,
-        "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
+        "products": products == null
+            ? []
+            : List<dynamic>.from(products!.map((x) => x.toJson())),
       };
 }
 
 class Product {
   final String? productId;
   final String? itemName;
+  String? storeName;
   final String? image;
   final String? description;
   final String? category;
@@ -116,7 +134,7 @@ class Product {
   final bool? shouldFetchCustomizations;
   final dynamic menuId;
   final int? grandTotal;
-  final dynamic store;
+  late final /*dynamic*/ Store? store;
   final dynamic calorie;
   final dynamic protein;
   final dynamic fat;
@@ -131,6 +149,7 @@ class Product {
   Product({
     this.productId,
     this.itemName,
+    this.storeName = '',
     this.image,
     this.description,
     this.category,
@@ -166,10 +185,14 @@ class Product {
         price: json["price"],
         formattedPrice: json["formatted_price"],
         originalPrice: json["original_price"],
-        upcCodes: json["upc_codes"] == null ? [] : List<dynamic>.from(json["upc_codes"]!.map((x) => x)),
+        upcCodes: json["upc_codes"] == null
+            ? []
+            : List<dynamic>.from(json["upc_codes"]!.map((x) => x)),
         unitSize: json["unit_size"]?.toDouble(),
         unitOfMeasurement: json["unit_of_measurement"],
-        attributes: json["attributes"] == null ? [] : List<String>.from(json["attributes"]!.map((x) => x)),
+        attributes: json["attributes"] == null
+            ? []
+            : List<String>.from(json["attributes"]!.map((x) => x)),
         shouldFetchCustomizations: json["should_fetch_customizations"],
         menuId: json["menu_id"],
         grandTotal: json["grand_total"],
@@ -192,10 +215,13 @@ class Product {
         "price": price,
         "formatted_price": formattedPrice,
         "original_price": originalPrice,
-        "upc_codes": upcCodes == null ? [] : List<dynamic>.from(upcCodes!.map((x) => x)),
+        "upc_codes":
+            upcCodes == null ? [] : List<dynamic>.from(upcCodes!.map((x) => x)),
         "unit_size": unitSize,
         "unit_of_measurement": unitOfMeasurement,
-        "attributes": attributes == null ? [] : List<dynamic>.from(attributes!.map((x) => x)),
+        "attributes": attributes == null
+            ? []
+            : List<dynamic>.from(attributes!.map((x) => x)),
         "should_fetch_customizations": shouldFetchCustomizations,
         "menu_id": menuId,
         "grand_total": grandTotal,
@@ -258,15 +284,20 @@ class Store {
         id: json["_id"],
         name: json["name"],
         phoneNumber: json["phone_number"],
-        address: json["address"] == null ? null : Address.fromJson(json["address"]),
+        address:
+            json["address"] == null ? null : Address.fromJson(json["address"]),
         type: json["type"],
         description: json["description"],
-        localHours: json["local_hours"] == null ? null : LocalHours.fromJson(json["local_hours"]),
+        localHours: json["local_hours"] == null
+            ? null
+            : LocalHours.fromJson(json["local_hours"]),
         dollarSigns: json["dollar_signs"],
         pickupEnabled: json["pickup_enabled"],
         deliveryEnabled: json["delivery_enabled"],
         isOpen: json["is_open"],
-        logoPhotos: json["logo_photos"] == null ? [] : List<String>.from(json["logo_photos"]!.map((x) => x)),
+        logoPhotos: json["logo_photos"] == null
+            ? []
+            : List<String>.from(json["logo_photos"]!.map((x) => x)),
         offersFirstPartyDelivery: json["offers_first_party_delivery"],
         offersThirdPartyDelivery: json["offers_third_party_delivery"],
         miles: json["miles"]?.toDouble(),
@@ -286,7 +317,9 @@ class Store {
         "pickup_enabled": pickupEnabled,
         "delivery_enabled": deliveryEnabled,
         "is_open": isOpen,
-        "logo_photos": logoPhotos == null ? [] : List<dynamic>.from(logoPhotos!.map((x) => x)),
+        "logo_photos": logoPhotos == null
+            ? []
+            : List<dynamic>.from(logoPhotos!.map((x) => x)),
         "offers_first_party_delivery": offersFirstPartyDelivery,
         "offers_third_party_delivery": offersThirdPartyDelivery,
         "miles": miles,
@@ -353,10 +386,16 @@ class LocalHours {
   });
 
   factory LocalHours.fromJson(Map<String, dynamic> json) => LocalHours(
-        operational: json["operational"] == null ? null : Delivery.fromJson(json["operational"]),
-        delivery: json["delivery"] == null ? null : Delivery.fromJson(json["delivery"]),
-        pickup: json["pickup"] == null ? null : Delivery.fromJson(json["pickup"]),
-        dineIn: json["dine_in"] == null ? null : Delivery.fromJson(json["dine_in"]),
+        operational: json["operational"] == null
+            ? null
+            : Delivery.fromJson(json["operational"]),
+        delivery: json["delivery"] == null
+            ? null
+            : Delivery.fromJson(json["delivery"]),
+        pickup:
+            json["pickup"] == null ? null : Delivery.fromJson(json["pickup"]),
+        dineIn:
+            json["dine_in"] == null ? null : Delivery.fromJson(json["dine_in"]),
       );
 
   Map<String, dynamic> toJson() => {

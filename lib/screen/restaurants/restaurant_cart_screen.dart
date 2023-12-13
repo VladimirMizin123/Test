@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -11,13 +15,17 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'model/get_user_address_model.dart' as address;
+import 'model/create_order_response_model.dart' as order;
 
 class RestaurantCart extends StatefulWidget {
   const RestaurantCart({super.key, required this.pickUp});
+
   final bool pickUp;
 
   @override
@@ -31,9 +39,18 @@ class _RestaurantCartState extends State<RestaurantCart> {
   bool isAddUpdate = false;
   bool isApiCall = false;
   dynamic price = 0;
+  bool getAddressLoadingState = false;
+  bool loadCreateOrder = false;
+
+  // bool createOrder = false;
+  address.UserAddress? getUserAddress;
+  order.CreateOrderData? orderData;
+
   @override
   void initState() {
     super.initState();
+
+    restaurantBloc.add(GetUserAddressEvent());
     restaurantBloc.add(GetShoppingListEvent());
   }
 
@@ -46,6 +63,59 @@ class _RestaurantCartState extends State<RestaurantCart> {
           child: bloc.BlocConsumer(
             bloc: restaurantBloc,
             listener: (context, state) {
+              /// Create Order State ---------------------------------------------------
+
+              if (state is CreateOrderLoadingState) {
+                loadCreateOrder = true;
+              }
+              if (state is CreateOrderErrorState) {
+                loadCreateOrder = false;
+              }
+              if (state is CreateOrderSuccessState) {
+                orderData = state.orderData;
+                if (orderData != null) {
+                  Get.to(
+                    () => CheckOutScreen(
+                      isFromGrocery: false,
+                      cartData: cartData,
+                      orderData: orderData,
+                      getUserAddress: getUserAddress,
+                    ),
+                    transition: Transition.fadeIn,
+                  );
+                }
+
+                loadCreateOrder = false;
+              }
+
+              /// Address
+              if (state is GetUserAddressSuccessState) {
+                if (state.userAddress.isEmpty) {
+                } else {
+                  /// address is primary then primary will be taken
+                  for (var i = 0; i < state.userAddress.length; i++) {
+                    if (state.userAddress[i].isPrimary == true) {
+                      getUserAddress = state.userAddress[i];
+                      break;
+                    }
+                  }
+
+                  /// address is not primary then first will be taken
+                  getUserAddress ??= state.userAddress[0];
+                  log("getUserAddress:-> ${jsonEncode(getUserAddress)}");
+                }
+
+                getAddressLoadingState = false;
+              }
+              if (state is GetUserAddressLoadingState) {
+                getAddressLoadingState = true;
+              }
+              if (state is GetUserAddressErrorState) {
+                getAddressLoadingState = false;
+              }
+
+              ///
+
               if (state is GetShoppingListLoadingState) {
                 loading = true;
               }
@@ -530,33 +600,123 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                               ],
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10),
-                                            child: simpleTextBorderButton(
-                                              color: AppColors.terracotta,
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              isFillColor: true,
-                                              height: 40.h,
-                                              isLoadingWidget: false,
-                                              buttonLable: 'Checkout ',
-                                              lableColor: Colors.white,
-                                              onTap: () {
-                                                Get.to(
-                                                  () => CheckOutScreen(
-                                                    cartData: cartData,
-                                                    subtotal: price,
-                                                    pickup: widget.pickUp,
+                                          loadCreateOrder
+                                              ? const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                )
+                                              : Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 10),
+                                                  child: simpleTextBorderButton(
+                                                    color: AppColors.terracotta,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    isFillColor: true,
+                                                    height: 40.h,
+                                                    isLoadingWidget: false,
+                                                    buttonLable: 'Checkout ',
+                                                    lableColor: Colors.white,
+                                                    onTap: () async {
+                                                      List<CreateOrderMealmeItems>
+                                                          data = [];
+
+                                                      for (var element
+                                                          in cartData) {
+                                                        List<SelectedOptions>
+                                                            optionList = [];
+                                                        for (var element1
+                                                            in element
+                                                                .options!) {
+                                                          optionList.add(
+                                                            SelectedOptions(
+                                                              quantity: element1
+                                                                  .quantity,
+                                                              markedPrice: element1
+                                                                  .markedPrice,
+                                                              optionId: element1
+                                                                  .optionId,
+                                                            ),
+                                                          );
+                                                        }
+
+                                                        data.add(
+                                                          CreateOrderMealmeItems(
+                                                            productId: element
+                                                                .productId,
+                                                            productType: 1,
+                                                            quantity: element
+                                                                .quantity,
+                                                            notes: '',
+                                                            productMarkedPrice:
+                                                                element.price,
+                                                            selectedOptions:
+                                                                optionList,
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      restaurantBloc.add(
+                                                        CreateOrderEvent(
+                                                          createOrderModel:
+                                                              CreateOrderModel(
+                                                            userId: userId,
+                                                            pickup:
+                                                                widget.pickUp,
+                                                            mealmeItems: data,
+                                                            userAddress:
+                                                                UserAddress(
+                                                              latitude:
+                                                                  (getUserAddress
+                                                                          ?.latitude ??
+                                                                      0.0),
+                                                              longitude:
+                                                                  (getUserAddress
+                                                                          ?.longitude ??
+                                                                      0.0),
+                                                              streetName:
+                                                                  getUserAddress
+                                                                      ?.streetName,
+                                                              streetNum:
+                                                                  getUserAddress
+                                                                      ?.streetNum,
+                                                              city:
+                                                                  getUserAddress
+                                                                      ?.city,
+                                                              country:
+                                                                  getUserAddress
+                                                                      ?.country,
+                                                              state:
+                                                                  getUserAddress
+                                                                      ?.state,
+                                                              zipcode:
+                                                                  getUserAddress
+                                                                      ?.zipcode,
+                                                            ),
+                                                            userPhone:
+                                                                int.parse(
+                                                              PreferenceUtils.getString(
+                                                                          prefUserMobile)
+                                                                      .isNotEmpty
+                                                                  ? PreferenceUtils
+                                                                      .getString(
+                                                                          prefUserMobile)
+                                                                  : '1234567890',
+                                                            ),
+                                                            driverTipCents: 0,
+                                                            pickupTipCents: 0,
+                                                            userDropoffNotes:
+                                                                '',
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    context: context,
+                                                    isDarkColor: false,
                                                   ),
-                                                  transition: Transition.fadeIn,
-                                                );
-                                              },
-                                              context: context,
-                                              isDarkColor: false,
-                                            ),
-                                          ),
+                                                ),
                                         ],
                                       ),
                                     ),

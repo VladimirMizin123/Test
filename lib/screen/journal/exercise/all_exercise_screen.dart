@@ -11,8 +11,11 @@ import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_entry_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 
+List<GetAllExerciseData> allExerciseList = [];
+
 class AllExerciseScreen extends StatefulWidget {
   final DateTime? dateTime;
+
   const AllExerciseScreen({super.key, this.dateTime});
 
   @override
@@ -20,9 +23,7 @@ class AllExerciseScreen extends StatefulWidget {
 }
 
 class _AllExerciseScreenState extends State<AllExerciseScreen> {
-  List<GetAllExerciseData> allExerciseList = [];
   GetUserJournalBloc journalPlanBloc = GetUserJournalBloc();
-  
 
   @override
   void initState() {
@@ -49,7 +50,10 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
                       : Center(
                           child: Text(
                             StringUtils.noExercise,
-                            style: textTheme.bodySmall?.copyWith(color: AppColors.middleGray, fontWeight: FontWeight.w400, fontSize: 13.sp),
+                            style: textTheme.bodySmall?.copyWith(
+                                color: AppColors.middleGray,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 13.sp),
                           ).paddingOnly(top: 10.h, bottom: 10.h),
                         )
                   : ListView.builder(
@@ -61,10 +65,14 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
                           children: [
                             InkWell(
                               onTap: () {
-                                Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(allExerciseData: allExerciseList[index],isFromHistory: false));
+                                Get.toNamed("/AddEntryScreen",
+                                    arguments: AddEntryArguments(
+                                        allExerciseData: allExerciseList[index],
+                                        isFromHistory: false));
                               },
                               child: ListTile(
-                                title: Text(allExerciseList[index].exerciseName ?? ''),
+                                title: Text(
+                                    allExerciseList[index].exerciseName ?? ''),
                                 trailing: Icon(
                                   Icons.arrow_forward_ios,
                                   size: 15.h,

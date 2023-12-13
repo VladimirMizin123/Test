@@ -33,7 +33,7 @@ class AppColors {
         onSurface: Color(0xFFFFFFFF),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.all(const Color(0xFF004C63)),
+        // fillColor: MaterialStateProperty.all(const Color(0xFF004C63)),
         checkColor: MaterialStateProperty.all(Colors.white),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +19,12 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 
+//TEMP
+List<Product> dataList1 = [];
+List<Product> dataList2 = [];
+List<Product> dataList3 = [];
+List<List<Product>> allData = [dataList1, dataList2, dataList3];
+
 class ChooseStoreScreen extends StatefulWidget {
   final GroceryCartScreenArguments? arguments;
   const ChooseStoreScreen({super.key, this.arguments});
@@ -30,10 +38,17 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
 
   List<Cart> productsList = [];
   List<Cart> searchedProductsList = [];
+
   bool isSearchOn = false;
   @override
   void initState() {
     super.initState();
+    /* dataList1.clear();
+    dataList2.clear();
+    dataList3.clear();*/
+    log(dataList1.length.toString(), name: "DATA LIST 1");
+    log(dataList2.length.toString(), name: "DATA LIST 2");
+    log(dataList3.length.toString(), name: "DATA LIST 3");
     searchStore();
   }
 
@@ -161,7 +176,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 12,
                                                       vertical: 12),
                                                   child: Row(
@@ -328,6 +343,17 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
+                                    /*if(dataList1.isNotEmpty){
+                                      if(dataList1[0].storeName ==  productsList[
+                                      index]
+                                          .store!.name){productsList[
+                                      index]
+                                          .store!
+                                          .isSelected = true;}
+
+                                    }
+                                    if(dataList2.isNotEmpty){}
+                                    if(dataList3.isNotEmpty){}*/
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 6),
@@ -352,9 +378,11 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                         child:
                                                             CachedNetworkImage(
                                                           imageUrl: productsList[
-                                                                  index]
-                                                              .store!
-                                                              .logoPhotos![0],
+                                                                          index]
+                                                                      .store!
+                                                                      .logoPhotos?[
+                                                                  0] ??
+                                                              '',
                                                           height: 60.h,
                                                           // width: 40.h,
                                                           fit: BoxFit.cover,
@@ -426,6 +454,21 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                       .store!
                                                                       .isSelected =
                                                                   false;
+                                                              if (selectedStoreCount ==
+                                                                  1) {
+                                                                dataList1
+                                                                    .clear();
+                                                              }
+                                                              if (selectedStoreCount ==
+                                                                  2) {
+                                                                dataList2
+                                                                    .clear();
+                                                              }
+                                                              if (selectedStoreCount ==
+                                                                  3) {
+                                                                dataList3
+                                                                    .clear();
+                                                              }
                                                               selectedStoreCount =
                                                                   selectedStoreCount -
                                                                       1;
@@ -442,9 +485,112 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                               selectedStoreCount =
                                                                   selectedStoreCount +
                                                                       1;
+                                                              log(selectedStoreCount
+                                                                  .toString());
+                                                              if (selectedStoreCount ==
+                                                                  1) {
+                                                                dataList1
+                                                                    .clear();
+                                                                log("CLEAR");
+                                                                (productsList[index]
+                                                                            .groceryResult ??
+                                                                        [])
+                                                                    .forEach(
+                                                                        (grocery) {
+                                                                  log("ADD");
+                                                                  (grocery.products ??
+                                                                          [])
+                                                                      .forEach(
+                                                                          (element) {
+                                                                    element
+                                                                        .storeName = productsList[index]
+                                                                            .store
+                                                                            ?.name ??
+                                                                        '';
+                                                                    dataList1.add(
+                                                                        element);
+                                                                  });
+                                                                });
+                                                              }
+                                                              if (selectedStoreCount ==
+                                                                  2) {
+                                                                dataList2
+                                                                    .clear();
+                                                                (productsList[index]
+                                                                            .groceryResult ??
+                                                                        [])
+                                                                    .forEach(
+                                                                        (grocery) {
+                                                                  (grocery.products ??
+                                                                          [])
+                                                                      .forEach(
+                                                                          (element) {
+                                                                    element
+                                                                        .storeName = productsList[index]
+                                                                            .store
+                                                                            ?.name ??
+                                                                        '';
+                                                                    dataList2.add(
+                                                                        element);
+                                                                  });
+                                                                });
+                                                              }
+                                                              if (selectedStoreCount ==
+                                                                  3) {
+                                                                dataList3
+                                                                    .clear();
+                                                                (productsList[index]
+                                                                            .groceryResult ??
+                                                                        [])
+                                                                    .forEach(
+                                                                        (grocery) {
+                                                                  (grocery.products ??
+                                                                          [])
+                                                                      .forEach(
+                                                                          (element) {
+                                                                    element
+                                                                        .storeName = productsList[index]
+                                                                            .store
+                                                                            ?.name ??
+                                                                        '';
+                                                                    dataList3.add(
+                                                                        element);
+                                                                  });
+                                                                });
+                                                              }
+
+                                                              /// Create Seperate List
                                                             }
                                                           }
                                                         });
+                                                        allData.sort((a, b) =>
+                                                            b.length.compareTo(
+                                                                a.length));
+                                                        log(
+                                                            dataList1.length
+                                                                .toString(),
+                                                            name:
+                                                                "DATA LIST 1");
+                                                        log(
+                                                            dataList2.length
+                                                                .toString(),
+                                                            name:
+                                                                "DATA LIST 2");
+                                                        log(
+                                                            dataList3.length
+                                                                .toString(),
+                                                            name:
+                                                                "DATA LIST 2");
+
+                                                        log(
+                                                            productsList[index]
+                                                                .groceryResult![
+                                                                    0]
+                                                                .products!
+                                                                .length
+                                                                .toString(),
+                                                            name:
+                                                                "productsList");
                                                       },
                                                       child: Container(
                                                         height: 22.h,
@@ -515,6 +661,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                             selectedProductStore.add(productsList[i]);
                           }
                         }
+
                         widget.arguments!.groceryBloc!.add(
                             GrocerySelectedStoreEvent(
                                 productsList: selectedProductStore));

@@ -66,15 +66,18 @@ class Data {
 
 class OrderedItem {
   String? orderId;
+  String? trackLink;
   List<Item>? items;
 
   OrderedItem({
     this.orderId,
+    this.trackLink,
     this.items,
   });
 
   factory OrderedItem.fromJson(Map<String, dynamic> json) => OrderedItem(
         orderId: json["orderId"],
+        trackLink: json["trackLink"],
         items: json["items"] == null
             ? []
             : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
@@ -82,6 +85,7 @@ class OrderedItem {
 
   Map<String, dynamic> toJson() => {
         "orderId": orderId,
+        "trackLink": trackLink,
         "items": items == null
             ? []
             : List<dynamic>.from(items!.map((x) => x.toJson())),
@@ -100,7 +104,6 @@ class Item {
   dynamic userId;
   int? deliveryTimeMin;
   int? deliveryTimeMax;
-  String? trackLink;
   String? optionId;
   bool? isPickUp;
   String? pickUpTime;
@@ -120,7 +123,6 @@ class Item {
     this.userId,
     this.deliveryTimeMin,
     this.deliveryTimeMax,
-    this.trackLink,
     this.optionId,
     this.isPickUp,
     this.pickUpTime,
@@ -143,7 +145,6 @@ class Item {
         userId: json["userId"],
         deliveryTimeMin: json["deliveryTimeMin"],
         deliveryTimeMax: json["deliveryTimeMax"],
-        trackLink: json["trackLink"],
         optionId: json["optionId"],
         isPickUp: json["isPickUp"],
         pickUpTime: json["pickUpTime"],
@@ -164,7 +165,6 @@ class Item {
         "userId": userId,
         "deliveryTimeMin": deliveryTimeMin,
         "deliveryTimeMax": deliveryTimeMax,
-        "trackLink": trackLink,
         "optionId": optionId,
         "isPickUp": isPickUp,
         "pickUpTime": pickUpTime,

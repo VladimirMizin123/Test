@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -6,22 +8,36 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import '../../restaurants/model/get_user_address_model.dart' as address;
+
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart'
+    as order;
+
+// import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart'
+//     as order;
 
 class GroceryCartScreen extends StatefulWidget {
   final GroceryCartScreenArguments? arguments;
+
   const GroceryCartScreen({super.key, this.arguments});
 
   @override
@@ -29,28 +45,26 @@ class GroceryCartScreen extends StatefulWidget {
 }
 
 class _GroceryCartScreenState extends State<GroceryCartScreen> {
-  List<String> productList = [
-    'Product 1',
-    'Product 2',
-    'Product 3',
-    'Product 4',
-    'Product 5'
-  ];
   GroceryBloc groceryBloc = GroceryBloc();
-  List<GrocerySearchModel> grocerySearchModalDataList = [];
-  List<Product>? groceryMultiSearchStoreProductListList = [];
   List<Cart> selectedStoreProductList = [];
   List<GroceryDetails> edgesList = [];
   List<GroceryDetails> onlyProductList = [];
   List<GroceryDetails> allSearchRestaurantList = [];
   bool isSearchOn = false;
+  bool loadCreateOrder = false;
+
+  // bool createOrder = false;
+
   // List<GroceryDetails> onlyProductList = [];
   int selectedIndex = 0;
+  address.UserAddress? getUserAddress;
+  order.CreateOrderData? orderData;
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      groceryBloc.add(GetUserAddressEvent());
       setState(() {
         edgesList = List.from(widget.arguments!.edgesList);
         for (var element in edgesList) {
@@ -67,6 +81,47 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
       body: BlocConsumer<GroceryBloc, GroceryState>(
         bloc: groceryBloc,
         listener: (context, state) {
+          // Address
+          if (state is GetUserAddressSuccessState) {
+            if (state.userAddress.isEmpty) {
+            } else {
+              /// address is primary then primary will be taken
+              for (var i = 0; i < state.userAddress.length; i++) {
+                if (state.userAddress[i].isPrimary == true) {
+                  getUserAddress = state.userAddress[i];
+                  break;
+                }
+              }
+
+              /// address is not primary then first will be taken
+              getUserAddress ??= state.userAddress[0];
+
+              log("getUserAddress LISTENER:-------> ${getUserAddress?.latitude ?? '=='}  ${getUserAddress?.longitude ?? "00"}");
+            }
+          }
+
+          if (state is CreateOrderLoadingState) {
+            loadCreateOrder = true;
+          }
+          if (state is CreateOrderErrorState) {
+            loadCreateOrder = false;
+          }
+          if (state is CreateOrderSuccessState) {
+            orderData = state.orderData;
+            if (orderData != null) {
+              Get.to(
+                () => CheckOutScreen(
+                  isFromGrocery: true,
+                  cartData: selectedStoreProductList,
+                  orderData: orderData,
+                  getUserAddress: getUserAddress,
+                ),
+              );
+            }
+
+            loadCreateOrder = false;
+          }
+
           // STATE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           if (state is GrocerySelectedStoreEventState) {
             selectedStoreProductList = state.productsList;
@@ -119,6 +174,57 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                 ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                 GestureDetector(
                   onTap: () {
+                    ///clear cart and selected items
+                    log(selectedStoreProductList.length.toString(),
+                        name: "Selected Length");
+                    selectedIndex = 0;
+
+                    if (selectedStoreProductList.length == 0) {
+                      dataList1.clear();
+                      dataList2.clear();
+                      dataList3.clear();
+                    } else {
+                      selectedStoreProductList.forEach((element) {
+                        log(element.store!.name.toString(),
+                            name: "Selected Length");
+                      });
+                      if (allData[0].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[0][0].storeName)) {
+                      } else {
+                        log("CLEAR");
+
+                        allData[0].clear();
+                      }
+                      if (allData[1].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[1][0].storeName)) {
+                      } else {
+                        log("CLEAR");
+
+                        allData[1].clear();
+                      }
+                      if (allData[2].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[2][0].storeName)) {
+                      } else {
+                        log("CLEAR");
+                        allData[2].clear();
+                      }
+                      // });
+                      log(
+                          (allData[0].isNotEmpty
+                                  ? allData[0][0].storeName
+                                  : 'DEFAULT')
+                              .toString(),
+                          name: "All Data Length");
+
+                      allData.sort((a, b) => b.length.compareTo(a.length));
+
+                      log(selectedStoreProductList.length.toString(),
+                          name: "Selected Length");
+                    }
+
                     Get.toNamed('/ChooseStoreScreen',
                         arguments: GroceryCartScreenArguments(
                           edgesList: widget.arguments!.edgesList,
@@ -304,74 +410,88 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               // List<GroceryShoppingData> edgesDList = [];
                                               onlyProductList.clear();
                                               // List<List<GroceryShoppingData>> dList = [];
-                                              List<List<GroceryDetails>> dList =
-                                                  [];
-                                              for (var i = 0;
-                                                  i <
-                                                      widget.arguments!
-                                                          .edgesList.length;
-                                                  i++) {
-                                                // List<GroceryShoppingData> singleDList = [];
-                                                List<GroceryDetails>
-                                                    singleDList = [];
-                                                for (var j = 0;
-                                                    j <
-                                                        selectedStoreProductList
-                                                            .length;
-                                                    j++) {
-                                                  for (var k = 0;
-                                                      k <
-                                                          selectedStoreProductList[
-                                                                  j]
-                                                              .groceryResult!
+                                              ///new Code
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
+                                                  onlyProductList.add(element);
+                                                });
+                                              }
+
+                                              ///old Code
+                                              /*
+                                                List<List<GroceryDetails>> dList =
+                                                [];
+                                                for (var i = 0;
+                                                    i <
+                                                        widget.arguments!
+                                                            .edgesList.length;
+                                                    i++) {
+                                                  // List<GroceryShoppingData> singleDList = [];
+                                                  List<GroceryDetails>
+                                                      singleDList = [];
+                                                  for (var j = 0;
+                                                      j <
+                                                          selectedStoreProductList
                                                               .length;
-                                                      k++) {
-                                                    for (var l = 0;
-                                                        l <
+                                                      j++) {
+                                                    log(selectedStoreProductList
+                                                        .length
+                                                        .toString());
+                                                    for (var k = 0;
+                                                        k <
                                                             selectedStoreProductList[
                                                                     j]
+                                                                .groceryResult!
+                                                                .length;
+                                                        k++) {
+                                                      for (var l = 0;
+                                                          l <
+                                                              selectedStoreProductList[
+                                                                      j]
+                                                                  .groceryResult![
+                                                                      k]
+                                                                  .products!
+                                                                  .length;
+                                                          l++) {
+                                                        // print('${widget.arguments!.edgesList[i].productName} == ${selectedStoreProductList[j].groceryResult![k].products![l].itemName}');
+                                                        if (widget
+                                                                .arguments!
+                                                                .edgesList[i]
+                                                                .itemName ==
+                                                            selectedStoreProductList[j]
                                                                 .groceryResult![
                                                                     k]
-                                                                .products!
-                                                                .length;
-                                                        l++) {
-                                                      // print('${widget.arguments!.edgesList[i].productName} == ${selectedStoreProductList[j].groceryResult![k].products![l].itemName}');
-                                                      if (widget
-                                                              .arguments!
-                                                              .edgesList[i]
-                                                              .itemName ==
-                                                          selectedStoreProductList[
-                                                                  j]
-                                                              .groceryResult![k]
-                                                              .products![l]
-                                                              .itemName) {
-                                                        if (singleDList
-                                                            .contains(widget
-                                                                    .arguments!
-                                                                    .edgesList[
-                                                                i])) {
+                                                                .products![l]
+                                                                .itemName) {
+                                                          if (singleDList
+                                                              .contains(widget
+                                                                      .arguments!
+                                                                      .edgesList[
+                                                                  i])) {
+                                                          } else {
+                                                            singleDList.add(widget
+                                                                .arguments!
+                                                                .edgesList[i]);
+                                                          }
                                                         } else {
-                                                          singleDList.add(widget
-                                                              .arguments!
-                                                              .edgesList[i]);
+                                                          // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
                                                         }
-                                                      } else {
-                                                        // print('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
                                                       }
                                                     }
                                                   }
+                                                  if (singleDList.isNotEmpty) {
+                                                    dList.add(singleDList);
+                                                  }
                                                 }
-                                                if (singleDList.isNotEmpty) {
-                                                  dList.add(singleDList);
-                                                }
-                                              }
 
-                                              dList.sort((a, b) =>
-                                                  a.length.compareTo(b.length));
-                                              if (dList.isNotEmpty) {
-                                                onlyProductList =
-                                                    List.from(dList.first);
-                                              }
+                                                dList.sort((a, b) => a.length
+                                                    .compareTo(b.length));
+                                                if (dList.isNotEmpty) {
+                                                  onlyProductList =
+                                                      List.from(dList.first);
+                                                }*/
                                             }
                                           },
                                           child: Container(
@@ -394,7 +514,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       horizontal: 20),
                                               child: Center(
                                                   child: Text(
-                                                'From 1 store only',
+                                                'From ${allData[0].isNotEmpty ? allData[0][0].storeName ?? '' : "-"} store only',
                                                 style: FontUtils.h15(
                                                     fontColor:
                                                         AppColors.terracotta),
@@ -417,7 +537,21 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                   msg:
                                                       'Please, select a Store!');
                                             } else {
+                                              ///new code
                                               setState(() {
+                                                selectedIndex = 2;
+                                              });
+                                              onlyProductList.clear();
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
+                                                  onlyProductList.add(element);
+                                                });
+                                              }
+
+                                              ///old code
+                                              /* setState(() {
                                                 selectedIndex = 2;
                                               });
                                               // selectedStoreProductList
@@ -485,23 +619,23 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                 }
                                               }
 
-                                              // dList.sort((a, b) => a.length
-                                              //     .compareTo(b.length));
-                                              // if (dList.isNotEmpty) {
-                                              //   for (var i = 0;
-                                              //       i < dList.length;
-                                              //       i++) {
-                                              //     if (i == 0) {
-                                              //       onlyProductList
-                                              //           .addAll(dList[i]);
-                                              //     } else if (i == 1) {
-                                              //       onlyProductList
-                                              //           .addAll(dList[i]);
-                                              //     } else {
-                                              //       return;
-                                              //     }
-                                              //   }
-                                              // }
+                                              dList.sort((a, b) =>
+                                                  b.length.compareTo(a.length));
+                                              if (dList.isNotEmpty) {
+                                                for (var i = 0;
+                                                    i < dList.length;
+                                                    i++) {
+                                                  if (i == 0) {
+                                                    onlyProductList
+                                                        .addAll(dList[i]);
+                                                  } else if (i == 1) {
+                                                    onlyProductList
+                                                        .addAll(dList[i]);
+                                                  } else {
+                                                    return;
+                                                  }
+                                                }
+                                              }*/
                                             }
                                           },
                                           child: Container(
@@ -524,7 +658,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       horizontal: 20),
                                               child: Center(
                                                   child: Text(
-                                                'From 2 store only',
+                                                'From ${allData[1].isNotEmpty ? allData[1][0].storeName ?? '' : "-"} store only',
                                                 style: FontUtils.h15(
                                                     fontColor:
                                                         AppColors.terracotta),
@@ -553,7 +687,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               // selectedStoreProductList
                                               // List<GroceryShoppingData> edgesDList = [];
                                               onlyProductList.clear();
-                                              List<List<GroceryDetails>> dList =
+                                              // List<List<GroceryShoppingData>> dList = [];
+                                              ///new Code
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
+                                                  onlyProductList.add(element);
+                                                });
+                                              }
+                                              /*  List<List<GroceryDetails>> dList =
                                                   [];
                                               for (var i = 0;
                                                   i <
@@ -632,7 +775,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               //       return;
                                               //     }
                                               //   }
-                                              // }
+                                              // }*/
                                             }
                                           },
                                           child: Container(
@@ -655,7 +798,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                       horizontal: 20),
                                               child: Center(
                                                   child: Text(
-                                                'From 3 store only',
+                                                'From ${allData[2].isNotEmpty ? allData[2][0].storeName ?? '' : "-"} store only',
                                                 style: FontUtils.h15(
                                                     fontColor:
                                                         AppColors.terracotta),
@@ -713,10 +856,15 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: isSearchOn == true
-                            ? displayData(displayData: allSearchRestaurantList)
+                            ? displayData(
+                                displayData: allSearchRestaurantList,
+                                hello: "123")
                             : selectedIndex == 0
-                                ? displayData(displayData: edgesList)
-                                : displayData(displayData: onlyProductList)),
+                                ? displayData(
+                                    displayData: edgesList, hello: "456")
+                                : displayData(
+                                    displayData: onlyProductList,
+                                    hello: "789")),
                   ),
                 ),
                 Container(
@@ -744,39 +892,107 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           ],
                         ),
                         const SizedBox(height: 30),
-                        simpleTextBorderButton(
-                          context: context,
-                          color: edgesList.indexWhere(
-                                      (element) => element.product == null) <
-                                  0
-                              ? AppColors.green
-                              : AppColors.gray,
-                          buttonLable: 'Checkout',
-                          height: screenSize.height * 0.065,
-                          width: screenSize.width,
-                          isLoadingWidget: false,
-                          onTap: () {
-                            int emptyIndex = edgesList.indexWhere(
-                                (element) => element.product == null);
+                        loadCreateOrder == true
+                            ? const Center(child: CircularProgressIndicator())
+                            : simpleTextBorderButton(
+                                context: context,
+                                color: edgesList.indexWhere((element) =>
+                                            element.product == null) <
+                                        0
+                                    ? AppColors.green
+                                    : AppColors.gray,
+                                buttonLable: 'Checkout',
+                                height: screenSize.height * 0.065,
+                                width: screenSize.width,
+                                isLoadingWidget: false,
+                                onTap: () {
+                                  loadCreateOrder = true;
 
-                            if (emptyIndex < 0) {
-                              Get.toNamed(
-                                '/CheckoutScreen',
-                                arguments: GroceryCartScreenArguments(
-                                  edgesList: edgesList,
-                                  askReceiveOrder:
-                                      widget.arguments!.askReceiveOrder,
-                                  groceryBloc: groceryBloc,
-                                ),
-                              );
-                            } else {
-                              Fluttertoast.showToast(
-                                  msg: 'Please, select the product!');
-                            }
-                          },
-                          isDarkColor: true,
-                          isFillColor: true,
-                        ),
+                                  setState(() {});
+                                  int emptyIndex = edgesList.indexWhere(
+                                      (element) => element.product == null);
+
+                                  if (emptyIndex < 0) {
+                                    if (getUserAddress == null) {
+                                      Fluttertoast.showToast(
+                                        msg: 'Please Select Address For Order',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        backgroundColor: Colors.black,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
+                                    } else {
+                                      List<CreateOrderGroceryItems> data = [];
+
+                                      for (var element in edgesList) {
+                                        data.add(
+                                          CreateOrderGroceryItems(
+                                            productId:
+                                                element.product?.productId,
+                                            productType: 2,
+                                            quantity:
+                                                element.product?.cartItemCount,
+                                            notes: '',
+                                            productMarkedPrice:
+                                                element.product?.originalPrice,
+                                            selectedOptions: [],
+                                          ),
+                                        );
+                                      }
+
+                                      groceryBloc.add(
+                                        CreateOrderEvent(
+                                          createGroceryOrderModel:
+                                              CreateGroceryOrderModel(
+                                            userId: userId,
+                                            pickup: widget
+                                                        .arguments!
+                                                        .askReceiveOrder
+                                                        .index ==
+                                                    0
+                                                ? false
+                                                : true,
+                                            groceryItems: data,
+                                            userAddress: UserAddress(
+                                              streetName:
+                                                  getUserAddress?.streetName ??
+                                                      '',
+                                              streetNum:
+                                                  getUserAddress?.streetNum ??
+                                                      '',
+                                              latitude:
+                                                  (getUserAddress?.latitude ??
+                                                      0.0),
+                                              longitude:
+                                                  (getUserAddress?.longitude ??
+                                                      0.0),
+                                              city: getUserAddress?.city ?? '',
+                                              country:
+                                                  getUserAddress?.country ?? '',
+                                              state:
+                                                  getUserAddress?.state ?? "",
+                                              zipcode:
+                                                  getUserAddress?.zipcode ?? '',
+                                            ),
+                                            userPhone: 1234567890,
+                                            driverTipCents: 0,
+                                            pickupTipCents: 0,
+                                            userDropoffNotes: '',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: 'Please, select the product!');
+                                  }
+                                  // loadCreateOrder = false;
+                                  // setState(() {});
+                                },
+                                isDarkColor: true,
+                                isFillColor: true,
+                              ),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -848,14 +1064,20 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
     return total;
   }
 
-  Widget displayData({List<GroceryDetails>? displayData}) {
+  Widget displayData(
+      {List<GroceryDetails>? displayData, required String hello}) {
+    log(hello, name: "CHECK");
     final screenSize = MediaQuery.of(context).size;
     return ListView.builder(
         itemCount: displayData!.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return displayData[index].product != null
+          return displayData[index].product != null &&
+                  (selectedIndex >= 1 &&
+                          allData[selectedIndex - 1]
+                              .contains(displayData[index].product) ||
+                      selectedIndex == 0)
               ? Column(
                   children: [
                     Row(
@@ -888,28 +1110,36 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     '', // 'Milk Almond Breeze 500ml, 1.5% fat',
                                 textAlign: TextAlign.start,
                                 style: FontUtils.h17(
-                                    fontColor: AppColors.darkGray),
+                                  fontColor: AppColors.darkGray,
+                                ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.info_outline_rounded,
-                                      color: AppColors.terracotta, size: 20),
+                                  const Icon(
+                                    Icons.info_outline_rounded,
+                                    color: AppColors.terracotta,
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 3),
                                   Text(
                                     'Available in: ',
                                     style: FontUtils.h12(
-                                        fontColor: AppColors.middleGray,
-                                        fontWeight: FWT.semiBold),
+                                      fontColor: AppColors.middleGray,
+                                      fontWeight: FWT.semiBold,
+                                    ),
                                   ),
                                   Flexible(
                                     child: Text(
-                                      selectedStoreProductList[0].store!.name ??
+                                      displayData[index].product!.storeName ??
                                           '',
                                       style: FontUtils.h12(
-                                          fontColor: AppColors.black,
-                                          fontWeight: FWT.semiBold),
+                                        fontColor: AppColors.black,
+                                        fontWeight: FWT.semiBold,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -1079,17 +1309,64 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   if (selectedStoreProductList.isNotEmpty) {
                     print(
                         "StoreName:- ${selectedStoreProductList[0].store!.name ?? ''}");
-                    Navigator.push(context,
+                    print("itemName:- ${displayData[index].itemName ?? ''}");
+                    log(selectedIndex.toString(), name: "selectedIndex");
+
+                    filterList() {
+                      List<Product> productList = [];
+                      if (selectedIndex != 0) {
+                        if (selectedIndex == 1) {
+                          allData[0].forEach((element) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
+                              productList.add(element);
+                            }
+                          });
+                        } else if (selectedIndex == 2) {
+                          allData[1].forEach((element) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
+                              productList.add(element);
+                            }
+                          });
+                        } else {
+                          allData[2].forEach((element) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
+                              productList.add(element);
+                            }
+                          });
+                        }
+                        log(productList.toString());
+                        return productList;
+                      } else {
+                        return null;
+                      }
+                    }
+
+                    Get.to(() => ItemCatalogScreen(
+                          selectedStoreProductList: selectedStoreProductList,
+                          productList: selectedIndex !=
+                                  0 /*&& selectedIndex != 3*/
+                              ? /*selectedIndex == 1
+                                  ? */
+                              filterList()
+                              /* : selectedIndex == 2
+                                      ? (allData[selectedIndex - 2] +
+                                          allData[selectedIndex - 1])
+                                      : null*/
+                              : null,
+                          groceryBloc: groceryBloc,
+                          productId: displayData[index].id,
+                          typeOfProduct: displayData[index].itemName ?? '',
+                        ));
+                    /*Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return ItemCatalogScreen(
-                        storeName:
-                            selectedStoreProductList[0].store!.name ?? '',
-                        selectedStoreProductList: selectedStoreProductList,
-                        groceryBloc: groceryBloc,
-                        productId: displayData[index].id,
-                        typeOfProduct: displayData[index].itemName ?? '',
-                      );
-                    }));
+                      return ;
+                    }));*/
                   } else {
                     Fluttertoast.showToast(msg: 'Please, Select Store!');
                   }

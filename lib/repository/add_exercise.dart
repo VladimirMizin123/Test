@@ -20,7 +20,13 @@ class AddExerciseRepository {
     required String workoutTime,
     required String createdBy,
   }) async {
-    Map<String, dynamic> data = {"caloriesBurned": caloriesBurned, "exerciseName": exerciseName, "userId": userId, "workoutTime": workoutTime, "createdBy": createdBy};
+    Map<String, dynamic> data = {
+      "caloriesBurned": caloriesBurned,
+      "exerciseName": exerciseName,
+      "userId": userId,
+      "workoutTime": workoutTime,
+      "createdBy": createdBy
+    };
     final response = await apiServices.post(ApiUrls.addExercise, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
@@ -34,8 +40,12 @@ class AddExerciseRepository {
     required String calorieBurnedPerMinuted,
     required String exerciseName,
   }) async {
-    Map<String, dynamic> data = {"id": userID, "exerciseName": exerciseName, "calorieBurnedPerMinute": calorieBurnedPerMinuted};
-    final response = await apiServices.post(ApiUrls.updateExercise, data);
+    Map<String, dynamic> data = {
+      "id": exerciseId,
+      "exerciseName": exerciseName,
+      "calorieBurnedPerMinute": calorieBurnedPerMinuted
+    };
+    final response = await apiServices.put(ApiUrls.updateExercise, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -46,7 +56,8 @@ class AddExerciseRepository {
   Future<Either<ErrorModel, SuccessModel>> deleteExercise({
     required String exerciseName,
   }) async {
-    final response = await apiServices.delete('${ApiUrls.removeExercise}?exerciseName=$exerciseName&userId=$userID');
+    final response = await apiServices.delete(
+        '${ApiUrls.removeExercise}?exerciseName=$exerciseName&userId=$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

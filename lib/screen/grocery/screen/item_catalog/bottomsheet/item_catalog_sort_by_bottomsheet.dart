@@ -59,7 +59,7 @@ class _ItemCatalogSortByBottomSheetState
                           fontWeight: FWT.semiBold))),
               const SizedBox(height: 10),
               myFilterWidget('Cheapest first', () {}),
-              myFilterWidget('Popular', () {}),
+              // myFilterWidget('Popular', () {}),
               myFilterWidget('Expensive', () {}),
               const SizedBox(height: 15),
               simpleTextBorderButton(

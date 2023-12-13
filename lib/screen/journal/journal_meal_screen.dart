@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,6 +45,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
   @override
   void initState() {
     super.initState();
+
+    log("SCREEN");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       journalPlanBloc.add(JournalPlanFetchEvent());
     });
@@ -348,13 +352,17 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                       return mealPlanCard(
                                         onTap: () {
                                           // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
-                                          Get.toNamed('/MealDetailsScreen',
-                                              arguments: MealPlanArguments(
-                                                  mealData: mealList[index],
-                                                  isFromScanner: false,
-                                                  currentSelectedData:
-                                                      journalMealScreenArguments!
-                                                          .dateTime));
+                                          log("REDIRECT");
+                                          Get.toNamed(
+                                            '/MealDetailsScreen',
+                                            arguments: MealPlanArguments(
+                                              mealData: mealList[index],
+                                              isFromScanner: false,
+                                              currentSelectedData:
+                                                  journalMealScreenArguments!
+                                                      .dateTime,
+                                            ),
+                                          );
                                         },
                                         mealData: mealList[index],
                                         context: context,

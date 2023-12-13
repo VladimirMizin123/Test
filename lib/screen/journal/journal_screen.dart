@@ -1017,8 +1017,8 @@ class _JournalScreenState extends State<JournalScreen> {
                                                 exerciseData!
                                                     .exerciseLogList!.isNotEmpty
                                             ? InkWell(
-                                                onTap: () {
-                                                  Get.toNamed(
+                                                onTap: () async {
+                                                  await Get.toNamed(
                                                     "/AddEntryScreen",
                                                     arguments:
                                                         AddEntryArguments(
@@ -1026,6 +1026,18 @@ class _JournalScreenState extends State<JournalScreen> {
                                                           exerciseData!
                                                               .exerciseLogList![0],
                                                       isFromHistory: true,
+                                                    ),
+                                                  );
+                                                  print(
+                                                      "object:--------> ${exerciseData!.exerciseLogList?[0].exerciseId}");
+
+                                                  bloc.add(
+                                                    GetExerciseDetails(
+                                                      date: dateTimeYYYYMMDD(
+                                                        dateTimeVal:
+                                                            selectedDateTime
+                                                                .toString(),
+                                                      ),
                                                     ),
                                                   );
                                                 },
@@ -1066,8 +1078,8 @@ class _JournalScreenState extends State<JournalScreen> {
                                                         .length >
                                                     1
                                             ? InkWell(
-                                                onTap: () {
-                                                  Get.toNamed(
+                                                onTap: () async {
+                                                  await Get.toNamed(
                                                     "/AddEntryScreen",
                                                     arguments:
                                                         AddEntryArguments(
@@ -1075,6 +1087,15 @@ class _JournalScreenState extends State<JournalScreen> {
                                                           exerciseData!
                                                               .exerciseLogList![1],
                                                       isFromHistory: true,
+                                                    ),
+                                                  );
+                                                  bloc.add(
+                                                    GetExerciseDetails(
+                                                      date: dateTimeYYYYMMDD(
+                                                        dateTimeVal:
+                                                            selectedDateTime
+                                                                .toString(),
+                                                      ),
                                                     ),
                                                   );
                                                 },
@@ -1447,11 +1468,12 @@ class _JournalScreenState extends State<JournalScreen> {
         }
       });
     }).toList();
-
+    print("dataList:--------> ${dataList?.length}");
     return Column(
       children: [
         InkWell(
           onTap: () async {
+            log("MEAL ID");
             // Get.toNamed("/JournalMealScreen", arguments: [dataList]);
             await Get.toNamed(
               "/JournalMealScreen",
@@ -1497,12 +1519,20 @@ class _JournalScreenState extends State<JournalScreen> {
         commonBorderView(
           child: InkWell(
             onTap: () {
-              Get.toNamed('/MealDetailsScreen',
-                  arguments: MealPlanArguments(
-                      mealData: MealData(
-                          recipe: Recipe(
-                    id: dataList![0].recipe!.id,
-                  ))));
+              log("REDIRECT");
+              log("${dataList[0].recipe!.name}", name: "RECIPE NAME");
+
+              Get.toNamed(
+                '/MealDetailsScreen',
+                arguments: MealPlanArguments(
+                  mealData: MealData(
+                    recipe: Recipe(
+                      id: dataList[0].recipe!.id,
+                      name: dataList[0].recipe!.name,
+                    ),
+                  ),
+                ),
+              );
               //Get.toNamed("/ForthJournalBGView");
             },
             child: commonJournalFoodData(

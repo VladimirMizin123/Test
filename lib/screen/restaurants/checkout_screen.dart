@@ -15,6 +15,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
@@ -38,13 +39,22 @@ import 'model/get_user_address_model.dart' as address;
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({
     super.key,
-    required this.cartData,
-    required this.subtotal,
-    required this.pickup,
+    this.cartData,
+    this.orderData,
+    required this.isFromGrocery,
+    required this.getUserAddress,
+    // required this.subtotal,
+    // required this.pickup,
   });
-  final List<ShoppingListData> cartData;
-  final int subtotal;
-  final bool pickup;
+
+  final address.UserAddress? getUserAddress;
+  final bool isFromGrocery;
+
+  final dynamic /*List<ShoppingListData>*/ cartData;
+  final dynamic /*order.CreateOrderData?*/ orderData;
+
+  // final int subtotal;
+  // final bool pickup;
 
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
@@ -108,24 +118,36 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   List<dynamic> data = [];
   Map<String, dynamic> cardData = {};
   bool loadCreateOrder = false;
-  order.CreateOrderData? orderData;
+
+  // order.CreateOrderData? orderData;
   List<product.ProductMealmeItems> productMealMeData = [];
-  bool createOrder = false;
+
+  // bool createOrder = false;
   ProductData? productData;
   bool webViewOpen = false;
 
   WebViewController controller = WebViewController();
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
-  bool getAddressLoadingState = false;
-  address.UserAddress? getUserAddress;
+
+  // bool getAddressLoadingState = false;
+
+  // address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
   int selectedIndex = -1;
+
   @override
   void initState() {
     super.initState();
     restaurantBloc.add(GetUserAddressEvent());
     restaurantBloc.add(GetDeliveryStatusEvent());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getCurrentLocation(
+        latitude: widget.getUserAddress?.latitude ?? 0,
+        longitude: widget.getUserAddress?.longitude ?? 0,
+      );
+      // widget.lateLong;
+    });
   }
 
   @override
@@ -137,52 +159,52 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           bloc: restaurantBloc,
           listener: (context, state) {
             /// User Address State---------------------------------------------------
-            if (state is GetUserAddressSuccessState) {
-              if (state.userAddress.isEmpty) {
-              } else {
-                /// address is primary then primary will be taken
-                for (var i = 0; i < state.userAddress.length; i++) {
-                  if (state.userAddress[i].isPrimary == true) {
-                    getUserAddress = state.userAddress[i];
-                    break;
-                  }
-                }
-
-                /// address is not primary then first will be taken
-                getUserAddress ??= state.userAddress[0];
-
-                getCurrentLocation(
-                    latitude: getUserAddress?.latitude,
-                    longitude: getUserAddress?.longitude);
-              }
-
-              getAddressLoadingState = false;
-            }
-            if (state is GetUserAddressLoadingState) {
-              getAddressLoadingState = true;
-            }
-            if (state is GetUserAddressErrorState) {
-              getAddressLoadingState = false;
-            }
+            // if (state is GetUserAddressSuccessState) {
+            //   if (state.userAddress.isEmpty) {
+            //   } else {
+            //     /// address is primary then primary will be taken
+            //     for (var i = 0; i < state.userAddress.length; i++) {
+            //       if (state.userAddress[i].isPrimary == true) {
+            //         getUserAddress = state.userAddress[i];
+            //         break;
+            //       }
+            //     }
+            //
+            //     /// address is not primary then first will be taken
+            //     getUserAddress ??= state.userAddress[0];
+            //
+            //     getCurrentLocation(
+            //         latitude: getUserAddress?.latitude,
+            //         longitude: getUserAddress?.longitude);
+            //   }
+            //
+            //   getAddressLoadingState = false;
+            // }
+            // if (state is GetUserAddressLoadingState) {
+            //   getAddressLoadingState = true;
+            // }
+            // if (state is GetUserAddressErrorState) {
+            //   getAddressLoadingState = false;
+            // }
 
             /// Create Order State ---------------------------------------------------
-
-            if (state is CreateOrderLoadingState) {
-              loadCreateOrder = true;
-            }
-            if (state is CreateOrderErrorState) {
-              loadCreateOrder = false;
-            }
-            if (state is CreateOrderSuccessState) {
-              orderData = state.orderData;
-              if (orderData != null) {
-                createOrder = true;
-              }
-
-              log('loadCreateOrder---------->>>>>> $loadCreateOrder');
-
-              loadCreateOrder = false;
-            }
+            //
+            // if (state is CreateOrderLoadingState) {
+            //   loadCreateOrder = true;
+            // }
+            // if (state is CreateOrderErrorState) {
+            //   loadCreateOrder = false;
+            // }
+            // if (state is CreateOrderSuccessState) {
+            //   orderData = state.orderData;
+            //   if (orderData != null) {
+            //     createOrder = true;
+            //   }
+            //
+            //   log('loadCreateOrder---------->>>>>> $loadCreateOrder');
+            //
+            //   loadCreateOrder = false;
+            // }
 
             /// Create Product State ---------------------------------------------------
 
@@ -243,13 +265,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     onPageStarted: (String url) {},
                     onPageFinished: (String url) {},
                     onWebResourceError: (WebResourceError error) {},
-                    onNavigationRequest: (NavigationRequest request) {
+                    onNavigationRequest: (NavigationRequest request) async {
                       if (request.url
                           .startsWith('https://gymeats.azurewebsites.net/')) {
-                        Get.to(() => RestaurantOrderDetailsScreen(
-                              mealMeOrderId:
-                                  productData?.priceId?.mealmeOrderId ?? '',
-                            ));
+                        if (widget.isFromGrocery) {
+                          final GroceryRepository repository =
+                              GroceryRepository();
+                          await repository.clearShoppingList();
+                          Get.to(() => RestaurantOrderDetailsScreen(
+                                mealMeOrderId:
+                                    productData?.priceId?.mealmeOrderId ?? '',
+                              ));
+                        } else {
+                          restaurantBloc.add(ClearShoppingListItemEvent());
+                        }
+
                         return NavigationDecision.prevent;
                       } else {
                         return NavigationDecision.navigate;
@@ -260,6 +290,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ..loadRequest(
                   Uri.parse(state.data['confirmUrl']),
                 );
+            }
+
+            if (state is ClearShoppingListItemSuccessState) {
+              Get.to(
+                () => RestaurantOrderDetailsScreen(
+                  mealMeOrderId: productData?.priceId?.mealmeOrderId ?? '',
+                ),
+              );
             }
 
             /// Update Delivery Status ---------------------------------------------------
@@ -606,7 +644,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           SizedBox(
                                             width: 200.w,
                                             child: Text(
-                                              getUserAddress?.streetName ??
+                                              widget.getUserAddress
+                                                      ?.streetName ??
                                                   'Where?',
                                               style: const TextStyle(
                                                 color: AppColors.darkGray,
@@ -731,7 +770,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        '${widget.cartData[index].quantity}x',
+                                                        '${widget.cartData[index]?.quantity ?? ''}x',
                                                         style: FontUtils.h14(
                                                           fontColor:
                                                               Colors.black,
@@ -854,145 +893,119 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           const SizedBox(
                             height: 10,
                           ),
-                          createOrder == true
-                              ? Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Subtotal',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          '\$${orderData!.finalQuote!.quote!.subtotal! / 100}',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        )
-                                      ],
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Subtotal',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
                                     ),
-                                    SizedBox(
-                                      height: 4.h,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Delivery fee',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        const Icon(Icons.info_outline,
-                                            size: 20),
-                                        const Spacer(),
-                                        Text(
-                                          '\$${orderData!.finalQuote!.quote!.deliveryFeeCents! / 100}',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Service fee',
-                                            style: FontUtils.h14(
-                                              fontColor: AppColors.darkGray,
-                                              fontWeight: FWT.lightMedium,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          const Icon(Icons.info_outline,
-                                              size: 20),
-                                          const Spacer(),
-                                          Text(
-                                            '\$${orderData!.finalQuote!.quote!.serviceFeeCents! / 100}',
-                                            style: FontUtils.h14(
-                                              fontColor: AppColors.darkGray,
-                                              fontWeight: FWT.lightMedium,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Service fee tax',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          '\$${orderData!.finalQuote!.quote!.salesTaxCents! / 100}',
-                                          style: FontUtils.h14(
-                                            fontColor: AppColors.darkGray,
-                                            fontWeight: FWT.lightMedium,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 5.h),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Total',
-                                            style: FontUtils.h18(
-                                              fontColor: AppColors.darkGray,
-                                              fontWeight: FWT.medium,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Text(
-                                            '\$ ${orderData!.finalQuote!.quote!.totalWithoutTips! / 100}',
-                                            style: FontUtils.h24(
-                                              fontColor:
-                                                  const Color(0xff010101),
-                                              fontWeight: FWT.medium,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Padding(
-                                  padding: EdgeInsets.only(top: 5.h),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Subtotal',
-                                        style: FontUtils.h18(
-                                          fontColor: AppColors.darkGray,
-                                          fontWeight: FWT.medium,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '\$${widget.subtotal / 100}',
-                                        style: FontUtils.h24(
-                                          fontColor: const Color(0xff010101),
-                                          fontWeight: FWT.medium,
-                                        ),
-                                      )
-                                    ],
                                   ),
+                                  const Spacer(),
+                                  Text(
+                                    '\$${(widget.orderData!.finalQuote?.quote?.subtotal ?? 0) / 100}',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 4.h,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Delivery fee',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.info_outline, size: 20),
+                                  const Spacer(),
+                                  Text(
+                                    '\$${(widget.orderData?.finalQuote?.quote?.deliveryFeeCents ?? 0) / 100}',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Service fee',
+                                      style: FontUtils.h14(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.lightMedium,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.info_outline, size: 20),
+                                    const Spacer(),
+                                    Text(
+                                      '\$${widget.orderData?.finalQuote!.quote!.serviceFeeCents! / 100}',
+                                      style: FontUtils.h14(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.lightMedium,
+                                      ),
+                                    )
+                                  ],
                                 ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Service fee tax',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '\$${(widget.orderData?.finalQuote?.quote?.salesTaxCents ?? 0) / 100}',
+                                    style: FontUtils.h14(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.lightMedium,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.h),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Total',
+                                      style: FontUtils.h18(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      '\$ ${(widget.orderData?.finalQuote?.quote?.totalWithoutTips ?? 0) / 100}',
+                                      style: FontUtils.h24(
+                                        fontColor: const Color(0xff010101),
+                                        fontWeight: FWT.medium,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: loadCreateOrder == true
@@ -1005,120 +1018,118 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     isFillColor: true,
                                     height: 40.h,
                                     isLoadingWidget: false,
-                                    buttonLable: createOrder == true
-                                        ? 'Confirm '
-                                        : 'Create Order',
+                                    buttonLable: 'Confirm',
                                     lableColor: Colors.white,
                                     onTap: () {
-                                      if (createOrder == false) {
-                                        List<CreateOrderMealmeItems> data = [];
+                                      //   if (createOrder == false) {
+                                      //     List<CreateOrderMealmeItems> data = [];
+                                      //
+                                      //     for (var element in widget.cartData) {
+                                      //       List<SelectedOptions> optionList = [];
+                                      //       for (var element1
+                                      //           in element.options!) {
+                                      //         optionList.add(
+                                      //           SelectedOptions(
+                                      //             quantity: element1.quantity,
+                                      //             markedPrice:
+                                      //                 element1.markedPrice,
+                                      //             optionId: element1.optionId,
+                                      //           ),
+                                      //         );
+                                      //       }
+                                      //
+                                      //       data.add(
+                                      //         CreateOrderMealmeItems(
+                                      //           productId: element.productId,
+                                      //           productType: 1,
+                                      //           quantity: element.quantity,
+                                      //           notes: notes.text,
+                                      //           productMarkedPrice: element.price,
+                                      //           selectedOptions: optionList,
+                                      //         ),
+                                      //       );
+                                      //     }
+                                      //
+                                      //     restaurantBloc.add(
+                                      //       CreateOrderEvent(
+                                      //         createOrderModel: CreateOrderModel(
+                                      //           userId: userId,
+                                      //           pickup: widget.pickup,
+                                      //           mealmeItems: data,
+                                      //           userAddress: UserAddress(
+                                      //             latitude:
+                                      //                 getUserAddress?.latitude,
+                                      //             longitude:
+                                      //                 getUserAddress?.longitude,
+                                      //             streetName:
+                                      //                 getUserAddress?.streetName,
+                                      //             streetNum:
+                                      //                 getUserAddress?.streetNum,
+                                      //             city: getUserAddress?.city,
+                                      //             country:
+                                      //                 getUserAddress?.country,
+                                      //             state: getUserAddress?.state,
+                                      //             zipcode:
+                                      //                 getUserAddress?.zipcode,
+                                      //           ),
+                                      //           userPhone: int.parse(
+                                      //             PreferenceUtils.getString(
+                                      //                         prefUserMobile)
+                                      //                     .isNotEmpty
+                                      //                 ? PreferenceUtils.getString(
+                                      //                     prefUserMobile)
+                                      //                 : '1234567890',
+                                      //           ),
+                                      //           driverTipCents: 0,
+                                      //           pickupTipCents: 0,
+                                      //           userDropoffNotes: notes.text,
+                                      //         ),
+                                      //       ),
+                                      //     );
+                                      //   } else {
+                                      /// Create Product / Create Checkout Api
 
-                                        for (var element in widget.cartData) {
-                                          List<SelectedOptions> optionList = [];
-                                          for (var element1
-                                              in element.options!) {
-                                            optionList.add(
-                                              SelectedOptions(
-                                                quantity: element1.quantity,
-                                                markedPrice:
-                                                    element1.markedPrice,
-                                                optionId: element1.optionId,
-                                              ),
-                                            );
-                                          }
-
-                                          data.add(
-                                            CreateOrderMealmeItems(
-                                              productId: element.productId,
-                                              productType: 1,
+                                      if (cardData.isEmpty) {
+                                        Fluttertoast.showToast(
+                                          msg: 'Please Select Card For Payment',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          backgroundColor: Colors.black,
+                                          textColor: Colors.white,
+                                          fontSize: 16.0,
+                                        );
+                                      } else {
+                                        for (var element in widget
+                                            .orderData!.finalQuote!.items!) {
+                                          productMealMeData.add(
+                                            product.ProductMealmeItems(
+                                              name: element.name,
+                                              markedPrice: element.markedPrice,
                                               quantity: element.quantity,
-                                              notes: notes.text,
-                                              productMarkedPrice: element.price,
-                                              selectedOptions: optionList,
+                                              productType: '1',
+                                              productId: element.productId,
+                                              image: element.image,
+                                              basePrice: element.basePrice,
                                             ),
                                           );
                                         }
 
                                         restaurantBloc.add(
-                                          CreateOrderEvent(
-                                            createOrderModel: CreateOrderModel(
+                                          CreateProductEvent(
+                                            createProductRequestModel: product
+                                                .CreateProductRequestModel(
                                               userId: userId,
-                                              pickup: widget.pickup,
-                                              mealmeItems: data,
-                                              userAddress: UserAddress(
-                                                latitude:
-                                                    getUserAddress?.latitude,
-                                                longitude:
-                                                    getUserAddress?.longitude,
-                                                streetName:
-                                                    getUserAddress?.streetName,
-                                                streetNum:
-                                                    getUserAddress?.streetNum,
-                                                city: getUserAddress?.city,
-                                                country:
-                                                    getUserAddress?.country,
-                                                state: getUserAddress?.state,
-                                                zipcode:
-                                                    getUserAddress?.zipcode,
-                                              ),
-                                              userPhone: int.parse(
-                                                PreferenceUtils.getString(
-                                                            prefUserMobile)
-                                                        .isNotEmpty
-                                                    ? PreferenceUtils.getString(
-                                                        prefUserMobile)
-                                                    : '1234567890',
-                                              ),
-                                              driverTipCents: 0,
-                                              pickupTipCents: 0,
-                                              userDropoffNotes: notes.text,
+                                              orderId:
+                                                  widget.orderData?.orderId,
+                                              totalAmount: widget
+                                                      .orderData?.totalPrice ??
+                                                  0,
+                                              mealmeItems: productMealMeData,
                                             ),
                                           ),
                                         );
-                                      } else {
-                                        /// Create Product / Create Checkout Api
-
-                                        if (cardData.isEmpty) {
-                                          Fluttertoast.showToast(
-                                            msg:
-                                                'Please Select Card For Payment',
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            backgroundColor: Colors.black,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0,
-                                          );
-                                        } else {
-                                          for (var element in orderData!
-                                              .finalQuote!.items!) {
-                                            productMealMeData.add(
-                                              product.ProductMealmeItems(
-                                                name: element.name,
-                                                markedPrice:
-                                                    element.markedPrice,
-                                                quantity: element.quantity,
-                                                productType: '1',
-                                                productId: element.productId,
-                                                image: element.image,
-                                                basePrice: element.basePrice,
-                                              ),
-                                            );
-                                          }
-
-                                          restaurantBloc.add(
-                                            CreateProductEvent(
-                                              createProductRequestModel: product
-                                                  .CreateProductRequestModel(
-                                                userId: userId,
-                                                orderId: orderData?.orderId,
-                                                totalAmount:
-                                                    orderData?.totalPrice,
-                                                mealmeItems: productMealMeData,
-                                              ),
-                                            ),
-                                          );
-                                        }
                                       }
+                                      // }
                                     },
                                     context: context,
                                     isDarkColor: false,

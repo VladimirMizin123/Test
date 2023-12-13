@@ -146,7 +146,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 height: 48.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    launchUrlForTracking(0);
+                    launchUrlForTracking();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isTap ? AppColors.coral : AppColors.mint,
@@ -193,9 +193,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           return InkWell(
-                            onTap: () {
-                              launchUrlForTracking(index);
-                            },
+                            onTap: () {},
                             child: Column(
                               children: [
                                 Row(
@@ -380,11 +378,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     return "$minIndex-$maxIndex min";
   }
 
-  launchUrlForTracking(int index) async {
+  launchUrlForTracking() async {
     try {
       await launchUrl(
         Uri.parse(
-          widget.data.items![index].trackLink ?? "",
+          widget.data.trackLink ?? "",
         ),
       );
     } catch (e) {

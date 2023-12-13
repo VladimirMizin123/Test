@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -585,8 +587,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                               arguments:
                                                   GroceryItemDetailsArguments(
                                                       groceryShoppingData:
-                                                          groceryDetails[
-                                                              index]))!
+                                                          groceryDetails[index],
+                                                      enableEdit: false))!
                                           .then((value) {
                                         setState(() {
                                           addNewGroceryItemBloc
@@ -680,36 +682,40 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                               children: [
                                                 Expanded(
                                                   flex: 2,
-                                                  child:
-                                                      DropdownButtonFormField(
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          decoration: const InputDecoration(
-                                                              border: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .black))),
-                                                          value: _selectProduct,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(12),
-                                                          items: productList
-                                                              .map((e) =>
-                                                                  DropdownMenuItem(
-                                                                    value: e,
-                                                                    child: Text(
-                                                                        e,
-                                                                        style: FontUtils.h16(
-                                                                            fontColor:
-                                                                                AppColors.black)),
-                                                                  ))
-                                                              .toList(),
-                                                          onChanged: (val) {
-                                                            setState(() {
-                                                              _selectProduct =
-                                                                  val!;
-                                                            });
-                                                          }),
+                                                  child: IgnorePointer(
+                                                    ignoring: true,
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            decoration: const InputDecoration(
+                                                                border: OutlineInputBorder(
+                                                                    borderSide: BorderSide(
+                                                                        color: Colors
+                                                                            .black))),
+                                                            value:
+                                                                _selectProduct,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12),
+                                                            items: productList
+                                                                .map((e) =>
+                                                                    DropdownMenuItem(
+                                                                      value: e,
+                                                                      child: Text(
+                                                                          e,
+                                                                          style:
+                                                                              FontUtils.h16(fontColor: AppColors.black)),
+                                                                    ))
+                                                                .toList(),
+                                                            onChanged: (val) {
+                                                              setState(() {
+                                                                _selectProduct =
+                                                                    val!;
+                                                              });
+                                                            }),
+                                                  ),
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 groceryDetails[index]

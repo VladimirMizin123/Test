@@ -23,6 +23,7 @@ class HistoryExerciseScreen extends StatefulWidget {
 class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
   GetUserJournalBloc journalPlanBloc = GetUserJournalBloc();
   List<ExerciseLogList> exerciseLogList = [];
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +50,10 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
                     : Center(
                         child: Text(
                           StringUtils.historyExercisesText,
-                          style: textTheme.bodySmall?.copyWith(color: AppColors.middleGray, fontWeight: FontWeight.w400, fontSize: 13.sp),
+                          style: textTheme.bodySmall?.copyWith(
+                              color: AppColors.middleGray,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13.sp),
                         ).paddingOnly(top: 10.h, bottom: 10.h),
                       )
                 : ListView.builder(
@@ -61,10 +65,14 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Get.toNamed("/AddEntryScreen", arguments: AddEntryArguments(exerciseLogList: exerciseLogList[index], isFromHistory: true));
+                              Get.toNamed("/AddEntryScreen",
+                                  arguments: AddEntryArguments(
+                                      exerciseLogList: exerciseLogList[index],
+                                      isFromHistory: true));
                             },
                             child: ListTile(
-                              title: Text(exerciseLogList[index].exerciseName ?? ''),
+                              title: Text(
+                                  exerciseLogList[index].exerciseName ?? ''),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 size: 15.h,

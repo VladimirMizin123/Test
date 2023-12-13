@@ -58,6 +58,8 @@ class ExerciseData {
 }
 
 class ExerciseLogList {
+  String? id;
+  String? exerciseId;
   String? exerciseName;
   int? workoutTime;
   int? caloriesBurned;
@@ -65,11 +67,15 @@ class ExerciseLogList {
 
   ExerciseLogList(
       {this.exerciseName,
-      this.workoutTime,
+      this.id,
+      this.exerciseId,
       this.caloriesBurned,
+      this.workoutTime,
       this.exerciseLogDate});
 
   ExerciseLogList.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    exerciseId = json['exerciseId'];
     exerciseName = json['exerciseName'];
     workoutTime = json['workoutTime'];
     caloriesBurned = json['caloriesBurned'];
@@ -78,6 +84,8 @@ class ExerciseLogList {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['exerciseId'] = exerciseId;
     data['exerciseName'] = exerciseName;
     data['workoutTime'] = workoutTime;
     data['caloriesBurned'] = caloriesBurned;

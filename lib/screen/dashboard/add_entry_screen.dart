@@ -1,18 +1,25 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
+import 'package:gymeats_mobile/screen/journal/exercise/all_exercise_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../app/sharedPrefrence.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_bloc.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_event.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_state.dart';
+import '../../repository/get_exercise_details.dart';
 import '../../widget/app_center_loader.dart';
 
 class AddEntryScreen extends StatefulWidget {
@@ -38,12 +45,32 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   void initState() {
     super.initState();
     if (addEntryArguments.isFromHistory) {
-      entryController.text = addEntryArguments.exerciseLogList!.exerciseName == null ? '' : addEntryArguments.exerciseLogList!.exerciseName ?? '';
-      minutesController.text = addEntryArguments.exerciseLogList!.workoutTime == null ? '1' : addEntryArguments.exerciseLogList!.workoutTime.toString();
-      caloriesTextBurnedController.text = addEntryArguments.exerciseLogList!.caloriesBurned == null ? '' : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
+      log("IF exerciseId:---> ${(jsonEncode(addEntryArguments.exerciseLogList))}");
+
+      entryController.text =
+          addEntryArguments.exerciseLogList!.exerciseName == null
+              ? ''
+              : addEntryArguments.exerciseLogList!.exerciseName ?? '';
+      minutesController.text =
+          addEntryArguments.exerciseLogList!.workoutTime == null
+              ? '1'
+              : addEntryArguments.exerciseLogList!.workoutTime.toString();
+      caloriesTextBurnedController.text =
+          addEntryArguments.exerciseLogList!.caloriesBurned == null
+              ? ''
+              : addEntryArguments.exerciseLogList!.caloriesBurned.toString();
+      print(
+          ":--------------> ${addEntryArguments.exerciseLogList!.caloriesBurned.toString()}");
     } else {
-      entryController.text = addEntryArguments.allExerciseData?.exerciseName == null ? '' : addEntryArguments.allExerciseData!.exerciseName ?? '';
-      caloriesTextBurnedController.text = addEntryArguments.allExerciseData?.calorieBurnedPerMinute == null ? '' : addEntryArguments.allExerciseData!.calorieBurnedPerMinute.toString();
+      entryController.text =
+          addEntryArguments.allExerciseData?.exerciseName == null
+              ? ''
+              : addEntryArguments.allExerciseData!.exerciseName ?? '';
+      caloriesTextBurnedController.text =
+          addEntryArguments.allExerciseData?.calorieBurnedPerMinute == null
+              ? ''
+              : addEntryArguments.allExerciseData!.calorieBurnedPerMinute
+                  .toString();
       minutesController.text = '1';
     }
     setState(() {
@@ -73,7 +100,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                   ),
                 ),
                 Text(
-                  addEntryArguments.isFromHistory ? 'Exercise' : StringUtils.addEntry,
+                  addEntryArguments.isFromHistory
+                      ? 'Exercise'
+                      : StringUtils.addEntry,
                   style: textTheme.displayMedium?.copyWith(color: Colors.black),
                 ).paddingOnly(right: 28.w),
                 const SizedBox(),
@@ -105,7 +134,8 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'minutes',
-                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
                         hintText: '00',
@@ -124,9 +154,17 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                           if (value.isNotEmpty) {
                             isButtonEnable = true;
                             if (addEntryArguments.isFromHistory) {
-                              caloriesTextBurnedController.text = (int.parse(minutesController.text) * addEntryArguments.exerciseLogList!.caloriesBurned!).toString();
+                              caloriesTextBurnedController.text =
+                                  (int.parse(minutesController.text) *
+                                          addEntryArguments
+                                              .exerciseLogList!.caloriesBurned!)
+                                      .toString();
                             } else {
-                              caloriesTextBurnedController.text = (int.parse(minutesController.text) * addEntryArguments.allExerciseData!.calorieBurnedPerMinute).toString();
+                              caloriesTextBurnedController.text =
+                                  (int.parse(minutesController.text) *
+                                          addEntryArguments.allExerciseData!
+                                              .calorieBurnedPerMinute)
+                                      .toString();
                             }
                           } else {
                             isButtonEnable = false;
@@ -142,7 +180,8 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     children: [
                       Text(
                         'Calories Burned',
-                        style: textTheme.bodyLarge?.copyWith(color: AppColors.darkGray),
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: AppColors.darkGray),
                       ),
                       commonUserTypeTextField(
                         hintText: '00cal',
@@ -194,7 +233,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                         context: context,
                                         buttonLable: 'Delete',
                                         onTap: () {
-                                          bloc.add(DeleteExerciseEvent(exerciseName: entryController.text));
+                                          bloc.add(DeleteExerciseEvent(
+                                              exerciseName:
+                                                  entryController.text));
                                         },
                                         isDarkColor: true,
                                       ),
@@ -206,8 +247,36 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                   height: 48.h,
                                   context: context,
                                   buttonLable: 'Update',
-                                  onTap: () {
-                                    bloc.add(UpdateExerciseEvent(id: '', calorieBurnedPerMinute: minutesController.text, exerciseName: entryController.text));
+                                  onTap: () async {
+                                    if (allExerciseList.isEmpty) {
+                                      final GetExerciseDetailsRepository
+                                          getExerciseDetailsRepository =
+                                          GetExerciseDetailsRepository();
+
+                                      await getExerciseDetailsRepository
+                                          .getAllExerciseDetails()
+                                          .fold((left) {}, (right) {
+                                        allExerciseList = right.data;
+                                      });
+                                    }
+
+                                    int index = allExerciseList.indexWhere(
+                                      (element) =>
+                                          element.exerciseName ==
+                                          addEntryArguments
+                                              .exerciseLogList?.exerciseName,
+                                    );
+                                    if (index >= 0) {}
+                                    String exeId = allExerciseList[index].id;
+                                    print(":-----> ${exeId}");
+                                    bloc.add(
+                                      UpdateExerciseEvent(
+                                        id: exeId,
+                                        calorieBurnedPerMinute:
+                                            minutesController.text,
+                                        exerciseName: entryController.text,
+                                      ),
+                                    );
                                   },
                                   isDarkColor: true,
                                   isFillColor: true,
@@ -221,16 +290,29 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             hasImage: false,
                             textColor: AppColors.skyBlue,
                             onPressed: () {
-                              if (minutesController.text == '0' || minutesController.text.isEmpty) {
-                                Fluttertoast.showToast(msg: 'Minutes can\'t be 0');
-                              } else if (caloriesTextBurnedController.text == '0' || caloriesTextBurnedController.text.isEmpty) {
-                                Fluttertoast.showToast(msg: 'Calories can\'t be 0');
+                              if (minutesController.text == '0' ||
+                                  minutesController.text.isEmpty) {
+                                Fluttertoast.showToast(
+                                    msg: 'Minutes can\'t be 0');
+                              } else if (caloriesTextBurnedController.text ==
+                                      '0' ||
+                                  caloriesTextBurnedController.text.isEmpty) {
+                                Fluttertoast.showToast(
+                                    msg: 'Calories can\'t be 0');
                               } else {
                                 FocusScope.of(context).unfocus();
-                                bloc.add(SaveClickEvent(userId: userId, workoutTime: minutesController.text, exerciseName: entryController.text, caloriesBurned: caloriesTextBurnedController.text, createdBy: ''));
+                                bloc.add(SaveClickEvent(
+                                    userId: userId,
+                                    workoutTime: minutesController.text,
+                                    exerciseName: entryController.text,
+                                    caloriesBurned:
+                                        caloriesTextBurnedController.text,
+                                    createdBy: ''));
                               }
                             },
-                            bgColor: isButtonEnable ? AppColors.primaryBlue : AppColors.gray,
+                            bgColor: isButtonEnable
+                                ? AppColors.primaryBlue
+                                : AppColors.gray,
                           ).paddingOnly(bottom: 20.h);
                   }
                 }).paddingOnly(bottom: 20.h),
@@ -240,7 +322,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     );
   }
 
-  Widget waterDetailsView({String? waterIcon, String? waterQuantity, double? height, void Function()? onTap}) {
+  Widget waterDetailsView(
+      {String? waterIcon,
+      String? waterQuantity,
+      double? height,
+      void Function()? onTap}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -251,7 +337,10 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
         ),
         Text(
           '$waterQuantity ml',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.darkGray),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.darkGray),
         ).paddingOnly(top: 3.h),
         GestureDetector(
           onTap: onTap,
@@ -281,5 +370,6 @@ class AddEntryArguments {
   final GetAllExerciseData? allExerciseData;
   final bool isFromHistory;
 
-  AddEntryArguments({this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
+  AddEntryArguments(
+      {this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
 }

@@ -134,13 +134,16 @@ class _ItemCatalogFilterBottomSheetState
                     },
                     isDismissible: false,
                   ).then((value) {
-                    log('value---------->>>>>> $value');
+                    log('value---------->>>>>> ${value}');
 
                     if (value != null) {
                       priceRange = value['priceRange'];
                       isFilter = value['isFilter'];
                       setState(() {});
                     }
+
+                    log(priceRange.toString());
+                    log(isFilter.toString());
                   });
                 },
                 child: myFilterWidget(
