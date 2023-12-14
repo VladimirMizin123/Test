@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widg
 import 'package:gymeats_mobile/screen/account_screen/map_address/map_address_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../../bloc/my_address/my_address_state.dart';
 import '../../../constant/asset_utils.dart';
 import '../../../constant/color_utils.dart';
@@ -219,14 +220,20 @@ class _AddressScreenState extends State<AddressScreen> {
                                   child: Text('No Data Found'),
                                 );
                               }
+                              print("user Address:- ${state.userAddress}");
 
                               if ((selectedAddress == null ||
                                   (selectedAddress?.isEmpty ?? false))) {
                                 int index = state.userAddress.indexWhere(
                                     (element) => element.isPrimary == true);
 
-                                if (index >= 0) {
+                                if (index != -1) {
                                   selectedAddress = state.userAddress[index].id;
+                                }
+                                if (selectedAddress == null &&
+                                    state.userAddress.isNotEmpty &&
+                                    state.userAddress.length == 1) {
+                                  selectedAddress = state.userAddress[0].id;
                                 }
                               }
                               return ListView.separated(
