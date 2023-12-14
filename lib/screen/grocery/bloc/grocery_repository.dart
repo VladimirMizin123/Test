@@ -243,9 +243,8 @@ class GroceryRepository {
                       ['serving_weight_grams']
                   .toString(),
               'nfMetricQuantity': jsonNutritionixItemInfo['foods'][0]
-                      ['nf_metric_qty']
-                  .toString(),
-              'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
+                      ['nf_metric_qty'] == null ? '0' : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'].toString(),
+               'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
                   ['nf_metric_uom'],
               'nfCalories': jsonNutritionixItemInfo['foods'][0]['nf_calories'],
               'nfTotalFat': jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
