@@ -178,12 +178,25 @@ class Nutri {
   final num? fat;
   final num? protein;
   final num? carbs;
+  final dynamic nfSaturatedFat;
+  final num? nfCholesterol;
+  final num? nfSodium;
+  final num? nfDietaryFiber;
+  final num? nfSugars;
+  final num? nfPotassium;
 
   Nutri({
     this.calories,
     this.fat,
     this.protein,
     this.carbs,
+    this.nfSaturatedFat,
+    this.nfCholesterol,
+    this.nfSodium,
+    this.nfDietaryFiber,
+    this.nfSugars,
+    this.nfPotassium
+
   });
 
   factory Nutri.fromJson(Map<String, dynamic> json) => Nutri(
@@ -191,6 +204,12 @@ class Nutri {
         fat: json["fat"],
         protein: json["protein"],
         carbs: json["carbs"],
+        nfSaturatedFat: json["nfSaturatedFat"],
+        nfCholesterol: json["nfCholesterol"],
+        nfSodium: json["nfSodium"],
+        nfDietaryFiber: json["nfDietaryFiber"],
+        nfSugars: json["nfSugars"],
+        nfPotassium: json["nfPotassium"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -198,6 +217,12 @@ class Nutri {
         "fat": fat,
         "protein": protein,
         "carbs": carbs,
+        "nfSaturatedFat": nfSaturatedFat,
+        "nfCholesterol": nfCholesterol,
+        "nfSodium": nfSodium,
+        "nfDietaryFiber": nfDietaryFiber,
+        "nfSugars": nfSugars,
+        "nfPotassium": nfPotassium,
       };
 }
 

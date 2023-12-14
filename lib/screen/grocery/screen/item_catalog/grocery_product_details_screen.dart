@@ -1,3 +1,4 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +10,10 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.d
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/divider_widget.dart';
 
+import '../../bloc/grocery_repository.dart';
+import '../../bloc/grocery_state.dart';
+import '../../modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+
 class GroceryProductDetails extends StatefulWidget {
   final Product product;
   const GroceryProductDetails({super.key, required this.product});
@@ -17,13 +22,57 @@ class GroceryProductDetails extends StatefulWidget {
   State<GroceryProductDetails> createState() => _GroceryProductDetailsState();
 }
 
+
 class _GroceryProductDetailsState extends State<GroceryProductDetails> {
+  final GroceryRepository _repository = GroceryRepository();
+  late NutritionixGetNxMealInfoByNameModelData nutritionixGetNxMealInfoByNameModelData = NutritionixGetNxMealInfoByNameModelData();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    _getNxData();
+    super.initState();
+  }
+
+  Future<void> _getNxData()
+  async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await _repository
+          .groceryDetailsMealInfo(productName: widget.product.itemName ?? '')
+          .fold((left) {
+        setState(() {
+          isLoading = false;
+        });
+        // emit(GrocerySearchErrorState());
+        // onFailError(emit: emit, text: left.errorMessage!);
+      }, (right) {
+            setState(() {
+              isLoading = false;
+              nutritionixGetNxMealInfoByNameModelData = right.data!;
+            });
+        // emit(GroceryNutritionixGetNxMealInfoByNameSuccessState(
+        //     nutritionixGetNxMealInfoByNameModelData: right.data!));
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // showToast(isSuccess: false, message: e.toString());
+      // emit(GroceryNutritionixGetNxMealInfoByNameErrorState());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: isLoading ? const Center(
+          child: CircularProgressIndicator(),
+        ) : Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             children: [
@@ -91,11 +140,27 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Calories',
+                          Text('Saturated Fat',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),
-                          Text(widget.product.calorie ?? 'N/A',
+                          Text(
+                            '${(nutritionixGetNxMealInfoByNameModelData.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g', style: FontUtils.h16(
+                              fontColor: AppColors.darkGray,
+                              fontWeight: FWT.medium)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Divider(color: AppColors.disabledColor, height: 2.h),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Cholesterol',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),
@@ -107,27 +172,11 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Protein',
+                          Text('Sodium',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),
-                          Text(widget.product.protein ?? 'N/A',
-                              style: FontUtils.h16(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.medium)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Divider(color: AppColors.disabledColor, height: 2.h),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Carbs',
-                              style: FontUtils.h16(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.medium)),
-                          Text(widget.product.carbs ?? 'N/A',
+                          Text( '${(nutritionixGetNxMealInfoByNameModelData?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),
@@ -139,11 +188,43 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Fat',
+                          Text('Dietary Fiber',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),
-                          Text(widget.product.fat ?? 'N/A',
+                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Divider(color: AppColors.disabledColor, height: 2.h),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Sugar',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Divider(color: AppColors.disabledColor, height: 2.h),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Potassium',
+                              style: FontUtils.h16(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium)),
+                          Text('${(nutritionixGetNxMealInfoByNameModelData?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
                               style: FontUtils.h16(
                                   fontColor: AppColors.darkGray,
                                   fontWeight: FWT.medium)),

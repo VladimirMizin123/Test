@@ -430,7 +430,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalCalorie))
                                                 .toStringAsFixed(2)),
-                                            AppColors.primaryBlue),
+                                            AppColors.primaryBlue,'Cal'),
                                         myProgressBarCardView(
                                             'Fat',
                                             widget.arguments?.fat ?? 0.00,
@@ -438,7 +438,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalFat))
                                                 .toStringAsFixed(2)),
-                                            AppColors.coral),
+                                            AppColors.coral,"g"),
                                         myProgressBarCardView(
                                             'Carbs',
                                             widget.arguments?.carbs ?? 0.00,
@@ -446,7 +446,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalCarbs))
                                                 .toStringAsFixed(2)),
-                                            AppColors.mint),
+                                            AppColors.mint,"g"),
                                         myProgressBarCardView(
                                             'Protein',
                                             widget.arguments?.protein ?? 0.00,
@@ -454,7 +454,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalProtein))
                                                 .toStringAsFixed(2)),
-                                            AppColors.skyBlue),
+                                            AppColors.skyBlue,"g"),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
@@ -1170,7 +1170,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalCalorie))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.primaryBlue),
+                                                      AppColors.primaryBlue,"cal"),
                                                   myProgressBarCardView(
                                                       'Fat',
                                                       widget.arguments
@@ -1192,7 +1192,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalFat))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.coral),
+                                                      AppColors.coral,"g"),
                                                   myProgressBarCardView(
                                                       'Carbs',
                                                       widget.arguments
@@ -1214,7 +1214,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalCarbs))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.mint),
+                                                      AppColors.mint,"g"),
                                                   myProgressBarCardView(
                                                       'Protein',
                                                       widget.arguments
@@ -1224,19 +1224,19 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   ?.protein ??
                                                               0.0
                                                           : nutritionixGetNxMealInfoByNameModelData!
-                                                                      .nfTotalFat ==
+                                                                      .nfProtein ==
                                                                   null
                                                               ? 0
                                                               : double.parse(
                                                                   nutritionixGetNxMealInfoByNameModelData!
-                                                                      .nfTotalFat
+                                                                      .nfProtein
                                                                       .toString()),
                                                       double.parse(double.parse(
                                                               PreferenceUtils
                                                                   .getString(
                                                                       totalProtein))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.skyBlue),
+                                                      AppColors.skyBlue,"g"),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -1256,18 +1256,19 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Calories',
+                                                  Text('Saturated Fat',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                      widget.arguments
-                                                                  ?.isShowData ==
-                                                              true
-                                                          ? '${widget.arguments?.cal ?? 0} cal'
-                                                          : '${(nutritionixGetNxMealInfoByNameModelData?.nfCalories ?? 0.00).toStringAsFixed(2)} cal',
+                                                     '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                                      // widget.arguments
+                                                      //             ?.isShowData ==
+                                                      //         true
+                                                      //     ? '${widget.arguments?.cal ?? 0} cal'
+                                                      //     : '${(nutritionixGetNxMealInfoByNameModelData?.nfCalories ?? 0.00).toStringAsFixed(2)} cal',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -1286,18 +1287,14 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Protein',
+                                                  Text('Cholesterol',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                      widget.arguments
-                                                                  ?.isShowData ==
-                                                              true
-                                                          ? '${widget.arguments?.protein ?? 0} g'
-                                                          : '${(nutritionixGetNxMealInfoByNameModelData?.nfProtein ?? 0).toStringAsFixed(2)} g',
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -1316,18 +1313,14 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Carbs',
+                                                  Text('Sodium',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                      widget.arguments
-                                                                  ?.isShowData ==
-                                                              true
-                                                          ? '${widget.arguments?.carbs ?? 0} g'
-                                                          : '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalCarbohydrate ?? 0)?.toStringAsFixed(2)} g',
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -1346,18 +1339,66 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Fat',
+                                                  Text('Dietary Fiber',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                      widget.arguments
-                                                                  ?.isShowData ==
-                                                              true
-                                                          ? '${widget.arguments?.fat ?? 0} g'
-                                                          : '${(nutritionixGetNxMealInfoByNameModelData?.nfTotalFat ?? 0)?.toStringAsFixed(2) ?? 0} g',
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                                                      style: FontUtils.h16(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.medium)),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Divider(
+                                                  color:
+                                                      AppColors.disabledColor,
+                                                  height: 2.h),
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text('Sugar',
+                                                      style: FontUtils.h16(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.medium)),
+                                                  Text(
+                                                     '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                                      style: FontUtils.h16(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.medium)),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Divider(
+                                                  color:
+                                                      AppColors.disabledColor,
+                                                  height: 2.h),
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text('Potassium',
+                                                      style: FontUtils.h16(
+                                                          fontColor: AppColors
+                                                              .darkGray,
+                                                          fontWeight:
+                                                              FWT.medium)),
+                                                  Text(
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -1557,7 +1598,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   }
 
   Widget myProgressBarCardView(
-      String title, double value, double totalValue, Color progressBarColor) {
+      String title, double value, double totalValue, Color progressBarColor,String unit) {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(
@@ -1588,7 +1629,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
               ],
             ),
             Text(
-                '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} cal',
+                '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} $unit',
                 style: FontUtils.h15(
                     fontColor: AppColors.darkGray,
                     fontWeight: FWT.lightMedium)),
