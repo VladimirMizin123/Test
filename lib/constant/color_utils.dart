@@ -36,6 +36,11 @@ class AppColors {
         // fillColor: MaterialStateProperty.all(const Color(0xFF004C63)),
         checkColor: MaterialStateProperty.all(Colors.white),
       ),
+      sliderTheme: const SliderThemeData(
+        rangeThumbShape: RoundRangeSliderThumbShape(
+          enabledThumbRadius: 20.0,
+        ),
+      ),
       dropdownMenuTheme: const DropdownMenuThemeData(
           textStyle: TextStyle(
             fontSize: 14,

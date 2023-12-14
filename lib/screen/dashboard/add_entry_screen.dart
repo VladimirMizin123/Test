@@ -288,9 +288,11 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                         exerciseName: entryController.text,
                                       ),
                                     );
-                                    journalPlanBloc.add(GetExerciseDetails(
-                                        date: addEntryArguments.dateTime!
-                                            .toString()));
+                                    if (addEntryArguments.dateTime != null) {
+                                      journalPlanBloc.add(GetExerciseDetails(
+                                          date: addEntryArguments.dateTime!
+                                              .toString()));
+                                    }
 
                                     ///call exercise history api
                                   },

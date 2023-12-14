@@ -63,8 +63,8 @@ class _PriceSelectionBottomSheetState extends State<PriceSelectionBottomSheet> {
                 min: 0,
                 divisions: 50,
                 labels: RangeLabels(
-                  _currentRangeValues.start.round().toString(),
-                  _currentRangeValues.end.round().toString(),
+                  '\$' + _currentRangeValues.start.round().toString(),
+                  '\$' + _currentRangeValues.end.round().toString(),
                 ),
                 activeColor: AppColors.green,
                 inactiveColor: AppColors.green.withOpacity(0.4),
@@ -77,9 +77,9 @@ class _PriceSelectionBottomSheetState extends State<PriceSelectionBottomSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('min ${_currentRangeValues.start}',
+                  Text('min \$${_currentRangeValues.start.toInt()}',
                       style: FontUtils.h14(fontColor: AppColors.darkGray)),
-                  Text('max ${_currentRangeValues.end}',
+                  Text('max \$${_currentRangeValues.end.toInt()}',
                       style: FontUtils.h14(fontColor: AppColors.darkGray)),
                 ],
               ),
