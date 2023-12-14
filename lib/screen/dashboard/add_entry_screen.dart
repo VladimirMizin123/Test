@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_state.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
@@ -154,11 +153,13 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                           if (value.isNotEmpty) {
                             isButtonEnable = true;
                             if (addEntryArguments.isFromHistory) {
+                              double perMin = addEntryArguments
+                                      .exerciseLogList!.caloriesBurned! /
+                                  addEntryArguments
+                                      .exerciseLogList!.workoutTime!;
                               caloriesTextBurnedController.text =
-                                  (int.parse(minutesController.text) *
-                                          addEntryArguments
-                                              .exerciseLogList!.caloriesBurned!)
-                                      .toString();
+                                  (int.parse(minutesController.text) * perMin)
+                                      .toStringAsFixed(0);
                             } else {
                               caloriesTextBurnedController.text =
                                   (int.parse(minutesController.text) *
@@ -248,6 +249,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                   context: context,
                                   buttonLable: 'Update',
                                   onTap: () async {
+                                    log('UPDATE');
                                     if (allExerciseList.isEmpty) {
                                       final GetExerciseDetailsRepository
                                           getExerciseDetailsRepository =

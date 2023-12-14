@@ -72,14 +72,14 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       const SizedBox(height: 10),
                       myGeneralInformationWidget(
                           'Brand', widget.product.itemName ?? ''),
-                      myGeneralInformationWidget(
+                      /* myGeneralInformationWidget(
                           'Manufacturer', 'Almond Breeze'),
                       myGeneralInformationWidget('Country', 'N/A'),
                       myGeneralInformationWidget('Weight', '450 g'),
                       myGeneralInformationWidget(
                           'Fat', widget.product.fat ?? 'N/A'),
                       myGeneralInformationWidget(
-                          'Expiration date', widget.product.day ?? 'N/A'),
+                          'Expiration date', widget.product.day ?? 'N/A'),*/
                       const SizedBox(height: 20),
                       Align(
                           alignment: Alignment.centerLeft,
@@ -391,14 +391,19 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title,
                 style: FontUtils.h16(
                     fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-            const Spacer(),
-            Text(value,
+            Expanded(
+              child: Text(
+                value,
                 style: FontUtils.h16(
-                    fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium),
+                textAlign: TextAlign.end,
+              ),
+            ),
           ],
         ),
         const DividerWidget(),

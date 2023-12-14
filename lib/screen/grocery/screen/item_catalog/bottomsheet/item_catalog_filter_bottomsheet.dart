@@ -1,12 +1,10 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/country_selection_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/price_selection_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -91,11 +89,11 @@ class _ItemCatalogFilterBottomSheetState
                 ],
               ),
               const SizedBox(height: 10),
-              myFilterWidget(
+              /* myFilterWidget(
                 'Just available',
                 '18',
                 CupertinoSwitch(value: true, onChanged: (bool? value) {}),
-              ),
+              ),*/
               myFilterWidget(
                   'Brand',
                   'Milo',
@@ -104,7 +102,7 @@ class _ItemCatalogFilterBottomSheetState
                     color: AppColors.black,
                     size: 30,
                   )),
-              GestureDetector(
+              /*GestureDetector(
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
@@ -122,7 +120,7 @@ class _ItemCatalogFilterBottomSheetState
                       color: AppColors.black,
                       size: 30,
                     )),
-              ),
+              ),*/
               GestureDetector(
                 onTap: () async {
                   await showModalBottomSheet(

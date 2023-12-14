@@ -48,6 +48,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   bool isSearchOn = false;
   List<Map<String, dynamic>> checkbox = [];
   int selectedIndex = -1;
+
   @override
   void initState() {
     super.initState();
@@ -386,11 +387,13 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 isDismissible: false,
                               );
                             },
-                            child: Text('Clear My Grocery List',
-                                    style: FontUtils.h18(
-                                        fontColor: AppColors.primaryBlue,
-                                        fontWeight: FWT.medium))
-                                .paddingSymmetric(vertical: 10.h),
+                            child: Text(
+                              'Clear My Grocery List',
+                              style: FontUtils.h18(
+                                fontColor: AppColors.primaryBlue,
+                                fontWeight: FWT.medium,
+                              ),
+                            ).paddingSymmetric(vertical: 10.h),
                           ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -581,6 +584,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 scrollDirection: Axis.vertical,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (BuildContext context, int index) {
+                                  log(groceryDetails[index].measurementType!,
+                                      name: "measurementType");
                                   return GestureDetector(
                                     onTap: () async {
                                       await Get.toNamed('/GroceryItemDetails',
@@ -682,39 +687,36 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                               children: [
                                                 Expanded(
                                                   flex: 2,
-                                                  child: IgnorePointer(
-                                                    ignoring: true,
-                                                    child:
-                                                        DropdownButtonFormField(
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            decoration: const InputDecoration(
-                                                                border: OutlineInputBorder(
-                                                                    borderSide: BorderSide(
-                                                                        color: Colors
-                                                                            .black))),
-                                                            value:
-                                                                _selectProduct,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12),
-                                                            items: productList
-                                                                .map((e) =>
-                                                                    DropdownMenuItem(
-                                                                      value: e,
-                                                                      child: Text(
-                                                                          e,
-                                                                          style:
-                                                                              FontUtils.h16(fontColor: AppColors.black)),
-                                                                    ))
-                                                                .toList(),
-                                                            onChanged: (val) {
-                                                              setState(() {
-                                                                _selectProduct =
-                                                                    val!;
-                                                              });
-                                                            }),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          AppColors.whiteColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                    ),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 12,
+                                                            horizontal: 16),
+                                                    child: Text(
+                                                      groceryDetails[index]
+                                                                      .measurementType ==
+                                                                  '' ||
+                                                              groceryDetails[
+                                                                          index]
+                                                                      .measurementType ==
+                                                                  null
+                                                          ? "No Unit"
+                                                          : capitalize(
+                                                              groceryDetails[
+                                                                      index]
+                                                                  .measurementType
+                                                                  .toString()),
+                                                      style: FontUtils.h16(
+                                                          fontColor:
+                                                              AppColors.black),
+                                                    ),
                                                   ),
                                                 ),
                                                 SizedBox(width: 8.w),
@@ -977,4 +979,12 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
           }),
     );
   }
+}
+
+String capitalize(String input) {
+  if (input.isEmpty) {
+    return input; // Return the input string as is if it's empty.
+  }
+
+  return input[0].toUpperCase() + input.substring(1);
 }

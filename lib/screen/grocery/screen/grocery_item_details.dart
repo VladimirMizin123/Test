@@ -21,8 +21,11 @@ import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import 'grocery_screen.dart';
+
 class GroceryItemDetails extends StatefulWidget {
   final GroceryItemDetailsArguments? arguments;
+
   const GroceryItemDetails({super.key, this.arguments});
 
   @override
@@ -42,6 +45,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   bool add = false;
   bool delete = false;
   bool addItem = false;
+
   @override
   void initState() {
     super.initState();
@@ -1068,39 +1072,67 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                       ? SizedBox()
                                                       : Expanded(
                                                           flex: 2,
-                                                          child: IgnorePointer(
-                                                            ignoring: !widget
-                                                                .arguments!
-                                                                .enableEdit,
-                                                            child:
-                                                                DropdownButtonFormField(
-                                                                    decoration: const InputDecoration(
-                                                                        border: OutlineInputBorder(
-                                                                            borderSide: BorderSide(
-                                                                                color: Colors
-                                                                                    .black))),
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .zero,
-                                                                    value:
-                                                                        _selectProduct,
+                                                          child: !widget
+                                                                  .arguments!
+                                                                  .enableEdit
+                                                              ? Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: AppColors
+                                                                        .whiteColor,
                                                                     borderRadius:
                                                                         BorderRadius.circular(
                                                                             12),
-                                                                    items: productList
-                                                                        .map((e) => DropdownMenuItem(
-                                                                              value: e,
-                                                                              child: Text(e),
-                                                                            ))
-                                                                        .toList(),
-                                                                    onChanged: (val) {
-                                                                      setState(
-                                                                          () {
-                                                                        _selectProduct =
-                                                                            val!;
-                                                                      });
-                                                                    }),
-                                                          ),
+                                                                  ),
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          18,
+                                                                      horizontal:
+                                                                          16),
+                                                                  child: Text(
+                                                                    widget.arguments?.groceryShoppingData?.measurementType ==
+                                                                                null ||
+                                                                            widget.arguments?.groceryShoppingData?.measurementType ==
+                                                                                ""
+                                                                        ? "No Unit"
+                                                                        : capitalize(widget.arguments?.groceryShoppingData?.measurementType ??
+                                                                            ""),
+                                                                    style: FontUtils.h16(
+                                                                        fontColor:
+                                                                            AppColors.black),
+                                                                  ),
+                                                                )
+                                                              : DropdownButtonFormField(
+                                                                  decoration: const InputDecoration(
+                                                                      border: OutlineInputBorder(
+                                                                          borderSide: BorderSide(
+                                                                              color: Colors
+                                                                                  .black))),
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  value:
+                                                                      _selectProduct,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12),
+                                                                  items:
+                                                                      productList
+                                                                          .map((e) =>
+                                                                              DropdownMenuItem(
+                                                                                value: e,
+                                                                                child: Text(e),
+                                                                              ))
+                                                                          .toList(),
+                                                                  onChanged:
+                                                                      (val) {
+                                                                    setState(
+                                                                        () {
+                                                                      _selectProduct =
+                                                                          val!;
+                                                                    });
+                                                                  }),
                                                         ),
                                                 ],
                                               ),
@@ -1426,66 +1458,75 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         )
                                                       : simpleTextBorderButton(
                                                           context: context,
-                                                          buttonLable:
-                                                              'Add Item',
+                                                          buttonLable: !widget
+                                                                  .arguments!
+                                                                  .enableEdit
+                                                              ? "Back"
+                                                              : 'Add Item',
                                                           height: size.height *
                                                               0.065,
                                                           width: size.width,
                                                           onTap: () {
                                                             if (widget
-                                                                    .arguments!
-                                                                    .isFromGroceryScreen ==
-                                                                true) {
-                                                              addNewGroceryItemBloc
-                                                                  .add(
-                                                                AddNewGroceryItem(
-                                                                  userId:
-                                                                      userId,
-                                                                  groceryItems: [
-                                                                    widget
-                                                                        .arguments!
-                                                                        .groceryDetails!
-                                                                  ],
-                                                                ),
-                                                              );
-                                                            } else if (widget
-                                                                    .arguments!
-                                                                    .isFromJournalScreen ==
-                                                                true) {
-                                                              addNewMealBloc
-                                                                  .add(
-                                                                AddNewMeal(
-                                                                  name: nutritionixGetNxMealInfoByNameModelData!
-                                                                          .foodName ??
-                                                                      '',
-                                                                  protein: nutritionixGetNxMealInfoByNameModelData
-                                                                          ?.nfProtein
-                                                                          .toString() ??
-                                                                      '0',
-                                                                  fat: nutritionixGetNxMealInfoByNameModelData
-                                                                          ?.nfTotalFat
-                                                                          .toString() ??
-                                                                      '0',
-                                                                  carbs: nutritionixGetNxMealInfoByNameModelData
-                                                                          ?.nfTotalCarbohydrate
-                                                                          .toString() ??
-                                                                      '0',
-                                                                  calorie: nutritionixGetNxMealInfoByNameModelData
-                                                                          ?.nfCalories
-                                                                          .toString() ??
-                                                                      '0',
-                                                                  type: widget
+                                                                .arguments!
+                                                                .enableEdit) {
+                                                              if (widget
                                                                       .arguments!
-                                                                      .type
-                                                                      .toString()
-                                                                      .removeAllWhitespace,
-                                                                  userId: userId
-                                                                      .toString(),
-                                                                  quantity: '1',
-                                                                ),
-                                                              );
-                                                            } else {}
-
+                                                                      .isFromGroceryScreen ==
+                                                                  true) {
+                                                                addNewGroceryItemBloc
+                                                                    .add(
+                                                                  AddNewGroceryItem(
+                                                                    userId:
+                                                                        userId,
+                                                                    groceryItems: [
+                                                                      widget
+                                                                          .arguments!
+                                                                          .groceryDetails!
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                              } else if (widget
+                                                                      .arguments!
+                                                                      .isFromJournalScreen ==
+                                                                  true) {
+                                                                addNewMealBloc
+                                                                    .add(
+                                                                  AddNewMeal(
+                                                                    name: nutritionixGetNxMealInfoByNameModelData!
+                                                                            .foodName ??
+                                                                        '',
+                                                                    protein: nutritionixGetNxMealInfoByNameModelData
+                                                                            ?.nfProtein
+                                                                            .toString() ??
+                                                                        '0',
+                                                                    fat: nutritionixGetNxMealInfoByNameModelData
+                                                                            ?.nfTotalFat
+                                                                            .toString() ??
+                                                                        '0',
+                                                                    carbs: nutritionixGetNxMealInfoByNameModelData
+                                                                            ?.nfTotalCarbohydrate
+                                                                            .toString() ??
+                                                                        '0',
+                                                                    calorie: nutritionixGetNxMealInfoByNameModelData
+                                                                            ?.nfCalories
+                                                                            .toString() ??
+                                                                        '0',
+                                                                    type: widget
+                                                                        .arguments!
+                                                                        .type
+                                                                        .toString()
+                                                                        .removeAllWhitespace,
+                                                                    userId: userId
+                                                                        .toString(),
+                                                                    quantity:
+                                                                        '1',
+                                                                  ),
+                                                                );
+                                                              } else {}
+                                                            } else {
+                                                              Get.back();
+                                                            }
                                                             // groceryBloc.add(GroceryAddToShoppingListEvent(
                                                             //   productID: widget.arguments!.groceryShoppingData!.productId!,
                                                             //   mealmeStoreId: widget.arguments!.groceryShoppingData!.mealmeStoreId!,

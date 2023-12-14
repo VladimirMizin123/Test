@@ -562,12 +562,12 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 },
                               ),
                               mapDetailWidget(
-                                title: "Flour",
+                                title: "Floor",
                                 //initialValue: floorNumberController.text,
                                 textEditingController: floorNumberController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Please Enter Flour number';
+                                    return 'Please Enter Floor number';
                                   } else {
                                     return null;
                                   }
