@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -37,15 +38,22 @@ class AddExerciseRepository {
 
   Future<Either<ErrorModel, SuccessModel>> updateExercise({
     required String exerciseId,
-    required String calorieBurnedPerMinuted,
     required String exerciseName,
+    required int workoutTime,
+    required int caloriesBurned,
+    required String userId,
   }) async {
     Map<String, dynamic> data = {
-      "id": exerciseId,
       "exerciseName": exerciseName,
-      "calorieBurnedPerMinute": calorieBurnedPerMinuted
+      "exerciseId": exerciseId,
+      "workoutTime": workoutTime,
+      "caloriesBurned": caloriesBurned,
+      "userId": userId,
     };
+
     final response = await apiServices.put(ApiUrls.updateExercise, data);
+    log(data.toString(), name: "data");
+    log(response.body.toString(), name: "response");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

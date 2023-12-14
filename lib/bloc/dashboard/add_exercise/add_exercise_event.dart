@@ -19,12 +19,16 @@ class SaveClickEvent extends AddWaterEvent {
 class UpdateExerciseEvent extends AddWaterEvent {
   final String? id;
   final String? exerciseName;
-  final String? calorieBurnedPerMinute;
+  final int? workOutTime;
+  final int? calorieBurned;
+  final String? userId;
 
   UpdateExerciseEvent({
     this.id,
-    this.calorieBurnedPerMinute,
     this.exerciseName,
+    this.workOutTime,
+    this.calorieBurned,
+    this.userId,
   });
 }
 

@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
+import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_event.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
@@ -37,6 +39,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   var addEntryArguments = Get.arguments;
 
   AddExerciseBloc bloc = AddExerciseBloc();
+  GetUserJournalBloc journalPlanBloc = GetUserJournalBloc();
 
   bool isButtonEnable = false;
 
@@ -262,23 +265,34 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                                       });
                                     }
 
-                                    int index = allExerciseList.indexWhere(
+                                    /*int index = allExerciseList.indexWhere(
                                       (element) =>
                                           element.exerciseName ==
                                           addEntryArguments
                                               .exerciseLogList?.exerciseName,
                                     );
                                     if (index >= 0) {}
-                                    String exeId = allExerciseList[index].id;
+                                    String exeId = allExerciseList[index].id;*/
+                                    String exeId = addEntryArguments
+                                        .exerciseLogList!.exerciseId!;
                                     print(":-----> ${exeId}");
+                                    print(":-----> ${userId}");
                                     bloc.add(
                                       UpdateExerciseEvent(
                                         id: exeId,
-                                        calorieBurnedPerMinute:
-                                            minutesController.text,
+                                        workOutTime:
+                                            int.parse(minutesController.text),
+                                        calorieBurned: int.parse(
+                                            caloriesTextBurnedController.text),
+                                        userId: userId,
                                         exerciseName: entryController.text,
                                       ),
                                     );
+                                    journalPlanBloc.add(GetExerciseDetails(
+                                        date: addEntryArguments.dateTime!
+                                            .toString()));
+
+                                    ///call exercise history api
                                   },
                                   isDarkColor: true,
                                   isFillColor: true,
@@ -370,8 +384,12 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
 class AddEntryArguments {
   final ExerciseLogList? exerciseLogList;
   final GetAllExerciseData? allExerciseData;
+  final String? dateTime;
   final bool isFromHistory;
 
   AddEntryArguments(
-      {this.exerciseLogList, this.allExerciseData, this.isFromHistory = false});
+      {this.exerciseLogList,
+      this.allExerciseData,
+      this.dateTime,
+      this.isFromHistory = false});
 }

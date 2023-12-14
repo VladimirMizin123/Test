@@ -1,6 +1,7 @@
 class ApiUrls {
   static const String baseUrl = 'https://gymeats.azurewebsites.net/';
-  static const String nutritionixBaseUrl = 'https://trackapi.nutritionix.com/v2/search/';
+  static const String nutritionixBaseUrl =
+      'https://trackapi.nutritionix.com/v2/search/';
   static const String apiKey = 'peONDsofens8dfs6sfYi4RvtTwlEXpQBwo==';
   static const String login = '${baseUrl}api/Auth/login';
   static const String register = '${baseUrl}api/Auth/signup-form';
@@ -58,11 +59,12 @@ class ApiUrls {
   //Nutritionix
   // static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
 
-  static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
-  static const String addNutritionDataToDb = '${baseUrl}api/Nutritionix/AddNutritionDataToDb';
+  static const String getNxMealInfoByName =
+      '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
+  static const String addNutritionDataToDb =
+      '${baseUrl}api/Nutritionix/AddNutritionDataToDb';
   static const String getNxSearchData = '${nutritionixBaseUrl}instant';
   static const String getNxItemInfoData = '${nutritionixBaseUrl}item';
-
 
   //For dashboard use apis
   static const String getDashboardData =
@@ -72,8 +74,10 @@ class ApiUrls {
   static const String getTotalCaloriesBurnedByExercise =
       '${baseUrl}api/Dashboard/GetTotalCaloriesBurnedByExercise';
   static const String addExercise = '${baseUrl}api/Dashboard/AddExercise';
+  /*static const String updateExercise =
+      '${baseUrl}api/ExerciseList/UpdateExercise'; */
   static const String updateExercise =
-      '${baseUrl}api/ExerciseList/UpdateExercise';
+      '${baseUrl}api/Dashboard/UpdateExerciseByExerciseId';
   static const String removeExercise = '${baseUrl}api/Dashboard/RemoveExercise';
   static const String addWater = '${baseUrl}api/Dashboard/AddWater';
   static const String updateWater = '${baseUrl}api/Dashboard/UpdateWater';

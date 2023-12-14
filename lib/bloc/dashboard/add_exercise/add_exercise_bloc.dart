@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -38,7 +40,8 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           showToast(isSuccess: true, message: right.message!);
-          PreferenceUtils.setInt(prefExerciseCAl, int.parse(event.caloriesBurned));
+          PreferenceUtils.setInt(
+              prefExerciseCAl, int.parse(event.caloriesBurned));
           emit(AddWaterSuccessfulState());
           Get.back(result: event.caloriesBurned);
         });
@@ -57,18 +60,24 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
     }
   }
 
-  _onUpdateExercise(UpdateExerciseEvent event, Emitter<AddWaterState> emit) async {
+  _onUpdateExercise(
+      UpdateExerciseEvent event, Emitter<AddWaterState> emit) async {
     emit(UpdateLoadingState());
     try {
       await _repository
           .updateExercise(
         exerciseId: event.id!,
-        calorieBurnedPerMinuted: event.calorieBurnedPerMinute!,
         exerciseName: event.exerciseName!,
+        workoutTime: event.workOutTime!,
+        caloriesBurned: event.calorieBurned!,
+        userId: event.userId!,
       )
           .fold((left) {
+        log("LEFT");
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
+        log("RIGHT");
+
         showToast(isSuccess: true, message: right.message!);
         emit(UpdateLoadingSuccessState());
       });
@@ -78,7 +87,8 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
     }
   }
 
-  _onDeleteExercise(DeleteExerciseEvent event, Emitter<AddWaterState> emit) async {
+  _onDeleteExercise(
+      DeleteExerciseEvent event, Emitter<AddWaterState> emit) async {
     emit(DeleteLoadingState());
     try {
       await _repository
