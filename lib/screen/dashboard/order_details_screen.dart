@@ -371,7 +371,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     int minIndex = 0;
     for (var data in widget.data.items!) {
       if (data.deliveryTimeMax == maxIndex) {
-        minIndex = data.deliveryTimeMin ?? 0;
+        minIndex = (data.deliveryTimeMin ?? 0).toInt();
       }
     }
 

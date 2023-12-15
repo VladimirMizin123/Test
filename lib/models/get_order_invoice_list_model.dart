@@ -95,15 +95,15 @@ class OrderedItem {
 class Item {
   String? productId;
   String? productName;
-  int? quantity;
-  int? price;
+  num? quantity;
+  num? price;
   String? type;
   DateTime? purchaseDate;
-  double? generatedProfit;
+  num? generatedProfit;
   dynamic partnerGeneratedProfit;
   dynamic userId;
-  int? deliveryTimeMin;
-  int? deliveryTimeMax;
+  num? deliveryTimeMin;
+  num? deliveryTimeMax;
   String? optionId;
   bool? isPickUp;
   String? pickUpTime;
