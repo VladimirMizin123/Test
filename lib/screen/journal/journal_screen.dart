@@ -1602,6 +1602,7 @@ class _JournalScreenState extends State<JournalScreen> {
                     //isFromJournalScreen: true,
                     isFromCustomMealScreen: true,
                     isShowData: true,
+                    imageUrl: customDataList[index].imageUrl ?? null,
                     protein: customDataList[index].protein ?? 0.0,
                     fat: customDataList[index].fat ?? 0.0,
                     carbs: customDataList[index].carbs ?? 0.0,

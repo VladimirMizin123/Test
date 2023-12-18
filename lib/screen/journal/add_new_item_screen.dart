@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -63,9 +64,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             if (state is SelectedImagePathState) {
               pickedImageFilePath = state.imgPath!.path ?? '';
               setState(() {
-                if (pickedImageFilePath.isEmpty) {
+                /*if (pickedImageFilePath.isEmpty) {
                   isButtonEnable = false;
-                } else if (nameController.text.isEmpty) {
+                } else */
+                if (nameController.text.isEmpty) {
                   isButtonEnable = false;
                 } else if (weightController.text.isEmpty) {
                   isButtonEnable = false;
@@ -186,9 +188,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                if (pickedImageFilePath.isEmpty) {
+                                /*if (pickedImageFilePath.isEmpty) {
                                   isButtonEnable = false;
-                                } else if (nameController.text.isEmpty) {
+                                } else*/
+                                if (nameController.text.isEmpty) {
                                   isButtonEnable = false;
                                 } else if (weightController.text.isEmpty) {
                                   isButtonEnable = false;
@@ -268,10 +271,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   onChanged: (value) {
                                     setState(
                                       () {
-                                        if (pickedImageFilePath.isEmpty) {
+                                        /* if (pickedImageFilePath.isEmpty) {
                                           isButtonEnable = false;
-                                        } else if (nameController
-                                            .text.isEmpty) {
+                                        } else*/
+                                        if (nameController.text.isEmpty) {
                                           isButtonEnable = false;
                                         } else if (weightController
                                             .text.isEmpty) {
@@ -528,9 +531,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                         hasImage: false,
                         onPressed: () {
                           // ADD NEW ITEM API,
-                          if (pickedImageFilePath.isEmpty) {
+                          /* if (pickedImageFilePath.isEmpty) {
                             Fluttertoast.showToast(msg: 'Please Select Image');
-                          } else if (nameController.text.isEmpty) {
+                          } else*/
+                          if (nameController.text.isEmpty) {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Name value');
                           } else if (weightController.text.isEmpty) {
@@ -569,10 +573,13 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             Fluttertoast.showToast(
                                 msg: 'Please fill correct Protein value');
                           } else {
+                            log("LAST");
                             getAddNewMealBloc.add(
                               AddNewMeal(
                                   name: nameController.text,
-                                  imageUrl: File(pickedImageFilePath),
+                                  imageUrl: pickedImageFilePath != ''
+                                      ? File(pickedImageFilePath)
+                                      : null,
                                   protein: proteinController.text,
                                   fat: fatController.text,
                                   carbs: carbsController.text,
@@ -641,9 +648,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             onChanged: (String? value) {
               if (value != null && value != '') {
                 setState(() {
-                  if (pickedImageFilePath.isEmpty) {
+                  /* if (pickedImageFilePath.isEmpty) {
                     isButtonEnable = false;
-                  } else if (nameController.text.isEmpty) {
+                  } else*/
+                  if (nameController.text.isEmpty) {
                     isButtonEnable = false;
                   } else if (weightController.text.isEmpty) {
                     isButtonEnable = false;

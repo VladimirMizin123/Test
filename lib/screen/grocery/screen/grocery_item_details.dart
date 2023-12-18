@@ -410,7 +410,31 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                               ),
                                       ],
                                     ),
-
+                                    (widget.arguments?.imageUrl ?? '') != ''
+                                        ? SizedBox(
+                                            height: 10,
+                                          )
+                                        : SizedBox(),
+                                    (widget.arguments?.imageUrl ?? '') != ''
+                                        ? ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            child: Container(
+                                              height: 160.h,
+                                              width: double.infinity.w,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.r),
+                                                  color: AppColors.disable),
+                                              child: Image.network(
+                                                widget.arguments?.imageUrl ??
+                                                    '',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox(),
                                     const SizedBox(height: 10),
                                     GridView(
                                       gridDelegate:
@@ -430,7 +454,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalCalorie))
                                                 .toStringAsFixed(2)),
-                                            AppColors.primaryBlue,'Cal'),
+                                            AppColors.primaryBlue,
+                                            'Cal'),
                                         myProgressBarCardView(
                                             'Fat',
                                             widget.arguments?.fat ?? 0.00,
@@ -438,7 +463,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalFat))
                                                 .toStringAsFixed(2)),
-                                            AppColors.coral,"g"),
+                                            AppColors.coral,
+                                            "g"),
                                         myProgressBarCardView(
                                             'Carbs',
                                             widget.arguments?.carbs ?? 0.00,
@@ -446,7 +472,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalCarbs))
                                                 .toStringAsFixed(2)),
-                                            AppColors.mint,"g"),
+                                            AppColors.mint,
+                                            "g"),
                                         myProgressBarCardView(
                                             'Protein',
                                             widget.arguments?.protein ?? 0.00,
@@ -454,7 +481,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     PreferenceUtils.getString(
                                                         totalProtein))
                                                 .toStringAsFixed(2)),
-                                            AppColors.skyBlue,"g"),
+                                            AppColors.skyBlue,
+                                            "g"),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
@@ -1170,7 +1198,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalCalorie))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.primaryBlue,"cal"),
+                                                      AppColors.primaryBlue,
+                                                      "cal"),
                                                   myProgressBarCardView(
                                                       'Fat',
                                                       widget.arguments
@@ -1192,7 +1221,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalFat))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.coral,"g"),
+                                                      AppColors.coral,
+                                                      "g"),
                                                   myProgressBarCardView(
                                                       'Carbs',
                                                       widget.arguments
@@ -1214,7 +1244,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalCarbs))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.mint,"g"),
+                                                      AppColors.mint,
+                                                      "g"),
                                                   myProgressBarCardView(
                                                       'Protein',
                                                       widget.arguments
@@ -1236,7 +1267,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                   .getString(
                                                                       totalProtein))
                                                           .toStringAsFixed(2)),
-                                                      AppColors.skyBlue,"g"),
+                                                      AppColors.skyBlue,
+                                                      "g"),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -1263,7 +1295,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                     '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
                                                       // widget.arguments
                                                       //             ?.isShowData ==
                                                       //         true
@@ -1372,7 +1404,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                           fontWeight:
                                                               FWT.medium)),
                                                   Text(
-                                                     '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                                      '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
                                                       style: FontUtils.h16(
                                                           fontColor: AppColors
                                                               .darkGray,
@@ -1597,8 +1629,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
     );
   }
 
-  Widget myProgressBarCardView(
-      String title, double value, double totalValue, Color progressBarColor,String unit) {
+  Widget myProgressBarCardView(String title, double value, double totalValue,
+      Color progressBarColor, String unit) {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(
@@ -1664,6 +1696,7 @@ class GroceryItemDetailsArguments {
   final String? productName;
   final String? productID;
   final String? type;
+  final String? imageUrl;
   final Map<String, dynamic>? groceryDetails;
   final bool isShowData;
   final bool enableEdit;
@@ -1681,6 +1714,7 @@ class GroceryItemDetailsArguments {
       this.productName,
       this.productID,
       this.type,
+      this.imageUrl,
       this.groceryDetails,
       this.isShowData = false,
       this.enableEdit = true,

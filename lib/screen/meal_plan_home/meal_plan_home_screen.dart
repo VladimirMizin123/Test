@@ -284,7 +284,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                   : mealPlanBloc
                                       .add(ClearUserGroceryMealPlanEvent());
                             },
-                            child: Text(StringUtils.regenerateGroceryList,
+                            child: Text(
+                                    hasGrocery
+                                        ? StringUtils.showGroceryList
+                                        : StringUtils.regenerateGroceryList,
                                     style: FontUtils.h18(
                                         fontColor: AppColors.primaryBlue,
                                         fontWeight: FWT.medium))

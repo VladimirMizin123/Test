@@ -276,6 +276,10 @@ class _CustomMealListState extends State<CustomMealList> {
                                                   fat: searchCustomMealList[
                                                           index]
                                                       .fat,
+                                                  imageUrl:
+                                                      searchCustomMealList[
+                                                              index]
+                                                          .imageUrl,
                                                   carbs: searchCustomMealList[
                                                           index]
                                                       .carbs,
@@ -288,6 +292,9 @@ class _CustomMealListState extends State<CustomMealList> {
                                                   productName:
                                                       customMealList[index]
                                                           .name,
+                                                  quantity:
+                                                      customMealList[index]
+                                                          .quantity,
                                                   isFromCustomMealScreen: true,
                                                 ),
                                               );
@@ -371,6 +378,8 @@ class _CustomMealListState extends State<CustomMealList> {
                                             arguments:
                                                 GroceryItemDetailsArguments(
                                               isShowData: true,
+                                              imageUrl: customMealList[index]
+                                                  .imageUrl,
                                               fat: customMealList[index].fat,
                                               carbs:
                                                   customMealList[index].carbs,
@@ -381,6 +390,8 @@ class _CustomMealListState extends State<CustomMealList> {
                                               productName:
                                                   customMealList[index].name,
                                               isFromCustomMealScreen: true,
+                                              quantity: customMealList[index]
+                                                  .quantity,
                                             ),
                                           );
                                         },
