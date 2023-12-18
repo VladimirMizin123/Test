@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -42,6 +43,7 @@ class AddNewGroceryItemRepository {
 
   Future<Either<ErrorModel, GetUserGroceryListModel>>
       getGroceryListData() async {
+    log("GetUserGroceryListModel");
     final response = await apiServices.get(
       '${ApiUrls.getGroceryItemList}?userId=$userID',
     );

@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 
+import '../../../repository/get_grocery_details.dart';
 import '../../../widget/app_widget.dart';
 
 class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
@@ -31,6 +32,8 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   }
 
   final MealPlanRepository _repository = MealPlanRepository();
+  final AddNewGroceryItemRepository _repositoryGrocery =
+      AddNewGroceryItemRepository();
   final box = GetStorage();
   // _onSwapMealDetails(SwapMealDetailsEvent event, Emitter<FetchMealPlanState> emit) async {
   //   emit(SwapMealDetailsState(similarMealData: event.similarMealData,dateTime: event.dateTime, day: event.day, mealId: event.mealId));
@@ -127,12 +130,39 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       GetMealLogByDateEvent event, Emitter<FetchMealPlanState> emit) async {
     emit(OnGetMealLogByDateLoadingState());
     try {
-      await _repository.getMealLogByDate(event.date!).fold((left) {
-        emit(FetchMealPlanErrorState());
-        // onFailError(emit: emit, text: left.errorMessage!);
-      }, (right) {
-        emit(OnGetMealLogByDateSuccessState(modelData: right.data));
-      });
+      await _repository.getMealLogByDate(event.date!).fold(
+        (left) async {
+          log("LEFT");
+          bool hasData = false;
+          await _repositoryGrocery.getGroceryListData().fold((l) {
+            log((l.errorMessage).toString(), name: "EMIT");
+
+            onFailError(emit: emit, text: l.errorMessage!);
+            emit(FetchMealPlanErrorState());
+          }, (r) {
+            log((r.data?.isNotEmpty ?? false).toString(), name: "EMIT");
+            log((r.data ?? false).toString(), name: "EMIT");
+            hasData = r.data?.isNotEmpty ?? false;
+            // onFailError(
+            //     emit: emit, text: left.errorMessage!, hasGrocery: hasData);
+
+            emit(FetchMealPlanErrorState(hasGrocery: hasData));
+          });
+          // onFailError(emit: emit, text: left.errorMessage!);
+        },
+        (right) {
+          _repositoryGrocery.getGroceryListData().fold((left) {
+            log((left.errorMessage).toString(), name: "EMIT");
+
+            onFailError(emit: emit, text: left.errorMessage!);
+          }, (r) {
+            log((r.data?.isNotEmpty ?? false).toString(), name: "EMIT");
+            emit(OnGetMealLogByDateSuccessState(
+                modelData: right.data,
+                hasGrocery: r.data?.isNotEmpty ?? false));
+          });
+        },
+      );
     } catch (e) {
       // showToast(isSuccess: false, message: e.toString());
       emit(FetchMealPlanErrorState());
@@ -302,8 +332,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       await _repository
           .fetchMealDetails(
-        recipeID: event.recipeID!,recipeName:  event.recipeName!
-      )
+              recipeID: event.recipeID!, recipeName: event.recipeName!)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
@@ -401,9 +430,11 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   /// ON FAIL
 
   onFailError(
-      {required String text, required Emitter<FetchMealPlanState> emit}) {
+      {required String text,
+      required Emitter<FetchMealPlanState> emit,
+      bool? hasGrocery}) {
     showToast(isSuccess: false, message: text);
-    emit(FetchMealPlanErrorState());
+    emit(FetchMealPlanErrorState(hasGrocery: hasGrocery ?? false));
   }
 
   bool emailValid(String email) {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -584,8 +582,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 scrollDirection: Axis.vertical,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (BuildContext context, int index) {
-                                  log(groceryDetails[index].measurementType!,
-                                      name: "measurementType");
                                   return GestureDetector(
                                     onTap: () async {
                                       await Get.toNamed('/GroceryItemDetails',

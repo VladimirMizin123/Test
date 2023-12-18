@@ -24,14 +24,19 @@ class FetchMealPlanSuccessState extends FetchMealPlanState {
 
 class FetchMealPlanLoadingState extends FetchMealPlanState {}
 
-class FetchMealPlanErrorState extends FetchMealPlanState {}
+class FetchMealPlanErrorState extends FetchMealPlanState {
+  bool hasGrocery;
+  FetchMealPlanErrorState({this.hasGrocery = false});
+}
 
 class OnGetMealLogByDateLoadingState extends FetchMealPlanState {}
 
 class OnGetMealLogByDateSuccessState extends FetchMealPlanState {
   final List<MealDataByDate>? modelData;
+  bool hasGrocery;
 
-  OnGetMealLogByDateSuccessState({required this.modelData});
+  OnGetMealLogByDateSuccessState(
+      {required this.modelData, this.hasGrocery = false});
 }
 
 // SKIP MEAL PLAN
@@ -39,7 +44,8 @@ class SkipMealPlanSuccessState extends FetchMealPlanState {
   final bool skipMealPlanData;
   final String mealID;
 
-  SkipMealPlanSuccessState({required this.skipMealPlanData, required this.mealID});
+  SkipMealPlanSuccessState(
+      {required this.skipMealPlanData, required this.mealID});
 }
 
 class SkipMealPlanLoadingState extends FetchMealPlanState {}
@@ -50,16 +56,15 @@ class SwapMealPlanSuccessState extends FetchMealPlanState {
   final bool swapMealPlanData;
   final String mealID;
 
-  SwapMealPlanSuccessState({required this.swapMealPlanData, required this.mealID});
+  SwapMealPlanSuccessState(
+      {required this.swapMealPlanData, required this.mealID});
 }
 
 class SwapMealPlanLoadingState extends FetchMealPlanState {}
 
 class SwapMealPlanErrorState extends FetchMealPlanState {}
 
-
-class ClearGroceryListSuccessState extends FetchMealPlanState {
-}
+class ClearGroceryListSuccessState extends FetchMealPlanState {}
 
 class ClearGroceryListLoadingState extends FetchMealPlanState {}
 
@@ -111,7 +116,8 @@ class SwapMealDetailsState extends FetchMealPlanState {
   final int? day;
   final DateTime? dateTime;
 
-  SwapMealDetailsState({this.similarMealData, this.mealId, this.day,this.dateTime});
+  SwapMealDetailsState(
+      {this.similarMealData, this.mealId, this.day, this.dateTime});
 }
 
 class GroceryAddToShoppingLoadingState extends FetchMealPlanState {
@@ -132,7 +138,11 @@ class GroceryAddToShoppingSuccessState extends FetchMealPlanState {
   final bool? isAdd;
   final bool? isRemove;
 
-  GroceryAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+  GroceryAddToShoppingSuccessState(
+      {required this.recipesAddToGroceryData,
+      required this.isAdd,
+      required this.isAdded,
+      required this.isRemove});
 }
 
 class GroceryAddToShoppingErrorState extends FetchMealPlanState {}
@@ -171,7 +181,6 @@ class AddRestrictionSuccessState extends FetchMealPlanState {
   AddRestrictionSuccessState({required this.data});
 }
 
-
 class GetUserRestrictionLoadingState extends FetchMealPlanState {}
 
 class GetUserRestrictionErrorState extends FetchMealPlanState {}
@@ -192,19 +201,18 @@ class BarcodeScannerSuccessState extends FetchMealPlanState {
 
 class BarcodeScannerErrorState extends FetchMealPlanState {}
 
-
 class NutritionixGetNxMealInfoByNameLoadingState extends FetchMealPlanState {
   NutritionixGetNxMealInfoByNameLoadingState();
 }
 
 class NutritionixGetNxMealInfoByNameSuccessState extends FetchMealPlanState {
-  final NutritionixGetNxMealInfoByNameModelData nutritionixGetNxMealInfoByNameModelData;
+  final NutritionixGetNxMealInfoByNameModelData
+      nutritionixGetNxMealInfoByNameModelData;
 
-  NutritionixGetNxMealInfoByNameSuccessState({required this.nutritionixGetNxMealInfoByNameModelData});
+  NutritionixGetNxMealInfoByNameSuccessState(
+      {required this.nutritionixGetNxMealInfoByNameModelData});
 }
 
 class NutritionixGetNxMealInfoByNameErrorState extends FetchMealPlanState {
   NutritionixGetNxMealInfoByNameErrorState();
 }
-
-

@@ -12,6 +12,7 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
@@ -54,12 +55,14 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   @override
   void initState() {
     super.initState();
+    log("INIT STATE");
     getData();
     //mealPlanBloc.add(MealPlanFetchEvent());
     // print('DATATATATA >>>>> ${box.read('mealPlan')}');
   }
 
   final box = GetStorage();
+  bool hasGrocery = false;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -81,7 +84,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             if (state is FetchMealPlanLoadingState) {
               isLoadingData = true;
             }
-
+            log("state == > $state");
             if (state is OnGetMealLogByDateSuccessState) {
               // MAKE SKIP OBJECT FROM HERE,,,,,
               mealDataByDate = state.modelData ?? [];
@@ -111,6 +114,11 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   break;
                 }
               }
+              log(state.hasGrocery.toString(), name: "HAS GROCERY");
+
+              hasGrocery = state.hasGrocery;
+              print("===>>>>>" + hasGrocery.toString());
+              setState(() {});
             }
 
             if (state is FetchMealPlanErrorState) {
@@ -125,6 +133,9 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   break;
                 }
               }
+              log(state.hasGrocery.toString(), name: "HAS GROCERY");
+
+              hasGrocery = state.hasGrocery;
             }
 
             if (state is SwapMealDetailsState) {
@@ -263,7 +274,15 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           )
                         : GestureDetector(
                             onTap: () {
-                              mealPlanBloc.add(ClearUserGroceryMealPlanEvent());
+                              log(hasGrocery.toString());
+                              hasGrocery
+                                  ? Get.offAll(
+                                      () => const AppManagerScreen(
+                                        selectIndex: 1,
+                                      ),
+                                    )
+                                  : mealPlanBloc
+                                      .add(ClearUserGroceryMealPlanEvent());
                             },
                             child: Text(StringUtils.regenerateGroceryList,
                                     style: FontUtils.h18(
