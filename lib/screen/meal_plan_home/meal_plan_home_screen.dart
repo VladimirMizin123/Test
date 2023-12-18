@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
@@ -63,6 +64,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
 
   final box = GetStorage();
   bool hasGrocery = false;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -272,27 +274,33 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                             child: const Center(
                                 child: CircularProgressIndicator()),
                           )
-                        : GestureDetector(
-                            onTap: () {
-                              log(hasGrocery.toString());
-                              hasGrocery
-                                  ? Get.offAll(
+                        : !isReadyToShowWidget
+                            ? const SizedBox()
+                            : GestureDetector(
+                                onTap: () {
+                                  log(hasGrocery.toString());
+                                  if (hasGrocery) {
+                                    Get.offAll(
                                       () => const AppManagerScreen(
                                         selectIndex: 1,
                                       ),
-                                    )
-                                  : mealPlanBloc
-                                      .add(ClearUserGroceryMealPlanEvent());
-                            },
-                            child: Text(
-                                    hasGrocery
-                                        ? StringUtils.showGroceryList
-                                        : StringUtils.regenerateGroceryList,
-                                    style: FontUtils.h18(
-                                        fontColor: AppColors.primaryBlue,
-                                        fontWeight: FWT.medium))
-                                .paddingSymmetric(vertical: 10.h),
-                          ),
+                                    );
+                                  } else {
+                                    mealPlanBloc
+                                        .add(ClearUserGroceryMealPlanEvent());
+                                    hasGrocery = true;
+                                    setState(() {});
+                                  }
+                                },
+                                child: Text(
+                                        hasGrocery
+                                            ? StringUtils.showGroceryList
+                                            : StringUtils.regenerateGroceryList,
+                                        style: FontUtils.h18(
+                                            fontColor: AppColors.primaryBlue,
+                                            fontWeight: FWT.medium))
+                                    .paddingSymmetric(vertical: 10.h),
+                              ),
 
                     ///
                     // state is ClearGroceryListLoadingState

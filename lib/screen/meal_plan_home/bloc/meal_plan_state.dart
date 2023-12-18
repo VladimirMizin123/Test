@@ -26,6 +26,7 @@ class FetchMealPlanLoadingState extends FetchMealPlanState {}
 
 class FetchMealPlanErrorState extends FetchMealPlanState {
   bool hasGrocery;
+
   FetchMealPlanErrorState({this.hasGrocery = false});
 }
 
@@ -64,7 +65,11 @@ class SwapMealPlanLoadingState extends FetchMealPlanState {}
 
 class SwapMealPlanErrorState extends FetchMealPlanState {}
 
-class ClearGroceryListSuccessState extends FetchMealPlanState {}
+class ClearGroceryListSuccessState extends FetchMealPlanState {
+  final bool isHasData;
+
+  ClearGroceryListSuccessState({required this.isHasData});
+}
 
 class ClearGroceryListLoadingState extends FetchMealPlanState {}
 
