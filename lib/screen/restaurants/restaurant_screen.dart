@@ -401,10 +401,24 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                     allSearchRestaurantList =
                                         restaurantList.where(
                                       (element) {
-                                        return element.name!
-                                            .toString()
-                                            .toLowerCase()
-                                            .contains(value.toLowerCase());
+                                        if ((element.cuisines ?? [])
+                                            .isNotEmpty) {
+                                          return element.name!
+                                                  .toString()
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      value.toLowerCase()) ||
+                                              element.cuisines!.any((element) =>
+                                                  element
+                                                      .toLowerCase()
+                                                      .contains(
+                                                          value.toLowerCase()));
+                                        } else {
+                                          return element.name!
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains(value.toLowerCase());
+                                        }
                                       },
                                     ).toSet();
 
