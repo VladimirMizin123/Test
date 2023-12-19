@@ -19,7 +19,24 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../constant/color_utils.dart';
 
 class AddNewItemScreen extends StatefulWidget {
-  const AddNewItemScreen({super.key});
+  final String? id;
+  final String? cal;
+  final String? fat;
+  final String? carbs;
+  final String? protein;
+  final String? name;
+  final String? weight;
+  final String? imageUrl;
+
+  const AddNewItemScreen(
+      {this.id,
+      this.cal,
+      this.fat,
+      this.carbs,
+      this.protein,
+      this.name,
+      this.weight,
+      this.imageUrl});
 
   @override
   State<AddNewItemScreen> createState() => _AddNewItemScreenState();
@@ -39,8 +56,55 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
   bool isButtonEnable = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     print('------->>>${Get.arguments}');
+
+    // TODO: implement initState
+    nameController.text = widget.name ?? '';
+    weightController.text = widget.weight ?? '';
+    calController.text = widget.cal ?? '';
+    fatController.text = widget.fat ?? '';
+    carbsController.text = widget.carbs ?? '';
+    proteinController.text = widget.protein ?? '';
+    if (nameController.text.isEmpty) {
+      isButtonEnable = false;
+    } else if (weightController.text.isEmpty) {
+      isButtonEnable = false;
+    } else if (calController.text
+            .isEmpty /*||
+                      (double.parse(calController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCalorie)))*/
+        ) {
+      isButtonEnable = false;
+    } else if (fatController.text
+            .isEmpty /*||
+                      (double.parse(fatController.text) >
+                          double.parse(PreferenceUtils.getString(totalFat)))*/
+        ) {
+      isButtonEnable = false;
+    } else if (carbsController.text
+            .isEmpty /*||
+                      (double.parse(carbsController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalCarbs)))*/
+        ) {
+      isButtonEnable = false;
+    } else if (proteinController.text
+            .isEmpty /*||
+                      (double.parse(proteinController.text) >
+                          double.parse(
+                              PreferenceUtils.getString(totalProtein)))*/
+        ) {
+      isButtonEnable = false;
+    } else {
+      isButtonEnable = true;
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -93,7 +157,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                   isButtonEnable = true;
                 }
               });
-              setState(() {});
+              /*setState(() {});*/
             }
           },
           builder: (context, state) {
@@ -120,37 +184,87 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                               );
                             },
                             child: pickedImageFilePath.isNotEmpty
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      height: 160.h,
-                                      width: double.infinity.w,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                          color: AppColors.disable),
-                                      child: Image.file(
-                                        File(pickedImageFilePath),
-                                        fit: BoxFit.cover,
+                                ? Builder(builder: (context) {
+                                    if (nameController.text.isEmpty) {
+                                      isButtonEnable = false;
+                                    } else if (weightController.text.isEmpty) {
+                                      isButtonEnable = false;
+                                    } else if (calController.text.isEmpty ||
+                                        (double.parse(calController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalCalorie)))) {
+                                      isButtonEnable = false;
+                                    } else if (fatController.text.isEmpty ||
+                                        (double.parse(fatController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalFat)))) {
+                                      isButtonEnable = false;
+                                    } else if (carbsController.text.isEmpty ||
+                                        (double.parse(carbsController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalCarbs)))) {
+                                      isButtonEnable = false;
+                                    } else if (proteinController.text.isEmpty ||
+                                        (double.parse(proteinController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalProtein)))) {
+                                      isButtonEnable = false;
+                                    } else {
+                                      isButtonEnable = true;
+                                    }
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Container(
+                                        height: 160.h,
+                                        width: double.infinity.w,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8.r),
+                                            color: AppColors.disable),
+                                        child: Image.file(
+                                          File(pickedImageFilePath),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : Container(
-                                    height: 160.h,
-                                    width: double.infinity.w,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(8.r),
-                                        color: AppColors.disable),
-                                    child: Center(
-                                      child: Text(
-                                        StringUtils.addPhoto,
-                                        style: textTheme.headlineSmall
-                                            ?.copyWith(
-                                                color: AppColors.middleGray),
+                                    );
+                                  })
+                                : (widget.imageUrl != null)
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          height: 160.h,
+                                          width: double.infinity.w,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                              color: AppColors.disable),
+                                          child: Image.network(
+                                            widget.imageUrl ?? '',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 160.h,
+                                        width: double.infinity.w,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8.r),
+                                            color: AppColors.disable),
+                                        child: Center(
+                                          child: Text(
+                                            StringUtils.addPhoto,
+                                            style: textTheme.headlineSmall
+                                                ?.copyWith(
+                                                    color:
+                                                        AppColors.middleGray),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
                           ),
                           const SizedBox(height: 10),
                           // commonTextField(
@@ -574,32 +688,54 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 msg: 'Please fill correct Protein value');
                           } else {
                             log("LAST");
-                            getAddNewMealBloc.add(
-                              AddNewMeal(
-                                  name: nameController.text,
-                                  imageUrl: pickedImageFilePath != ''
-                                      ? File(pickedImageFilePath)
-                                      : null,
-                                  protein: proteinController.text,
-                                  fat: fatController.text,
-                                  carbs: carbsController.text,
-                                  calorie: calController.text,
-                                  type: Get.arguments
-                                      .toString()
-                                      .removeAllWhitespace,
-                                  userId: userId,
-                                  quantity: '1'),
-                            );
+                            (widget.protein != null)
+                                ? getAddNewMealBloc.add(
+                                    UpdateNewMealEvent(
+                                        id: widget.id!,
+                                        name: nameController.text,
+                                        imageUrl: pickedImageFilePath != ''
+                                            ? File(pickedImageFilePath)
+                                            : null,
+                                        protein: proteinController.text,
+                                        fat: fatController.text,
+                                        carbs: carbsController.text,
+                                        calorie: calController.text,
+                                        type: Get.arguments
+                                            .toString()
+                                            .removeAllWhitespace,
+                                        userId: userId,
+                                        quantity: '1'),
+                                  )
+                                : getAddNewMealBloc.add(
+                                    AddNewMeal(
+                                        name: nameController.text,
+                                        imageUrl: pickedImageFilePath != ''
+                                            ? File(pickedImageFilePath)
+                                            : null,
+                                        protein: proteinController.text,
+                                        fat: fatController.text,
+                                        carbs: carbsController.text,
+                                        calorie: calController.text,
+                                        type: Get.arguments
+                                            .toString()
+                                            .removeAllWhitespace,
+                                        userId: userId,
+                                        quantity: '1'),
+                                  );
                           }
                         },
                         textColor: Colors.white,
-                        title: StringUtils.saveNewItem,
+                        title: (widget.protein != null)
+                            ? StringUtils.saveChanges
+                            : StringUtils.saveNewItem,
                       ).paddingOnly(bottom: 30.h, top: 10.h);
                     }
                   },
                 )
               ],
-            ).paddingSymmetric(horizontal: 20.w);
+            ).paddingSymmetric(
+              horizontal: 20.w,
+            );
           }),
     );
   }

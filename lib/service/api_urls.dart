@@ -142,6 +142,8 @@ class ApiUrls {
   static const deleteAddress = '${baseUrl}api/UserAddress/RemoveAddress';
   static const String addNewMeal =
       '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
+  static const String updateMeal =
+      '${baseUrl}api/UserCustomMeal/UpdateUserCustomMeal';
 
   /// UserGroceryList
 

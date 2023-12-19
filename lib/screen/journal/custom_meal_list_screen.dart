@@ -13,7 +13,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/get_custom_meal_list_model.dart';
-import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
+import 'package:gymeats_mobile/screen/journal/add_new_item_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
@@ -268,7 +268,7 @@ class _CustomMealListState extends State<CustomMealList> {
                                               horizontal: 12, vertical: 6),
                                           child: GestureDetector(
                                             onTap: () {
-                                              Get.toNamed(
+                                              /*Get.toNamed(
                                                 '/GroceryItemDetails',
                                                 arguments:
                                                     GroceryItemDetailsArguments(
@@ -297,7 +297,38 @@ class _CustomMealListState extends State<CustomMealList> {
                                                           .quantity,
                                                   isFromCustomMealScreen: true,
                                                 ),
-                                              );
+                                              );*/
+                                              Get.to(
+                                                  () => AddNewItemScreen(
+                                                      id: searchCustomMealList[index]
+                                                          .id,
+                                                      name: searchCustomMealList[
+                                                              index]
+                                                          .name,
+                                                      cal: searchCustomMealList[
+                                                              index]
+                                                          .calorie
+                                                          .toString(),
+                                                      carbs: searchCustomMealList[
+                                                              index]
+                                                          .carbs
+                                                          .toString(),
+                                                      fat: searchCustomMealList[
+                                                              index]
+                                                          .fat
+                                                          .toString(),
+                                                      protein:
+                                                          searchCustomMealList[index]
+                                                              .protein
+                                                              .toString(),
+                                                      weight:
+                                                          searchCustomMealList[index]
+                                                              .quantity
+                                                              .toString(),
+                                                      imageUrl:
+                                                          searchCustomMealList[index]
+                                                              .imageUrl),
+                                                  arguments: widget.type);
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(
@@ -373,7 +404,7 @@ class _CustomMealListState extends State<CustomMealList> {
                                           horizontal: 12, vertical: 6),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.toNamed(
+                                          /* Get.toNamed(
                                             '/GroceryItemDetails',
                                             arguments:
                                                 GroceryItemDetailsArguments(
@@ -393,7 +424,36 @@ class _CustomMealListState extends State<CustomMealList> {
                                               quantity: customMealList[index]
                                                   .quantity,
                                             ),
-                                          );
+                                          );*/
+
+                                          Get.to(
+                                              () => AddNewItemScreen(
+                                                    id: customMealList[index]
+                                                        .id,
+                                                    name: customMealList[index]
+                                                        .name,
+                                                    cal: customMealList[index]
+                                                        .calorie
+                                                        .toString(),
+                                                    carbs: customMealList[index]
+                                                        .carbs
+                                                        .toString(),
+                                                    fat: customMealList[index]
+                                                        .fat
+                                                        .toString(),
+                                                    protein:
+                                                        customMealList[index]
+                                                            .protein
+                                                            .toString(),
+                                                    weight:
+                                                        customMealList[index]
+                                                            .quantity
+                                                            .toString(),
+                                                    imageUrl:
+                                                        customMealList[index]
+                                                            .imageUrl,
+                                                  ),
+                                              arguments: widget.type);
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
@@ -452,6 +512,7 @@ class _CustomMealListState extends State<CustomMealList> {
                     bgColor: AppColors.primaryBlue,
                     hasImage: false,
                     onPressed: () {
+                      log("null");
                       Get.toNamed("/AddNewItemScreen", arguments: widget.type);
                     },
                     textColor: Colors.white,

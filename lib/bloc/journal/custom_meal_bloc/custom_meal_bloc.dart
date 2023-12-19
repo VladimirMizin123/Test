@@ -12,6 +12,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
   AddNewMealBloc() : super(InitialState()) {
     on<AddNewMeal>(_onAddNewMeal);
+    on<UpdateNewMealEvent>(_onUpdateNewMeal);
     on<GetSelectedImagePath>(_onGetSelectedImagePath);
     on<GetCustomListEvent>(_onGetCustomMealListDetails);
   }
@@ -23,6 +24,44 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
     try {
       await _repository
           .addMeal(
+              imageUrl: event.imageUrl,
+              calorie: event.calorie,
+              carbs: event.carbs,
+              fat: event.fat,
+              name: event.name,
+              protein: event.protein,
+              type: event.type,
+              userId: event.userId,
+              quantity: event.quantity)
+          .fold(
+        (left) {
+          onFailError(emit: emit, text: left.errorMessage!);
+        },
+        (right) {
+          showToast(isSuccess: true, message: right.message!);
+          emit(AddNewMealSuccessfulState(productId: event.id));
+
+          ///change bottom bar to select journal screen
+          // Get.offAllNamed('/AppManagerScreen');
+          // Get.offAllNamed('/AppManagerScreen');
+          Get.offAll(() => const AppManagerScreen(
+                selectIndex: 4,
+              ));
+        },
+      );
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(AddNewMealErrorState(productId: event.id));
+    }
+  }
+
+  _onUpdateNewMeal(
+      UpdateNewMealEvent event, Emitter<AddNewMealState> emit) async {
+    emit(AddNewMealLoadingState(productId: event.id));
+    try {
+      await _repository
+          .updateMeal(
+              id: event.id.toString(),
               imageUrl: event.imageUrl,
               calorie: event.calorie,
               carbs: event.carbs,

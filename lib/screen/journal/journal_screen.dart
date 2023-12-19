@@ -1459,7 +1459,6 @@ class _JournalScreenState extends State<JournalScreen> {
     }).toList();
 
     logData.map((e) {
-      log("${e.mealName}", name: "MEAT ID FROM logData");
       customDataList?.forEach((element) {
         if (e.mealName == element.name || e.mealId == element.id) {
           if (e.value.toString() == 'ATE') {

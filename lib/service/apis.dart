@@ -221,6 +221,54 @@ class ApiServices {
     }
   }
 
+  Future<http.Response> putMultipart(
+      {required String url,
+      required Map<String, String> body,
+      required List<http.MultipartFile> files}) async {
+    try {
+      Map<String, String>? headers;
+      if (token.isEmpty) {
+        headers = {
+          'Content-Type': 'multipart/form-data',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      } else {
+        headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+      debugPrint('post url--> $url');
+      debugPrint('token--> $token');
+      final request = http.MultipartRequest(
+        'PUT',
+        Uri.parse(url),
+      );
+      request.headers.addAll(headers);
+      if (files.isNotEmpty) {
+        request.files.addAll(files);
+      }
+
+      request.fields.addAll(body);
+      var response = await request.send().then((value) async {
+        return await http.Response.fromStream(value);
+      });
+      debugPrint("postMultipart response--> ${response.body}");
+      return _returnResponse(response);
+    } on SocketException {
+      throw NoInternetException('No Internet connection');
+    } on HttpException {
+      throw FetchDataException('No Service found');
+    } on FormatException {
+      throw InvalidInputException('Bad response format');
+    } catch (e) {
+      throw FetchDataException(e.toString());
+    }
+  }
+
   Future<dynamic> getWithHeader(String url) async {
     try {
       final response = await http.get(Uri.parse(url), headers: {
@@ -284,5 +332,4 @@ class ApiServices {
       throw FetchDataException(e.toString());
     }
   }
-
 }

@@ -205,6 +205,7 @@ class StringUtils {
   static const journalMeal = 'Journal / Meal Details';
   static const addNewItem = 'Add New Item';
   static const saveNewItem = 'Save New Item';
+  static const saveChanges = 'Save Changes';
   static const addPhoto = 'Add Photo';
   static const editPhoto = 'Edit Photo';
   static const weight = 'Weight';

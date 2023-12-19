@@ -80,6 +80,71 @@ class AddNewMealRepository {
     }
   }
 
+  Future<Either<ErrorModel, SuccessModel>> updateMeal({
+    required String id,
+    required String name,
+    File? imageUrl,
+    required String protein,
+    required String fat,
+    required String carbs,
+    required String calorie,
+    required String type,
+    required String userId,
+    required String quantity,
+  }) async {
+    List<http.MultipartFile> mealItemImage = [];
+    if (imageUrl != null) {
+      var stream = http.ByteStream(imageUrl.openRead());
+      stream.cast();
+      var length = await imageUrl.length();
+
+      var multipartFileImage = http.MultipartFile(
+        'ImageUrl',
+        stream,
+        length,
+        filename: imageUrl.path,
+        contentType: MediaType(
+          'image',
+          imageUrl.path.split('/').last.split('.').last == 'png'
+              ? 'png'
+              : 'jpg',
+        ),
+      );
+
+      mealItemImage.add(multipartFileImage);
+    } else {
+      mealItemImage = [];
+    }
+    Map<String, String> data = {
+      'Id': id.toString(),
+      'Name': name.toString(),
+      'Protein': protein.toString(),
+      'Fat': fat.toString(),
+      'Carbs': carbs.toString(),
+      'Quantity': quantity.toString(),
+      'Calorie': calorie.toString(),
+      'Type': type.toString(),
+      'UserId': userId.toString(),
+    };
+
+    log('data----CUSTOM------>>>>>> $data');
+
+    final response = await apiServices.putMultipart(
+        url: ApiUrls.updateMeal, body: data, files: mealItemImage);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('SUCCESS BODY--${response.body}');
+
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      print('FailBODYYY--${response.body}');
+      return Left(
+        ErrorModel.fromJson(
+          jsonDecode(response.body),
+        ),
+      );
+    }
+  }
+
   /// GetUserGroceryList ====================================================================
 
   Future<Either<ErrorModel, GetCustomMealListModel>>
