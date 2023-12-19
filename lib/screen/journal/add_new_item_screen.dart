@@ -704,7 +704,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                             .toString()
                                             .removeAllWhitespace,
                                         userId: userId,
-                                        quantity: '1'),
+                                        quantity: weightController.text),
                                   )
                                 : getAddNewMealBloc.add(
                                     AddNewMeal(
@@ -720,7 +720,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                             .toString()
                                             .removeAllWhitespace,
                                         userId: userId,
-                                        quantity: '1'),
+                                        quantity: weightController.text),
                                   );
                           }
                         },
