@@ -79,6 +79,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
               isGroceryFetchLoadingState = false;
               if (groceryDetails.isNotEmpty) {
+                selectedItemCount = 0;
                 for (var i = 0; i < groceryDetails.length; i++) {
                   checkbox.add({
                     'value': true,
@@ -132,6 +133,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                     if (groceryDetails.isNotEmpty) {
                       checkbox.clear();
+                      selectedItemCount = 0;
                       for (var i = 0; i < groceryDetails.length; i++) {
                         checkbox.add({
                           'value': true,
@@ -182,6 +184,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                     if (groceryDetails.isNotEmpty) {
                       checkbox.clear();
+                      selectedItemCount = 0;
                       for (var i = 0; i < groceryDetails.length; i++) {
                         checkbox.add({
                           'value': true,
@@ -635,9 +638,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                     ['value'] =
                                                                 value!;
 
-                                                            int count = 0;
-
-                                                            for (var i = 0;
+                                                            /* for (var i = 0;
                                                                 i <
                                                                     checkbox
                                                                         .length;
@@ -648,10 +649,17 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                 count =
                                                                     count + 1;
                                                               }
+                                                            }*/
+                                                            if (checkbox[index]
+                                                                ['value']) {
+                                                              selectedItemCount =
+                                                                  selectedItemCount +
+                                                                      1;
+                                                            } else {
+                                                              selectedItemCount =
+                                                                  selectedItemCount -
+                                                                      1;
                                                             }
-
-                                                            selectedItemCount =
-                                                                count;
                                                           });
                                                         },
                                                       ),

@@ -47,52 +47,52 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
           children: [
             exerciseLogList.isEmpty
                 ? state is AllExerciseLogLoadingState
-                ? const Expanded(child: AppCenterLoader())
-                : Center(
-              child: Text(
-                StringUtils.historyExercisesText,
-                style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.middleGray,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 13.sp),
-              ).paddingOnly(top: 10.h, bottom: 10.h),
-            )
+                    ? const Expanded(child: AppCenterLoader())
+                    : Center(
+                        child: Text(
+                          StringUtils.historyExercisesText,
+                          style: textTheme.bodySmall?.copyWith(
+                              color: AppColors.middleGray,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13.sp),
+                        ).paddingOnly(top: 10.h, bottom: 10.h),
+                      )
                 : ListView.builder(
-              itemCount: exerciseLogList.length,
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return Column(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Get.toNamed("/AddEntryScreen",
-                            arguments: AddEntryArguments(
-                                exerciseLogList:
-                                exerciseLogList[index],
-                                dateTime: widget.dateTime!.toString(),
-                                isFromHistory: true))
-                            ?.then((value) {
-                          exerciseLogList.clear();
-                          journalPlanBloc.add(GetExerciseDetails(
-                              date: widget.dateTime!.toString()));
-                        });
-                      },
-                      child: ListTile(
-                        title: Text(
-                            exerciseLogList[index].exerciseName ?? ''),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 15.h,
-                          color: const Color(0xFF010101),
-                        ),
-                      ),
-                    ),
-                    Divider(height: 2.h, color: AppColors.disable),
-                  ],
-                );
-              },
-            ),
+                    itemCount: exerciseLogList.length,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Get.toNamed("/AddEntryScreen",
+                                      arguments: AddEntryArguments(
+                                          exerciseLogList:
+                                              exerciseLogList[index],
+                                          dateTime: widget.dateTime!.toString(),
+                                          isFromHistory: true))
+                                  ?.then((value) {
+                                exerciseLogList.clear();
+                                journalPlanBloc.add(GetExerciseDetails(
+                                    date: widget.dateTime!.toString()));
+                              });
+                            },
+                            child: ListTile(
+                              title: Text(
+                                  exerciseLogList[index].exerciseName ?? ''),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 15.h,
+                                color: const Color(0xFF010101),
+                              ),
+                            ),
+                          ),
+                          Divider(height: 2.h, color: AppColors.disable),
+                        ],
+                      );
+                    },
+                  ),
           ],
         );
       },
