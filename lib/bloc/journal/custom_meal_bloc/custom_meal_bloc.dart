@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_st
 import 'package:gymeats_mobile/repository/get_new_meal_details.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:intl/intl.dart';
 
 class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
   AddNewMealBloc() : super(InitialState()) {
@@ -109,7 +110,10 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
     emit(GetCustomMealListLoadingState());
 
     try {
-      await _repository.getCustomMealListData().fold((left) {
+      await _repository
+          .getCustomMealListData(
+              DateFormat('yyyy-MM-dd').format(event.dateTime!))
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('right.data---------->>>>>> ${right.data}');

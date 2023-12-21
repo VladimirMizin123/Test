@@ -147,10 +147,10 @@ class AddNewMealRepository {
 
   /// GetUserGroceryList ====================================================================
 
-  Future<Either<ErrorModel, GetCustomMealListModel>>
-      getCustomMealListData() async {
+  Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(
+      String date) async {
     final response = await apiServices.get(
-      '${ApiUrls.getCustomMeal}?userId=$userID',
+      '${ApiUrls.getCustomMeal}?userId=$userID&date=$date',
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

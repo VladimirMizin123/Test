@@ -87,7 +87,7 @@ class _JournalScreenState extends State<JournalScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToToday();
-      addNewMealBloc.add(GetCustomListEvent());
+      addNewMealBloc.add(GetCustomListEvent(dateTime: DateTime.now()));
       bloc.add(JournalGetDashboardDataEvent(dateTime: DateTime.now()));
       bloc.add(GetUserJournalData(date: dateTimeNow()));
       if (dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString()) ==
@@ -232,12 +232,18 @@ class _JournalScreenState extends State<JournalScreen> {
                                 recapDataList = [];
                                 logData = [];
 
-                                bloc.add(GetUserJournalData(
+                                bloc.add(
+                                  GetUserJournalData(
                                     date: dateTimeYYYYMMDD(
                                         dateTimeVal:
-                                            selectedDateTime.toString())));
+                                            selectedDateTime.toString()),
+                                  ),
+                                );
                                 bloc.add(JournalGetDashboardDataEvent(
                                     dateTime: selectedDateTime));
+                                addNewMealBloc.add(GetCustomListEvent(
+                                    dateTime: selectedDateTime));
+
                                 // if (dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString()) == dateTimeNow()) {
                                 //   PreferenceUtils.setInt(userMealPlanCountState, 0);
                                 bloc.add(GenMealData());
@@ -1483,7 +1489,8 @@ class _JournalScreenState extends State<JournalScreen> {
             )!
                 .then((value) {
               setState(() {
-                addNewMealBloc.add(GetCustomListEvent());
+                addNewMealBloc
+                    .add(GetCustomListEvent(dateTime: selectedDateTime));
               });
             });
           },

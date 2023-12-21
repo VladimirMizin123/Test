@@ -60,4 +60,7 @@ class UpdateNewMealEvent extends AddNewMealEvent {
 }
 
 /// Get Grocery Event ===============================================================
-class GetCustomListEvent extends AddNewMealEvent {}
+class GetCustomListEvent extends AddNewMealEvent {
+  final DateTime? dateTime;
+  GetCustomListEvent({this.dateTime});
+}
