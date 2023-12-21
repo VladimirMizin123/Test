@@ -4,12 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
+
 import '../../bloc/user_type/user_type_bloc.dart';
 import '../../bloc/user_type/user_type_event.dart';
 import '../../bloc/user_type/user_type_state.dart';
 import '../../constant/app_TextStyle.dart';
-import '../../constant/string_utils.dart';
 import '../../constant/color_utils.dart';
+import '../../constant/string_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
@@ -207,11 +208,16 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             controller: heightController,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w900,
+                                            textInputType: TextInputType.number,
                                             hintText: StringUtils.required,
-                                            inputFormatters: <TextInputFormatter>[
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp('[0-9.]'))
+                                            ],
+                                            /* inputFormatters: <TextInputFormatter>[
                                               FilteringTextInputFormatter.allow(
                                                   RegExp(r"^\d+\'?\d{0,2}")),
-                                            ],
+                                            ],*/
                                             context: context,
                                             onChange: (String value) {
                                               bloc.add(TextChangeEvent(

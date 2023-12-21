@@ -214,6 +214,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             }
           },
           builder: (context, state) {
+            log("state is $state");
             return SafeArea(
               child: SizedBox(
                 height: size.height.h,

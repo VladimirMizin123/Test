@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,6 +69,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
           bloc: addNewGroceryItemBloc,
           listener: (context, state) async {
             /// Get Item Stat ==============================================
+            log("State ==== $state");
 
             ///----------Loading State
             if (state is GetGroceryListLoadingState) {
@@ -594,10 +597,15 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                           groceryDetails[index],
                                                       enableEdit: false))!
                                           .then((value) {
+                                        log("message");
                                         setState(() {
+                                          groceryDetails[index].quantity =
+                                              value;
+                                        });
+                                        /*setState(() {
                                           addNewGroceryItemBloc
                                               .add(GetGroceryItemEvent());
-                                        });
+                                        });*/
                                       });
                                     },
                                     child: Container(
@@ -711,7 +719,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                                           index]
                                                                       .measurementType ==
                                                                   null
-                                                          ? "No Unit"
+                                                          ? "Piece"
                                                           : capitalize(
                                                               groceryDetails[
                                                                       index]

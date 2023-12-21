@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/account_screen/profile/profile_screen_widget.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+
 import '../../../constant/color_utils.dart';
 import '../account/account_scrren_widget.dart';
 
@@ -21,7 +22,9 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  bool isOb = false;
+  bool isOb = true;
+  bool newPassword = true;
+  bool conPassword = true;
   AccountBloc accountBloc = AccountBloc();
   final formKey = GlobalKey<FormState>();
   TextEditingController oldPasswordController = TextEditingController();
@@ -88,7 +91,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                           },
                                           child: isOb
                                               ? const Icon(Icons.visibility_off)
-                                              : const Icon(Icons.remove_red_eye)),
+                                              : const Icon(
+                                                  Icons.remove_red_eye)),
                                       width: double.infinity,
                                       hintText: "Old Password",
                                       obscureText: isOb,
@@ -122,12 +126,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                           return null;
                                         }
                                       },
+                                      suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              newPassword = !newPassword;
+                                            });
+                                          },
+                                          child: newPassword
+                                              ? const Icon(Icons.visibility_off)
+                                              : const Icon(
+                                                  Icons.remove_red_eye)),
+                                      obscureText: newPassword,
                                       textEditingController:
                                           newPasswordController,
                                       enableBorderColor: AppColors.disable,
                                       width: double.infinity,
                                       hintText: StringUtils.writeNewPassword,
-                                      obscureText: false,
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),
@@ -168,7 +182,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       enableBorderColor: AppColors.disable,
                                       width: double.infinity,
                                       hintText: StringUtils.writeNewPassword,
-                                      obscureText: false,
+                                      obscureText: conPassword,
+                                      suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              conPassword = !conPassword;
+                                            });
+                                          },
+                                          child: conPassword
+                                              ? const Icon(Icons.visibility_off)
+                                              : const Icon(
+                                                  Icons.remove_red_eye)),
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),

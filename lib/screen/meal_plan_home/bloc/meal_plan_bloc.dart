@@ -151,8 +151,8 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
           });
           // onFailError(emit: emit, text: left.errorMessage!);
         },
-        (right) {
-          _repositoryGrocery.getGroceryListData().fold((left) {
+        (right) async {
+          await _repositoryGrocery.getGroceryListData().fold((left) {
             log((left.errorMessage).toString(), name: "EMIT");
 
             onFailError(emit: emit, text: left.errorMessage!);
