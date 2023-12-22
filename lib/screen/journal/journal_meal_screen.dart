@@ -169,14 +169,19 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                         color: AppColors.darkGray,
                       ),
                     ),
-                    Text(journalMealScreenArguments!.mealType!.capitalize ?? '',
-                        style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                    Text(
+                      journalMealScreenArguments!.mealType!.capitalize ?? '',
+                      style: FontUtils.h20(
+                        fontColor: AppColors.oxFF010101,
+                      ),
+                    ),
 
                     GestureDetector(
                       onTap: () {
                         Get.to(
                           () => CustomMealList(
-                              type: journalMealScreenArguments!.mealType!),
+                              type: journalMealScreenArguments!.mealType!,
+                              dateTime: journalMealScreenArguments!.dateTime!),
                         );
                       },
                       child: Image.asset(

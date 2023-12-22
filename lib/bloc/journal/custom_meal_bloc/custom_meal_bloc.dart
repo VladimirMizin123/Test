@@ -121,7 +121,8 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
         emit(GetCustomMealListSuccessState(customMealDetails: right.data));
       });
     } catch (e) {
-      print('--dw-->>>${e.toString()}');
+      print('--ERROR-->>>${e.toString()}');
+
       showToast(isSuccess: false, message: e.toString());
       emit(GetCustomMealListErrorState());
     }

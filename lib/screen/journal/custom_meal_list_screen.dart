@@ -22,7 +22,8 @@ import '../../widget/svg_image.dart';
 
 class CustomMealList extends StatefulWidget {
   final String type;
-  const CustomMealList({super.key, required this.type});
+  final DateTime? dateTime;
+  const CustomMealList({super.key, required this.type, required this.dateTime});
 
   @override
   State<CustomMealList> createState() => _CustomMealListState();
@@ -39,7 +40,7 @@ class _CustomMealListState extends State<CustomMealList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      addNewMealBloc.add(GetCustomListEvent());
+      addNewMealBloc.add(GetCustomListEvent(dateTime: widget.dateTime));
     });
   }
 
