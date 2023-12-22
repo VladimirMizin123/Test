@@ -1473,7 +1473,7 @@ class _JournalScreenState extends State<JournalScreen> {
         }
       });
     }).toList();
-    print("dataList:--------> ${dataList?.length}");
+
     return Column(
       children: [
         InkWell(

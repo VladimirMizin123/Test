@@ -399,14 +399,19 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                   ),
                                 ),
                 ),
-                buildButton(
+                !(journalMealScreenArguments!.dateTime!.day ==
+                        DateTime.now().day)
+                    ? SizedBox()
+                    : buildButton(
                         context: context,
                         title: StringUtils.addNewItem,
                         hasImage: false,
                         textColor: AppColors.skyBlue,
                         onPressed: () {
-                          Get.toNamed("/AddNewItemScreen",
-                              arguments: journalMealScreenArguments!.mealType!);
+                          Get.toNamed(
+                            "/AddNewItemScreen",
+                            arguments: journalMealScreenArguments!.mealType!,
+                          );
                           // bloc.add(SaveClickEvent(
                           //     userId: userId,
                           //     workoutTime: minutesController.text,
@@ -414,8 +419,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                           //     caloriesBurned: caloriesBurnedController.text,
                           //     createdBy: ''));
                         },
-                        bgColor: AppColors.primaryBlue)
-                    .paddingOnly(bottom: 20.h, left: 20.w, right: 20.w)
+                        bgColor: AppColors.primaryBlue,
+                      ).paddingOnly(bottom: 20.h, left: 20.w, right: 20.w)
               ],
             ),
           ));

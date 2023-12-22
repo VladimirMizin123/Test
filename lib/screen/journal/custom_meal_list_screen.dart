@@ -508,17 +508,21 @@ class _CustomMealListState extends State<CustomMealList> {
                                 ),
                               ),
                   ),
-                  buildButton(
-                    context: context,
-                    bgColor: AppColors.primaryBlue,
-                    hasImage: false,
-                    onPressed: () {
-                      log("null");
-                      Get.toNamed("/AddNewItemScreen", arguments: widget.type);
-                    },
-                    textColor: Colors.white,
-                    title: StringUtils.addNewItem,
-                  ).paddingOnly(bottom: 30.h, top: 10.h, right: 14, left: 14),
+                  !(widget.dateTime!.day == DateTime.now().day)
+                      ? SizedBox()
+                      : buildButton(
+                          context: context,
+                          bgColor: AppColors.primaryBlue,
+                          hasImage: false,
+                          onPressed: () {
+                            log("null");
+                            Get.toNamed("/AddNewItemScreen",
+                                arguments: widget.type);
+                          },
+                          textColor: Colors.white,
+                          title: StringUtils.addNewItem,
+                        ).paddingOnly(
+                          bottom: 30.h, top: 10.h, right: 14, left: 14),
                 ],
               ),
             ),
