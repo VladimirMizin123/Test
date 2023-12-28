@@ -12,12 +12,10 @@ class ItemCatalogFilterBottomSheet extends StatefulWidget {
   const ItemCatalogFilterBottomSheet({super.key, this.value});
   final RangeValues? value;
   @override
-  State<ItemCatalogFilterBottomSheet> createState() =>
-      _ItemCatalogFilterBottomSheetState();
+  State<ItemCatalogFilterBottomSheet> createState() => _ItemCatalogFilterBottomSheetState();
 }
 
-class _ItemCatalogFilterBottomSheetState
-    extends State<ItemCatalogFilterBottomSheet> {
+class _ItemCatalogFilterBottomSheetState extends State<ItemCatalogFilterBottomSheet> {
   int selectedIndex = 0;
   RangeValues? priceRange;
   bool isFilter = false;
@@ -33,8 +31,7 @@ class _ItemCatalogFilterBottomSheetState
     final screenSize = MediaQuery.of(context).size;
     return Material(
       color: AppColors.whiteColor,
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(
@@ -46,17 +43,12 @@ class _ItemCatalogFilterBottomSheetState
                   child: Container(
                     height: 3.h,
                     width: 80.w,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.disable),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
                   )),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Text('Filters',
-                      style: FontUtils.h22(
-                          fontColor: AppColors.darkGray,
-                          fontWeight: FWT.semiBold)),
+                  Text('Filters', style: FontUtils.h22(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold)),
                   const SizedBox(width: 10),
                   Container(
                     height: 22,
@@ -65,11 +57,7 @@ class _ItemCatalogFilterBottomSheetState
                       color: AppColors.errorRedColor,
                       shape: BoxShape.circle,
                     ),
-                    child: Center(
-                        child: Text('1',
-                            style: FontUtils.h10(
-                                fontColor: AppColors.whiteColor,
-                                fontWeight: FWT.bold))),
+                    child: Center(child: Text('1', style: FontUtils.h10(fontColor: AppColors.whiteColor, fontWeight: FWT.bold))),
                   ),
                   const Spacer(),
                   GestureDetector(
@@ -94,14 +82,14 @@ class _ItemCatalogFilterBottomSheetState
                 '18',
                 CupertinoSwitch(value: true, onChanged: (bool? value) {}),
               ),*/
-              myFilterWidget(
+              /* myFilterWidget(
                   'Brand',
                   'Milo',
                   const Icon(
                     Icons.keyboard_arrow_right_rounded,
                     color: AppColors.black,
                     size: 30,
-                  )),
+                  )),*/
               /*GestureDetector(
                 onTap: () {
                   showModalBottomSheet(
@@ -197,8 +185,7 @@ class _ItemCatalogFilterBottomSheetState
               children: [
                 Text(title, style: FontUtils.h16(fontColor: AppColors.black)),
                 const Spacer(),
-                Text(subTitle,
-                    style: FontUtils.h16(fontColor: AppColors.black)),
+                Text(subTitle, style: FontUtils.h16(fontColor: AppColors.black)),
                 const SizedBox(width: 10),
                 trailingWidget
               ],
