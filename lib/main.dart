@@ -163,10 +163,11 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
-                  PreferenceUtils.getBool(prefIsConfirmEmail)
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
-              : '/',
+              : PreferenceUtils.getBool("ignoreIntro")
+                  ? "/LoginScreen"
+                  : '/',
           // initialRoute: 'SignUpScreen',
           getPages: [
             GetPage(
@@ -196,18 +197,14 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/ChooseStoreScreen',
               page: () {
-                GroceryCartScreenArguments? argument =
-                    (Get.arguments is GroceryCartScreenArguments)
-                        ? Get.arguments
-                        : null;
+                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
                 return ChooseStoreScreen(arguments: argument);
               },
             ),
             GetPage(
               name: '/MealDetailsScreen',
               page: () {
-                MealPlanArguments? argument =
-                    (Get.arguments is MealPlanArguments) ? Get.arguments : null;
+                MealPlanArguments? argument = (Get.arguments is MealPlanArguments) ? Get.arguments : null;
                 return MealDetailsScreen(mealDataArguments: argument);
               },
             ),
@@ -222,20 +219,14 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/GroceryCartScreen',
               page: () {
-                GroceryCartScreenArguments? argument =
-                    (Get.arguments is GroceryCartScreenArguments)
-                        ? Get.arguments
-                        : null;
+                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
                 return GroceryCartScreen(arguments: argument);
               },
             ),
             GetPage(
                 name: '/GroceryItemDetails',
                 page: () {
-                  GroceryItemDetailsArguments? argument =
-                      (Get.arguments is GroceryItemDetailsArguments)
-                          ? Get.arguments
-                          : null;
+                  GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
                   return GroceryItemDetails(arguments: argument);
                 }),
             GetPage(
@@ -249,10 +240,7 @@ class _MyAppState extends State<MyApp> {
             GetPage(
                 name: '/CheckoutScreen',
                 page: () {
-                  GroceryCartScreenArguments? argument =
-                      (Get.arguments is GroceryCartScreenArguments)
-                          ? Get.arguments
-                          : null;
+                  GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
                   return CheckoutScreen(arguments: argument);
                 }),
 

@@ -15,6 +15,7 @@ import 'package:gymeats_mobile/screen/account_screen/program/program_screen.dart
 import 'package:gymeats_mobile/screen/account_screen/setting/setting_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 import 'package:livechatt/livechatt.dart';
+
 import '../address/address_screen.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -26,48 +27,15 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   List settingList = [
-    {
-      "image": AssetsUtils.profileIcon,
-      "title": "Profile",
-      "subtitle": "",
-      "color": AppColors.disable,
-      "screen": const ProfileScreen()
-    },
-    {
-      "image": AssetsUtils.icHome,
-      "title": "My Address",
-      "subtitle": "",
-      "color": AppColors.disable,
-      "screen": const AddressScreen()
-    },
-    {
-      "image": AssetsUtils.icMealPlan,
-      "title": "Program",
-      "subtitle": "Diet",
-      "color": AppColors.transparentColor,
-      "screen": const ProgramScreen()
-    },
+    {"image": AssetsUtils.profileIcon, "title": "Profile", "subtitle": "", "color": AppColors.disable, "screen": const ProfileScreen()},
+    {"image": AssetsUtils.icHome, "title": "My Address", "subtitle": "", "color": AppColors.disable, "screen": const AddressScreen()},
+    {"image": AssetsUtils.icMealPlan, "title": "Program", "subtitle": "Diet", "color": AppColors.transparentColor, "screen": const ProgramScreen()},
   ];
 
   List settingList1 = [
-    {
-      "image": AssetsUtils.about,
-      "title": "About",
-      "color": AppColors.disable,
-      "screen": const AboutScreen()
-    },
-    {
-      "image": AssetsUtils.chat,
-      "title": "Support",
-      "color": AppColors.disable,
-      "screen": ''
-    },
-    {
-      "image": AssetsUtils.setting,
-      "title": "Settings",
-      "color": AppColors.transparentColor,
-      "screen": const SettingScreen()
-    },
+    {"image": AssetsUtils.about, "title": "About", "color": AppColors.disable, "screen": const AboutScreen()},
+    {"image": AssetsUtils.chat, "title": "Support", "color": AppColors.disable, "screen": ''},
+    {"image": AssetsUtils.setting, "title": "Settings", "color": AppColors.transparentColor, "screen": const SettingScreen()},
   ];
   AccountBloc accountBloc = AccountBloc();
   String fullName = '';
@@ -92,8 +60,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   bloc: accountBloc,
                   listener: (context, state) {
                     if (state is GetProfileDetailsSuccessState) {
-                      fullName =
-                          '${state.profileDetails?.firstName} ${state.profileDetails?.lastName}';
+                      fullName = '${state.profileDetails?.firstName} ${state.profileDetails?.lastName}';
                       setState(() {});
                     }
                   },
@@ -105,13 +72,11 @@ class _AccountScreenState extends State<AccountScreen> {
                           color: AppColors.whiteColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        margin: EdgeInsets.only(
-                            top: 150.h, right: 23.w, left: 23.w),
+                        margin: EdgeInsets.only(top: 150.h, right: 23.w, left: 23.w),
                         child: Column(
                           children: [
                             accountScreenListWidget(
-                                children:
-                                    List.generate(settingList.length, (index) {
+                                children: List.generate(settingList.length, (index) {
                               var data = settingList[index];
                               return accountScreenDataWidget(
                                 onTap: () {
@@ -149,13 +114,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                           '16538658',
                                           '0',
                                           fullName,
-                                          PreferenceUtils.getString(
-                                              prefUserEmail),
-                                          <String, String>{
-                                            'org': PreferenceUtils.getString(
-                                                prefUserData),
-                                            'position': 'user'
-                                          },
+                                          PreferenceUtils.getString(prefUserEmail),
+                                          <String, String>{'org': PreferenceUtils.getString(prefUserData), 'position': 'user'},
                                         );
                                       } else {
                                         Get.to(data["screen"]);
@@ -182,6 +142,7 @@ class _AccountScreenState extends State<AccountScreen> {
               InkWell(
                 onTap: () {
                   PreferenceUtils.clearPrefs();
+                  PreferenceUtils.setBool("ignoreIntro", true);
                   Get.offAllNamed('LoginScreen');
                 },
                 child: const Text(

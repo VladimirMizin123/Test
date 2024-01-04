@@ -117,9 +117,15 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                           'Expiration date', widget.product.day ?? 'N/A'),*/
                             const SizedBox(height: 20),
                             Align(
-                                alignment: Alignment.centerLeft,
-                                child:
-                                    Text('Nutritional Information', style: FontUtils.h24(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold))),
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Nutritional Information',
+                                style: FontUtils.h24(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.semiBold,
+                                ),
+                              ),
+                            ),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
