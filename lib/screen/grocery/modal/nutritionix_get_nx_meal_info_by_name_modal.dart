@@ -124,14 +124,14 @@ class NutritionixGetNxMealInfoByNameModelData {
   });
 
   factory NutritionixGetNxMealInfoByNameModelData.fromJson(
-          Map<String, dynamic> json) =>
+          Map<dynamic, dynamic> json) =>
       NutritionixGetNxMealInfoByNameModelData(
         foodName: json["foodName"],
         brandName: json["brandName"],
         servingQty: json["servingQuantity"],
         servingUnit: json["servingUnit"],
         servingWeightGrams: json["servingWeightInGram"],
-        nfMetricQty: json["nfMetricQuantity"],
+        //nfMetricQty: json["nfMetricQuantity"],
         nfMetricUom: json["nfMetricUom"],
         nfCalories: json["nfCalories"],
         nfTotalFat: json["nfTotalFat"],
@@ -144,24 +144,24 @@ class NutritionixGetNxMealInfoByNameModelData {
         nfProtein: json["nfProtein"],
         nfPotassium: json["nfPotassium"],
         nfP: json["nf_P"],
-        fullNutrients: json["nfFullNutrients"] == null
-            ? []
-            : List<FullNutrient>.from(
-                json["nfFullNutrients"]!.map((x) => FullNutrient.fromJson(x))),
+        // fullNutrients: json["nfFullNutrients"] == null
+        //     ? []
+        //     : List<FullNutrient>.from(
+        //         json["nfFullNutrients"]!.map((x) => FullNutrient.fromJson(x))),
         nixBrandName: json["nxBrandname"],
         nixBrandId: json["nxBrandId"],
         nixItemName: json["nxItemName"],
         nixItemId: json["nxItemId"],
-        metadata: json["metadata"] == null
-            ? null
-            : Metadata.fromJson(json["metadata"]),
+        // metadata: json["metadata"] == null
+        //     ? null
+        //     : Metadata.fromJson(json["metadata"]),
         source: json["source"],
         ndbNo: json["ndb_No"],
         tags: json["tags"],
         altMeasures: json["alt_Measure"],
         lat: json["lat"],
         lng: json["lng"],
-        photo: json["photo"] == null ? null : Photo.fromJson(json["photo"]),
+        //photo: json["photo"] == null ? null : Photo.fromJson(json["photo"]),
         note: json["note"],
         classCode: json["class_Code"],
         brickCode: json["brick_Code"],
@@ -238,9 +238,9 @@ class FullNutrient {
 class Metadata {
   Metadata();
 
-  factory Metadata.fromJson(Map<String, dynamic> json) => Metadata();
+  factory Metadata.fromJson(Map<dynamic, dynamic> json) => Metadata();
 
-  Map<String, dynamic> toJson() => {};
+  Map<dynamic, dynamic> toJson() => {};
 }
 
 class Photo {
@@ -254,13 +254,13 @@ class Photo {
     this.isUserUploaded,
   });
 
-  factory Photo.fromJson(Map<String, dynamic> json) => Photo(
+  factory Photo.fromJson(Map<dynamic, dynamic> json) => Photo(
         thumb: json["thumb"],
         highres: json["highres"],
         isUserUploaded: json["is_user_uploaded"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<dynamic, dynamic> toJson() => {
         "thumb": thumb,
         "highres": highres,
         "is_user_uploaded": isUserUploaded,

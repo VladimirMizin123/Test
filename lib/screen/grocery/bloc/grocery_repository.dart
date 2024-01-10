@@ -19,6 +19,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/remove_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/service/hive_singleton.dart';
 
 import '../../restaurants/model/get_user_address_model.dart';
 
@@ -133,6 +134,46 @@ class GroceryRepository {
       groceryDetailsMealInfo({
     required String productName,
   }) async {
+    /*--------------Hive box Nx Data--------------------*/
+    late HiveSingleton hiveSingleton;
+    hiveSingleton = HiveSingleton();
+    var resultKeys = await hiveSingleton.getAllKeys();
+    var resultKey = resultKeys.firstWhere(
+          (key) => key.toLowerCase() == productName.toLowerCase(),
+      orElse: () => '',
+    );
+    if (resultKey.isNotEmpty) {
+      log('localdbtask Key found: $resultKey');
+      var specificValue = await hiveSingleton.getValueByKey(resultKey);
+      log('localdbtask if Value associated with the key: $specificValue');
+      Map<String, dynamic> finalOutput = {
+        'success': true,
+        'message': null,
+        'errorMessage': null,
+        'data': specificValue
+      };
+      return Right(
+          NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+    } else {
+      log('localdbtask else Key not found');
+      var matchingKeys = await hiveSingleton.findKeysWithAnyWord(productName);
+      if (matchingKeys != null) {
+        var specificValue = await hiveSingleton.getValueByKey(matchingKeys);
+        log('localdbtask if Data associated with matching key ($matchingKeys): $specificValue');
+        Map<String, dynamic> finalOutput = {
+          'success': true,
+          'message': null,
+          'errorMessage': null,
+          'data': specificValue
+        };
+        return Right(
+            NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+      } else {
+        log('localdbtask else No matching key found');
+      }
+    }
+    /*--------------Hive box Nx Data--------------------*/
+
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
 
     // log(apiURL, name: 'API URL :');
@@ -140,8 +181,11 @@ class GroceryRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      Map<String, dynamic> json = jsonDecode(response.body);
+      await hiveSingleton.addValueToBox(productName, json["data"]);
       return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
           jsonDecode(response.body)));
+
     } else if (response.statusCode == 400) {
       Map<String, dynamic> json = jsonDecode(response.body);
       if (json["success"] == false) {
@@ -290,6 +334,9 @@ class GroceryRepository {
             final responseAddNxData =
                 await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
+
+           await hiveSingleton.addValueToBox(productName, nxAddData);
+
             return Right(
                 NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
           } else {

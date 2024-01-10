@@ -23,6 +23,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart'
 import 'package:gymeats_mobile/screen/meal_plan_home/model/user_restriction_modal.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/service/hive_singleton.dart';
 
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
@@ -199,11 +200,61 @@ class MealPlanRepository {
 
   Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
       {required String recipeID,required String recipeName}) async {
+    log('localdbtask fetchMealDetails');
     log('recipeName --  $recipeName');
     final response = await apiServices
         .get('${ApiUrls.getRecipeDetailById}/$userID?recipeId=$recipeID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> recipeDetailsMap = jsonDecode(response.body);
+
+      /*--------------Hive box Nx Data--------------------*/
+      late HiveSingleton hiveSingleton;
+      hiveSingleton = HiveSingleton();
+      var resultKeys = await hiveSingleton.getAllKeys();
+      var resultKey = resultKeys.firstWhere(
+            (key) => key.toLowerCase() == recipeName.toLowerCase(),
+        orElse: () => '',
+      );
+      if (resultKey.isNotEmpty) {
+        log('rushankkkkkkk Key found: $resultKey');
+        var specificValue = await hiveSingleton.getValueByKey(resultKey);
+        log('rushankkkkkkk if Value associated with the key: $specificValue');
+
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = specificValue["nfCalories"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = specificValue["nfProtein"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = specificValue["nfTotalCabohydrate"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = specificValue["nfTotalFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = specificValue["nfCholesterol"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = specificValue["nfSodium"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = specificValue["nfSugar"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = specificValue["nfPotassium"] ?? 0;
+        String updatedJsonData = json.encode(recipeDetailsMap);
+        return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+      } else {
+        log('rushankkkkkkk else Key not found');
+        var matchingKeys = await hiveSingleton.findKeysWithAnyWord(recipeName);
+        if (matchingKeys != null) {
+          var specificValue = await hiveSingleton.getValueByKey(matchingKeys);
+          log('rushankkkkkkk if Data associated with matching key ($matchingKeys): $specificValue');
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = specificValue["nfCalories"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = specificValue["nfProtein"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = specificValue["nfTotalCabohydrate"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = specificValue["nfTotalFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = specificValue["nfCholesterol"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = specificValue["nfSodium"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = specificValue["nfSugar"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = specificValue["nfPotassium"] ?? 0;
+          String updatedJsonData = json.encode(recipeDetailsMap);
+          return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+        } else {
+          log('rushankkkkkkk else No matching key found');
+        }
+      }
+      /*--------------Hive box Nx Data--------------------*/
 
       String apiNxInfoURL = '${ApiUrls.getNxMealInfoByName}?name=$recipeName';
       log(apiNxInfoURL, name: 'API URL :');
@@ -273,6 +324,8 @@ class MealPlanRepository {
             final responseAddNxData = await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
 
+            await hiveSingleton.addValueToBox(recipeName, nxAddData);
+
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = jsonNutritionixItemInfo['foods'][0]['nf_calories'];
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNutritionixItemInfo['foods'][0]['nf_protein'];
             recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'];
@@ -297,7 +350,7 @@ class MealPlanRepository {
         }
       }
       else
-        {
+      {
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = jsonNxInfo["data"]["nfCalories"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNxInfo["data"]["nfProtein"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNxInfo["data"]["nfTotalCabohydrate"] ?? 0;
@@ -308,9 +361,9 @@ class MealPlanRepository {
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = jsonNxInfo["data"]["nfDietaryFiber"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = jsonNxInfo["data"]["nfSugar"] ?? 0;
           recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = jsonNxInfo["data"]["nfPotassium"] ?? 0;
-
-
           String updatedJsonData = json.encode(recipeDetailsMap);
+
+          await hiveSingleton.addValueToBox(recipeName, jsonNxInfo["data"]);
           return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
         }
       // return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
@@ -323,6 +376,49 @@ class MealPlanRepository {
       groceryDetailsMealInfo({
     required String productName,
   }) async {
+    log('localdbtask 2');
+
+    /*--------------Hive box Nx Data--------------------*/
+    late HiveSingleton hiveSingleton;
+    hiveSingleton = HiveSingleton();
+    var resultKeys = await hiveSingleton.getAllKeys();
+    var resultKey = resultKeys.firstWhere(
+          (key) => key.toLowerCase() == productName.toLowerCase(),
+      orElse: () => '',
+    );
+    if (resultKey.isNotEmpty) {
+      log('rushankkkkkkk Key found: $resultKey');
+      var specificValue = await hiveSingleton.getValueByKey(resultKey);
+      log('rushankkkkkkk if Value associated with the key: $specificValue');
+      Map<String, dynamic> finalOutput = {
+        'success': true,
+        'message': null,
+        'errorMessage': null,
+        'data': specificValue
+      };
+      return Right(
+          NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+    } else {
+      log('rushankkkkkkk else Key not found');
+      var matchingKeys = await hiveSingleton.findKeysWithAnyWord(productName);
+      if (matchingKeys != null) {
+        var specificValue = await hiveSingleton.getValueByKey(matchingKeys);
+        log('rushankkkkkkk if Data associated with matching key ($matchingKeys): $specificValue');
+        Map<String, dynamic> finalOutput = {
+          'success': true,
+          'message': null,
+          'errorMessage': null,
+          'data': specificValue
+        };
+        return Right(
+            NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+      } else {
+        log('rushankkkkkkk else No matching key found');
+      }
+    }
+    /*--------------Hive box Nx Data--------------------*/
+
+
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
 
     // log(apiURL, name: 'API URL :');
@@ -330,6 +426,8 @@ class MealPlanRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      Map<String, dynamic> json = jsonDecode(response.body);
+      await hiveSingleton.addValueToBox(productName, json["data"]);
       return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
           jsonDecode(response.body)));
     }else if(response.statusCode == 400) {
@@ -441,6 +539,7 @@ class MealPlanRepository {
             };
             final responseAddNxData = await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
+            await hiveSingleton.addValueToBox(productName, nxAddData);
             return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
           }
           else

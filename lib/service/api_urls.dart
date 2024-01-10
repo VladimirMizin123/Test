@@ -59,6 +59,8 @@ class ApiUrls {
   //Nutritionix
   // static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
 
+  static const String getNXJsonFile =
+      '${baseUrl}api/Nutritionix/GetNXJsonFile';
   static const String getNxMealInfoByName =
       '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
   static const String addNutritionDataToDb =

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -65,19 +68,31 @@ import 'package:gymeats_mobile/screen/user_photo_selection/user_photo_selection_
 import 'package:gymeats_mobile/screen/user_sign_up_info/user_sing_up_info_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/service/hive_singleton.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
+import 'constant/string_utils.dart';
 import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
 import 'screen/reset_password/reset_password_screen.dart';
+import 'package:http/http.dart' as http;
 
+late HiveSingleton hiveSingleton;
 // LATTEST CODE. . .
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await Hive.initFlutter();
+  hiveSingleton = HiveSingleton();
+  await hiveSingleton.initHive();
+
   // cameras = await availableCameras();
   await PreferenceUtils.init();
   await Firebase.initializeApp(
@@ -147,7 +162,73 @@ class _MyAppState extends State<MyApp> {
       });
     });
     bloc.add(LatLogEvent());
+    _dbTest();
     super.initState();
+  }
+
+  Future<void> _dbTest()
+  async {
+
+    /*--------------Hive box Version--------------------*/
+    var nxBoxVersion = await Hive.openBox(StringUtils.hiveBoxVersionName);
+    /*--------------Hive box Version--------------------*/
+
+
+    /*--------------Hive box Nx Data--------------------*/
+     await hiveSingleton.openBox(StringUtils.hiveBoxNxName);
+    /*--------------Hive box Nx Data--------------------*/
+
+    final ApiServices apiServices = ApiServices();
+    String apiURL = ApiUrls.getNXJsonFile;
+    log(apiURL, name: 'API URL :');
+    final response = await apiServices.get(apiURL);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> json = jsonDecode(response.body);
+      if (json["success"] == true) {
+        debugPrint('localdbtask ${json["data"]["nxJsonFileUrl"]}');
+        final String nxJsonFileUrl = json["data"]["nxJsonFileUrl"];
+        final response = await http.get(Uri.parse(nxJsonFileUrl));
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = jsonDecode(response.body);
+          debugPrint('localdbtask $data');
+          debugPrint('localdbtask ${data['version']}');
+
+          if (nxBoxVersion.containsKey('version')) {
+            //Already exists data
+            debugPrint('localdbtask Exists');
+            final jsonFileVersion = await nxBoxVersion.get('version');
+            debugPrint('localdbtask file Version -- ${jsonFileVersion['value']}');
+            if(jsonFileVersion['value'] < 0)
+              {
+                debugPrint('localdbtask Server version is higher');
+                await hiveSingleton.clearBox();
+                for (var item in data['data']) {
+                  var foodName = item['foodName'];
+                  await hiveSingleton.addValueToBox(foodName, item);
+                }
+                debugPrint('localdbtask Replace and added new data done');
+              }
+            else
+              {
+                debugPrint('localdbtask Server version is equal or lower');
+              }
+          }
+          else
+          {
+            //First time Install
+            await nxBoxVersion.put('version', {'value': data['version']});
+            for (var item in data['data']) {
+              var foodName = item['foodName'];
+              await hiveSingleton.addValueToBox(foodName, item);
+            }
+            debugPrint('localdbtask added new data done');
+          }
+        } else {
+          throw Exception('Failed to load data');
+        }
+      }
+    }
+
   }
 
   @override

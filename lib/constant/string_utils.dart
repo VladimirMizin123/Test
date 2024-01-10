@@ -283,4 +283,6 @@ class StringUtils {
   static const deleteAccount = "Delete Account?";
   static const deleteAccountInfo =
       "Are you sure that you want to delete your account? You will lose all your stats and progress";
+  static const hiveBoxVersionName = 'nxBoxVersion';
+  static const hiveBoxNxName = 'nxBoxData';
 }
