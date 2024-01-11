@@ -198,7 +198,7 @@ class _MyAppState extends State<MyApp> {
             debugPrint('localdbtask Exists');
             final jsonFileVersion = await nxBoxVersion.get('version');
             debugPrint('localdbtask file Version -- ${jsonFileVersion['value']}');
-            if(jsonFileVersion['value'] < 0)
+            if(jsonFileVersion['value'] < data['version'])
               {
                 debugPrint('localdbtask Server version is higher');
                 await hiveSingleton.clearBox();
