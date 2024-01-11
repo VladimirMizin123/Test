@@ -184,11 +184,13 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                       children: [
                         Text("About",
                                 style: TextStyle(
+                                    color: Colors.black,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 24.sp))
                             .paddingOnly(right: 20.w, left: 20.w),
                         Text(data?.descriptionShort ?? '',
                                 style: TextStyle(
+                                    color: Colors.black,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16.sp))
                             .paddingOnly(right: 20.w, left: 20.w),
@@ -197,6 +199,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                         ),
                         Text(data?.descriptionLong ?? '',
                                 style: TextStyle(
+                                    color: Colors.black,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16.sp))
                             .paddingOnly(right: 20.w, left: 20.w),
@@ -298,7 +301,9 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                         Text(
                           "What to Eat",
                           style: TextStyle(
-                              fontSize: 24.sp, fontWeight: FontWeight.w500),
+                              color: Colors.black,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w500),
                         ).paddingOnly(right: 20.w, left: 20.w),
                         Column(
                           children: [
@@ -322,11 +327,14 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                                       ?.increase?.length ??
                                                   0,
                                               (index) => expandTileWidget(
-                                                  title: Text(data
-                                                          ?.cpcsIngredientGroups
-                                                          ?.increase?[index]
-                                                          .name ??
-                                                      ""),
+                                                  title: Text(
+                                                      data
+                                                              ?.cpcsIngredientGroups
+                                                              ?.increase?[index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          color: Colors.black)),
                                                   children: [
                                                     (data
                                                                 ?.cpcsIngredientGroups
@@ -351,11 +359,14 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                                       ?.decrease?.length ??
                                                   0,
                                               (index) => expandTileWidget(
-                                                  title: Text(data
-                                                          ?.cpcsIngredientGroups
-                                                          ?.decrease?[index]
-                                                          .name ??
-                                                      ""),
+                                                  title: Text(
+                                                      data
+                                                              ?.cpcsIngredientGroups
+                                                              ?.decrease?[index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          color: Colors.black)),
                                                   children: [
                                                     (data
                                                                 ?.cpcsIngredientGroups
@@ -380,11 +391,14 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                                       ?.length ??
                                                   0,
                                               (index) => expandTileWidget(
-                                                  title: Text(data
-                                                          ?.cpcsIngredientGroups
-                                                          ?.avoid?[index]
-                                                          .name ??
-                                                      ""),
+                                                  title: Text(
+                                                      data
+                                                              ?.cpcsIngredientGroups
+                                                              ?.avoid?[index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          color: Colors.black)),
                                                   children: [
                                                     (data
                                                                 ?.cpcsIngredientGroups

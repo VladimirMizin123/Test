@@ -45,6 +45,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
                                 Text(
                                   "Privacy Policy",
                                   style: TextStyle(
+                                      color: Colors.black,
                                       fontSize: 24,
                                       fontWeight: FontWeight.w500),
                                 ),
@@ -57,19 +58,25 @@ class _PolicyScreenState extends State<PolicyScreen> {
                         ),
                         Text(StringUtils.writePolicyInstructions,
                             style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w400)),
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text("1. ${StringUtils.policyInformationTitle1}",
                             style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w500)),
+                                color: Colors.black,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text(StringUtils.policy1,
                             style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w400)),
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400)),
                         SizedBox(
                           height: 10.h,
                         ),
@@ -81,13 +88,17 @@ class _PolicyScreenState extends State<PolicyScreen> {
                         ),
                         Text("2. ${StringUtils.policyInformationTitle2}",
                             style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w500)),
+                                color: Colors.black,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text(StringUtils.policy2,
                             style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w400)),
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400)),
                         SizedBox(
                           height: 10.h,
                         ),

@@ -283,6 +283,32 @@ class StringUtils {
   static const deleteAccount = "Delete Account?";
   static const deleteAccountInfo =
       "Are you sure that you want to delete your account? You will lose all your stats and progress";
+  static const snacksAppetizers = 'Snacks/Appetizers';
+  static const burgers = 'Burgers';
+  static const pizza = 'Pizza';
+  static const sandwiches = 'Sandwiches';
+  static const salads = 'Salads';
+  static const soups = 'Soups';
+  static const halal = 'Halal';
+  static const riceNoodles = 'Rice/Noodles';
+  static const italian = 'Italian';
+  static const mexican = 'Mexican';
+  static const turkish = 'Turkish';
+  static const wraps = 'Wraps';
+  static const sushi = 'Sushi';
+  static const kosher = 'Kosher';
+  static const asian = 'Asian';
+  static const mediterranean = 'Mediterranean';
+  static const seafood = 'Seafood';
+  static const beefSteak = 'Beef/Steak';
+  static const indian = 'Indian';
+  static const vegetarianVegan = 'Vegetarian/Vegan';
+  static const bbq = 'BBQ';
+  static const breakfastItems = 'Breakfast Items';
+  static const poultry = 'Poultry';
+  static const pork = 'Pork';
+  static const desserts = 'Desserts';
+  static const drinks = 'Drinks';
   static const hiveBoxVersionName = 'nxBoxVersion';
   static const hiveBoxNxName = 'nxBoxData';
 }

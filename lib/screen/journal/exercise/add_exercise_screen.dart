@@ -49,6 +49,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,

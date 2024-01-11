@@ -26,6 +26,7 @@ Widget unitScreenWidget({String? text, Widget? widget}) {
 
 Widget radioButtonWidget(
     {int? value1,
+    required BuildContext context,
     int? value2,
     String? title1,
     String? title2,
@@ -47,11 +48,22 @@ Widget radioButtonWidget(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title1!,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black)),
             SizedBox(
               width: 17.w,
             ),
             Radio(
+              fillColor: MaterialStateColor.resolveWith(
+                (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return AppColors.primaryBlueColor;
+                  }
+                  return AppColors.black;
+                },
+              ),
               activeColor: AppColors.primaryBlueColor,
               value: value1,
               groupValue: groupValue,
@@ -64,13 +76,24 @@ Widget radioButtonWidget(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title2!,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black)),
             SizedBox(
               width: 17.w,
             ),
             Container(
               margin: EdgeInsets.only(left: 20.w),
               child: Radio(
+                fillColor: MaterialStateColor.resolveWith(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return AppColors.primaryBlueColor;
+                    }
+                    return AppColors.black;
+                  },
+                ),
                 activeColor: AppColors.primaryBlueColor,
                 value: value2,
                 groupValue: groupValue,

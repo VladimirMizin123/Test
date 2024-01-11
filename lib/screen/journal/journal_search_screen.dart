@@ -214,6 +214,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextField(
+                        style: const TextStyle(color: Colors.black),
                         controller: searchController,
                         onSubmitted: (String value) {
                           journalPlanBloc.add(JournalSearchEvent(
@@ -225,7 +226,8 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                           ));
                         },
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
+                          prefixIcon:
+                              const Icon(Icons.search, color: Colors.black),
                           hintText: 'Search for item',
                           hintStyle: FontUtils.h16(),
                           border: InputBorder.none,

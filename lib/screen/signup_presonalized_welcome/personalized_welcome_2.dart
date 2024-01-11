@@ -17,7 +17,6 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    print('Gender:- $gender');
 
     return Scaffold(
       body: Container(

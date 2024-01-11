@@ -13,6 +13,8 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
@@ -29,11 +31,17 @@ class RestaurantMenuScreen extends StatefulWidget {
     required this.restaurantId,
     required this.pickup,
     required this.mealType,
+    required this.userId,
+    required this.address,
+    required this.getUserAddress,
   });
   final String? restaurantName;
   final String restaurantId;
   final String mealType;
   final bool pickup;
+  final String userId;
+  final Address address;
+  final UserAddress? getUserAddress;
 
   @override
   State<RestaurantMenuScreen> createState() => _RestaurantMenuScreenState();
@@ -68,11 +76,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     super.initState();
 
     restaurantBloc.add(
-      GetRestaurantMenuListEvent(
-        widget.restaurantId,
-        widget.pickup,
-        widget.mealType,
-      ),
+      GetRestaurantMenuListEvent(widget.restaurantId, widget.pickup,
+          widget.mealType, widget.getUserAddress),
     );
 
     restaurantBloc.add(GetShoppingListEvent());

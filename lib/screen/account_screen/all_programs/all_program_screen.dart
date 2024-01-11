@@ -322,8 +322,14 @@ class _AllProgramScreenState extends State<AllProgramScreen> {
                                   ),
                                   child: Image.asset(AssetsUtils.user),
                                 ),
-                                title: Text(data?.name ?? ''),
-                                subtitle: Text(data?.author ?? ""),
+                                title: Text(
+                                  data?.name ?? '',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                subtitle: Text(
+                                  data?.author ?? "",
+                                  style: const TextStyle(color: Colors.black),
+                                ),
                                 trailing: const SvgImage(
                                     image: AssetsUtils.forwardArrow),
                                 onTap: () {

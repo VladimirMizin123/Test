@@ -17,7 +17,7 @@ Widget profileDataWidget({String? text, TextStyle? style, Widget? widget}) {
 Widget labelWidget({String? text, TextStyle? style}) {
   return Text(
     text!,
-    style: style,
+    style: style?.copyWith(color: Colors.black),
   );
 }
 

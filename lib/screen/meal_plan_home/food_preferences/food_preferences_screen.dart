@@ -211,7 +211,6 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                       height: screenSize.height * 0.065,
                       width: screenSize.width,
                       onTap: () {
-                        // print(restrictionIdList.toList().toString());
                         mealPlanBloc.add(AddUserRestrictionEvent(
                             edgeRestrictionList: restrictionIdList));
                       },
@@ -236,7 +235,10 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
       padding: const EdgeInsets.only(top: 10),
       child: Row(
         children: [
-          Text(title),
+          Text(
+            title,
+            style: const TextStyle(color: Colors.black),
+          ),
           const Spacer(),
           CupertinoSwitch(
               value: value,

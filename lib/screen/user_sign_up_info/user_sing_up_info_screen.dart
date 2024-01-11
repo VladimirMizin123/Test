@@ -38,7 +38,6 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc.add(LatLogEvent());
     pageController = PageController(initialPage: 0);
@@ -62,7 +61,6 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("Options:- ${model.options}");
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -285,7 +283,6 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                 : buildButton(
                                         context: context,
                                         onPressed: () {
-                                          // print(model.restrictionID.toList().toString());
                                           UserSignUpDataModel
                                               userSignUpDataModel =
                                               UserSignUpDataModel(

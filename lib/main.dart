@@ -138,11 +138,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("Call initDynamicLinks");
       final appLinks = AppLinks();
       appLinks.allUriLinkStream.listen((uri) {
-        print("uri.path ${uri.path}");
-
         if (uri.path == '/auth/setNewPassword') {
           final token = PreferenceUtils.getString(forgetPassToken);
           if (token != '') {
@@ -166,16 +163,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  Future<void> _dbTest()
-  async {
-
+  Future<void> _dbTest() async {
     /*--------------Hive box Version--------------------*/
     var nxBoxVersion = await Hive.openBox(StringUtils.hiveBoxVersionName);
     /*--------------Hive box Version--------------------*/
 
-
     /*--------------Hive box Nx Data--------------------*/
-     await hiveSingleton.openBox(StringUtils.hiveBoxNxName);
+    await hiveSingleton.openBox(StringUtils.hiveBoxNxName);
     /*--------------Hive box Nx Data--------------------*/
 
     final ApiServices apiServices = ApiServices();
@@ -197,24 +191,20 @@ class _MyAppState extends State<MyApp> {
             //Already exists data
             debugPrint('localdbtask Exists');
             final jsonFileVersion = await nxBoxVersion.get('version');
-            debugPrint('localdbtask file Version -- ${jsonFileVersion['value']}');
-            if(jsonFileVersion['value'] < data['version'])
-              {
-                debugPrint('localdbtask Server version is higher');
-                await hiveSingleton.clearBox();
-                for (var item in data['data']) {
-                  var foodName = item['foodName'];
-                  await hiveSingleton.addValueToBox(foodName, item);
-                }
-                debugPrint('localdbtask Replace and added new data done');
+            debugPrint(
+                'localdbtask file Version -- ${jsonFileVersion['value']}');
+            if (jsonFileVersion['value'] < data['version']) {
+              debugPrint('localdbtask Server version is higher');
+              await hiveSingleton.clearBox();
+              for (var item in data['data']) {
+                var foodName = item['foodName'];
+                await hiveSingleton.addValueToBox(foodName, item);
               }
-            else
-              {
-                debugPrint('localdbtask Server version is equal or lower');
-              }
-          }
-          else
-          {
+              debugPrint('localdbtask Replace and added new data done');
+            } else {
+              debugPrint('localdbtask Server version is equal or lower');
+            }
+          } else {
             //First time Install
             await nxBoxVersion.put('version', {'value': data['version']});
             for (var item in data['data']) {
@@ -228,7 +218,6 @@ class _MyAppState extends State<MyApp> {
         }
       }
     }
-
   }
 
   @override
@@ -244,7 +233,8 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
-          initialRoute: PreferenceUtils.getBool(prefIsLogin) && PreferenceUtils.getBool(prefIsConfirmEmail)
+          initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
+                  PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
               : PreferenceUtils.getBool("ignoreIntro")
                   ? "/LoginScreen"
@@ -278,14 +268,18 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/ChooseStoreScreen',
               page: () {
-                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                GroceryCartScreenArguments? argument =
+                    (Get.arguments is GroceryCartScreenArguments)
+                        ? Get.arguments
+                        : null;
                 return ChooseStoreScreen(arguments: argument);
               },
             ),
             GetPage(
               name: '/MealDetailsScreen',
               page: () {
-                MealPlanArguments? argument = (Get.arguments is MealPlanArguments) ? Get.arguments : null;
+                MealPlanArguments? argument =
+                    (Get.arguments is MealPlanArguments) ? Get.arguments : null;
                 return MealDetailsScreen(mealDataArguments: argument);
               },
             ),
@@ -300,14 +294,20 @@ class _MyAppState extends State<MyApp> {
             GetPage(
               name: '/GroceryCartScreen',
               page: () {
-                GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                GroceryCartScreenArguments? argument =
+                    (Get.arguments is GroceryCartScreenArguments)
+                        ? Get.arguments
+                        : null;
                 return GroceryCartScreen(arguments: argument);
               },
             ),
             GetPage(
                 name: '/GroceryItemDetails',
                 page: () {
-                  GroceryItemDetailsArguments? argument = (Get.arguments is GroceryItemDetailsArguments) ? Get.arguments : null;
+                  GroceryItemDetailsArguments? argument =
+                      (Get.arguments is GroceryItemDetailsArguments)
+                          ? Get.arguments
+                          : null;
                   return GroceryItemDetails(arguments: argument);
                 }),
             GetPage(
@@ -321,7 +321,10 @@ class _MyAppState extends State<MyApp> {
             GetPage(
                 name: '/CheckoutScreen',
                 page: () {
-                  GroceryCartScreenArguments? argument = (Get.arguments is GroceryCartScreenArguments) ? Get.arguments : null;
+                  GroceryCartScreenArguments? argument =
+                      (Get.arguments is GroceryCartScreenArguments)
+                          ? Get.arguments
+                          : null;
                   return CheckoutScreen(arguments: argument);
                 }),
 

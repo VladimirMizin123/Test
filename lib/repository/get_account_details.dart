@@ -121,6 +121,7 @@ class AccountRepository {
         await apiServices.get('${ApiUrls.getProfileDetails}$userID');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      print("userdetails:${response.body}");
       return Right(getProfileDetailsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
       return Right(getProfileDetailsResponseModelFromJson(response.body));
@@ -267,10 +268,13 @@ class AccountRepository {
       "waterType": waterType,
       "userId": userID
     };
-    print('=data==>$data');
+
+    print("data:$data");
 
     final response = await apiServices.put(ApiUrls.updateUnitInfo, data);
-    print('==response==>${response.statusCode}====${response.body}');
+    print('hello response  :${response.body}');
+
+    print("code:${response.statusCode}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateUnitInfoResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {

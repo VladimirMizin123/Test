@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
+import 'package:gymeats_mobile/screen/restaurants/res_category_data_service/res_categorydata_service.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -66,6 +67,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         userStreetName: event.userStreetName,
         userStreetNum: event.userStreetNum,
         userZipcode: event.userZipcode,
+        categoriesData: event.categotyData,
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
@@ -87,10 +89,10 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository
           .getRestaurantMenuList(
-        restaurantId: event.restaurantId,
-        pickup: event.pickUp,
-        mealType: event.mealType,
-      )
+              restaurantId: event.restaurantId,
+              pickup: event.pickUp,
+              mealType: event.mealType,
+              getUserAddress: event.getUserAddress)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(GetRestaurantMenuListErrorState());

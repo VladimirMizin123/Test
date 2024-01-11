@@ -84,7 +84,10 @@ class _SettingScreenState extends State<SettingScreen> {
                         },
                         color: data["color"],
                         leading: SvgImage(image: data["image"]),
-                        title: Text(data["title"]),
+                        title: Text(
+                          data["title"],
+                          style: const TextStyle(color: Colors.black),
+                        ),
                         trailing: data["title"].toString() == 'Notifications'
                             ? CupertinoSwitch(
                                 value: isNotification,

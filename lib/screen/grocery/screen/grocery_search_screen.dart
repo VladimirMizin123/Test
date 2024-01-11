@@ -154,6 +154,7 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextField(
+                        style: const TextStyle(color: Colors.black),
                         controller: searchController,
                         onSubmitted: (String value) {
                           groceryBloc.add(
@@ -167,7 +168,8 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                           );
                         },
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
+                          prefixIcon:
+                              const Icon(Icons.search, color: Colors.black),
                           hintText: 'Search for item',
                           hintStyle: FontUtils.h16(),
                           border: InputBorder.none,

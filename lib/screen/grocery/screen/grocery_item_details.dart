@@ -14,11 +14,17 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart'
+    as account;
+
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import 'grocery_screen.dart';
@@ -45,6 +51,10 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   bool add = false;
   bool delete = false;
   bool addItem = false;
+  AccountBloc accountBloc = AccountBloc();
+
+  bool isLoader = false;
+  int? weightValue;
 
   @override
   void initState() {
@@ -92,11 +102,15 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
         });
       }
     }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      accountBloc.add(GetUnitInfoEvent());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: BlocConsumer<GroceryBloc, GroceryState>(
           bloc: groceryBloc,
@@ -397,7 +411,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                             ),
                                           SizedBox(width: 8.w),
                                           widget.arguments?.isShowData == true
-                                              ? SizedBox()
+                                              ? const SizedBox()
                                               : Expanded(
                                                   flex: 2,
                                                   child:
@@ -431,10 +445,10 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                         ],
                                       ),
                                       (widget.arguments?.imageUrl ?? '') != ''
-                                          ? SizedBox(
+                                          ? const SizedBox(
                                               height: 10,
                                             )
-                                          : SizedBox(),
+                                          : const SizedBox(),
                                       (widget.arguments?.imageUrl ?? '') != ''
                                           ? ClipRRect(
                                               borderRadius:
@@ -454,56 +468,141 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                 ),
                                               ),
                                             )
-                                          : SizedBox(),
+                                          : const SizedBox(),
                                       const SizedBox(height: 10),
-                                      GridView(
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 2,
-                                                crossAxisSpacing: 6.w,
-                                                mainAxisSpacing: 6.h),
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        children: [
-                                          myProgressBarCardView(
-                                              'Cal',
-                                              widget.arguments?.cal ?? 0.00,
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalCalorie))
-                                                  .toStringAsFixed(2)),
-                                              AppColors.primaryBlue,
-                                              'Cal'),
-                                          myProgressBarCardView(
-                                              'Fat',
-                                              widget.arguments?.fat ?? 0.00,
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalFat))
-                                                  .toStringAsFixed(2)),
-                                              AppColors.coral,
-                                              "g"),
-                                          myProgressBarCardView(
-                                              'Carbs',
-                                              widget.arguments?.carbs ?? 0.00,
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalCarbs))
-                                                  .toStringAsFixed(2)),
-                                              AppColors.mint,
-                                              "g"),
-                                          myProgressBarCardView(
-                                              'Protein',
-                                              widget.arguments?.protein ?? 0.00,
-                                              double.parse(double.parse(
-                                                      PreferenceUtils.getString(
-                                                          totalProtein))
-                                                  .toStringAsFixed(2)),
-                                              AppColors.skyBlue,
-                                              "g"),
-                                        ],
+                                      BlocConsumer(
+                                        bloc: accountBloc,
+                                        builder: (context, state) {
+                                          if (state is account
+                                              .GetUnitInfoSuccessState) {
+                                            isLoader = false;
+
+                                            weightValue =
+                                                state.unitData?.weightType ==
+                                                        'Pound'
+                                                    ? 1
+                                                    : 2;
+
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              accountBloc
+                                                  .add(GetUnitInfoEvent());
+                                            });
+                                          }
+                                          return GridView(
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    childAspectRatio: 2,
+                                                    crossAxisSpacing: 6.w,
+                                                    mainAxisSpacing: 6.h),
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            children: [
+                                              myProgressBarCardView(
+                                                  'Cal',
+                                                  widget.arguments?.cal ?? 0.0,
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCalorie))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.primaryBlue,
+                                                  'Cal'),
+                                              myProgressBarCardView(
+                                                  isWeight: true,
+                                                  'Fat',
+                                                  widget.arguments?.fat ?? 0.00,
+                                                  // double.tryParse(weightGramToPound(
+                                                  //             textValue: widget
+                                                  //                 .arguments
+                                                  //                 ?.fat,
+                                                  //             weightValue:
+                                                  //                 weightValue)
+                                                  //         .toString()) ??
+                                                  //     0.0,
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalFat))
+                                                      .toStringAsFixed(2)),
+                                                  // double.parse(double.parse(weightGramToPound(
+                                                  //             textValue: num.tryParse(
+                                                  //                 PreferenceUtils
+                                                  //                     .getString(
+                                                  //                         totalFat)),
+                                                  //             weightValue:
+                                                  //                 weightValue)
+                                                  //         .toString())
+                                                  //     .toStringAsFixed(2)),
+                                                  AppColors.coral,
+                                                  "g"),
+                                              myProgressBarCardView(
+                                                  isWeight: true,
+                                                  'Carbs',
+
+                                                  // double.tryParse(weightGramToPound(
+                                                  //             textValue: widget
+                                                  //                 .arguments
+                                                  //                 ?.carbs,
+                                                  //             weightValue:
+                                                  //                 weightValue)
+                                                  //         .toString()) ??
+                                                  //     0.0,
+                                                  widget.arguments?.carbs ??
+                                                      0.0,
+                                                  // double.parse(double.parse(weightGramToPound(
+                                                  //             textValue: num.tryParse(
+                                                  //                 PreferenceUtils
+                                                  //                     .getString(
+                                                  //                         totalCarbs)),
+                                                  //             weightValue:
+                                                  //                 weightValue)
+                                                  //         .toString())
+                                                  //     .toStringAsFixed(2)),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalCarbs))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.mint,
+                                                  "g"),
+                                              myProgressBarCardView(
+                                                  isWeight: true,
+                                                  'Protein',
+                                                  // double.tryParse(weightGramToPound(
+                                                  //             textValue: widget
+                                                  //                 .arguments
+                                                  //                 ?.protein,
+                                                  //             weightValue: widget
+                                                  //                 .arguments
+                                                  //                 ?.weightValue)
+                                                  //         .toString()) ??
+                                                  //     0.0,
+                                                  widget.arguments?.protein ??
+                                                      0.0,
+                                                  // double.parse(double.parse(
+                                                  //         weightGramToPound(
+                                                  //                 textValue:
+                                                  //                     num.tryParse(
+                                                  //                         PreferenceUtils.getString(totalProtein)),
+                                                  //                 weightValue: weightValue)
+                                                  //             .toString())
+                                                  //     .toStringAsFixed(2)),
+                                                  double.parse(double.parse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalProtein))
+                                                      .toStringAsFixed(2)),
+                                                  AppColors.skyBlue,
+                                                  "g"),
+                                            ],
+                                          );
+                                        },
+                                        listener: (BuildContext context,
+                                            Object? state) {},
                                       ),
                                       const SizedBox(height: 10),
                                       Align(
@@ -533,60 +632,141 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                           color: AppColors.disabledColor,
                                           height: 2.h),
                                       const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Protein',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${((widget.arguments?.protein ?? 0.00)).toStringAsFixed(2)} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
+                                      BlocConsumer(
+                                        bloc: accountBloc,
+                                        builder: (context, state) {
+                                          if (state is account
+                                              .GetUnitInfoSuccessState) {
+                                            isLoader = false;
+
+                                            weightValue =
+                                                state.unitData?.weightType ==
+                                                        'Pound'
+                                                    ? 1
+                                                    : 2;
+
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              accountBloc
+                                                  .add(GetUnitInfoEvent());
+                                            });
+                                          }
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Protein',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text(
+                                                  // '${weightGramToPound(textValue: widget.arguments?.protein, weightValue: weightValue)} ${weightValue == 1 ? "Pound" : "g"} ',
+                                                  '${widget.arguments?.protein}g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          );
+                                        },
+                                        listener: (BuildContext context,
+                                            Object? state) {},
                                       ),
                                       const SizedBox(height: 10),
                                       Divider(
                                           color: AppColors.disabledColor,
                                           height: 2.h),
                                       const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Carbs',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${((widget.arguments?.carbs ?? 0.00)).toStringAsFixed(2)} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
+                                      BlocConsumer(
+                                        bloc: accountBloc,
+                                        builder: (context, state) {
+                                          if (state is account
+                                              .GetUnitInfoSuccessState) {
+                                            isLoader = false;
+
+                                            weightValue =
+                                                state.unitData?.weightType ==
+                                                        'Pound'
+                                                    ? 1
+                                                    : 2;
+
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              accountBloc
+                                                  .add(GetUnitInfoEvent());
+                                            });
+                                          }
+
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Carbs',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text(
+                                                  '${widget.arguments?.carbs}g',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          );
+                                        },
+                                        listener: (BuildContext context,
+                                            Object? state) {},
                                       ),
                                       const SizedBox(height: 10),
                                       Divider(
                                           color: AppColors.disabledColor,
                                           height: 2.h),
                                       const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Fat',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${((widget.arguments?.fat ?? 0.00)).toStringAsFixed(2) ?? 0} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
+                                      BlocConsumer(
+                                        bloc: accountBloc,
+                                        builder: (context, state) {
+                                          if (state is account
+                                              .GetUnitInfoSuccessState) {
+                                            isLoader = false;
+
+                                            weightValue =
+                                                state.unitData?.weightType ==
+                                                        'Pound'
+                                                    ? 1
+                                                    : 2;
+
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              accountBloc
+                                                  .add(GetUnitInfoEvent());
+                                            });
+                                          }
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Fat',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                              Text(
+                                                  '${((widget.arguments?.fat ?? 0.00)).toStringAsFixed(2) ?? 0}g',
+                                                  // '${weightGramToPound(textValue: widget.arguments?.fat, weightValue: weightValue)} ${weightValue == 1 ? "Pound" : "g"}',
+                                                  style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.darkGray,
+                                                      fontWeight: FWT.medium)),
+                                            ],
+                                          );
+                                        },
+                                        listener: (BuildContext context,
+                                            Object? state) {},
                                       ),
                                       const SizedBox(height: 10),
                                       Divider(
@@ -1122,7 +1302,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                     widget.arguments
                                                                 ?.isShowData ==
                                                             true
-                                                        ? SizedBox()
+                                                        ? const SizedBox()
                                                         : Expanded(
                                                             flex: 2,
                                                             child: !widget
@@ -1137,7 +1317,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                           BorderRadius.circular(
                                                                               12),
                                                                     ),
-                                                                    padding: EdgeInsets.symmetric(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
                                                                         vertical:
                                                                             18,
                                                                         horizontal:
@@ -1245,6 +1426,47 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                 2)),
                                                         AppColors.coral,
                                                         "g"),
+                                                    // myProgressBarCardView(
+                                                    //     'Fat',
+                                                    //     widget.arguments
+                                                    //                 ?.isShowData ==
+                                                    //             true
+                                                    //         ? double.tryParse(weightGramToPound(
+                                                    //                     textValue: widget
+                                                    //                         .arguments?.fat,
+                                                    //                     weightValue: widget
+                                                    //                         .arguments?.weightValue)
+                                                    //                 .toString()) ??
+                                                    //             0.0
+                                                    //         : nutritionixGetNxMealInfoByNameModelData!
+                                                    //                     .nfTotalFat ==
+                                                    //                 null
+                                                    //             ? 0
+                                                    //             : double.tryParse(weightGramToPound(textValue: nutritionixGetNxMealInfoByNameModelData!.nfTotalFat, weightValue: weightValue)
+                                                    //                     .toString()) ??
+                                                    //                 0.0,
+                                                    //     // double.parse(
+                                                    //     //     nutritionixGetNxMealInfoByNameModelData!
+                                                    //     //         .nfTotalFat
+                                                    //     //         .toString()),
+                                                    //     double.tryParse(
+                                                    //           weightGramToPound(
+                                                    //                   textValue: double
+                                                    //                       .parse(
+                                                    //                     PreferenceUtils.getString(totalFat),
+                                                    //                   ),
+                                                    //                   weightValue: widget
+                                                    //                       .arguments
+                                                    //                       ?.weightValue) ??
+                                                    //               "",
+                                                    //         ) ??
+                                                    //         0,
+                                                    //     AppColors.coral,
+                                                    //     widget.arguments
+                                                    //                 ?.weightValue ==
+                                                    //             1
+                                                    //         ? "Pound"
+                                                    //         : "g"),
                                                     myProgressBarCardView(
                                                         'Carbs',
                                                         widget.arguments
@@ -1253,14 +1475,39 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                             ? widget.arguments
                                                                     ?.carbs ??
                                                                 0.0
+                                                            // double.tryParse(weightGramToPound(
+                                                            //             textValue: widget
+                                                            //                 .arguments?.carbs,
+                                                            //             weightValue: widget
+                                                            //                 .arguments?.weightValue)
+                                                            //         .toString()) ??
+                                                            //     0.0
                                                             : nutritionixGetNxMealInfoByNameModelData!
                                                                         .nfTotalCarbohydrate ==
                                                                     null
                                                                 ? 0
-                                                                : double.parse(
+                                                                :
+                                                                // double.tryParse(weightGramToPound(textValue: nutritionixGetNxMealInfoByNameModelData!.nfTotalCarbohydrate, weightValue: weightValue)
+                                                                //         .toString()) ??
+                                                                //     0.0,
+                                                                double.parse(
                                                                     nutritionixGetNxMealInfoByNameModelData!
                                                                         .nfTotalCarbohydrate
                                                                         .toString()),
+                                                        // double.tryParse(
+                                                        //       weightGramToPound(
+                                                        //               textValue:
+                                                        //                   double
+                                                        //                       .parse(
+                                                        //                 PreferenceUtils.getString(
+                                                        //                     totalCarbs),
+                                                        //               ),
+                                                        //               weightValue: widget
+                                                        //                   .arguments
+                                                        //                   ?.weightValue) ??
+                                                        //           "",
+                                                        //     ) ??
+                                                        //     0,
                                                         double.parse(double.parse(
                                                                 PreferenceUtils
                                                                     .getString(
@@ -1274,7 +1521,17 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         widget.arguments
                                                                     ?.isShowData ==
                                                                 true
-                                                            ? widget.arguments
+                                                            ?
+                                                            // double.tryParse(weightGramToPound(
+                                                            //             textValue: widget
+                                                            //                 .arguments
+                                                            //                 ?.protein,
+                                                            //             weightValue: widget
+                                                            //                 .arguments
+                                                            //                 ?.weightValue)
+                                                            //         .toString()) ??
+                                                            //     0.0
+                                                            widget.arguments
                                                                     ?.protein ??
                                                                 0.0
                                                             : nutritionixGetNxMealInfoByNameModelData!
@@ -1285,6 +1542,27 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                     nutritionixGetNxMealInfoByNameModelData!
                                                                         .nfProtein
                                                                         .toString()),
+                                                        // double.tryParse(weightGramToPound(
+                                                        //             textValue: nutritionixGetNxMealInfoByNameModelData!
+                                                        //                 .nfProtein,
+                                                        //             weightValue:
+                                                        //                 weightValue)
+                                                        //         .toString()) ??
+                                                        //     0.0,
+                                                        // double.tryParse(
+                                                        //       weightGramToPound(
+                                                        //               textValue:
+                                                        //                   double
+                                                        //                       .parse(
+                                                        //                 PreferenceUtils.getString(
+                                                        //                     totalProtein),
+                                                        //               ),
+                                                        //               weightValue: widget
+                                                        //                   .arguments
+                                                        //                   ?.weightValue) ??
+                                                        //           "",
+                                                        //     ) ??
+                                                        //     0,
                                                         double.parse(double.parse(
                                                                 PreferenceUtils
                                                                     .getString(
@@ -1319,7 +1597,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                             fontWeight:
                                                                 FWT.medium)),
                                                     Text(
-                                                        '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                                        '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)}g',
+                                                        // '${weightGramToPound(textValue: nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00, weightValue: weightValue)} ${weightValue == 1 ? "Pound" : "g"} ',
                                                         // widget.arguments
                                                         //             ?.isShowData ==
                                                         //         true
@@ -1403,6 +1682,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                 FWT.medium)),
                                                     Text(
                                                         '${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                                                        // '${weightGramToPound(textValue: nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00, weightValue: weightValue)} ${weightValue == 1 ? "Pound" : "g"} ',
                                                         style: FontUtils.h16(
                                                             fontColor: AppColors
                                                                 .darkGray,
@@ -1429,6 +1709,7 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                                 FWT.medium)),
                                                     Text(
                                                         '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                                        // '${weightGramToPound(textValue: nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00, weightValue: weightValue)} ${weightValue == 1 ? "Pound" : "g"} ',
                                                         style: FontUtils.h16(
                                                             fontColor: AppColors
                                                                 .darkGray,
@@ -1661,7 +1942,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
   }
 
   Widget myProgressBarCardView(String title, double value, double totalValue,
-      Color progressBarColor, String unit) {
+      Color progressBarColor, String unit,
+      {isWeight = false}) {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(
@@ -1691,8 +1973,8 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                     lineHeight: 12),
               ],
             ),
-            Text(
-                '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} $unit',
+            Text('${value.toStringAsFixed(2)} / $totalValue $unit ',
+                // '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} $unit',
                 style: FontUtils.h15(
                     fontColor: AppColors.darkGray,
                     fontWeight: FWT.lightMedium)),
@@ -1736,12 +2018,14 @@ class GroceryItemDetailsArguments {
   final double? carbs;
   final double? protein;
   final int? quantity;
+  final int? weightValue;
 
   GroceryItemDetailsArguments(
       {this.groceryShoppingData,
       this.isFromGroceryScreen = false,
       this.isFromCustomMealScreen = false,
       this.isFromJournalScreen = false,
+      this.weightValue,
       this.productName,
       this.productID,
       this.type,

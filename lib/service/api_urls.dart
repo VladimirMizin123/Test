@@ -28,6 +28,11 @@ class ApiUrls {
       '${baseUrl}api/Suggestic/GetRecipeDetailById';
   static const String productRestaurantSearch =
       '${baseUrl}api/MealMe/product-restaurantSearch-byName';
+
+//*
+  static const String mealSearchNearByRestaurant =
+      '$baseUrl/api/MealMe/MealSearch-NearByRestaurant';
+
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
@@ -117,7 +122,7 @@ class ApiUrls {
   static const String getUserDetailsById =
       '${baseUrl}api/UserDetails/GetProfileDetailsById';
 
-  static const String mapApiKey = 'AIzaSyAfEDvN9t66JxrKSApYumdKyw63rrWZzkE';
+  static const String mapApiKey = 'AIzaSyCKoMQs-ZZgHFUNglLpdGlpsXiD2JrXjhE';
 
   static String searchLocationURL(String value) {
     String url =

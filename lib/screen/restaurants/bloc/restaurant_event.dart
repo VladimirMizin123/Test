@@ -1,7 +1,10 @@
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 
 abstract class RestaurantEvent {}
@@ -21,19 +24,20 @@ class GetRestaurantListEvent extends RestaurantEvent {
   final String userZipcode;
   final bool pickup;
   final int maximumMiles;
+  final List categotyData;
 
   GetRestaurantListEvent(
-    this.latitude,
-    this.longitude,
-    this.userStreetNum,
-    this.userStreetName,
-    this.userCity,
-    this.userState,
-    this.userCountry,
-    this.userZipcode,
-    this.pickup,
-    this.maximumMiles,
-  );
+      this.latitude,
+      this.longitude,
+      this.userStreetNum,
+      this.userStreetName,
+      this.userCity,
+      this.userState,
+      this.userCountry,
+      this.userZipcode,
+      this.pickup,
+      this.maximumMiles,
+      this.categotyData);
 }
 
 /// Get Restaurant List Event ===============================================================
@@ -42,11 +46,10 @@ class GetRestaurantMenuListEvent extends RestaurantEvent {
   final bool? pickUp;
   final String? mealType;
 
+  final user.UserAddress? getUserAddress;
+
   GetRestaurantMenuListEvent(
-    this.restaurantId,
-    this.pickUp,
-    this.mealType,
-  );
+      this.restaurantId, this.pickUp, this.mealType, this.getUserAddress);
 }
 
 /// Get Cousines List Event ===============================================================

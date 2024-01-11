@@ -42,7 +42,6 @@ class _UserTypePageState extends State<UserTypeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc.add(UserTypeClickEvent(isFemale: false, isMale: true, isNon: false));
   }

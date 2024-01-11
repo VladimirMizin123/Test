@@ -114,8 +114,6 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(FetchMealPlanErrorState());
       }, (right) {
-        print('------>>>>>>DATATATATATATATAT');
-
         box.write('mealPlan', right.data);
 
         emit(FetchMealPlanSuccessState(

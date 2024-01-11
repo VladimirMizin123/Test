@@ -91,8 +91,7 @@ class SignUpRepository {
     final response = await apiServices.get(
       '${ApiUrls.checkEmail}/$email',
     );
-    print("responseCheckEmail : ${response.body}");
-    print("responseCheckEmail statusCode: ${response.statusCode}");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(CheckEmailExist.fromJson(jsonDecode(response.body)));
     } else {
@@ -106,7 +105,7 @@ class SignUpRepository {
     String apiURL = '';
     // if (mealPlanScreenCountState == 0) {
     apiURL = '${ApiUrls.genMealPlan}/$userID';
-    print('genMealPlan apiURL : $apiURL');
+
     // } else {
     //   apiURL = '${ApiUrls.getMealPlan}/$userID';
     //   print('getMealPlan apiURL : $apiURL');
@@ -129,8 +128,7 @@ class SignUpRepository {
       {List<String> restrictionList = const [], String? userid}) async {
     final response = await apiServices.post(
         '${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
-    print("restrictionList:---------> ${restrictionList}");
-    print("URL:---------> ${ApiUrls.addRestrictionAndGetMealPlan}/$userid");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

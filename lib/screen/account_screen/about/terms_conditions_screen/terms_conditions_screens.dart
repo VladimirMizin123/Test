@@ -45,6 +45,7 @@ class _ConditionScreenState extends State<ConditionScreen> {
                                 Text(
                                   "Terms and Conditions",
                                   style: TextStyle(
+                                      color: Colors.black,
                                       fontSize: 24,
                                       fontWeight: FontWeight.w500),
                                 ),
@@ -57,20 +58,26 @@ class _ConditionScreenState extends State<ConditionScreen> {
                         ),
                         Text(StringUtils.writeTermsInstructions,
                             style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w400)),
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text("1. ${StringUtils.termsInformationTitle1}",
                             style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w500)),
+                                color: Colors.black,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text(
                           StringUtils.termsStep1,
                           style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.w400),
+                              color: Colors.black,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400),
                           softWrap: true,
                         ),
                         SizedBox(
@@ -78,13 +85,17 @@ class _ConditionScreenState extends State<ConditionScreen> {
                         ),
                         Text("2. ${StringUtils.termsInformationTitle2}",
                             style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w500)),
+                                color: Colors.black,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500)),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text(StringUtils.term2,
                             style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w400)),
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400)),
                         SizedBox(
                           height: 10.h,
                         ),

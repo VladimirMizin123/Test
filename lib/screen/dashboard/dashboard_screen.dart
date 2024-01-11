@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -13,11 +15,17 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/water_convert.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
@@ -42,8 +50,23 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   GetMealLogByDate mealDateModel = GetMealLogByDate();
   GetUserJournalBloc journalBloc = GetUserJournalBloc();
 
-  // String recipeIdView = '';
-  // List<MealDataByDate> idDataList = [];
+  AccountBloc accountBloc = AccountBloc();
+
+  bool isLoader = false;
+  int? weightValue;
+  int? heightValue;
+  int? energyValue;
+  int? waterValue;
+  String? unitId;
+
+  // String? weightQuantity;
+
+  // String? weightKGToPound({num? textValue}) {
+  //   num? value =
+  //       weightValue == 1 ? ((textValue ?? 0) * 2.20462) : (textValue ?? 0);
+  //   weightQuantity = value.toStringAsFixed(2).toString();
+  //   return weightQuantity;
+  // }
 
   GetDashboardBloc bloc = GetDashboardBloc();
   GetDashboardModel model = GetDashboardModel();
@@ -67,29 +90,48 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     /* dateBloc.add(GetMealLogByDateData(
         date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      accountBloc.add(GetUnitInfoEvent());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    print('Token:- ${PreferenceUtils.getString(prefToken)}');
-
     carouselList = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          commonSliderView(
-              icon: AssetsUtils.breakFastIcon,
-              title: StringUtils.breakfast,
-              textTheme: Theme.of(context).textTheme,
-              context: context),
-          commonSliderView(
-              icon: AssetsUtils.lunchIcon,
-              title: StringUtils.lunch,
-              textTheme: Theme.of(context).textTheme,
-              context: context),
-        ],
+      BlocConsumer(
+        bloc: accountBloc,
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state is GetUnitInfoSuccessState) {
+            isLoader = false;
+
+            weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
+
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              accountBloc.add(GetUnitInfoEvent());
+            });
+          }
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              commonSliderView(
+                icon: AssetsUtils.breakFastIcon,
+                title: StringUtils.breakfast,
+                textTheme: Theme.of(context).textTheme,
+                context: context,
+                weightValue: weightValue,
+              ),
+              commonSliderView(
+                  icon: AssetsUtils.lunchIcon,
+                  title: StringUtils.lunch,
+                  textTheme: Theme.of(context).textTheme,
+                  context: context,
+                  weightValue: weightValue),
+            ],
+          );
+        },
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -98,12 +140,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               icon: AssetsUtils.snackIcon,
               title: StringUtils.snack,
               textTheme: Theme.of(context).textTheme,
-              context: context),
+              context: context,
+              weightValue: weightValue),
           commonSliderView(
               icon: AssetsUtils.dinnerIcon,
               title: StringUtils.dinner,
               textTheme: Theme.of(context).textTheme,
-              context: context),
+              context: context,
+              weightValue: weightValue),
         ],
       ),
     ];
@@ -188,16 +232,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 child: BlocConsumer(
                   bloc: bloc,
                   builder: (context, state) {
-                    print('state : $state');
                     if (state is LoadDashboardData) {
-                      print("logData:- $logData");
                       return initView();
                     }
                     if (state is LoadMealData) {
                       return const AppCenterLoader();
                     }
                     if (state is LoadingDoneState) {
-                      print("logData:- $logData");
                       return initView();
                     }
                     if (state is LoadingData) {
@@ -232,13 +273,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           totalFat, model.data!.totalFat.toString());
                       await PreferenceUtils.setString(
                           totalCarbs, model.data!.totalCarbs.toString());
-
-                      print(
-                          '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
-                      print(model.data!.totalCalorie);
-                      print(model.data!.totalProtein);
-                      print(model.data!.totalFat);
-                      print(model.data!.totalCarbs);
 
                       // print('logData : $logData');
 
@@ -389,101 +423,124 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     )
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    calciumDataView(
-                      title: 'Carbs',
-                      textTheme: Theme.of(context).textTheme,
-                      gramCount: /*int.parse(model.data!.totalIntakeCarbs!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model.data!.totalIntakeCarbs!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            :*/
-                          model.data!.totalIntakeCarbs!
-                              .toDouble()
-                              .floor()
-                              .toString(),
-                      totalGram: int.parse(model.data!.totalCarbs!
+                BlocConsumer(
+                  bloc: accountBloc,
+                  builder: (context, state) {
+                    if (state is GetUnitInfoSuccessState) {
+                      isLoader = false;
+
+                      weightValue =
+                          state.unitData?.weightType == 'Pound' ? 1 : 2;
+
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        accountBloc.add(GetUnitInfoEvent());
+                      });
+                    }
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        calciumDataView(
+                          title: 'Carbs',
+                          textTheme: Theme.of(context).textTheme,
+                          gramCount: /*int.parse(model.data!.totalIntakeCarbs!
+                                      .toString()
+                                      .split('.')[1]) >=
+                                  50
+                              ? model.data!.totalIntakeCarbs!
+                                  .toDouble()
+                                  .ceil()
                                   .toString()
-                                  .split('.')[1]) >=
-                              50
-                          ? model.data!.totalCarbs!.toDouble().ceil().toString()
-                          : model.data!.totalCarbs!
-                              .toDouble()
-                              .floor()
-                              .toString(),
-                      progressColor: AppColors.mint,
-                      percentage:
-                          model.data!.totalIntakeCarbs!.toDouble().ceil() /
-                              model.data!.totalCarbs!.toDouble().ceil(),
-                    ),
-                    calciumDataView(
-                        percentage:
-                            model.data!.totalIntakeProtein!.toDouble().ceil() /
+                              :*/
+                              model.data!.totalIntakeCarbs!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          totalGram: int.parse(model.data!.totalCarbs!
+                                      .toString()
+                                      .split('.')[1]) >=
+                                  50
+                              ? model.data!.totalCarbs!
+                                  .toDouble()
+                                  .ceil()
+                                  .toString()
+                              : model.data!.totalCarbs!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          progressColor: AppColors.mint,
+                          percentage:
+                              model.data!.totalIntakeCarbs!.toDouble().ceil() /
+                                  model.data!.totalCarbs!.toDouble().ceil(),
+                        ),
+                        calciumDataView(
+                            percentage: model.data!.totalIntakeProtein!
+                                    .toDouble()
+                                    .ceil() /
                                 model.data!.totalProtein!.toDouble().ceil(),
-                        title: 'Protein',
-                        textTheme: Theme.of(context).textTheme,
-                        gramCount: /*int.parse(model.data!.totalIntakeProtein!
+                            title: 'Protein',
+                            textTheme: Theme.of(context).textTheme,
+                            gramCount: /*int.parse(model.data!.totalIntakeProtein!
+                                        .toString()
+                                        .split('.')[1]) >=
+                                    50
+                                ? model.data!.totalIntakeProtein!
+                                    .toDouble()
+                                    .ceil()
+                                    .toString()
+                                :*/
+                                model.data!.totalIntakeProtein!
+                                    .toDouble()
+                                    .floor()
+                                    .toString(),
+                            totalGram: /*int.parse(model.data!.totalProtein!
+                                        .toString()
+                                        .split('.')[1]) >=
+                                    50
+                                ? model.data!.totalProtein!
+                                    .toDouble()
+                                    .ceil()
+                                    .toString()
+                                :*/
+                                model.data!.totalProtein!
+                                    .toDouble()
+                                    .floor()
+                                    .toString(),
+                            progressColor: AppColors.skyBlue),
+                        calciumDataView(
+                          percentage:
+                              model.data!.totalIntakeFat!.toDouble().ceil() /
+                                  model.data!.totalFat!.toDouble().ceil(),
+                          title: 'Fat',
+                          textTheme: Theme.of(context).textTheme,
+                          gramCount: /*int.parse(model.data!.totalIntakeFat!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
-                              ? model.data!.totalIntakeProtein!
+                              ? model.data!.totalIntakeFat!
                                   .toDouble()
                                   .ceil()
                                   .toString()
                               :*/
-                            model.data!.totalIntakeProtein!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        totalGram: /*int.parse(model.data!.totalProtein!
+                              model.data!.totalIntakeFat!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          totalGram: /*int.parse(model.data!.totalFat!
                                       .toString()
                                       .split('.')[1]) >=
                                   50
-                              ? model.data!.totalProtein!
-                                  .toDouble()
-                                  .ceil()
-                                  .toString()
+                              ? model.data!.totalFat!.toDouble().ceil().toString()
                               :*/
-                            model.data!.totalProtein!
-                                .toDouble()
-                                .floor()
-                                .toString(),
-                        progressColor: AppColors.skyBlue),
-                    calciumDataView(
-                      percentage:
-                          model.data!.totalIntakeFat!.toDouble().ceil() /
-                              model.data!.totalFat!.toDouble().ceil(),
-                      title: 'Fat',
-                      textTheme: Theme.of(context).textTheme,
-                      gramCount: /*int.parse(model.data!.totalIntakeFat!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model.data!.totalIntakeFat!
-                                .toDouble()
-                                .ceil()
-                                .toString()
-                            :*/
-                          model.data!.totalIntakeFat!
-                              .toDouble()
-                              .floor()
-                              .toString(),
-                      totalGram: /*int.parse(model.data!.totalFat!
-                                    .toString()
-                                    .split('.')[1]) >=
-                                50
-                            ? model.data!.totalFat!.toDouble().ceil().toString()
-                            :*/
-                          model.data!.totalFat!.toDouble().floor().toString(),
-                      progressColor: AppColors.coral,
-                    ),
-                  ],
+                              model.data!.totalFat!
+                                  .toDouble()
+                                  .floor()
+                                  .toString(),
+                          progressColor: AppColors.coral,
+                        ),
+                      ],
+                    );
+                  },
+                  listener: (BuildContext context, Object? state) {},
                 )
               ],
             ).paddingAll(10),
@@ -491,33 +548,79 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () async {
-                    Get.toNamed('/AddWaterScreen',
-                            arguments: AddWaterArguments(
-                                dailyGoal:
-                                    model.data!.dailyWaterGoals.toString()))!
-                        .then((value) {
-                      bloc.add(GetDashboardData());
+              BlocConsumer(
+                bloc: accountBloc,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  if (state is GetUnitInfoSuccessState) {
+                    isLoader = false;
+
+                    weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
+
+                    heightValue =
+                        state.unitData?.heightType == 'Inches' ? 1 : 2;
+                    energyValue =
+                        state.unitData?.energyType == 'Kilojoules' ? 1 : 2;
+                    waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
+                    unitId = state.unitData?.unitId;
+
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      accountBloc.add(GetUnitInfoEvent());
                     });
-                  },
-                  child: dashBoardCardView(
-                    margin: EdgeInsets.only(left: 20.w, top: 15.h, bottom: 5.h),
-                    child: waterExerciseDataView(
-                      percentage: model.data!.totalIntakeWater! /
-                          model.data!.dailyWaterGoals!,
-                      title: StringUtils.water,
-                      textTheme: Theme.of(context).textTheme,
-                      progressColor: AppColors.primaryBlue,
-                      image: AssetsUtils.water,
-                      type: StringUtils.rate,
-                      countValue: model.data!.dailyWaterGoals!.toString(),
-                      mlCalCount: model.data!.totalIntakeWater!.toString(),
-                      tag: StringUtils.ml,
-                    ),
-                  ),
-                ),
+                  }
+                  return Expanded(
+                    child: Builder(builder: (context) {
+                      String? mytdailyWaterGoals;
+                      if (waterValue == 1) {
+                        var value = (model.data!.dailyWaterGoals! * 0.033814);
+
+                        mytdailyWaterGoals =
+                            value.toStringAsFixed(2).toString();
+                      } else {
+                        mytdailyWaterGoals =
+                            model.data!.dailyWaterGoals.toString();
+                      }
+                      return InkWell(
+                        onTap: () async {
+                          Get.toNamed('/AddWaterScreen',
+                                  arguments: AddWaterArguments(
+                                      dailyGoal: mytdailyWaterGoals.toString(),
+                                      isWatervalue: waterValue
+
+                                      // model.data!.dailyWaterGoals
+                                      //     .toString(),
+                                      ))!
+                              .then((value) {
+                            bloc.add(GetDashboardData());
+                          });
+                        },
+                        child: Builder(builder: (context) {
+                          return dashBoardCardView(
+                            margin: EdgeInsets.only(
+                                left: 20.w, top: 15.h, bottom: 5.h),
+                            child: waterExerciseDataView(
+                              percentage: model.data!.totalIntakeWater! /
+                                  model.data!.dailyWaterGoals!,
+                              title: StringUtils.water,
+                              textTheme: Theme.of(context).textTheme,
+                              progressColor: AppColors.primaryBlue,
+                              image: AssetsUtils.water,
+                              type: StringUtils.rate,
+                              // countValue: model.data!.dailyWaterGoals!.toString(),
+                              countValue: mytdailyWaterGoals.toString(),
+                              mlCalCount: convertMilliToOz(
+                                  textValue: model.data!.totalIntakeWater!,
+                                  isWatervalue: waterValue),
+                              tag: waterValue == 1
+                                  ? StringUtils.oz
+                                  : StringUtils.ml,
+                            ),
+                          );
+                        }),
+                      );
+                    }),
+                  );
+                },
               ),
               SizedBox(width: 8.w),
               Expanded(
@@ -767,28 +870,31 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     Color? progressColor,
     required double percentage,
   }) {
-    return Column(
-      children: [
-        Text(
-          title.toString(),
-          style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-        commonProgressbar(
-            progressColor: progressColor,
-            width: 76.w,
-            lineHeight: 10.0,
-            percentage: percentage),
-        SizedBox(
-          height: 5.h,
-        ),
-        Text(
-          '$gramCount / $totalGram g',
-          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
-        )
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            title.toString(),
+            style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+          commonProgressbar(
+              progressColor: progressColor,
+              width: 76.w,
+              lineHeight: 10.0,
+              percentage: percentage),
+          SizedBox(
+            height: 5.h,
+          ),
+          Text(
+            '$gramCount / $totalGram g',
+            style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
     );
   }
 
@@ -821,6 +927,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       TextTheme? textTheme,
       required double percentage,
       String? countValue}) {
+    if (waterValue == 1) {}
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(

@@ -274,7 +274,6 @@ class _LoginScreenState extends State<LoginScreen> {
           AppleIDAuthorizationScopes.fullName,
         ],
       );
-      print(credential.email);
     } catch (e) {
       print("Error:- $e");
     }

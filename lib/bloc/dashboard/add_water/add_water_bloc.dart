@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -29,13 +31,16 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
           onFailError(emit: emit, text: left.errorMessage!);
         }, (right) {
           showToast(isSuccess: true, message: right.message!);
-          int waterML = PreferenceUtils.getInt(prefWaterML);
-          waterML = waterML + int.parse(event.waterML);
-          PreferenceUtils.setInt(prefWaterML, waterML);
+          double waterML = PreferenceUtils.getDouble(prefWaterML);
+          waterML = waterML + double.parse(event.waterML);
+
+          PreferenceUtils.setDouble(prefWaterML, waterML);
           emit(AddWaterSuccessfulState());
+
           Get.back(result: event.waterML);
         });
       } catch (e) {
+        log(e.toString());
         showToast(isSuccess: false, message: e.toString());
         emit(ErrorState());
       }
@@ -59,8 +64,8 @@ class AddWaterBloc extends Bloc<AddWaterEvent, AddWaterState> {
           showToast(isSuccess: true, message: right.message!);
           // int waterML = PreferenceUtils.getInt(prefWaterML);
           // waterML = waterML + int.parse(event.waterML);
-          int waterML = int.parse(event.waterML);
-          PreferenceUtils.setInt(prefWaterML, waterML);
+          double waterML = double.parse(event.waterML);
+          PreferenceUtils.setDouble(prefWaterML, waterML);
           emit(UpdateWaterSuccessfulState());
           Get.back(result: event.waterML);
         });

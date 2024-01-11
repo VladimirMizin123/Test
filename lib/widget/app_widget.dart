@@ -86,18 +86,18 @@ Widget buildBorderButton({
   );
 }
 
-Widget commonTextField({
-  String? hintText,
-  bool isPassword = false,
-  bool eyeShow = false,
-  Function()? onTap,
-  Widget? suffixIcon,
-  int? maxLength,
-  TextEditingController? controller,
-  required BuildContext context,
-  TextInputType? textInputType,
-  void Function(String)? onChanged,
-}) {
+Widget commonTextField(
+    {String? hintText,
+    bool isPassword = false,
+    bool eyeShow = false,
+    Function()? onTap,
+    Widget? suffixIcon,
+    int? maxLength,
+    TextEditingController? controller,
+    required BuildContext context,
+    TextInputType? textInputType,
+    void Function(String)? onChanged,
+    bool? isWeight = false}) {
   return SizedBox(
     height: 48.h,
     child: TextFormField(
@@ -270,6 +270,7 @@ Widget commonSearchTextField({
             keyboardType: textInputType,
             style: TextStyle(
               fontSize: fontSize.sp,
+              color: Colors.black,
               fontWeight: FontWeight.w400,
             ),
             onChanged: (value) {
@@ -396,15 +397,18 @@ Widget dashBoardCardView(
   );
 }
 
-Widget commonSliderView({
-  String? icon,
-  String? title,
-  TextTheme? textTheme,
-  BuildContext? context,
-}) {
+Widget commonSliderView(
+    {String? icon,
+    String? title,
+    TextTheme? textTheme,
+    BuildContext? context,
+    int? weightValue}) {
   return GestureDetector(
     onTap: () {
-      Get.toNamed("/AddNewItemScreen", arguments: title);
+      Get.toNamed("/AddNewItemScreen", arguments: {
+        "title": title,
+        "weightValue": weightValue,
+      });
     },
     child: Container(
       height: 48.h,

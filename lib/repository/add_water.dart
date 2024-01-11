@@ -19,6 +19,7 @@ class AddWaterRepository {
       "userId": userId,
       "createdBy": createdDate
     };
+
     final response = await apiServices.post(ApiUrls.addWater, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
@@ -36,7 +37,9 @@ class AddWaterRepository {
       "userId": userId,
       "createdBy": createdDate
     };
+
     final response = await apiServices.put(ApiUrls.updateWater, data);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {

@@ -96,9 +96,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
             mealDataByDate = state.modelData ?? [];
 
             for (var k = 0; k < mealDataByDate.length; k++) {
-              // print('K --- $k');
               for (var i = 0; i < mealList.length; i++) {
-                // print('${mealPlanList[i].meals![j].id == mealDataByDate[k].mealId}');
                 if (mealList[i].id == mealDataByDate[k].mealId) {
                   mealList[i].isSkipped = true;
                 }
@@ -215,6 +213,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                             controller: controller,
                             readOnly: true,
                             style: TextStyle(
+                              color: Colors.black,
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w400,
                             ),

@@ -56,6 +56,7 @@ class PurchaseOptions extends StatelessWidget {
               Text(
                 '\$$price',
                 style: textTheme.titleLarge!.copyWith(
+                  color: Colors.black,
                   fontSize: isSelected ? 24.sp : 18.sp,
                 ),
               ).paddingAll(savePercentage != null ? 0.sp : 00.sp),

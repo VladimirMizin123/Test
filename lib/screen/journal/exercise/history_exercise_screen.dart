@@ -42,7 +42,6 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
         }
       },
       builder: (BuildContext context, GetUserJournalState state) {
-        print("Blc:-$state ");
         return Column(
           children: [
             exerciseLogList.isEmpty
@@ -80,7 +79,9 @@ class _HistoryExerciseScreenState extends State<HistoryExerciseScreen> {
                             },
                             child: ListTile(
                               title: Text(
-                                  exerciseLogList[index].exerciseName ?? ''),
+                                exerciseLogList[index].exerciseName ?? '',
+                                style: const TextStyle(color: Colors.black),
+                              ),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 size: 15.h,

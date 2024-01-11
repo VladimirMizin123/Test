@@ -33,7 +33,9 @@ Widget AccountTitleWidget({Widget? widget, String? title}) {
                   Text(
                     title!,
                     style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.w500),
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500),
                   ),
                   SizedBox(
                     width: 40.w,

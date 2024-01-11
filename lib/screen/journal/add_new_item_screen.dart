@@ -11,9 +11,15 @@ import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.da
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart'
+    as account;
+import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../constant/color_utils.dart';
@@ -29,7 +35,8 @@ class AddNewItemScreen extends StatefulWidget {
   final String? imageUrl;
 
   const AddNewItemScreen(
-      {this.id,
+      {super.key,
+      this.id,
       this.cal,
       this.fat,
       this.carbs,
@@ -55,10 +62,14 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
   String pickedImageFilePath = '';
   bool isButtonEnable = false;
 
+  AccountBloc accountBloc = AccountBloc();
+
+  bool isLoader = false;
+  final _debouncer = Debouncer();
+  // int? weightValue;
+
   @override
   void initState() {
-    print('------->>>${Get.arguments}');
-
     // TODO: implement initState
     nameController.text = widget.name ?? '';
     weightController.text = widget.weight ?? '';
@@ -100,6 +111,9 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     } else {
       isButtonEnable = true;
     }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      accountBloc.add(GetUnitInfoEvent());
+    });
     super.initState();
   }
 
@@ -345,137 +359,186 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             },
                           ),
 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(StringUtils.weight,
-                                  style: textTheme.bodyLarge
-                                      ?.copyWith(color: Colors.black)),
-                              SizedBox(
-                                width: 80.w,
-                                child: TextFormField(
-                                  controller: weightController,
-                                  cursorColor: AppColors.darkGray,
-                                  keyboardType: TextInputType.number,
-                                  style: const TextStyle(
-                                      fontSize: 16, color: AppColors.darkGray),
-                                  decoration: InputDecoration(
-                                    hintText: '00',
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.grayColor),
-                                    isDense: true,
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    disabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.primaryBlue)),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(
-                                      () {
-                                        /* if (pickedImageFilePath.isEmpty) {
-                                          isButtonEnable = false;
-                                        } else*/
-                                        if (nameController.text.isEmpty) {
-                                          isButtonEnable = false;
-                                        } else if (weightController
-                                            .text.isEmpty) {
-                                          isButtonEnable = false;
-                                        } else if (calController.text
-                                                .isEmpty /*||
-                                            (double.parse(calController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCalorie)))*/
-                                            ) {
-                                          isButtonEnable = false;
-                                        } else if (fatController.text
-                                                .isEmpty /*||
-                                            (double.parse(fatController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalFat)))*/
-                                            ) {
-                                          isButtonEnable = false;
-                                        } else if (carbsController.text
-                                                .isEmpty /*||
-                                            (double.parse(carbsController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCarbs)))*/
-                                            ) {
-                                          isButtonEnable = false;
-                                        } else if (proteinController.text
-                                                .isEmpty /*||
-                                            (double.parse(proteinController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalProtein)))*/
-                                            ) {
-                                          isButtonEnable = false;
-                                        } else {
-                                          isButtonEnable = true;
-                                        }
+                          BlocConsumer(
+                            bloc: accountBloc,
+                            builder: (context, state) {
+                              if (state is account.GetUnitInfoSuccessState) {
+                                isLoader = false;
+
+                                // weightValue =
+                                //     state.unitData?.weightType == 'Pound'
+                                //         ? 1
+                                //         : 2;
+
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((timeStamp) {
+                                  accountBloc.add(GetUnitInfoEvent());
+                                });
+                              }
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      // "${StringUtils.weight} / ${Get.arguments?["weightValue"] == 1 ? "Pound" : "Kg"}",
+                                      "${StringUtils.weight} ",
+                                      style: textTheme.bodyLarge
+                                          ?.copyWith(color: Colors.black)),
+                                  SizedBox(
+                                    width: 80.w,
+                                    child: TextFormField(
+                                      controller: weightController,
+                                      cursorColor: AppColors.darkGray,
+                                      keyboardType: TextInputType.number,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.darkGray),
+                                      decoration: InputDecoration(
+                                        hintText: '00',
+                                        hintStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.grayColor),
+                                        isDense: true,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
+                                        disabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            //*
+                                            // if (Get.arguments["weightValue"] ==
+                                            //     1) {
+                                            //   num? valueA = num.tryParse(value);
+                                            //   if (weightController
+                                            //       .text.isNotEmpty) {
+                                            //     if (valueA != null &&
+                                            //         valueA != 0) {
+                                            //       _debouncer.run(() {
+                                            //         weightController
+                                            //             .text = weightKGToPound(
+                                            //                 textValue:
+                                            //                     int.tryParse(
+                                            //                         value),
+                                            //                 weightValue: Get
+                                            //                         .arguments[
+                                            //                     "weightValue"])
+                                            //             .toString();
+                                            //         setState(() {});
+                                            //       });
+                                            //     }
+                                            //   }
+                                            // }
+                                            //*
+
+                                            if (nameController.text.isEmpty) {
+                                              isButtonEnable = false;
+                                            } else if (weightController
+                                                .text.isEmpty) {
+                                              isButtonEnable = false;
+                                            } else if (calController.text
+                                                    .isEmpty /*||
+                                              (double.parse(calController.text) >
+                                                  double.parse(
+                                                      PreferenceUtils.getString(
+                                                          totalCalorie)))*/
+                                                ) {
+                                              isButtonEnable = false;
+                                            } else if (fatController.text
+                                                    .isEmpty /*||
+                                              (double.parse(fatController.text) >
+                                                  double.parse(
+                                                      PreferenceUtils.getString(
+                                                          totalFat)))*/
+                                                ) {
+                                              isButtonEnable = false;
+                                            } else if (carbsController.text
+                                                    .isEmpty /*||
+                                              (double.parse(carbsController.text) >
+                                                  double.parse(
+                                                      PreferenceUtils.getString(
+                                                          totalCarbs)))*/
+                                                ) {
+                                              isButtonEnable = false;
+                                            } else if (proteinController.text
+                                                    .isEmpty /*||
+                                              (double.parse(proteinController.text) >
+                                                  double.parse(
+                                                      PreferenceUtils.getString(
+                                                          totalProtein)))*/
+                                                ) {
+                                              isButtonEnable = false;
+                                            } else {
+                                              isButtonEnable = true;
+                                            }
+                                          },
+                                        );
+                                        setState(() {});
                                       },
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              // Container(
-                              //   height: 45.h,
-                              //   width: 86.w,
-                              //   decoration: BoxDecoration(
-                              //     border: Border.all(
-                              //         color: Colors.grey.shade300, // Set border color
-                              //         width: 1.0), // Set border width
-                              //     borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                              //   ),
-                              //   child: TextFormField(
-                              //     controller: weightController,
-                              //     keyboardType: TextInputType.number,
-                              //     cursorColor: AppColors.middleGray,
-                              //     style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.darkGray),
-                              //     onChanged: (value) {},
-                              //     decoration: InputDecoration(
-                              //       filled: false,
-                              //       hintText: '00',
-                              //       hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: AppColors.darkGray),
-                              //       enabledBorder: OutlineInputBorder(
-                              //         borderRadius: BorderRadius.circular(8),
-                              //         borderSide: const BorderSide(color: Colors.transparent),
-                              //       ),
-                              //       border: OutlineInputBorder(
-                              //         borderRadius: BorderRadius.circular(8),
-                              //         borderSide: const BorderSide(color: Colors.transparent),
-                              //       ),
-                              //       disabledBorder: OutlineInputBorder(
-                              //         borderRadius: BorderRadius.circular(8),
-                              //         borderSide: const BorderSide(color: Colors.transparent),
-                              //       ),
-                              //       focusedBorder: OutlineInputBorder(
-                              //         borderRadius: BorderRadius.circular(8),
-                              //         borderSide: const BorderSide(color: Colors.transparent),
-                              //       ),
-                              //       suffix: const Text(StringUtils.oz),
-                              //       suffixStyle: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500, color: Colors.grey),
-                              //     ),
-                              //   ),
-                              // )
-                            ],
-                          ).paddingSymmetric(vertical: 10.h),
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 45.h,
+                                  //   width: 86.w,
+                                  //   decoration: BoxDecoration(
+                                  //     border: Border.all(
+                                  //         color: Colors.grey.shade300, // Set border color
+                                  //         width: 1.0), // Set border width
+                                  //     borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                                  //   ),
+                                  //   child: TextFormField(
+                                  //     controller: weightController,
+                                  //     keyboardType: TextInputType.number,
+                                  //     cursorColor: AppColors.middleGray,
+                                  //     style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.darkGray),
+                                  //     onChanged: (value) {},
+                                  //     decoration: InputDecoration(
+                                  //       filled: false,
+                                  //       hintText: '00',
+                                  //       hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: AppColors.darkGray),
+                                  //       enabledBorder: OutlineInputBorder(
+                                  //         borderRadius: BorderRadius.circular(8),
+                                  //         borderSide: const BorderSide(color: Colors.transparent),
+                                  //       ),
+                                  //       border: OutlineInputBorder(
+                                  //         borderRadius: BorderRadius.circular(8),
+                                  //         borderSide: const BorderSide(color: Colors.transparent),
+                                  //       ),
+                                  //       disabledBorder: OutlineInputBorder(
+                                  //         borderRadius: BorderRadius.circular(8),
+                                  //         borderSide: const BorderSide(color: Colors.transparent),
+                                  //       ),
+                                  //       focusedBorder: OutlineInputBorder(
+                                  //         borderRadius: BorderRadius.circular(8),
+                                  //         borderSide: const BorderSide(color: Colors.transparent),
+                                  //       ),
+                                  //       suffix: const Text(StringUtils.oz),
+                                  //       suffixStyle: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500, color: Colors.grey),
+                                  //     ),
+                                  //   ),
+                                  // )
+                                ],
+                              ).paddingSymmetric(vertical: 10.h);
+                            },
+                            listener: (BuildContext context, Object? state) {},
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -514,6 +577,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 child: dashBoardCardView(
                                   margin: const EdgeInsets.only(left: 4),
                                   child: calciumDataView(
+                                    isWeight: true,
                                     label: 'fat',
                                     title: 'Fat',
                                     percent: fatController.text.isEmpty
@@ -531,17 +595,24 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     gramCount: fatController.text.isEmpty
                                         ? '0'
                                         : fatController.text,
+                                    // weightKGToPound(
+                                    //     textValue: int.tryParse(
+                                    //         fatController.text),
+                                    //     weightValue:
+                                    //         Get.arguments["weightvalue"]),
+
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
+                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalFat)), weightValue: Get.arguments["weightValue"])} ${Get.arguments["weightValue"] == 1 ? "Pound" : "g"}",
                                         '${double.parse(PreferenceUtils.getString(totalFat)).toStringAsFixed(2)} g',
 
+                                    controller: fatController,
                                     // percent: 0.77,
                                     // gramCount: fatController.text,
                                     // progressColor: AppColors.coral,
                                     // textTheme: textTheme,
                                     // totalGram: '${double.parse(PreferenceUtils.getString(totalFat)).floor()} g',
-                                    controller: fatController,
                                   ),
                                 ),
                               ),
@@ -557,6 +628,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   child: calciumDataView(
                                     title: 'Carbs',
                                     label: 'carbs',
+                                    isWeight: true,
                                     percent: carbsController.text.isEmpty
                                         ? 0
                                         : (double.parse(carbsController.text) >
@@ -575,6 +647,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
+                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalCarbs)), weightValue: Get.arguments?["weightValue"])} ${Get.arguments?["weightValue"] == 1 ? "Pound" : "g"}",
                                         '${double.parse(PreferenceUtils.getString(totalCarbs)).toStringAsFixed(2)} g',
 
                                     // textTheme: textTheme,
@@ -593,6 +666,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   child: calciumDataView(
                                     title: 'Protein',
                                     label: 'protein',
+                                    isWeight: true,
 
                                     percent: proteinController.text.isEmpty
                                         ? 0
@@ -613,6 +687,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
+                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalProtein)), weightValue: Get.arguments?["weightValue"])} ${Get.arguments["weightValue"] == 1 ? "Pound" : "g"}",
                                         '${double.parse(PreferenceUtils.getString(totalProtein)).toStringAsFixed(2)} g',
 
                                     // textTheme: textTheme,
@@ -700,11 +775,47 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                         fat: fatController.text,
                                         carbs: carbsController.text,
                                         calorie: calController.text,
-                                        type: Get.arguments
+                                        type: Get.arguments["title"]
                                             .toString()
                                             .removeAllWhitespace,
                                         userId: userId,
                                         quantity: weightController.text),
+                                    // UpdateNewMealEvent(
+                                    //   id: widget.id!,
+                                    //   name: nameController.text,
+                                    //   imageUrl: pickedImageFilePath != ''
+                                    //       ? File(pickedImageFilePath)
+                                    //       : null,
+                                    //   protein: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               proteinController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   fat: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               fatController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   carbs: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               carbsController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   calorie: calController.text,
+                                    //   type: Get.arguments["title"]
+                                    //       .toString()
+                                    //       .removeAllWhitespace,
+                                    //   userId: userId,
+                                    //   quantity: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               weightController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    // ),
                                   )
                                 : getAddNewMealBloc.add(
                                     AddNewMeal(
@@ -721,6 +832,41 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                             .removeAllWhitespace,
                                         userId: userId,
                                         quantity: weightController.text),
+                                    // AddNewMeal(
+                                    //   name: nameController.text,
+                                    //   imageUrl: pickedImageFilePath != ''
+                                    //       ? File(pickedImageFilePath)
+                                    //       : null,
+                                    //   protein: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               proteinController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   fat: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               fatController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   carbs: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               carbsController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    //   calorie: calController.text,
+                                    //   type: Get.arguments
+                                    //       .toString()
+                                    //       .removeAllWhitespace,
+                                    //   userId: userId,
+                                    //   quantity: weightGramToPound(
+                                    //           textValue: num.tryParse(
+                                    //               weightController.text),
+                                    //           weightValue:
+                                    //               Get.arguments["weightValue"])
+                                    //       .toString(),
+                                    // ),
                                   );
                           }
                         },
@@ -740,16 +886,16 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     );
   }
 
-  Widget calciumDataView({
-    String? title,
-    String? gramCount,
-    TextTheme? textTheme,
-    String? totalGram,
-    double? percent,
-    Color? progressColor,
-    String? label,
-    TextEditingController? controller,
-  }) {
+  Widget calciumDataView(
+      {String? title,
+      String? gramCount,
+      TextTheme? textTheme,
+      String? totalGram,
+      double? percent,
+      Color? progressColor,
+      String? label,
+      TextEditingController? controller,
+      bool? isWeight}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -776,12 +922,30 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
         SizedBox(
           width: 70,
           child: commonTextField(
+            isWeight: isWeight,
             textInputType: TextInputType.number,
             context: context,
             hintText: label,
             isPassword: false,
             controller: controller,
-            onChanged: (String? value) {
+            onChanged: (value) {
+              //*
+              // if (isWeight == true) {
+              //   if (Get.arguments["weightValue"] == 1) {
+              //     num? valueA = num.tryParse(value);
+              //     if (valueA != null && valueA != 0) {
+              //       _debouncer.run(() {
+              //         controller?.text = weightKGToPound(
+              //                 textValue: int.tryParse(value),
+              //                 weightValue: Get.arguments["weightValue"])
+              //             .toString();
+              //         setState(() {});
+              //       });
+              //     }
+              //   }
+              // }
+              //*
+
               if (value != null && value != '') {
                 setState(() {
                   /* if (pickedImageFilePath.isEmpty) {

@@ -17,6 +17,9 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
@@ -49,6 +52,11 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   List<Map<String, dynamic>> checkbox = [];
   int selectedIndex = -1;
 
+  AccountBloc accountBloc = AccountBloc();
+
+  bool isLoader = false;
+  int? weightValue;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +66,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
       // groceryBloc.add(GroceryFetchEvent());
       addNewGroceryItemBloc.add(GetGroceryItemEvent());
       myAddressBloc.add(addressevent.GetUserAddressEvent());
+      accountBloc.add(GetUnitInfoEvent());
     });
   }
 
@@ -409,6 +418,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                           boxShadow: boxShadowWidget,
                         ),
                         child: TextFormField(
+                          style: const TextStyle(color: Colors.black),
                           readOnly: true,
                           onTap: () {
                             // Get.toNamed('/GrocerySearchScreen')!.then((value) {
@@ -432,7 +442,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             });
                           },
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.search),
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.black),
                             hintText: 'Search for item',
                             hintStyle: FontUtils.h16(),
                             border: InputBorder.none,
@@ -582,360 +593,405 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
                           SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
-                              child: ListView.builder(
-                                itemCount: groceryDetails.length,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      await Get.toNamed('/GroceryItemDetails',
-                                              arguments:
-                                                  GroceryItemDetailsArguments(
-                                                      groceryShoppingData:
-                                                          groceryDetails[index],
-                                                      enableEdit: false))!
-                                          .then((value) {
-                                        log("message");
-                                        setState(() {
-                                          groceryDetails[index].quantity =
-                                              value;
-                                        });
-                                        /*setState(() {
-                                          addNewGroceryItemBloc
-                                              .add(GetGroceryItemEvent());
-                                        });*/
-                                      });
-                                    },
-                                    child: Container(
-                                      color: Colors.transparent,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12),
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(
-                                                    height: 20.0,
-                                                    width: 20.0,
-                                                    child: Transform.scale(
-                                                      scale: 1.2,
-                                                      child: Checkbox(
-                                                        checkColor:
-                                                            Colors.white,
-                                                        activeColor:
-                                                            AppColors.appColor,
-                                                        materialTapTargetSize:
-                                                            MaterialTapTargetSize
-                                                                .shrinkWrap,
-                                                        value: checkbox[index]
-                                                            ['value'],
-                                                        // value: edgesList[
-                                                        //         index]
-                                                        //     .isAddedForViewCart,
-                                                        onChanged:
-                                                            (bool? value) {
-                                                          setState(() {
-                                                            checkbox[index]
-                                                                    ['value'] =
-                                                                value!;
+                              child: BlocConsumer(
+                                bloc: accountBloc,
+                                builder: (context, state) {
+                                  if (state is GetUnitInfoSuccessState) {
+                                    isLoader = false;
 
-                                                            /* for (var i = 0;
-                                                                i <
-                                                                    checkbox
-                                                                        .length;
-                                                                i++) {
-                                                              if (checkbox[i][
-                                                                      'value'] ==
-                                                                  true) {
-                                                                count =
-                                                                    count + 1;
-                                                              }
-                                                            }*/
-                                                            if (checkbox[index]
-                                                                ['value']) {
-                                                              selectedItemCount =
-                                                                  selectedItemCount +
-                                                                      1;
-                                                            } else {
-                                                              selectedItemCount =
-                                                                  selectedItemCount -
-                                                                      1;
-                                                            }
-                                                          });
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child:
-                                                        SingleChildScrollView(
-                                                      scrollDirection:
-                                                          Axis.horizontal,
-                                                      child: Text(
-                                                        groceryDetails[index]
-                                                                .itemName ??
-                                                            '',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: FontUtils.h16(
-                                                            fontColor: AppColors
-                                                                .black),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(height: 6.h),
-                                            Row(
+                                    weightValue =
+                                        state.unitData?.weightType == 'Pound'
+                                            ? 1
+                                            : 2;
+
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((timeStamp) {
+                                      accountBloc.add(GetUnitInfoEvent());
+                                    });
+                                  }
+                                  return ListView.builder(
+                                    itemCount: groceryDetails.length,
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return GestureDetector(
+                                        onTap: () async {
+                                          await Get.toNamed(
+                                                  '/GroceryItemDetails',
+                                                  arguments:
+                                                      GroceryItemDetailsArguments(
+                                                          weightValue:
+                                                              weightValue,
+                                                          groceryShoppingData:
+                                                              groceryDetails[
+                                                                  index],
+                                                          enableEdit: false))!
+                                              .then((value) {
+                                            log("message");
+                                            setState(() {
+                                              groceryDetails[index].quantity =
+                                                  value;
+                                            });
+                                            /*setState(() {
+                                            addNewGroceryItemBloc
+                                                .add(GetGroceryItemEvent());
+                                          });*/
+                                          });
+                                        },
+                                        child: Container(
+                                          color: Colors.transparent,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            child: Column(
                                               children: [
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          AppColors.whiteColor,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 12,
-                                                            horizontal: 16),
-                                                    child: Text(
-                                                      groceryDetails[index]
-                                                                      .measurementType ==
-                                                                  '' ||
-                                                              groceryDetails[
-                                                                          index]
-                                                                      .measurementType ==
-                                                                  null
-                                                          ? "Piece"
-                                                          : capitalize(
-                                                              groceryDetails[
-                                                                      index]
-                                                                  .measurementType
-                                                                  .toString()),
-                                                      style: FontUtils.h16(
-                                                          fontColor:
-                                                              AppColors.black),
-                                                    ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 4),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 20.0,
+                                                        width: 20.0,
+                                                        child: Transform.scale(
+                                                          scale: 1.2,
+                                                          child: Checkbox(
+                                                            checkColor:
+                                                                Colors.white,
+                                                            activeColor:
+                                                                AppColors
+                                                                    .appColor,
+                                                            materialTapTargetSize:
+                                                                MaterialTapTargetSize
+                                                                    .shrinkWrap,
+                                                            value:
+                                                                checkbox[index]
+                                                                    ['value'],
+                                                            // value: edgesList[
+                                                            //         index]
+                                                            //     .isAddedForViewCart,
+                                                            onChanged:
+                                                                (bool? value) {
+                                                              setState(() {
+                                                                checkbox[index][
+                                                                        'value'] =
+                                                                    value!;
+
+                                                                /* for (var i = 0;
+                                                                  i <
+                                                                      checkbox
+                                                                          .length;
+                                                                  i++) {
+                                                                if (checkbox[i][
+                                                                        'value'] ==
+                                                                    true) {
+                                                                  count =
+                                                                      count + 1;
+                                                                }
+                                                              }*/
+                                                                if (checkbox[
+                                                                        index]
+                                                                    ['value']) {
+                                                                  selectedItemCount =
+                                                                      selectedItemCount +
+                                                                          1;
+                                                                } else {
+                                                                  selectedItemCount =
+                                                                      selectedItemCount -
+                                                                          1;
+                                                                }
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          child: Text(
+                                                            groceryDetails[
+                                                                        index]
+                                                                    .itemName ??
+                                                                '',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: FontUtils.h16(
+                                                                fontColor:
+                                                                    AppColors
+                                                                        .black),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                SizedBox(width: 8.w),
-                                                groceryDetails[index]
-                                                            .quantity! >
-                                                        1
-                                                    ? GestureDetector(
-                                                        onTap: () {
-                                                          addNewGroceryItemBloc
-                                                              .add(
-                                                            UpdateRemoveNewGroceryItem(
-                                                              userId: userId,
-                                                              id: groceryDetails[
-                                                                      index]
-                                                                  .id!
-                                                                  .toString(),
-                                                              itemName:
+                                                SizedBox(height: 6.h),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: AppColors
+                                                              .whiteColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                        ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 12,
+                                                                horizontal: 16),
+                                                        child: Text(
+                                                          groceryDetails[index]
+                                                                          .measurementType ==
+                                                                      '' ||
                                                                   groceryDetails[
+                                                                              index]
+                                                                          .measurementType ==
+                                                                      null
+                                                              ? "Piece"
+                                                              : capitalize(
+                                                                  groceryDetails[
+                                                                          index]
+                                                                      .measurementType
+                                                                      .toString()),
+                                                          style: FontUtils.h16(
+                                                              fontColor:
+                                                                  AppColors
+                                                                      .black),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    groceryDetails[index]
+                                                                .quantity! >
+                                                            1
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              addNewGroceryItemBloc
+                                                                  .add(
+                                                                UpdateRemoveNewGroceryItem(
+                                                                  userId:
+                                                                      userId,
+                                                                  id: groceryDetails[
+                                                                          index]
+                                                                      .id!
+                                                                      .toString(),
+                                                                  itemName: groceryDetails[
                                                                           index]
                                                                       .itemName!
                                                                       .toString(),
-                                                              quantity: groceryDetails[
-                                                                          index]
-                                                                      .quantity -
-                                                                  1,
-                                                              measurementType:
-                                                                  groceryDetails[
+                                                                  quantity:
+                                                                      groceryDetails[index]
+                                                                              .quantity -
+                                                                          1,
+                                                                  measurementType: groceryDetails[
                                                                           index]
                                                                       .measurementType!
                                                                       .toString(),
-                                                              measurementValue:
-                                                                  groceryDetails[
+                                                                  measurementValue: groceryDetails[
                                                                           index]
                                                                       .measurementValue!
                                                                       .toString(),
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Container(
+                                                              height:
+                                                                  size.height *
+                                                                      0.070,
+                                                              width:
+                                                                  size.height *
+                                                                      0.070,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            6),
+                                                                color: AppColors
+                                                                    .skyBlue,
+                                                              ),
+                                                              child: Center(
+                                                                child: checkbox[index]
+                                                                            [
+                                                                            'onUpdateRemove'] ==
+                                                                        true
+                                                                    ? Transform.scale(
+                                                                        scale:
+                                                                            0.5,
+                                                                        child:
+                                                                            const CircularProgressIndicator())
+                                                                    : const Icon(
+                                                                        Icons
+                                                                            .remove,
+                                                                        size:
+                                                                            27),
+                                                              ),
+                                                              // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                             ),
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          height: size.height *
-                                                              0.070,
-                                                          width: size.height *
-                                                              0.070,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        6),
-                                                            color: AppColors
-                                                                .skyBlue,
-                                                          ),
-                                                          child: Center(
-                                                            child: checkbox[index]
-                                                                        [
-                                                                        'onUpdateRemove'] ==
-                                                                    true
-                                                                ? Transform.scale(
-                                                                    scale: 0.5,
-                                                                    child:
-                                                                        const CircularProgressIndicator())
-                                                                : const Icon(
-                                                                    Icons
-                                                                        .remove,
-                                                                    size: 27),
-                                                          ),
-                                                          // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                                        ),
-                                                      )
-                                                    : GestureDetector(
-                                                        onTap: () async {
-                                                          // groceryBloc.add(
-                                                          //     RemoveGroceryEvent(
-                                                          //         productID:
-                                                          //             edgesList[index]
-                                                          //                 .productId!));
+                                                          )
+                                                        : GestureDetector(
+                                                            onTap: () async {
+                                                              // groceryBloc.add(
+                                                              //     RemoveGroceryEvent(
+                                                              //         productID:
+                                                              //             edgesList[index]
+                                                              //                 .productId!));
 
-                                                          addNewGroceryItemBloc
-                                                              .add(
-                                                            RemoveGroceryItemEvent(
-                                                              userGroceryListId:
-                                                                  groceryDetails[
-                                                                          index]
-                                                                      .id!,
+                                                              addNewGroceryItemBloc
+                                                                  .add(
+                                                                RemoveGroceryItemEvent(
+                                                                  userGroceryListId:
+                                                                      groceryDetails[
+                                                                              index]
+                                                                          .id!,
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Container(
+                                                              height:
+                                                                  size.height *
+                                                                      0.070,
+                                                              width:
+                                                                  size.height *
+                                                                      0.070,
+                                                              decoration: BoxDecoration(
+                                                                  border: Border.all(
+                                                                      color: AppColors
+                                                                          .skyBlue),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              6)),
+                                                              child: Center(
+                                                                  child: checkbox[index]
+                                                                              [
+                                                                              'onDelete'] ==
+                                                                          true
+                                                                      ? Transform.scale(
+                                                                          scale:
+                                                                              0.5,
+                                                                          child:
+                                                                              const CircularProgressIndicator())
+                                                                      : SvgPicture.asset(
+                                                                          AssetsUtils
+                                                                              .icDelete)),
                                                             ),
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          height: size.height *
-                                                              0.070,
-                                                          width: size.height *
-                                                              0.070,
-                                                          decoration: BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: AppColors
-                                                                      .skyBlue),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          6)),
-                                                          child: Center(
-                                                              child: checkbox[index]
-                                                                          [
-                                                                          'onDelete'] ==
-                                                                      true
-                                                                  ? Transform.scale(
-                                                                      scale:
-                                                                          0.5,
-                                                                      child:
-                                                                          const CircularProgressIndicator())
-                                                                  : SvgPicture.asset(
-                                                                      AssetsUtils
-                                                                          .icDelete)),
-                                                        ),
-                                                      ),
-                                                SizedBox(width: 8.w),
-                                                Container(
-                                                  height: size.height * 0.070,
-                                                  width: size.height * 0.070,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: AppColors
-                                                              .disable),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6)),
-                                                  child: Center(
-                                                      child: Text(
-                                                    groceryDetails[index]
-                                                        .quantity
-                                                        .toString(),
-                                                    style: FontUtils.h18(
-                                                        fontWeight:
-                                                            FWT.semiBold,
-                                                        fontColor:
-                                                            AppColors.darkGray),
-                                                  )),
-                                                ),
-                                                SizedBox(width: 8.w),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    addNewGroceryItemBloc.add(
-                                                      UpdateAddNewGroceryItem(
-                                                        userId: userId,
-                                                        id: groceryDetails[
-                                                                index]
-                                                            .id!
+                                                          ),
+                                                    SizedBox(width: 8.w),
+                                                    Container(
+                                                      height:
+                                                          size.height * 0.070,
+                                                      width:
+                                                          size.height * 0.070,
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: AppColors
+                                                                  .disable),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(6)),
+                                                      child: Center(
+                                                          child: Text(
+                                                        groceryDetails[index]
+                                                            .quantity
                                                             .toString(),
-                                                        itemName:
-                                                            groceryDetails[
+                                                        style: FontUtils.h18(
+                                                            fontWeight:
+                                                                FWT.semiBold,
+                                                            fontColor: AppColors
+                                                                .darkGray),
+                                                      )),
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        addNewGroceryItemBloc
+                                                            .add(
+                                                          UpdateAddNewGroceryItem(
+                                                            userId: userId,
+                                                            id: groceryDetails[
                                                                     index]
-                                                                .itemName!
+                                                                .id!
                                                                 .toString(),
-                                                        quantity:
-                                                            groceryDetails[
+                                                            itemName:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .itemName!
+                                                                    .toString(),
+                                                            quantity: groceryDetails[
                                                                         index]
                                                                     .quantity +
                                                                 1,
-                                                        measurementType:
-                                                            groceryDetails[
-                                                                    index]
-                                                                .measurementType!
-                                                                .toString(),
-                                                        measurementValue:
-                                                            groceryDetails[
-                                                                    index]
-                                                                .measurementValue!
-                                                                .toString(),
+                                                            measurementType:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .measurementType!
+                                                                    .toString(),
+                                                            measurementValue:
+                                                                groceryDetails[
+                                                                        index]
+                                                                    .measurementValue!
+                                                                    .toString(),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        height:
+                                                            size.height * 0.070,
+                                                        width:
+                                                            size.height * 0.070,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(6),
+                                                          color:
+                                                              AppColors.skyBlue,
+                                                        ),
+                                                        child: Center(
+                                                          child: checkbox[index]
+                                                                      [
+                                                                      'onUpdateAdd'] ==
+                                                                  true
+                                                              ? Transform.scale(
+                                                                  scale: 0.5,
+                                                                  child:
+                                                                      const CircularProgressIndicator())
+                                                              : const Icon(
+                                                                  Icons.add,
+                                                                  size: 27),
+                                                        ),
                                                       ),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    height: size.height * 0.070,
-                                                    width: size.height * 0.070,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
-                                                      color: AppColors.skyBlue,
                                                     ),
-                                                    child: Center(
-                                                      child: checkbox[index][
-                                                                  'onUpdateAdd'] ==
-                                                              true
-                                                          ? Transform.scale(
-                                                              scale: 0.5,
-                                                              child:
-                                                                  const CircularProgressIndicator())
-                                                          : const Icon(
-                                                              Icons.add,
-                                                              size: 27),
-                                                    ),
-                                                  ),
+                                                  ],
                                                 ),
+                                                SizedBox(height: 10.h),
+                                                const Divider(
+                                                    color: AppColors.disable,
+                                                    thickness: 1.1),
+                                                SizedBox(height: 5.h),
                                               ],
                                             ),
-                                            SizedBox(height: 10.h),
-                                            const Divider(
-                                                color: AppColors.disable,
-                                                thickness: 1.1),
-                                            SizedBox(height: 5.h),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   );
                                 },
+                                listener:
+                                    (BuildContext context, Object? state) {},
                               ),
                             ),
                     ),

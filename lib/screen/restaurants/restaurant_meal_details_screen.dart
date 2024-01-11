@@ -7,6 +7,9 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
@@ -15,6 +18,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 
@@ -76,7 +80,6 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
               }
             },
             builder: (context, state) {
-              print('----->>${PreferenceUtils.getString(totalProtein)}');
               return SafeArea(
                 child: Column(
                   children: [
@@ -215,7 +218,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                               .getString(
                                                                   totalCalorie))
                                                       .toStringAsFixed(2)),
-                                              AppColors.primaryBlue,'cal'),
+                                              AppColors.primaryBlue,
+                                              'cal'),
                                           myProgressBarCardView(
                                               'Fat',
                                               nutritionixGetNxMealInfoByNameModelData!
@@ -235,7 +239,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                               .getString(
                                                                   totalFat))
                                                       .toStringAsFixed(2)),
-                                              AppColors.coral,'g'),
+                                              AppColors.coral,
+                                              'g'),
                                           myProgressBarCardView(
                                               'Carbs',
                                               nutritionixGetNxMealInfoByNameModelData!
@@ -255,7 +260,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                               .getString(
                                                                   totalCarbs))
                                                       .toStringAsFixed(2)),
-                                              AppColors.mint,'g'),
+                                              AppColors.mint,
+                                              'g'),
                                           myProgressBarCardView(
                                               'Protein',
                                               nutritionixGetNxMealInfoByNameModelData!
@@ -275,7 +281,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                               .getString(
                                                                   totalProtein))
                                                       .toStringAsFixed(2)),
-                                              AppColors.skyBlue,'g'),
+                                              AppColors.skyBlue,
+                                              'g'),
                                         ],
                                       ),
                                       const SizedBox(height: 10),
@@ -499,7 +506,12 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
   }
 
   Widget myProgressBarCardView(
-      String title, double value, double totalValue, Color progressBarColor,String unit) {
+    String title,
+    double value,
+    double totalValue,
+    Color progressBarColor,
+    String unit,
+  ) {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(

@@ -172,8 +172,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 );
 
                 if (widget.isProfile == true) {
-                  print("comes from profile");
-
                   AccountRepository().updateDietProgramInfo(dietId: dietId);
                   SignUpRepository().addUserRestriction(
                     userid: PreferenceUtils.getString(prefUserData),
@@ -378,7 +376,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               child: isSearchOn
                   ? isPreference == true
                       ? searchEdgesRestrictionList.isEmpty
-                          ? const Text('No Search Found!')
+                          ? const Text(
+                              'No Search Found!',
+                              style: TextStyle(color: Colors.black),
+                            )
                           : SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
                               child: GridView.count(
@@ -470,8 +471,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
                                         bloc.add(
                                             CheckSurveyData(index: indexAt));
-
-                                        print('=------->>>>>>>>$listOptions');
                                       },
                                     );
                                   },
@@ -479,7 +478,10 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                               ),
                             )
                       : searchDietList.isEmpty
-                          ? const Text('No Search Found!')
+                          ? const Text(
+                              'No Search Found!',
+                              style: TextStyle(color: Colors.black),
+                            )
                           : SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
                               child: GridView.count(
@@ -543,8 +545,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                             " Diet", "")
                                                         .toLowerCase());
 
-                                            print(
-                                                "DIET:-----> ${dietId}\n RESTRICTION ID:----->  ${getSurveyData!.options![indexAt].restrictionId!}");
                                             dietId = getSurveyData!
                                                 .options![indexAt]
                                                 .restrictionId!;
@@ -711,7 +711,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                   .options![index].isSelect =
                                               !getSurveyData!
                                                   .options![index].isSelect;
-                                          print("none:-----> ${noneSelected}");
 
                                           noneSelected = getSurveyData!
                                               .options![index].isSelect;
@@ -735,9 +734,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                             for (int indexL = 0;
                                                 indexL < listOptions.length;
                                                 indexL++) {
-                                              print(
-                                                "object:----->  ${listOptions[indexL].optionName == getSurveyData!.options![surveyIndex].label}",
-                                              );
                                               if (listOptions[indexL]
                                                       .optionName ==
                                                   getSurveyData!
@@ -800,15 +796,11 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                             .options![index]
                                                             .isSelect ==
                                                         false);
-                                                print(
-                                                    "listOptions:----------> ${listOptions}");
                                               } else {
                                                 dietId = getSurveyData!
                                                     .options![index]
                                                     .restrictionId!;
 
-                                                print(
-                                                    "add second time in first screen:----------> ${listOptions}");
                                                 getSurveyData!.options![index]
                                                     .isSelect = true;
 
@@ -821,7 +813,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                     if (element.label ==
                                                         listOptions[loIndex]
                                                             .optionName) {
-                                                      print("Match");
                                                       listOptions
                                                           .removeAt(loIndex);
                                                     }
@@ -838,9 +829,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                             .label ??
                                                         ''));
 
-                                                print(
-                                                  "listOptions:------------> ${listOptions.length}",
-                                                );
                                                 bloc.add(CheckSurveyData(
                                                     index: index));
                                               }
@@ -848,8 +836,6 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
                                             setState(() {});
                                           } else {
-                                            print(
-                                                "add second time in 2nd screen:----------> ${listOptions}");
                                             if (getSurveyData!
                                                 .options![index].isSelect) {
                                               listOptions.removeWhere(

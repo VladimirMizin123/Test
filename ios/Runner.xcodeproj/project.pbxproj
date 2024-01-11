@@ -16,7 +16,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		B3F591BA2ABEFA9400D2D6BA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3F591B92ABEFA9400D2D6BA /* GoogleService-Info.plist */; };
-		B3F591BC2ABEFC8C00D2D6BA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3F591BB2ABEFC8C00D2D6BA /* GoogleService-Info.plist */; };
 		C1BBAED9DB2C265091F59DB6 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC7E4AD75A0642EEBF648E9C /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -68,7 +67,6 @@
 		AC7E4AD75A0642EEBF648E9C /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3B5CC952A8B6BC500E094E8 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		B3F591B92ABEFA9400D2D6BA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		B3F591BB2ABEFC8C00D2D6BA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E94C1D163A6DA2D67A3E5FEA /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -149,7 +147,6 @@
 			isa = PBXGroup;
 			children = (
 				B3F591B92ABEFA9400D2D6BA /* GoogleService-Info.plist */,
-				B3F591BB2ABEFC8C00D2D6BA /* GoogleService-Info.plist */,
 				B3B5CC952A8B6BC500E094E8 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -223,7 +220,7 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1300;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					331C8080294A63A400263BE5 = {
@@ -272,7 +269,6 @@
 				B3F591BA2ABEFA9400D2D6BA /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-				B3F591BC2ABEFC8C00D2D6BA /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

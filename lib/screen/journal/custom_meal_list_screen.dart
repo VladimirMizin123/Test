@@ -160,7 +160,10 @@ class _CustomMealListState extends State<CustomMealList> {
                             fontWeight: FWT.regular),
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-                          prefixIcon: const Icon(Icons.search),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.black,
+                          ),
                           hintText: 'Search',
                           // hintStyle: FontUtils.h16(),
                           border: InputBorder.none,
@@ -386,8 +389,8 @@ class _CustomMealListState extends State<CustomMealList> {
                                       },
                                     ),
                                   )
-                                : Center(
-                                    child: const Text('No Search Found!',
+                                : const Center(
+                                    child: Text('No Search Found!',
                                         style: TextStyle(
                                             color: AppColors.middleGray)),
                                   )

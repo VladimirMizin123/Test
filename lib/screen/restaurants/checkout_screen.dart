@@ -849,6 +849,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 ],
                               ),
                               child: TextFormField(
+                                style: const TextStyle(color: Colors.black),
                                 controller: notes,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(

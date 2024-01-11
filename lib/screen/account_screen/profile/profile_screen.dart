@@ -68,6 +68,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  int? weightValue;
+  int? heightValue;
+
+  // String? heightCmToFoot({heightValue}) {
+  //   print("heightValue:$heightValue");
+  //   if (heightValue == 1) {
+  //     return heightValue;
+  //   } else {
+  //     return heightValue;
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,6 +98,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 setState(() {});
               }
 
+              if (state is GetUnitInfoSuccessState) {
+                weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
+                heightValue = state.unitData?.heightType == 'Inches' ? 1 : 2;
+              }
+
               if (state is GetProfileDetailsSuccessState) {
                 isProfileDetailsLoader = false;
 
@@ -98,9 +115,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     state.profileDetails?.weightInLb.toString() ?? '';
                 targetWeightController.text =
                     state.profileDetails?.targetWeightInLb.toString() ?? '';
+                // heightController.text = state.profileDetails?.heightInCm == null
+                //     ? ''
+                //     : state.profileDetails?.heightInCm.toString() ?? '';
+
                 heightController.text = state.profileDetails?.heightInCm == null
                     ? ''
-                    : state.profileDetails?.heightInCm.toString() ?? '';
+                    : state.profileDetails?.heightInCm.toString() ?? "";
                 heightController.text =
                     heightController.text.replaceAll('.', "'");
                 if (state.profileDetails?.goal == 1) {
@@ -290,6 +311,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
                                               validator: (value) {
                                                 if (value!.isEmpty) {
                                                   return 'Please Enter First Name';
@@ -316,6 +339,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
                                               validator: (value) {
                                                 if (value!.isEmpty) {
                                                   return 'Please Enter Last Name';
@@ -342,6 +367,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
                                               validator: (value) {
                                                 if (value!.isEmpty) {
                                                   return 'Please Enter Phone Number';
@@ -372,6 +399,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Select Goal/Focus';
@@ -422,6 +451,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Enter Weight';
@@ -446,6 +477,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Enter Target Weight';
@@ -470,6 +503,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Enter Height';
@@ -505,6 +540,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Select Birthdate';
@@ -564,6 +601,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w400),
                                           widget: commonTextFormField(
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Please Select Gender';
@@ -695,7 +734,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.grey.shade200,
           onDateTimeChanged: (dateTime) => setState(() {
             this.dateTime = dateTime;
-            print("date : $dateTime");
           }),
         ),
       );

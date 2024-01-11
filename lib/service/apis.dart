@@ -28,10 +28,9 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'GET API URL');
-      log(headers.toString(), name: 'GET API HEADER');
+
       final response = await http.get(Uri.parse(url), headers: headers);
-      log(response.body, name: 'GET API RESPONSE');
+
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -61,15 +60,14 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'POST API URL :');
-      log(body.toString(), name: 'POST BODY  :');
+
       final jsonBody = jsonEncode(body);
       final response = await http.post(
         Uri.parse(url),
         body: jsonBody,
         headers: headers,
       );
-      log(response.body, name: 'API RESPONSE : ${response.statusCode}');
+
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -134,9 +132,9 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
-      log(url, name: 'DELETE API URL :');
+      // log(url, name: 'DELETE API URL :');
       final response = await http.delete(Uri.parse(url), headers: headers);
-      log(response.body, name: 'DELETE API RESPONSE :');
+
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -318,9 +316,9 @@ class ApiServices {
         'x-app-key': 'f6b94efc0c0a331c85d37a78368dea7d',
       };
       log(url, name: 'GET API URL');
-      log(headers.toString(), name: 'GET API HEADER');
+
       final response = await http.get(Uri.parse(url), headers: headers);
-      log(response.body, name: 'GET API RESPONSE');
+
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');

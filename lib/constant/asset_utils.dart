@@ -165,6 +165,32 @@ class AssetsUtils {
   static const downArrow = '${svgPath}down_arrow.svg';
   static const done = '${svgPath}Done.svg';
   static const questionRounded = '${svgPath}question_rounded.svg';
+  static const snacksAppetizers = '${svgPath}snacks.svg';
+  static const burgers = '${svgPath}burgers.svg';
+  static const pizza = '${svgPath}pizza.svg';
+  static const sandwiches = '${svgPath}sandwiches.svg';
+  static const salads = '${svgPath}salads.svg';
+  static const soups = '${svgPath}soups.svg';
+  static const halal = '${svgPath}halal.svg';
+  static const rice = '${svgPath}rice.svg';
+  static const italian = '${svgPath}italian.svg';
+  static const mexican = '${svgPath}mexican.svg';
+  static const turkish = '${svgPath}turkish.svg';
+  static const wraps = '${svgPath}wraps.svg';
+  static const sushi = '${svgPath}sushi.svg';
+  static const kosher = '${svgPath}kosher.svg';
+  static const asian = '${svgPath}asian.svg';
+  static const mediterranean = '${svgPath}mediterranean.svg';
+  static const seafood = '${svgPath}seafood.svg';
+  static const beefsteak = '${svgPath}beef_steak.svg';
+  static const indian = '${svgPath}indian.svg';
+  static const vegetarianVegan = '${svgPath}vegetarian_Vegan.svg';
+  static const bbq = '${svgPath}bbq.svg';
+  static const beakfast = '${svgPath}beakfast.svg';
+  static const poultry = '${svgPath}poultry.svg';
+  static const pork = '${svgPath}pork.svg';
+  static const desserts = '${svgPath}desserts.svg';
+  static const drinks = '${svgPath}drinks.svg';
 
   /// Icons
 

@@ -41,7 +41,6 @@ class _CreditCardState extends State<CreditCard> {
           _cardInfo = value;
 
           Get.back(result: _cardInfo);
-          print('==_cardInfo====>$_cardInfo');
         });
       })
       ..setErrorListener((exception) {

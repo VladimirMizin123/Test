@@ -109,6 +109,7 @@ flutter:
     - assets/image/
     - assets/icon/
     - assets/svg/
+    # - assets/svg/food_svg
     - assets/video/gym_eats_presentation.mp4
   #   - images/a_dot_ham.jpeg
 

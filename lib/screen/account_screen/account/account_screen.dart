@@ -89,6 +89,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                     Expanded(
                                       child: Text(
                                         data["title"],
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                       ),
                                     ),
                                     Text(data["subtitle"]),
@@ -123,7 +125,11 @@ class _AccountScreenState extends State<AccountScreen> {
                                     },
                                     color: data["color"],
                                     leading: SvgImage(image: data["image"]),
-                                    title: Text(data["title"]),
+                                    title: Text(
+                                      data["title"],
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
                                     trailing: const SvgImage(
                                       image: AssetsUtils.forwardArrow,
                                     ),
@@ -147,7 +153,10 @@ class _AccountScreenState extends State<AccountScreen> {
                 },
                 child: const Text(
                   "Log out",
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Colors.black),
                 ),
               ),
             ],

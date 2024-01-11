@@ -56,7 +56,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             onFailError(emit: emit, text: left.errorMessage!);
           }, (r) async {
             final getGender = r.data!.gender;
-            print('getGender : $getGender');
+
             await PreferenceUtils.setString(
                 prefUserMobile, r.data?.phoneNumber ?? '');
             // emit(LoginSuccessfulState());

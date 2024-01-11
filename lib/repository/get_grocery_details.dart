@@ -29,12 +29,10 @@ class AddNewGroceryItemRepository {
       ApiUrls.addNewGroceryItem,
       data,
     );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('SUCESSBODYYY--${response.body}');
 
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
-      print('FailBOdeweDYYY--${response.body}');
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
@@ -97,11 +95,8 @@ class AddNewGroceryItemRepository {
       data,
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('SUCESSBODYYY--${response.body}');
-
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
-      print('FailBODYYY--${response.body}');
       return Left(
         ErrorModel.fromJson(
           jsonDecode(response.body),

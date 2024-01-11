@@ -67,11 +67,10 @@ class AddNewMealRepository {
     final response = await apiServices.postMultipart(
         url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('SUCCESS BODY--${response.body}');
+      print("addMealresponse code:${response.statusCode}");
 
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
-      print('FailBODYYY--${response.body}');
       return Left(
         ErrorModel.fromJson(
           jsonDecode(response.body),
@@ -127,16 +126,13 @@ class AddNewMealRepository {
       'UserId': userId.toString(),
     };
 
-    log('data----CUSTOM------>>>>>> $data');
-
     final response = await apiServices.putMultipart(
         url: ApiUrls.updateMeal, body: data, files: mealItemImage);
+    print("updateMeal code:${response.statusCode}");
+    // print("update:${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('SUCCESS BODY--${response.body}');
-
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
-      print('FailBODYYY--${response.body}');
       return Left(
         ErrorModel.fromJson(
           jsonDecode(response.body),

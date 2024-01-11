@@ -280,6 +280,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
       {String? Function(String?)? validator,
       TextEditingController? controller}) {
     return TextFormField(
+      style: const TextStyle(color: Colors.black),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
       controller: controller,

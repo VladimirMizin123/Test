@@ -440,6 +440,7 @@ class _GetUserAddressState extends State<GetUserAddress>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Column(
         children: [

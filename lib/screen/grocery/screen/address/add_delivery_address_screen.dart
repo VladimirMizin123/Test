@@ -12,7 +12,8 @@ class AddDeliveryAddressScreen extends StatefulWidget {
   const AddDeliveryAddressScreen({super.key});
 
   @override
-  State<AddDeliveryAddressScreen> createState() => _AddDeliveryAddressScreenState();
+  State<AddDeliveryAddressScreen> createState() =>
+      _AddDeliveryAddressScreenState();
 }
 
 class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
@@ -37,8 +38,14 @@ class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const BackButtonWidget(),
-                Text('Add delivery address', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                Text('Add delivery address',
+                    style: FontUtils.h20(
+                        fontColor: AppColors.oxFF010101,
+                        fontWeight: FWT.semiBold)),
+                Opacity(
+                    opacity: 0,
+                    child: Text('Edit',
+                        style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             const SizedBox(height: 10),
@@ -48,13 +55,29 @@ class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Column(
                     children: [
-                      textFieldWidget(title: 'Street', controller: streetController, hintText: '430 Tanyard Rd, Rocky Mount', onTap: () {}),
+                      textFieldWidget(
+                          title: 'Street',
+                          controller: streetController,
+                          hintText: '430 Tanyard Rd, Rocky Mount',
+                          onTap: () {}),
                       const SizedBox(height: 10),
-                      textFieldWidget(title: 'Apartment number ', controller: streetController, hintText: '18', onTap: () {}),
+                      textFieldWidget(
+                          title: 'Apartment number ',
+                          controller: streetController,
+                          hintText: '18',
+                          onTap: () {}),
                       const SizedBox(height: 10),
-                      textFieldWidget(title: 'Zip', controller: streetController, hintText: '24151', onTap: () {}),
+                      textFieldWidget(
+                          title: 'Zip',
+                          controller: streetController,
+                          hintText: '24151',
+                          onTap: () {}),
                       const SizedBox(height: 10),
-                      textFieldWidget(title: 'Phone number ', controller: streetController, hintText: '+1 111-111-1111', onTap: () {}),
+                      textFieldWidget(
+                          title: 'Phone number ',
+                          controller: streetController,
+                          hintText: '+1 111-111-1111',
+                          onTap: () {}),
                     ],
                   ),
                 ),
@@ -84,7 +107,11 @@ class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
     );
   }
 
-  Widget textFieldWidget({String? title, String? hintText, TextEditingController? controller, VoidCallback? onTap}) {
+  Widget textFieldWidget(
+      {String? title,
+      String? hintText,
+      TextEditingController? controller,
+      VoidCallback? onTap}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -93,11 +120,13 @@ class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
           style: FontUtils.h16(fontColor: AppColors.black),
         ),
         TextFormField(
+          style: const TextStyle(color: Colors.black),
           controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: FontUtils.h12(fontColor: AppColors.middleGray),
-            suffixIcon: const Icon(Icons.cancel_outlined, color: AppColors.black),
+            suffixIcon:
+                const Icon(Icons.cancel_outlined, color: AppColors.black),
           ),
         ),
       ],

@@ -95,6 +95,7 @@ class _SearchLocationState extends State<SearchLocation> {
                   ],
                 ),
                 child: TextFormField(
+                  style: const TextStyle(color: Colors.black),
                   controller: searchTextController,
                   focusNode: searchTextFocus,
                   decoration: InputDecoration(
@@ -155,7 +156,8 @@ class _SearchLocationState extends State<SearchLocation> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            child: Text(searchList[index].description ?? ""),
+                            child: Text(searchList[index].description ?? "",
+                                style: const TextStyle(color: Colors.black)),
                           ),
                         );
                       },

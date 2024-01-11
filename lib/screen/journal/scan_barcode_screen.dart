@@ -75,6 +75,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
           ? Align(
               alignment: Alignment.bottomCenter,
               child: TextField(
+                style: const TextStyle(color: Colors.black),
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 controller: upcNumberController,
@@ -190,7 +191,6 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    print("Created -> ${controller.hasPermissions}");
     setState(() {
       _qrViewController = controller;
       _qrViewController.resumeCamera();

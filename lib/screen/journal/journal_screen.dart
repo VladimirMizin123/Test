@@ -14,11 +14,15 @@ import 'package:gymeats_mobile/models/get_custom_meal_list_model.dart';
 import 'package:gymeats_mobile/models/get_meal_tracker_data_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/edit_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -50,6 +54,9 @@ class _JournalScreenState extends State<JournalScreen> {
   DateTime selectedDateTime = DateTime.now();
   int currentIndex = 0;
   bool defaultImage = true;
+  AccountBloc accountBloc = AccountBloc();
+  bool isLoader = false;
+  int? weightValue;
 
   bool isDoneLoader = false;
 
@@ -104,6 +111,7 @@ class _JournalScreenState extends State<JournalScreen> {
       bloc.add(GetExerciseDetails(
           date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
       bloc.add(DailyRecapEvent());
+      accountBloc.add(GetUnitInfoEvent());
     });
   }
 
@@ -220,8 +228,6 @@ class _JournalScreenState extends State<JournalScreen> {
                                       selectedDateTime.month,
                                       listOfDates[index]);
                                 });
-                                print(dateTimeYYYYMMDD(
-                                    dateTimeVal: selectedDateTime.toString()));
 
                                 mealTrackerDataList = [];
                                 tmpMealTrackerDataList = [];
@@ -437,7 +443,6 @@ class _JournalScreenState extends State<JournalScreen> {
                         if (state is GetCustomMealListSuccessState) {
                           customMealData = state.customMealDetails!;
 
-                          print("Hellllllo");
                           breakFastCustomList.clear();
                           lunchDataCustomList!.clear();
                           dinnerDataCustomList!.clear();
@@ -502,168 +507,117 @@ class _JournalScreenState extends State<JournalScreen> {
                                               .ceil(),
                                       progressColor: AppColors.primaryBlue,
                                     ).paddingOnly(top: 5.h),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        calciumDataView(
-                                          title: 'Carbs',
-                                          textTheme: textTheme,
-                                          gramCount: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!
-                                                                .totalIntakeCarbs!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalIntakeCarbs!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!
+                                    BlocConsumer(
+                                      bloc: accountBloc,
+                                      builder: (context, state) {
+                                        if (state is GetUnitInfoSuccessState) {
+                                          isLoader = false;
+
+                                          weightValue =
+                                              state.unitData?.weightType ==
+                                                      'Pound'
+                                                  ? 1
+                                                  : 2;
+
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback(
+                                                  (timeStamp) {
+                                            accountBloc.add(GetUnitInfoEvent());
+                                          });
+                                        }
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            calciumDataView(
+                                              title: 'Carbs',
+                                              textTheme: textTheme,
+                                              gramCount: getDashboardModel!
                                                   .data!.totalIntakeCarbs!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          totalGram: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!.totalCarbs!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalCarbs!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!
+                                              totalGram: getDashboardModel!
                                                   .data!.totalCarbs!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          progressColor: AppColors.mint,
-                                          percentage: getDashboardModel!
-                                                      .data!.totalCarbs ==
-                                                  0
-                                              ? 0
-                                              : getDashboardModel!
-                                                      .data!.totalIntakeCarbs!
-                                                      .toDouble()
-                                                      .ceil() /
-                                                  getDashboardModel!
-                                                      .data!.totalCarbs!
-                                                      .toDouble()
-                                                      .ceil(),
-                                        ),
-                                        calciumDataView(
-                                          title: 'Protein',
-                                          textTheme: textTheme,
-                                          gramCount: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!
-                                                                .totalIntakeProtein!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalIntakeProtein!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!
+                                              progressColor: AppColors.mint,
+                                              percentage: getDashboardModel!
+                                                          .data!.totalCarbs ==
+                                                      0
+                                                  ? 0
+                                                  : getDashboardModel!.data!
+                                                          .totalIntakeCarbs!
+                                                          .toDouble()
+                                                          .ceil() /
+                                                      getDashboardModel!
+                                                          .data!.totalCarbs!
+                                                          .toDouble()
+                                                          .ceil(),
+                                            ),
+                                            calciumDataView(
+                                              title: 'Protein',
+                                              textTheme: textTheme,
+                                              gramCount: getDashboardModel!
                                                   .data!.totalIntakeProtein!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          totalGram: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!
-                                                                .totalProtein!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalProtein!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!
+                                              totalGram: getDashboardModel!
                                                   .data!.totalProtein!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          progressColor: AppColors.skyBlue,
-                                          percentage: getDashboardModel!.data!
-                                                      .totalIntakeProtein ==
-                                                  0
-                                              ? 0
-                                              : getDashboardModel!
-                                                      .data!.totalIntakeProtein!
-                                                      .toDouble()
-                                                      .ceil() /
-                                                  getDashboardModel!
-                                                      .data!.totalProtein!
-                                                      .toDouble()
-                                                      .ceil(),
-                                        ),
-                                        calciumDataView(
-                                          title: 'Fat',
-                                          textTheme: textTheme,
-                                          gramCount: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!
-                                                                .totalIntakeFat!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalIntakeFat!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!
+                                              progressColor: AppColors.skyBlue,
+                                              percentage: getDashboardModel!
+                                                          .data!
+                                                          .totalIntakeProtein ==
+                                                      0
+                                                  ? 0
+                                                  : getDashboardModel!.data!
+                                                          .totalIntakeProtein!
+                                                          .toDouble()
+                                                          .ceil() /
+                                                      getDashboardModel!
+                                                          .data!.totalProtein!
+                                                          .toDouble()
+                                                          .ceil(),
+                                            ),
+                                            calciumDataView(
+                                              title: 'Fat',
+                                              textTheme: textTheme,
+                                              gramCount: getDashboardModel!
                                                   .data!.totalIntakeFat!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          totalGram: /*int.parse(
-                                                            getDashboardModel!
-                                                                .data!.totalFat!
-                                                                .toString()
-                                                                .split('.')[1]) >=
-                                                        50
-                                                    ? getDashboardModel!
-                                                        .data!.totalFat!
-                                                        .toDouble()
-                                                        .ceil()
-                                                        .toString()
-                                                    :*/
-                                              getDashboardModel!.data!.totalFat!
+                                              totalGram: getDashboardModel!
+                                                  .data!.totalFat!
                                                   .toDouble()
                                                   .floor()
                                                   .toString(),
-                                          progressColor: AppColors.coral,
-                                          percentage: getDashboardModel!
-                                                      .data!.totalIntakeFat ==
-                                                  0
-                                              ? 0
-                                              : getDashboardModel!
-                                                      .data!.totalIntakeFat!
-                                                      .toDouble()
-                                                      .ceil() /
-                                                  getDashboardModel!
-                                                      .data!.totalFat!
-                                                      .toDouble()
-                                                      .ceil(),
-                                        ),
-                                      ],
-                                    ).paddingOnly(top: 5.h),
+                                              progressColor: AppColors.coral,
+                                              percentage: getDashboardModel!
+                                                          .data!
+                                                          .totalIntakeFat ==
+                                                      0
+                                                  ? 0
+                                                  : getDashboardModel!
+                                                          .data!.totalIntakeFat!
+                                                          .toDouble()
+                                                          .ceil() /
+                                                      getDashboardModel!
+                                                          .data!.totalFat!
+                                                          .toDouble()
+                                                          .ceil(),
+                                            ),
+                                          ],
+                                        ).paddingOnly(top: 5.h);
+                                      },
+                                      listener: (BuildContext context,
+                                          Object? state) {},
+                                    ),
                                   ],
                                 ).paddingAll(5),
                               ),
@@ -1370,23 +1324,26 @@ class _JournalScreenState extends State<JournalScreen> {
     Color? progressColor,
     required double percentage,
   }) {
-    return Column(
-      children: [
-        Text(
-          title.toString(),
-          style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
-        ),
-        commonProgressbar(
-          progressColor: progressColor,
-          width: 80.w,
-          percent: percentage >= 1.0 ? 1.0 : percentage,
-          lineHeight: 8.0,
-        ),
-        Text(
-          '$gramCount / $totalGram g',
-          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
-        )
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            title.toString(),
+            style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
+          ),
+          commonProgressbar(
+            progressColor: progressColor,
+            width: 80.w,
+            percent: percentage >= 1.0 ? 1.0 : percentage,
+            lineHeight: 8.0,
+          ),
+          Text(
+            '$gramCount / $totalGram g',
+            style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
     );
   }
 

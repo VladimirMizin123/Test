@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
@@ -64,8 +63,6 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
       response.fold((left) {
         emit(ErrorStateData(errMessage: left.errorMessage!));
       }, (right) {
-        print('------RESPONSE>>>>>>>>${right.data}');
-
         emit(GetDietPlanSuccessState(edgesRestrictionList: right.data));
       });
     } catch (e) {

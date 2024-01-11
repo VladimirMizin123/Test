@@ -531,9 +531,8 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 //initialValue: addressNameController.text,
                                 textEditingController: addressNameController,
                                 readOnly: false,
-                                suffixIcon: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
                                 ),
                               ),
                               mapDetailWidget(

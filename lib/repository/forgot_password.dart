@@ -33,8 +33,7 @@ class ForgotPasswordRepository {
     final response = await apiServices.get(
       '${ApiUrls.checkEmail}/$email',
     );
-    print("responseCheckEmail : ${response.body}");
-    print("responseCheckEmail statusCode: ${response.statusCode}");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(CheckEmailExist.fromJson(jsonDecode(response.body)));
     } else {

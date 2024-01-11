@@ -114,6 +114,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
                         onChanged: (String? value) {
                           setState(() {
                             if (value!.isEmpty) {
@@ -336,7 +337,10 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                       },
                                     ),
                                   )
-                                : const Text('No Search Found!')
+                                : const Text(
+                                    'No Search Found!',
+                                    style: TextStyle(color: Colors.black),
+                                  )
                             : SingleChildScrollView(
                                 child: ListView.builder(
                                   itemCount: productsList.length,

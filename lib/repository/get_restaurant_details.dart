@@ -20,6 +20,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as user;
 
 class RestaurantRepository {
   final ApiServices apiServices = ApiServices();
@@ -44,18 +46,18 @@ class RestaurantRepository {
 
   /// Get Restaurant List ====================================================================
 
-  Future<Either<ErrorModel, GetRestaurantListModel>> getRestaurantListData({
-    required dynamic latitude,
-    required dynamic longitude,
-    required String userStreetNum,
-    required String userStreetName,
-    required String userCity,
-    required String userState,
-    required String userCountry,
-    required String userZipcode,
-    required bool pickup,
-    required int maximumMiles,
-  }) async {
+  Future<Either<ErrorModel, GetRestaurantListModel>> getRestaurantListData(
+      {required dynamic latitude,
+      required dynamic longitude,
+      required String userStreetNum,
+      required String userStreetName,
+      required String userCity,
+      required String userState,
+      required String userCountry,
+      required String userZipcode,
+      required bool pickup,
+      required int maximumMiles,
+      required List categoriesData}) async {
     Map<String, dynamic> data = {
       "latitude": latitude,
       "longitude": longitude,
@@ -66,15 +68,18 @@ class RestaurantRepository {
       "user_country": userCountry,
       "user_zipcode": userZipcode,
       "pickup": pickup,
-      "maximum_miles": maximumMiles
+      "maximum_miles": maximumMiles,
+      "categories": categoriesData
     };
 
-    log('data---------->>>>>> $data');
+    // log('myData $data');
 
     final response = await apiServices.post(
       ApiUrls.getRestaurantList,
       data,
     );
+
+    // log("body${response.body.toString()}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetRestaurantListModel.fromJson(jsonDecode(response.body)));
@@ -88,10 +93,31 @@ class RestaurantRepository {
   /// Get Restaurant Menu List ====================================================================
 
   Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList(
-      {String? restaurantId, bool? pickup, String? mealType}) async {
-    final response = await apiServices.post(
-        '${ApiUrls.getRestaurantMenuList}/$userID?restaurantId=$restaurantId&mealType=$mealType&pickup=$pickup',
-        {});
+      {String? restaurantId,
+      bool? pickup,
+      String? mealType,
+      user.UserAddress? getUserAddress}) async {
+    Map<String, dynamic> data = {
+      "userId": userId,
+      "mealType": mealType,
+      "latitude": getUserAddress?.latitude,
+      "restaurantId": restaurantId,
+      "longitude": getUserAddress?.longitude,
+      "user_street_num": getUserAddress?.streetNum,
+      "user_street_name": getUserAddress?.streetName,
+      "user_city": getUserAddress?.city,
+      "user_state": getUserAddress?.state,
+      "user_country": getUserAddress?.country,
+      "user_zipcode": getUserAddress?.zipcode,
+      "pickup": pickup
+    };
+
+    final response =
+        await apiServices.post(ApiUrls.getRestaurantMenuList, data);
+
+    log("body:${response.body.toString()}");
+    print("data:$data");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
@@ -127,13 +153,16 @@ class RestaurantRepository {
       "user_country": userCountry,
       "user_zipcode": userZipcode,
       "pickup": pickup,
-      "maximum_miles": maximumMiles
+      "maximum_miles": maximumMiles, //add category ///////
     };
 
+    print("getCousinesListData:$data");
     final response = await apiServices.post(
       ApiUrls.getCousinesList,
       data,
     );
+
+    print("response print :${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetCousinesListModel.fromJson(jsonDecode(response.body)));
@@ -308,7 +337,7 @@ class RestaurantRepository {
         await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      log('response.body---------->>>>>> ${response.body}');
+      log('response.body---------->>>>>> he ${response.body}');
 
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {

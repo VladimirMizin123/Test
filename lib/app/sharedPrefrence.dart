@@ -46,10 +46,23 @@ class PreferenceUtils {
     return _prefsInstance != null ? (_prefsInstance!.getInt(key) ?? 0) : 0;
   }
 
+  static double getDouble(String key) {
+    return _prefsInstance != null
+        ? (_prefsInstance!.getDouble(key) ?? 0.0)
+        : 0.0;
+  }
+
   static Future<bool> setInt(String key, int value) async {
     var prefs = await _instance;
     return _prefsInstance != null
         ? prefs.setInt(key, value)
+        : Future.value(false);
+  }
+
+  static Future<bool> setDouble(String key, double value) async {
+    var prefs = await _instance;
+    return _prefsInstance != null
+        ? prefs.setDouble(key, value)
         : Future.value(false);
   }
 

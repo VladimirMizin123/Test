@@ -13,10 +13,12 @@ class SearchDeliveryAddressScreen extends StatefulWidget {
   const SearchDeliveryAddressScreen({super.key});
 
   @override
-  State<SearchDeliveryAddressScreen> createState() => _SearchDeliveryAddressScreenState();
+  State<SearchDeliveryAddressScreen> createState() =>
+      _SearchDeliveryAddressScreenState();
 }
 
-class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScreen> {
+class _SearchDeliveryAddressScreenState
+    extends State<SearchDeliveryAddressScreen> {
   TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -34,8 +36,14 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const BackButtonWidget(),
-                Text('Search delivery address', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                Text('Search delivery address',
+                    style: FontUtils.h20(
+                        fontColor: AppColors.oxFF010101,
+                        fontWeight: FWT.semiBold)),
+                Opacity(
+                    opacity: 0,
+                    child: Text('Edit',
+                        style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             const SizedBox(height: 10),
@@ -48,16 +56,21 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
                   boxShadow: boxShadowWidget,
                 ),
                 child: TextFormField(
+                  style: const TextStyle(color: Colors.black),
                   controller: controller,
                   onChanged: (value) {},
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search, color: AppColors.black),
+                    prefixIcon:
+                        const Icon(Icons.search, color: AppColors.black),
                     hintText: 'Search for item',
                     hintStyle: FontUtils.h16(),
                     border: InputBorder.none,
-                    suffixIcon: const Icon(Icons.cancel_outlined, color: AppColors.black),
-                    enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                    focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                    suffixIcon: const Icon(Icons.cancel_outlined,
+                        color: AppColors.black),
+                    enabledBorder:
+                        const OutlineInputBorder(borderSide: BorderSide.none),
+                    focusedBorder:
+                        const OutlineInputBorder(borderSide: BorderSide.none),
                   ),
                 ),
               ),
@@ -70,13 +83,14 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
                   Get.toNamed('/AddDeliveryAddressScreen');
                 },
                 child: Container(
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                     boxShadow: boxShadowWidget,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -85,15 +99,19 @@ class _SearchDeliveryAddressScreenState extends State<SearchDeliveryAddressScree
                           children: [
                             Text(
                               'Can\'t find your address?',
-                              style: FontUtils.h16(fontWeight: FWT.medium, fontColor: AppColors.black),
+                              style: FontUtils.h16(
+                                  fontWeight: FWT.medium,
+                                  fontColor: AppColors.black),
                             ),
                             Text(
                               'Use a map',
-                              style: FontUtils.h12(fontColor: AppColors.terracotta),
+                              style: FontUtils.h12(
+                                  fontColor: AppColors.terracotta),
                             ),
                           ],
                         ),
-                        SvgPicture.asset(AssetsUtils.icFlagIcon, color: AppColors.terracotta),
+                        SvgPicture.asset(AssetsUtils.icFlagIcon,
+                            color: AppColors.terracotta),
                       ],
                     ),
                   ),

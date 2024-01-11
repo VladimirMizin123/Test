@@ -7,5 +7,11 @@ class MealPlanArguments {
   final String? barcodeNumber;
   final bool? isFromScanner;
 
-  MealPlanArguments({this.isFromScanner = false,this.barcodeNumber = '', this.currentSelectedData, this.productName, this.mealData});
+  MealPlanArguments({
+    this.isFromScanner = false,
+    this.barcodeNumber = '',
+    this.currentSelectedData,
+    this.productName,
+    this.mealData,
+  });
 }

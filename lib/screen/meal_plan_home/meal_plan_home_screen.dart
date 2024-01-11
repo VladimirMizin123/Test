@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
@@ -13,6 +14,9 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
@@ -41,7 +45,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   bool isLoadingData = false;
   bool isReadyToShowWidget = false;
   MealPlanBloc mealPlanBloc = MealPlanBloc();
+  AccountBloc accountBloc = AccountBloc();
 
+  bool isLoader = false;
+  int? weightValue;
   getData() {
     mealPlanList = box.read('mealPlan');
 
@@ -57,9 +64,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   void initState() {
     super.initState();
     log("INIT STATE");
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      accountBloc.add(GetUnitInfoEvent());
+    });
     getData();
-    //mealPlanBloc.add(MealPlanFetchEvent());
-    // print('DATATATATA >>>>> ${box.read('mealPlan')}');
   }
 
   final box = GetStorage();
@@ -88,14 +96,11 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             }
             log("state == > $state");
             if (state is OnGetMealLogByDateSuccessState) {
-              // MAKE SKIP OBJECT FROM HERE,,,,,
               mealDataByDate = state.modelData ?? [];
 
               for (var k = 0; k < mealDataByDate.length; k++) {
-                // print('K --- $k');
                 for (var i = 0; i < mealPlanList.length; i++) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
-                    // print('${mealPlanList[i].meals![j].id == mealDataByDate[k].mealId}');
                     if (mealPlanList[i].meals![j].id ==
                             mealDataByDate[k].mealId &&
                         mealDataByDate[k].value == 'SKIPPED') {
@@ -109,17 +114,14 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 if (mealPlanList[i].date!.year == DateTime.now().year &&
                     mealPlanList[i].date!.month == DateTime.now().month &&
                     mealPlanList[i].date!.day == DateTime.now().day) {
-                  print('JUMP DAY :::: ${mealPlanList.length}');
-                  print('JUMP DAY :::: $i');
                   _pageController.jumpToPage(i);
                   isReadyToShowWidget = true;
                   break;
                 }
               }
-              log(state.hasGrocery.toString(), name: "HAS GROCERY");
 
               hasGrocery = state.hasGrocery;
-              print("===>>>>>" + hasGrocery.toString());
+
               setState(() {});
             }
 
@@ -128,8 +130,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 if (mealPlanList[i].date!.year == DateTime.now().year &&
                     mealPlanList[i].date!.month == DateTime.now().month &&
                     mealPlanList[i].date!.day == DateTime.now().day) {
-                  print('JUMP DAY :::: ${mealPlanList.length}');
-                  print('JUMP DAY :::: $i');
                   _pageController.jumpToPage(i);
                   isReadyToShowWidget = true;
                   break;
@@ -143,10 +143,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             if (state is SwapMealDetailsState) {
               Get.back();
               for (var i = 0; i < mealPlanList.length; i++) {
-                // print("${mealPlanList[i].day} == ${state.day}");
                 if (mealPlanList[i].date == state.dateTime) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
-                    print("${mealPlanList[i].meals![j].id} == ${state.mealId}");
                     if (mealPlanList[i].meals![j].id == state.mealId) {
                       mealPlanList[i].meals![j].id = state.similarMealData!.id;
                       mealPlanList[i].meals![j].meal =
@@ -214,7 +212,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             }
           },
           builder: (context, state) {
-            log("state is $state");
             return SafeArea(
               child: SizedBox(
                 height: size.height.h,
@@ -227,6 +224,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       width: 56.w,
                       color: AppColors.primaryBlue,
                     ),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -417,89 +415,113 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                   ),
                                 ),
                               ),
-                    mealPlanList.isEmpty
-                        ? const SizedBox()
-                        : Expanded(
-                            child: Stack(
-                              children: [
-                                PageView(
-                                  controller: _pageController,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  onPageChanged: (int? value) {
-                                    setState(() {
-                                      selectedDayIndex = value ?? 0;
-                                    });
-                                    debugPrint('CURRENT PAGE : $value');
-                                  },
-                                  children: mealPlanList.map((e) {
-                                    return SingleChildScrollView(
-                                      child: ListView.builder(
-                                        itemCount: e.meals!.length,
-                                        shrinkWrap: true,
-                                        scrollDirection: Axis.vertical,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return mealPlanCard(
-                                            onTap: () {
-                                              Get.toNamed('/MealDetailsScreen',
-                                                  arguments: MealPlanArguments(
-                                                      mealData:
-                                                          e.meals![index]));
-                                            },
-                                            mealData: e.meals![index],
-                                            context: context,
-                                            onSkipMealTap: () {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) {
-                                                  return SkipMealBottomSheet(
-                                                    bloc: mealPlanBloc,
-                                                    mealData: e.meals![index],
-                                                  );
-                                                },
-                                                isDismissible: false,
-                                              );
-                                            },
-                                            onSwapMealTap: () {
-                                              // print(e.meals![index].id);
+                    BlocConsumer(
+                      bloc: accountBloc,
+                      builder: (context, state) {
+                        if (state is GetUnitInfoSuccessState) {
+                          isLoader = false;
 
-                                              // for (var i = 0; i < mealPlanList.length; i++) {
-                                              //   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
-                                              //     if (mealPlanList[i].meals![j].id == e.meals![index].id) {
-                                              //       print("${mealPlanList[i].meals![j].id} == ${e.meals![index].id}");
-                                              //     }
-                                              //     break;
-                                              //   }
-                                              // }
-                                              showModalBottomSheet(
+                          weightValue =
+                              state.unitData?.weightType == 'Pound' ? 1 : 2;
+
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            accountBloc.add(GetUnitInfoEvent());
+                          });
+                        }
+                        return mealPlanList.isEmpty
+                            ? const SizedBox()
+                            : Expanded(
+                                child: Stack(
+                                  children: [
+                                    PageView(
+                                      controller: _pageController,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      onPageChanged: (int? value) {
+                                        setState(() {
+                                          selectedDayIndex = value ?? 0;
+                                        });
+                                        debugPrint('CURRENT PAGE : $value');
+                                      },
+                                      children: mealPlanList.map((e) {
+                                        return SingleChildScrollView(
+                                          child: ListView.builder(
+                                            itemCount: e.meals!.length,
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.vertical,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return mealPlanCard(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                      '/MealDetailsScreen',
+                                                      arguments:
+                                                          MealPlanArguments(
+                                                              mealData:
+                                                                  e.meals![
+                                                                      index]));
+                                                },
+                                                mealData: e.meals![index],
                                                 context: context,
-                                                builder: (context) {
-                                                  return SwapMealBottomSheet(
-                                                    mealPlanBloc: mealPlanBloc,
-                                                    mealData: e.meals![index],
-                                                    day: e.day,
-                                                    dateTime: e.date,
+                                                onSkipMealTap: () {
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return SkipMealBottomSheet(
+                                                        bloc: mealPlanBloc,
+                                                        mealData:
+                                                            e.meals![index],
+                                                      );
+                                                    },
+                                                    isDismissible: false,
+                                                  );
+                                                },
+                                                onSwapMealTap: () {
+                                                  // print(e.meals![index].id);
+
+                                                  // for (var i = 0; i < mealPlanList.length; i++) {
+                                                  //   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
+                                                  //     if (mealPlanList[i].meals![j].id == e.meals![index].id) {
+                                                  //       print("${mealPlanList[i].meals![j].id} == ${e.meals![index].id}");
+                                                  //     }
+                                                  //     break;
+                                                  //   }
+                                                  // }
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return SwapMealBottomSheet(
+                                                        mealPlanBloc:
+                                                            mealPlanBloc,
+                                                        mealData:
+                                                            e.meals![index],
+                                                        day: e.day,
+                                                        dateTime: e.date,
+                                                      );
+                                                    },
                                                   );
                                                 },
                                               );
                                             },
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }).toList(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    isReadyToShowWidget
+                                        ? const SizedBox()
+                                        : Container(
+                                            color: Colors.white,
+                                            child: const AppCenterLoader(),
+                                          ),
+                                  ],
                                 ),
-                                isReadyToShowWidget
-                                    ? const SizedBox()
-                                    : Container(
-                                        color: Colors.white,
-                                        child: const AppCenterLoader(),
-                                      ),
-                              ],
-                            ),
-                          ),
+                              );
+                      },
+                      listener: (BuildContext context, Object? state) {},
+                    ),
                   ],
                 ),
               ),

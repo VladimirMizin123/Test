@@ -177,8 +177,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 createOrder = true;
               }
 
-              print('loadCreateOrder---------->>>>>> $loadCreateOrder');
-
               loadCreateOrder = false;
             }
 
@@ -227,9 +225,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               loadCreateOrder = false;
             }
             if (state is CreateCheckoutSuccessState) {
-              print('state.data['
-                  ']---------->>>>>> ${state.data['confirmUrl']}');
-
               loadCreateOrder = false;
 
               webViewOpen = true;
@@ -781,6 +776,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ],
                               ),
                               child: TextFormField(
+                                style: const TextStyle(color: Colors.black),
                                 controller: notes,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
@@ -977,8 +973,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         : 'Create Order',
                                     lableColor: Colors.white,
                                     onTap: () {
-                                      print(
-                                          '-===getUserAddress?.streetName.isEmpty==>${getUserAddress == null}');
                                       if (getUserAddress == null) {
                                         Fluttertoast.showToast(
                                           msg:
@@ -1083,9 +1077,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                 basePrice: element.basePrice,
                                               ),
                                             );
-
-                                            print(
-                                                '==productMealMeData===>${productMealMeData.last.image}');
                                           }
 
                                           widget.arguments?.groceryBloc?.add(

@@ -29,14 +29,22 @@ Widget bulletPointWidget({String? text}) {
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('\u2022', style: TextStyle(fontSize: 20.sp)),
+      Text('\u2022',
+          style: TextStyle(
+            fontSize: 20.sp,
+            color: Colors.black,
+          )),
       SizedBox(
         width: 10.w,
       ),
       Expanded(
         child: Text(
           text!,
-          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
+          style: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
           softWrap: true,
         ),
       ),

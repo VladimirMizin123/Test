@@ -86,7 +86,6 @@ class AddNewGroceryItemBloc
       }, (right) {
         showToast(isSuccess: true, message: right.message!);
 
-        print('---->>>>${right.success}');
         emit(RemoveGroceryItemSuccessState(
             userGroceryListId: event.userGroceryListId,
             isDelete: right.success));

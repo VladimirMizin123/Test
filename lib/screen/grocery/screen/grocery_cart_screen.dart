@@ -17,7 +17,8 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart' as order;
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart'
+    as order;
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_choose_store_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/item_catalog_screen.dart';
@@ -124,7 +125,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
             selectedStoreProductList = state.productsList;
           }
           if (state is GroceryProductListState) {
-            print('==state.productList!.length===>${state.productList!.length}');
+            print(
+                '==state.productList!.length===>${state.productList!.length}');
             if (state.productList?.isNotEmpty ?? false) {
               if (selectedIndex == 0) {
                 for (var i = 0; i < edgesList.length; i++) {
@@ -159,7 +161,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                       width: 40.w,
                       child: const BackButtonWidget(),
                     ),
-                    Text('Grocery List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
+                    Text('Grocery List',
+                        style: FontUtils.h20(
+                            fontColor: AppColors.oxFF010101,
+                            fontWeight: FWT.semiBold)),
                     SizedBox(
                       width: 40.w,
                     ),
@@ -168,7 +173,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                 GestureDetector(
                   onTap: () {
                     ///clear cart and selected items
-                    log(selectedStoreProductList.length.toString(), name: "Selected Length");
+                    log(selectedStoreProductList.length.toString(),
+                        name: "Selected Length");
                     selectedIndex = 0;
 
                     if (selectedStoreProductList.length == 0) {
@@ -177,31 +183,44 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                       dataList3.clear();
                     } else {
                       selectedStoreProductList.forEach((element) {
-                        log(element.store!.name.toString(), name: "Selected Length");
+                        log(element.store!.name.toString(),
+                            name: "Selected Length");
                       });
-                      if (allData[0].isNotEmpty && selectedStoreProductList.any((element) => element.store!.name == allData[0][0].storeName)) {
+                      if (allData[0].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[0][0].storeName)) {
                       } else {
                         log("CLEAR");
 
                         allData[0].clear();
                       }
-                      if (allData[1].isNotEmpty && selectedStoreProductList.any((element) => element.store!.name == allData[1][0].storeName)) {
+                      if (allData[1].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[1][0].storeName)) {
                       } else {
                         log("CLEAR");
 
                         allData[1].clear();
                       }
-                      if (allData[2].isNotEmpty && selectedStoreProductList.any((element) => element.store!.name == allData[2][0].storeName)) {
+                      if (allData[2].isNotEmpty &&
+                          selectedStoreProductList.any((element) =>
+                              element.store!.name == allData[2][0].storeName)) {
                       } else {
                         log("CLEAR");
                         allData[2].clear();
                       }
                       // });
-                      log((allData[0].isNotEmpty ? allData[0][0].storeName : 'DEFAULT').toString(), name: "All Data Length");
+                      log(
+                          (allData[0].isNotEmpty
+                                  ? allData[0][0].storeName
+                                  : 'DEFAULT')
+                              .toString(),
+                          name: "All Data Length");
 
                       allData.sort((a, b) => b.length.compareTo(a.length));
 
-                      log(selectedStoreProductList.length.toString(), name: "Selected Length");
+                      log(selectedStoreProductList.length.toString(),
+                          name: "Selected Length");
                     }
 
                     Get.toNamed('/ChooseStoreScreen',
@@ -214,34 +233,52 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   child: Container(
                     width: screenSize.width * 0.50,
                     decoration: BoxDecoration(
-                        color: selectedStoreProductList.isEmpty ? AppColors.middleGray.withOpacity(0.10) : AppColors.mint,
+                        color: selectedStoreProductList.isEmpty
+                            ? AppColors.middleGray.withOpacity(0.10)
+                            : AppColors.mint,
                         borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green)),
+                        border: Border.all(
+                            color: selectedStoreProductList.isEmpty
+                                ? AppColors.middleGray
+                                : AppColors.green)),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2, horizontal: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // const Icon(Icons.search, color: AppColors.green),
-                          SvgPicture.asset(AssetsUtils.icLocation, color: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green),
+                          SvgPicture.asset(AssetsUtils.icLocation,
+                              color: selectedStoreProductList.isEmpty
+                                  ? AppColors.middleGray
+                                  : AppColors.green),
                           selectedStoreProductList.isEmpty
                               ? Text(
                                   'Choose a Store',
                                   style: FontUtils.h14(
-                                      fontColor: selectedStoreProductList.isEmpty ? AppColors.middleGray : AppColors.green, fontWeight: FWT.semiBold),
+                                      fontColor:
+                                          selectedStoreProductList.isEmpty
+                                              ? AppColors.middleGray
+                                              : AppColors.green,
+                                      fontWeight: FWT.semiBold),
                                 )
-                              : selectedStoreProductList[0].store!.logoPhotos == null
+                              : selectedStoreProductList[0].store!.logoPhotos ==
+                                      null
                                   ? const SizedBox()
                                   : CachedNetworkImage(
                                       height: 20,
-                                      imageUrl: selectedStoreProductList[0].store!.logoPhotos![0],
+                                      imageUrl: selectedStoreProductList[0]
+                                          .store!
+                                          .logoPhotos![0],
                                       fit: BoxFit.cover,
-                                      placeholder: (context, url) => const Center(
-                                          child: CircularProgressIndicator(
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child: CircularProgressIndicator(
                                         color: AppColors.lightGrey,
                                       )),
-                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
                                     ),
                           const Icon(
                             Icons.keyboard_arrow_down_rounded,
@@ -262,14 +299,18 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                       boxShadow: boxShadowWidget,
                     ),
                     child: TextFormField(
+                      style: const TextStyle(color: Colors.black),
                       readOnly: false,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.black),
                         hintText: 'Search for item',
                         hintStyle: FontUtils.h16(),
                         border: InputBorder.none,
-                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none),
+                        focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none),
                       ),
                       onChanged: (String? value) {
                         setState(() {
@@ -277,7 +318,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                             isSearchOn = true;
                             allSearchRestaurantList = edgesList.where(
                               (element) {
-                                return element.itemName!.toString().toLowerCase().contains(value.toLowerCase());
+                                return element.itemName!
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase());
                               },
                             ).toList();
 
@@ -303,32 +347,43 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                               scrollDirection: Axis.horizontal,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   child: GestureDetector(
                                     onTap: () {
                                       if (selectedStoreProductList.isEmpty) {
-                                        Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                        Fluttertoast.showToast(
+                                            msg: 'Please, select a Store!');
                                       } else {
                                         setState(() {
                                           selectedIndex = 0;
-                                          List.from(widget.arguments!.edgesList);
+                                          List.from(
+                                              widget.arguments!.edgesList);
                                         });
                                       }
                                     },
                                     child: Container(
                                       height: 40,
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(50),
-                                          color: selectedIndex == 0 ? AppColors.coral : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: selectedIndex == 0
+                                              ? AppColors.coral
+                                              : Colors.transparent,
                                           border: Border.all(
-                                            color: selectedIndex == 0 ? Colors.transparent : AppColors.coral,
+                                            color: selectedIndex == 0
+                                                ? Colors.transparent
+                                                : AppColors.coral,
                                           )),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
                                         child: Center(
                                           child: Text(
                                             'All',
-                                            style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                            style: FontUtils.h15(
+                                                fontColor:
+                                                    AppColors.terracotta),
                                           ),
                                         ),
                                       ),
@@ -337,12 +392,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                 ),
                                 selectedStoreProductList.isNotEmpty
                                     ? Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
                                         child: GestureDetector(
                                           onTap: () {
                                             // From 1 store only
-                                            if (selectedStoreProductList.isEmpty) {
-                                              Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                            if (selectedStoreProductList
+                                                .isEmpty) {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      'Please, select a Store!');
                                             } else {
                                               setState(() {
                                                 selectedIndex = 1;
@@ -352,8 +411,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               onlyProductList.clear();
                                               // List<List<GroceryShoppingData>> dList = [];
                                               ///new Code
-                                              if (allData[selectedIndex - 1].isNotEmpty) {
-                                                widget.arguments!.edgesList.forEach((element) {
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
                                                   onlyProductList.add(element);
                                                 });
                                               }
@@ -436,18 +497,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                           child: Container(
                                             height: 40,
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                              color: selectedIndex == 1 ? AppColors.coral : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              color: selectedIndex == 1
+                                                  ? AppColors.coral
+                                                  : Colors.transparent,
                                               border: Border.all(
-                                                color: selectedIndex == 1 ? Colors.transparent : AppColors.coral,
+                                                color: selectedIndex == 1
+                                                    ? Colors.transparent
+                                                    : AppColors.coral,
                                               ),
                                             ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
                                               child: Center(
                                                   child: Text(
                                                 'From ${allData[0].isNotEmpty ? allData[0][0].storeName ?? '' : "-"} store only',
-                                                style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                style: FontUtils.h15(
+                                                    fontColor:
+                                                        AppColors.terracotta),
                                               )),
                                             ),
                                           ),
@@ -456,20 +526,26 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     : const SizedBox(),
                                 selectedStoreProductList.length >= 2
                                     ? Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
                                         child: GestureDetector(
                                           onTap: () {
                                             // From 1 store only
-                                            if (selectedStoreProductList.isEmpty) {
-                                              Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                            if (selectedStoreProductList
+                                                .isEmpty) {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      'Please, select a Store!');
                                             } else {
                                               ///new code
                                               setState(() {
                                                 selectedIndex = 2;
                                               });
                                               onlyProductList.clear();
-                                              if (allData[selectedIndex - 1].isNotEmpty) {
-                                                widget.arguments!.edgesList.forEach((element) {
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
                                                   onlyProductList.add(element);
                                                 });
                                               }
@@ -565,18 +641,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                           child: Container(
                                             height: 40,
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                              color: selectedIndex == 2 ? AppColors.coral : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              color: selectedIndex == 2
+                                                  ? AppColors.coral
+                                                  : Colors.transparent,
                                               border: Border.all(
-                                                color: selectedIndex == 2 ? Colors.transparent : AppColors.coral,
+                                                color: selectedIndex == 2
+                                                    ? Colors.transparent
+                                                    : AppColors.coral,
                                               ),
                                             ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
                                               child: Center(
                                                   child: Text(
                                                 'From ${allData[1].isNotEmpty ? allData[1][0].storeName ?? '' : "-"} store only',
-                                                style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                style: FontUtils.h15(
+                                                    fontColor:
+                                                        AppColors.terracotta),
                                               )),
                                             ),
                                           ),
@@ -585,12 +670,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                     : const SizedBox(),
                                 selectedStoreProductList.length >= 3
                                     ? Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
                                         child: GestureDetector(
                                           onTap: () {
                                             // From 1 store only
-                                            if (selectedStoreProductList.isEmpty) {
-                                              Fluttertoast.showToast(msg: 'Please, select a Store!');
+                                            if (selectedStoreProductList
+                                                .isEmpty) {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      'Please, select a Store!');
                                             } else {
                                               setState(() {
                                                 selectedIndex = 3;
@@ -600,8 +689,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                               onlyProductList.clear();
                                               // List<List<GroceryShoppingData>> dList = [];
                                               ///new Code
-                                              if (allData[selectedIndex - 1].isNotEmpty) {
-                                                widget.arguments!.edgesList.forEach((element) {
+                                              if (allData[selectedIndex - 1]
+                                                  .isNotEmpty) {
+                                                widget.arguments!.edgesList
+                                                    .forEach((element) {
                                                   onlyProductList.add(element);
                                                 });
                                               }
@@ -690,18 +781,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                           child: Container(
                                             height: 40,
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                              color: selectedIndex == 3 ? AppColors.coral : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              color: selectedIndex == 3
+                                                  ? AppColors.coral
+                                                  : Colors.transparent,
                                               border: Border.all(
-                                                color: selectedIndex == 3 ? Colors.transparent : AppColors.coral,
+                                                color: selectedIndex == 3
+                                                    ? Colors.transparent
+                                                    : AppColors.coral,
                                               ),
                                             ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
                                               child: Center(
                                                   child: Text(
                                                 'From ${allData[2].isNotEmpty ? allData[2][0].storeName ?? '' : "-"} store only',
-                                                style: FontUtils.h15(fontColor: AppColors.terracotta),
+                                                style: FontUtils.h15(
+                                                    fontColor:
+                                                        AppColors.terracotta),
                                               )),
                                             ),
                                           ),
@@ -756,16 +856,22 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: isSearchOn == true
-                            ? displayData(displayData: allSearchRestaurantList, hello: "123")
+                            ? displayData(
+                                displayData: allSearchRestaurantList,
+                                hello: "123")
                             : selectedIndex == 0
-                                ? displayData(displayData: edgesList, hello: "456")
-                                : displayData(displayData: onlyProductList, hello: "789")),
+                                ? displayData(
+                                    displayData: edgesList, hello: "456")
+                                : displayData(
+                                    displayData: onlyProductList,
+                                    hello: "789")),
                   ),
                 ),
                 Container(
                   color: AppColors.whiteColor,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: Column(
                       children: [
                         Row(
@@ -773,11 +879,15 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           children: [
                             Text(
                               'Total',
-                              style: FontUtils.h20(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                              style: FontUtils.h20(
+                                  fontColor: AppColors.black,
+                                  fontWeight: FWT.semiBold),
                             ),
                             Text(
                               '\$ ${totalAmount(edgesList).toStringAsFixed(2)}',
-                              style: FontUtils.h22(fontColor: AppColors.black, fontWeight: FWT.semiBold),
+                              style: FontUtils.h22(
+                                  fontColor: AppColors.black,
+                                  fontWeight: FWT.semiBold),
                             )
                           ],
                         ),
@@ -786,7 +896,11 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                             ? const Center(child: CircularProgressIndicator())
                             : simpleTextBorderButton(
                                 context: context,
-                                color: edgesList.indexWhere((element) => element.product == null) < 0 ? AppColors.green : AppColors.gray,
+                                color: edgesList.indexWhere((element) =>
+                                            element.product == null) <
+                                        0
+                                    ? AppColors.green
+                                    : AppColors.gray,
                                 buttonLable: 'Checkout',
                                 height: screenSize.height * 0.065,
                                 width: screenSize.width,
@@ -795,7 +909,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                   loadCreateOrder = true;
 
                                   setState(() {});
-                                  int emptyIndex = edgesList.indexWhere((element) => element.product == null);
+                                  int emptyIndex = edgesList.indexWhere(
+                                      (element) => element.product == null);
 
                                   if (emptyIndex < 0) {
                                     if (getUserAddress == null) {
@@ -813,11 +928,14 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       for (var element in edgesList) {
                                         data.add(
                                           CreateOrderGroceryItems(
-                                            productId: element.product?.productId,
+                                            productId:
+                                                element.product?.productId,
                                             productType: 2,
-                                            quantity: element.product?.cartItemCount,
+                                            quantity:
+                                                element.product?.cartItemCount,
                                             notes: '',
-                                            productMarkedPrice: element.product?.originalPrice,
+                                            productMarkedPrice:
+                                                element.product?.originalPrice,
                                             selectedOptions: [],
                                           ),
                                         );
@@ -825,19 +943,37 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 
                                       groceryBloc.add(
                                         CreateOrderEvent(
-                                          createGroceryOrderModel: CreateGroceryOrderModel(
+                                          createGroceryOrderModel:
+                                              CreateGroceryOrderModel(
                                             userId: userId,
-                                            pickup: widget.arguments!.askReceiveOrder.index == 0 ? false : true,
+                                            pickup: widget
+                                                        .arguments!
+                                                        .askReceiveOrder
+                                                        .index ==
+                                                    0
+                                                ? false
+                                                : true,
                                             groceryItems: data,
                                             userAddress: UserAddress(
-                                              streetName: getUserAddress?.streetName ?? '',
-                                              streetNum: getUserAddress?.streetNum ?? '',
-                                              latitude: (getUserAddress?.latitude ?? 0.0),
-                                              longitude: (getUserAddress?.longitude ?? 0.0),
+                                              streetName:
+                                                  getUserAddress?.streetName ??
+                                                      '',
+                                              streetNum:
+                                                  getUserAddress?.streetNum ??
+                                                      '',
+                                              latitude:
+                                                  (getUserAddress?.latitude ??
+                                                      0.0),
+                                              longitude:
+                                                  (getUserAddress?.longitude ??
+                                                      0.0),
                                               city: getUserAddress?.city ?? '',
-                                              country: getUserAddress?.country ?? '',
-                                              state: getUserAddress?.state ?? "",
-                                              zipcode: getUserAddress?.zipcode ?? '',
+                                              country:
+                                                  getUserAddress?.country ?? '',
+                                              state:
+                                                  getUserAddress?.state ?? "",
+                                              zipcode:
+                                                  getUserAddress?.zipcode ?? '',
                                             ),
                                             userPhone: 1234567890,
                                             driverTipCents: 0,
@@ -848,7 +984,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       );
                                     }
                                   } else {
-                                    Fluttertoast.showToast(msg: 'Please, select the product!');
+                                    Fluttertoast.showToast(
+                                        msg: 'Please, select the product!');
                                   }
                                   // loadCreateOrder = false;
                                   // setState(() {});
@@ -897,7 +1034,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     'Choose',
                     style: FontUtils.h16(fontColor: AppColors.black),
                   ),
-                  const Icon(Icons.chevron_right_rounded, color: AppColors.black)
+                  const Icon(Icons.chevron_right_rounded,
+                      color: AppColors.black)
                 ],
               ),
             ),
@@ -918,14 +1056,16 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
     double total = 0;
     for (var i = 0; i < edgesList.length; i++) {
       if (edgesList[i].product != null) {
-        total = total + ((edgesList[i].product!.price! / 100) * edgesList[i].product!.cartItemCount);
+        total = total +
+            ((edgesList[i].product!.price! / 100) *
+                edgesList[i].product!.cartItemCount);
       }
     }
     return total;
   }
 
-  Widget displayData({List<GroceryDetails>? displayData, required String hello}) {
-    log(hello, name: "CHECK");
+  Widget displayData(
+      {List<GroceryDetails>? displayData, required String hello}) {
     final screenSize = MediaQuery.of(context).size;
     return ListView.builder(
         itemCount: displayData!.length,
@@ -933,7 +1073,10 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return displayData[index].product != null &&
-                  (selectedIndex >= 1 && allData[selectedIndex - 1].contains(displayData[index].product) || selectedIndex == 0)
+                  (selectedIndex >= 1 &&
+                          allData[selectedIndex - 1]
+                              .contains(displayData[index].product) ||
+                      selectedIndex == 0)
               ? Column(
                   children: [
                     Row(
@@ -948,7 +1091,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                               child: CircularProgressIndicator(
                             color: AppColors.lightGrey,
                           )),
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         ),
                         // Image(
                         //   image: NetworkImage(displayData[index].cartData!.image!),
@@ -961,7 +1105,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                displayData[index].product!.itemName ?? '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                displayData[index].product!.itemName ??
+                                    '', // 'Milk Almond Breeze 500ml, 1.5% fat',
                                 textAlign: TextAlign.start,
                                 style: FontUtils.h17(
                                   fontColor: AppColors.darkGray,
@@ -988,7 +1133,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                   ),
                                   Flexible(
                                     child: Text(
-                                      displayData[index].product!.storeName ?? '',
+                                      displayData[index].product!.storeName ??
+                                          '',
                                       style: FontUtils.h12(
                                         fontColor: AppColors.black,
                                         fontWeight: FWT.semiBold,
@@ -1003,7 +1149,9 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                         const SizedBox(width: 10),
                         Text(
                           '\$ ${(((displayData[index].product!.price ?? 0) / 100) * displayData[index].product!.cartItemCount).toStringAsFixed(2)}', // '\$ 5.99',
-                          style: FontUtils.h17(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                          style: FontUtils.h17(
+                              fontColor: AppColors.darkGray,
+                              fontWeight: FWT.semiBold),
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -1014,19 +1162,27 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                         Expanded(
                           flex: 3,
                           child: Container(
-                            decoration:
-                                BoxDecoration(border: Border.all(color: AppColors.switchColor, width: 1.2), borderRadius: BorderRadius.circular(6)),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: AppColors.switchColor, width: 1.2),
+                                borderRadius: BorderRadius.circular(6)),
                             height: screenSize.height * 0.070,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Product 1',
-                                    style: FontUtils.h18(fontColor: AppColors.black),
+                                    style: FontUtils.h18(
+                                        fontColor: AppColors.black),
                                   ),
-                                  const Icon(Icons.check_circle_outline_outlined, size: 30, color: AppColors.switchColor)
+                                  const Icon(
+                                      Icons.check_circle_outline_outlined,
+                                      size: 30,
+                                      color: AppColors.switchColor)
                                 ],
                               ),
                             ),
@@ -1037,14 +1193,21 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           child: displayData[index].product!.cartItemCount == 1
                               ? GestureDetector(
                                   onTap: () {
-                                    for (var element in selectedStoreProductList) {
-                                      element.groceryResult?.forEach((groceryItem) {
+                                    for (var element
+                                        in selectedStoreProductList) {
+                                      element.groceryResult
+                                          ?.forEach((groceryItem) {
                                         final products = groceryItem.products;
                                         if (products != null) {
                                           for (var productsItem in products) {
-                                            if (productsItem.productId == displayData[index].product?.productId) {
+                                            if (productsItem.productId ==
+                                                displayData[index]
+                                                    .product
+                                                    ?.productId) {
                                               productsItem.cartItemCount = 1;
-                                              productsItem.isAddedToShoppingList = false;
+                                              productsItem
+                                                      .isAddedToShoppingList =
+                                                  false;
                                             }
                                           }
                                         }
@@ -1058,21 +1221,32 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                   child: Container(
                                     height: screenSize.height * 0.070,
                                     width: screenSize.height * 0.070,
-                                    decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
-                                    child: Center(child: SvgPicture.asset(AssetsUtils.icDelete)),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.disable),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Center(
+                                        child: SvgPicture.asset(
+                                            AssetsUtils.icDelete)),
                                   ),
                                 )
                               : GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      displayData[index].product!.cartItemCount--;
+                                      displayData[index]
+                                          .product!
+                                          .cartItemCount--;
                                     });
                                   },
                                   child: Container(
                                     height: screenSize.height * 0.070,
                                     // width: size.height * 0.045,
-                                    decoration:
-                                        BoxDecoration(border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.mint, width: 2),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     child: const Center(
                                       child: Icon(Icons.remove, size: 27),
                                     ),
@@ -1085,11 +1259,18 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                             height: screenSize.height * 0.070,
                             // width: size.height * 0.045,
 
-                            decoration: BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: AppColors.disable),
+                                borderRadius: BorderRadius.circular(10)),
                             child: Center(
                                 child: Text(
-                              displayData[index].product!.cartItemCount.toString(),
-                              style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                              displayData[index]
+                                  .product!
+                                  .cartItemCount
+                                  .toString(),
+                              style: FontUtils.h18(
+                                  fontWeight: FWT.semiBold,
+                                  fontColor: AppColors.darkGray),
                             )),
                           ),
                         ),
@@ -1108,7 +1289,9 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 color: AppColors.mint,
                               ),
-                              child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                              child: const Center(
+                                  child: Icon(Icons.add,
+                                      color: AppColors.green, size: 27)),
                             ),
                           ),
                         ),
@@ -1119,31 +1302,34 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                     const Divider(thickness: 1.2),
                   ],
                 )
-              : myItemChooseWidget(screenSize, displayData[index].itemName ?? '', () {
+              : myItemChooseWidget(
+                  screenSize, displayData[index].itemName ?? '', () {
                   // Get.toNamed('/ItemCatalogScreen');
                   if (selectedStoreProductList.isNotEmpty) {
-                    print("StoreName:- ${selectedStoreProductList[0].store!.name ?? ''}");
-                    print("itemName:- ${displayData[index].itemName ?? ''}");
-                    log(selectedIndex.toString(), name: "selectedIndex");
-
                     filterList() {
                       List<Product> productList = [];
                       if (selectedIndex != 0) {
                         if (selectedIndex == 1) {
                           allData[0].forEach((element) {
-                            if ((element.itemName ?? '').toLowerCase().contains(displayData[index].itemName ?? '')) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
                               productList.add(element);
                             }
                           });
                         } else if (selectedIndex == 2) {
                           allData[1].forEach((element) {
-                            if ((element.itemName ?? '').toLowerCase().contains(displayData[index].itemName ?? '')) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
                               productList.add(element);
                             }
                           });
                         } else {
                           allData[2].forEach((element) {
-                            if ((element.itemName ?? '').toLowerCase().contains(displayData[index].itemName ?? '')) {
+                            if ((element.itemName ?? '')
+                                .toLowerCase()
+                                .contains(displayData[index].itemName ?? '')) {
                               productList.add(element);
                             }
                           });
@@ -1157,7 +1343,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 
                     Get.to(() => ItemCatalogScreen(
                           selectedStoreProductList: selectedStoreProductList,
-                          productList: selectedIndex != 0 /*&& selectedIndex != 3*/
+                          productList: selectedIndex !=
+                                  0 /*&& selectedIndex != 3*/
                               ? /*selectedIndex == 1
                                   ? */
                               filterList()
@@ -1188,5 +1375,8 @@ class GroceryCartScreenArguments {
   final AskReceiveOrder askReceiveOrder;
   final GroceryBloc? groceryBloc;
 
-  GroceryCartScreenArguments({required this.edgesList, required this.askReceiveOrder, this.groceryBloc});
+  GroceryCartScreenArguments(
+      {required this.edgesList,
+      required this.askReceiveOrder,
+      this.groceryBloc});
 }

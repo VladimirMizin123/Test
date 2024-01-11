@@ -35,8 +35,6 @@ class _HomeState extends State<Home> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appLinks = AppLinks();
       appLinks.allUriLinkStream.listen((uri) {
-        print("uri.path ${uri.path}");
-
         if (uri.path == '/auth/setNewPassword') {
           final token = PreferenceUtils.getString(forgetPassToken);
           if (token != '') {

@@ -72,7 +72,9 @@ class _AllExerciseScreenState extends State<AllExerciseScreen> {
                               },
                               child: ListTile(
                                 title: Text(
-                                    allExerciseList[index].exerciseName ?? ''),
+                                  allExerciseList[index].exerciseName,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
                                 trailing: Icon(
                                   Icons.arrow_forward_ios,
                                   size: 15.h,

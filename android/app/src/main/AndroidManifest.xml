@@ -19,7 +19,7 @@
         android:requestLegacyExternalStorage="true">
         <!-- <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" /> -->
         <!-- Update this value to your google maps api key. -->
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAA0_XVZ7Uvy8JOfxDOfy15t2cwkBfIihs"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCKoMQs-ZZgHFUNglLpdGlpsXiD2JrXjhE"/>
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

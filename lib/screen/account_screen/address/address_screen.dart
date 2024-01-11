@@ -220,7 +220,6 @@ class _AddressScreenState extends State<AddressScreen> {
                                   child: Text('No Data Found'),
                                 );
                               }
-                              print("user Address:- ${state.userAddress}");
 
                               if ((selectedAddress == null ||
                                   (selectedAddress?.isEmpty ?? false))) {
@@ -250,6 +249,18 @@ class _AddressScreenState extends State<AddressScreen> {
                                               margin:
                                                   EdgeInsets.only(left: 20.w),
                                               child: Radio(
+                                                fillColor: MaterialStateColor
+                                                    .resolveWith(
+                                                  (Set<MaterialState> states) {
+                                                    if (states.contains(
+                                                        MaterialState
+                                                            .selected)) {
+                                                      return AppColors
+                                                          .primaryBlueColor;
+                                                    }
+                                                    return AppColors.black;
+                                                  },
+                                                ),
                                                 activeColor:
                                                     AppColors.primaryBlueColor,
                                                 value:
@@ -274,6 +285,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                                 '${state.userAddress[index].streetName} ',
                                                 style: const TextStyle(
                                                   fontSize: 16,
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.w400,
                                                 ),
                                                 maxLines: 1,
@@ -287,6 +299,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                                   ? '(default)'
                                                   : '',
                                               style: const TextStyle(
+                                                color: Colors.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400,
                                               ),

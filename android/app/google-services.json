@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1041946139722-aenjmvptprv44fi3oopor1qimv17ldbu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gymeats_mobile",
+            "certificate_hash": "544bb4d003fcbd27b4ee7e95fdbbe7a1284cafcb"
+          }
+        },
+        {
+          "client_id": "1041946139722-s29k0ajk3dsbr62vis4dhuuokpam0v04.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gymeats_mobile",
+            "certificate_hash": "c70b071f9d571c6d0324939f2754a797012f72f5"
+          }
+        },
+        {
           "client_id": "1041946139722-8h74m1j1ep8qvtrqrk9in1si3btaogh3.apps.googleusercontent.com",
           "client_type": 3
         }

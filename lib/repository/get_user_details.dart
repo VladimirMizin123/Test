@@ -14,8 +14,7 @@ class GetUserDetailsByIDDataRepository {
       String userId) async {
     final response =
         await apiServices.get('${ApiUrls.getUserDetailsById}/$userId');
-    print("getUserDetailsResponse : ${jsonDecode(response.body)}");
-    print("getUserDetailsResponse statusCode: ${response.statusCode}");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetUserDetailsById.fromJson(jsonDecode(response.body)));
     } else {

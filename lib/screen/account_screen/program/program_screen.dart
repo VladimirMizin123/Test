@@ -149,7 +149,10 @@ class _ProgramScreenState extends State<ProgramScreen> {
                           },
                           color: data["color"],
                           leading: SvgImage(image: data["image"]),
-                          title: Text(data["title"]),
+                          title: Text(
+                            data["title"],
+                            style: const TextStyle(color: Colors.black),
+                          ),
                           trailing: const SvgImage(
                             image: AssetsUtils.forwardArrow,
                           ),

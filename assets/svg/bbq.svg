@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="117.911" height="110.337" viewBox="0 0 117.911 110.337">
+  <g id="BBQ" transform="translate(-1276.827 -40.913)">
+    <line id="Line_13" data-name="Line 13" y1="81.194" x2="85.54" transform="translate(1279.236 43.452)" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="7"/>
+    <rect id="Rectangle_3" data-name="Rectangle 3" width="20.462" height="15.548" rx="3.312" transform="translate(1297.779 94.829) rotate(45)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <rect id="Rectangle_4" data-name="Rectangle 4" width="20.462" height="6.386" transform="translate(1304.436 86.192) rotate(35.038)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <rect id="Rectangle_5" data-name="Rectangle 5" width="20.462" height="6.386" transform="translate(1336.187 58.082) rotate(60)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Rectangle_6" data-name="Rectangle 6" d="M3.832,0h16.63a0,0,0,0,1,0,0V8.822a6.726,6.726,0,0,1-6.726,6.726H0a0,0,0,0,1,0,0V3.832A3.832,3.832,0,0,1,3.832,0Z" transform="translate(1322.249 68.941) rotate(45)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Rectangle_7" data-name="Rectangle 7" d="M3.832,0h16.63a0,0,0,0,1,0,0V5.331a6.726,6.726,0,0,1-6.726,6.726H0a0,0,0,0,1,0,0V3.832A3.832,3.832,0,0,1,3.832,0Z" transform="translate(1349.663 45.171) rotate(60)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <line id="Line_14" data-name="Line 14" y1="81.194" x2="85.54" transform="translate(1306.788 67.518)" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="7"/>
+    <path id="Rectangle_8" data-name="Rectangle 8" d="M0,0H20.462a0,0,0,0,1,0,0V3.175A12.373,12.373,0,0,1,8.089,15.548H3.312A3.312,3.312,0,0,1,0,12.236V0A0,0,0,0,1,0,0Z" transform="translate(1325.331 118.894) rotate(45)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Rectangle_9" data-name="Rectangle 9" d="M0,0H14.363a6.1,6.1,0,0,1,6.1,6.1v.287a0,0,0,0,1,0,0H5.888A5.888,5.888,0,0,1,0,.5V0A0,0,0,0,1,0,0Z" transform="translate(1331.987 110.258) rotate(35.038)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Rectangle_10" data-name="Rectangle 10" d="M0,0H20.462a0,0,0,0,1,0,0V0a6.386,6.386,0,0,1-6.386,6.386H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(1363.739 82.148) rotate(60)" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Path_976" data-name="Path 976" d="M1348.52,113.714,1338.807,104l8.284-8.284a3.832,3.832,0,0,1,5.42,0l7.5,11.843-1.979,6.154A6.725,6.725,0,0,1,1348.52,113.714Z" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+    <path id="Path_977" data-name="Path 977" d="M1373.641,87.161l-6.868-11.9,7.123-4.112a3.831,3.831,0,0,1,5.235,1.4l9.148,5.337-5.45,11.73A6.725,6.725,0,0,1,1373.641,87.161Z" fill="#fff" stroke="#000" stroke-miterlimit="10" stroke-width="3"/>
+  </g>
+</svg>

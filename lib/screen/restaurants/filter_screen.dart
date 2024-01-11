@@ -1,16 +1,24 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/screen/restaurants/res_category_data_service/res_categorydata_service.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
+// ignore: must_be_immutable
 class FilterScreen extends StatefulWidget {
-  const FilterScreen({
+  FilterScreen({
     super.key,
     required this.cousinesList,
     required this.restaurantList,
@@ -18,13 +26,22 @@ class FilterScreen extends StatefulWidget {
     required this.rating,
     required this.isFastDelivery,
     required this.isPickup,
+    required this.catgoryDataList,
+    this.getUserAddres,
+    required this.result,
+    required this.restaurantBloc,
   });
   final CousinesList cousinesList;
   final List<RestaurantList> restaurantList;
-  final List selectedCategory;
+  List selectedCategory;
   final List rating;
   final bool isFastDelivery;
   final bool isPickup;
+  final List<Map<String, dynamic>> catgoryDataList;
+  final UserAddress? getUserAddres;
+  final String? result;
+  final RestaurantBloc restaurantBloc;
+
   @override
   State<FilterScreen> createState() => _FilterScreenState();
 }
@@ -125,8 +142,10 @@ class _FilterScreenState extends State<FilterScreen> {
     });
   }
 
+  List localList = [];
   @override
   void initState() {
+    localList = widget.selectedCategory.map((e) => e).toList();
     selectedCategoryData = widget.selectedCategory;
     rating = widget.rating;
     data = Set.from(widget.restaurantList);
@@ -137,7 +156,6 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SafeArea(
         child: WillPopScope(
@@ -555,39 +573,36 @@ class _FilterScreenState extends State<FilterScreen> {
                     mainAxisExtent: MediaQuery.of(context).size.height * 0.13,
                   ),
                   physics: const BouncingScrollPhysics(),
-                  itemCount: widget.cousinesList.cousines!.length,
+                  itemCount: widget.catgoryDataList.length,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        if (selectedCategoryData
-                            .contains(widget.cousinesList.cousines![index])) {
+                        if (localList
+                            .contains(widget.catgoryDataList[index]["title"])) {
                           setState(() {
-                            selectedCategoryData
-                                .remove(widget.cousinesList.cousines![index]);
+                            localList
+                                .remove(widget.catgoryDataList[index]["title"]);
                           });
                         } else {
                           setState(() {
-                            selectedCategoryData
-                                .add(widget.cousinesList.cousines![index]);
+                            localList
+                                .add(widget.catgoryDataList[index]["title"]);
                           });
                         }
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: selectedCategoryData.contains(
-                                  widget.cousinesList.cousines![index])
+                          color: localList.contains(
+                                  widget.catgoryDataList[index]["title"])
                               ? AppColors.coral
                               : Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: selectedCategoryData.contains(
-                                  widget.cousinesList.cousines![index])
+                          border: localList.contains(
+                                  widget.catgoryDataList[index]["title"])
                               ? Border.all(color: AppColors.terracotta)
                               : const Border(),
-                          image: const DecorationImage(
-                              image: AssetImage(AssetsUtils.food1),
-                              alignment: Alignment.centerRight),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(0xff004C63).withOpacity(0.08),
@@ -596,19 +611,26 @@ class _FilterScreenState extends State<FilterScreen> {
                             ),
                           ],
                         ),
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 4.h, left: 3.h),
-                            child: Text(
-                              widget.cousinesList.cousines![index],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: SvgPicture.asset(
+                                widget.catgoryDataList[index]["image"],
+                                height: 45.h,
+                                width: 45.w,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              widget.catgoryDataList[index]["title"],
                               style: FontUtils.h17(
                                 fontColor: Colors.black,
                                 fontWeight: FWT.semiBold,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     );
@@ -625,9 +647,34 @@ class _FilterScreenState extends State<FilterScreen> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedCategoryData.clear();
-                          rating.clear();
-                          isFastDelivery = false;
+                          if (localList.isNotEmpty) {
+                            Get.back();
+                            localList.clear();
+                            selectedCategoryData.clear();
+                            rating.clear();
+                            isFastDelivery = false;
+                            widget.restaurantBloc.add(
+                              GetRestaurantListEvent(
+                                widget.getUserAddres?.latitude ?? 0,
+                                widget.getUserAddres?.longitude ?? 0,
+                                widget.getUserAddres?.streetNum ?? '',
+                                widget.getUserAddres?.streetName ?? '',
+                                widget.getUserAddres?.city ?? '',
+                                widget.getUserAddres?.state ?? '',
+                                widget.getUserAddres?.country ?? '',
+                                widget.getUserAddres?.zipcode ?? '',
+                                widget.result == 'Bring me the order'
+                                    ? false
+                                    : true,
+                                5,
+                                localList.isNotEmpty
+                                    ? localList
+                                    : categoryDataList
+                                        .map((e) => e["title"])
+                                        .toList(),
+                              ),
+                            );
+                          }
                         });
                       },
                       child: Container(
@@ -637,7 +684,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.white,
                           border: Border.all(
-                            color: selectedCategoryData.isNotEmpty ||
+                            color: localList.isNotEmpty ||
                                     rating.isNotEmpty ||
                                     isFastDelivery
                                 ? AppColors.terracotta
@@ -649,7 +696,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           child: Text(
                             'Clear',
                             style: FontUtils.h18(
-                              fontColor: selectedCategoryData.isNotEmpty ||
+                              fontColor: localList.isNotEmpty ||
                                       rating.isNotEmpty ||
                                       isFastDelivery
                                   ? AppColors.terracotta
@@ -662,9 +709,34 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (selectedCategoryData.isNotEmpty ||
-                            rating.isNotEmpty ||
-                            isFastDelivery) {
+                        selectedCategoryData = localList;
+                        widget.restaurantBloc.add(
+                          GetRestaurantListEvent(
+                            widget.getUserAddres?.latitude ?? 0,
+                            widget.getUserAddres?.longitude ?? 0,
+                            widget.getUserAddres?.streetNum ?? '',
+                            widget.getUserAddres?.streetName ?? '',
+                            widget.getUserAddres?.city ?? '',
+                            widget.getUserAddres?.state ?? '',
+                            widget.getUserAddres?.country ?? '',
+                            widget.getUserAddres?.zipcode ?? '',
+                            widget.result == 'Bring me the order'
+                                ? false
+                                : true,
+                            5,
+                            selectedCategoryData.isNotEmpty
+                                ? selectedCategoryData
+                                : categoryDataList
+                                    .map((e) => e["title"])
+                                    .toList(),
+                          ),
+                        );
+
+                        if (
+                            // selectedCategoryData
+                            selectedCategoryData.isNotEmpty ||
+                                rating.isNotEmpty ||
+                                isFastDelivery) {
                           isFilter = true;
                         }
 
@@ -703,7 +775,9 @@ class _FilterScreenState extends State<FilterScreen> {
 
                             /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
 
-                            if (selectedCategoryData.isNotEmpty) {
+                            if (
+                                // selectedCategoryData
+                                selectedCategoryData.isNotEmpty) {
                               for (var i = 0; i < ratingFilter.length; i++) {
                                 for (var j = 0;
                                     j <
@@ -713,7 +787,9 @@ class _FilterScreenState extends State<FilterScreen> {
                                             .length;
                                     j++) {
                                   for (var k = 0;
-                                      k < selectedCategoryData.length;
+                                      k <
+                                          // selectedCategoryData
+                                          selectedCategoryData.length;
                                       k++) {
                                     if (ratingFilter
                                         .elementAt(i)
@@ -745,13 +821,15 @@ class _FilterScreenState extends State<FilterScreen> {
                                 alldata = {
                                   'restaurantData': finalData,
                                   'filterTab': selectedCategoryData,
-                                  'rating': rating,
+                                  // selectedCategoryData,
+                                  'rating': selectedCategoryData,
                                   'fastDelivery': isFastDelivery
                                 };
                               } else {
                                 alldata = {
                                   'restaurantData': finalData,
                                   'filterTab': selectedCategoryData,
+                                  // selectedCategoryData,
                                   'rating': rating,
                                   'fastDelivery': isFastDelivery
                                 };
@@ -775,6 +853,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 alldata = {
                                   'restaurantData': ratingFilter,
                                   'filterTab': selectedCategoryData,
+                                  // selectedCategoryData,
                                   'rating': rating,
                                   'fastDelivery': isFastDelivery
                                 };
@@ -782,6 +861,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 alldata = {
                                   'restaurantData': ratingFilter,
                                   'filterTab': selectedCategoryData,
+                                  // selectedCategoryData,
                                   'rating': rating,
                                   'fastDelivery': isFastDelivery
                                 };
@@ -791,18 +871,21 @@ class _FilterScreenState extends State<FilterScreen> {
 
                           /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
 
-                          else if (selectedCategoryData.isNotEmpty) {
+                          else if (
+                              // selectedCategoryData
+                              localList.isNotEmpty) {
                             for (var i = 0; i < data.length; i++) {
                               for (var j = 0;
                                   j < data.elementAt(i).cuisines!.length;
                                   j++) {
                                 for (var k = 0;
-                                    k < selectedCategoryData.length;
+                                    k <
+                                        // selectedCategoryData
+                                        selectedCategoryData.length;
                                     k++) {
-                                  if (data
-                                      .elementAt(i)
-                                      .cuisines![j]
-                                      .contains(selectedCategoryData[k])) {
+                                  if (data.elementAt(i).cuisines![j].contains(
+                                      // selectedCategoryData
+                                      selectedCategoryData[k])) {
                                     finalData.add(data.elementAt(i));
                                   }
                                 }
@@ -827,6 +910,7 @@ class _FilterScreenState extends State<FilterScreen> {
                               alldata = {
                                 'restaurantData': finalData,
                                 'filterTab': selectedCategoryData,
+                                // selectedCategoryData,
                                 'rating': rating,
                                 'fastDelivery': isFastDelivery
                               };
@@ -837,6 +921,7 @@ class _FilterScreenState extends State<FilterScreen> {
                               alldata = {
                                 'restaurantData': finalData,
                                 'filterTab': selectedCategoryData,
+                                // selectedCategoryData,
                                 'rating': rating,
                                 'fastDelivery': isFastDelivery
                               };
@@ -858,6 +943,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             alldata = {
                               'restaurantData': finalData,
                               'filterTab': selectedCategoryData,
+                              // selectedCategoryData,
                               'rating': rating,
                               'fastDelivery': isFastDelivery
                             };
@@ -871,17 +957,21 @@ class _FilterScreenState extends State<FilterScreen> {
                         width: MediaQuery.of(context).size.width / 2.3,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: selectedCategoryData.isNotEmpty ||
-                                  rating.isNotEmpty ||
-                                  isFastDelivery
-                              ? AppColors.terracotta
-                              : AppColors.disabledColor,
+                          color:
+                              // selectedCategoryData
+                              localList.isNotEmpty ||
+                                      rating.isNotEmpty ||
+                                      isFastDelivery
+                                  ? AppColors.terracotta
+                                  : AppColors.disabledColor,
                           border: Border.all(
-                            color: selectedCategoryData.isNotEmpty ||
-                                    rating.isNotEmpty ||
-                                    isFastDelivery
-                                ? AppColors.terracotta
-                                : AppColors.disabledColor,
+                            color:
+                                // selectedCategoryData
+                                localList.isNotEmpty ||
+                                        rating.isNotEmpty ||
+                                        isFastDelivery
+                                    ? AppColors.terracotta
+                                    : AppColors.disabledColor,
                             width: 2,
                           ),
                         ),

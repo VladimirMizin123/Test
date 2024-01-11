@@ -29,10 +29,7 @@ class GetUserJournalDataRepository {
       String date) async {
     final response =
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
-    print(
-        'getMealLogByDate URL : ${'${ApiUrls.getMealLogByDate}/$userId?date=$date'}');
-    log('getMealLogByDate response : ${response.body}');
-    print('getMealLogByDate response statusCode : ${response.statusCode}');
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
         GetMealLogByDate.fromJson(jsonDecode(response.body)),
@@ -46,8 +43,7 @@ class GetUserJournalDataRepository {
     final response = await apiServices.get(
       '${ApiUrls.getDashboardData}/$userId',
     );
-    print("response123 : ${response.body}");
-    print("response statusCode: ${response.statusCode}");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetDashboardModel.fromJson(jsonDecode(response.body)));
     } else {

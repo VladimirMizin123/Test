@@ -20,13 +20,12 @@ class UnitScreen extends StatefulWidget {
 class _UnitScreenState extends State<UnitScreen> {
   AccountBloc accountBloc = AccountBloc();
 
+  bool isLoader = false;
   int? weightValue;
   int? heightValue;
   int? energyValue;
   int? waterValue;
   String? unitId;
-
-  bool isLoader = false;
 
   @override
   void initState() {
@@ -55,7 +54,7 @@ class _UnitScreenState extends State<UnitScreen> {
               weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
               heightValue = state.unitData?.heightType == 'Inches' ? 1 : 2;
               energyValue = state.unitData?.energyType == 'Kilojoules' ? 1 : 2;
-              waterValue = state.unitData?.waterType == 'Cup' ? 1 : 2;
+              waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
               unitId = state.unitData?.unitId;
 
               setState(() {});
@@ -77,8 +76,9 @@ class _UnitScreenState extends State<UnitScreen> {
                             unitScreenWidget(
                               text: "Weight",
                               widget: radioButtonWidget(
+                                context: context,
                                 title1: "Pound",
-                                title2: "Kilograms",
+                                title2: "Kilogram",
                                 value1: 1,
                                 value2: 2,
                                 onChanged1: (value) {
@@ -111,8 +111,9 @@ class _UnitScreenState extends State<UnitScreen> {
                             unitScreenWidget(
                               text: "Height",
                               widget: radioButtonWidget(
-                                title1: "Inches",
-                                title2: "Centimeters",
+                                context: context,
+                                title1: "Feet/Inch",
+                                title2: "Centimeter",
                                 value1: 1,
                                 value2: 2,
                                 onChanged1: (value) {
@@ -143,43 +144,10 @@ class _UnitScreenState extends State<UnitScreen> {
                               ),
                             ),
                             unitScreenWidget(
-                              text: "Energy",
-                              widget: radioButtonWidget(
-                                title1: "Kilojoules",
-                                title2: "Calories",
-                                value1: 1,
-                                value2: 2,
-                                onChanged1: (value) {
-                                  energyValue = value;
-                                  accountBloc.add(
-                                    UpdateUnitInfoEvent(
-                                      unitId: unitId!,
-                                      energyType: energyValue!,
-                                      weightType: weightValue!,
-                                      heightType: heightValue!,
-                                      waterType: waterValue!,
-                                    ),
-                                  );
-                                },
-                                onChanged2: (value) {
-                                  energyValue = value;
-                                  accountBloc.add(
-                                    UpdateUnitInfoEvent(
-                                      unitId: unitId!,
-                                      energyType: energyValue!,
-                                      weightType: weightValue!,
-                                      heightType: heightValue!,
-                                      waterType: waterValue!,
-                                    ),
-                                  );
-                                },
-                                groupValue: energyValue,
-                              ),
-                            ),
-                            unitScreenWidget(
                               text: "Water",
                               widget: radioButtonWidget(
-                                title1: "Cup",
+                                context: context,
+                                title1: "FL Oz",
                                 title2: "Mililiters",
                                 value1: 1,
                                 value2: 2,

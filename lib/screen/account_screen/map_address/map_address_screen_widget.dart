@@ -29,6 +29,7 @@ Widget mapDetailWidget({
         height: 8.h,
       ),
       commonTextFormField(
+        style: const TextStyle(color: Colors.black),
         enableBorderColor: AppColors.disable,
         initialValue: initialValue,
         hintText: title ?? "",

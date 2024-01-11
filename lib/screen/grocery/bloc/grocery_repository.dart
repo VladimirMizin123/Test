@@ -203,7 +203,7 @@ class GroceryRepository {
               await apiServices.getNutritionix(apiNutritionixItemInfoURL);
           Map<String, dynamic> jsonNutritionixItemInfo =
               jsonDecode(responseNutritionixItemInfo.body);
-          log(responseNutritionixItemInfo.body, name: 'API RESPONSE :');
+          // log(responseNutritionixItemInfo.body, name: 'API RESPONSE :');
 
           if (jsonNutritionixItemInfo['foods'] != null) {
             Map<String, dynamic> finalOutput = {
@@ -286,9 +286,12 @@ class GroceryRepository {
               'servingWeightGram': jsonNutritionixItemInfo['foods'][0]
                       ['serving_weight_grams']
                   .toString(),
-              'nfMetricQuantity': jsonNutritionixItemInfo['foods'][0]
-                      ['nf_metric_qty'] == null ? '0' : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'].toString(),
-               'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
+              'nfMetricQuantity':
+                  jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'] == null
+                      ? '0'
+                      : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty']
+                          .toString(),
+              'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
                   ['nf_metric_uom'],
               'nfCalories': jsonNutritionixItemInfo['foods'][0]['nf_calories'],
               'nfTotalFat': jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],

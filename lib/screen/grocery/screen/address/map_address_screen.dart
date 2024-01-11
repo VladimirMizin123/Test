@@ -17,6 +17,7 @@ class MapAddressScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const GoogleMap(
@@ -72,6 +73,7 @@ class MapAddressScreen extends StatelessWidget {
                             boxShadow: boxShadowWidget,
                           ),
                           child: TextFormField(
+                            style: const TextStyle(color: Colors.black),
                             onTap: () {
                               Get.toNamed('/SearchDeliveryAddressScreen');
                             },

@@ -36,8 +36,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const BackButtonWidget(),
-                Text('Checkout', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                Text('Checkout',
+                    style: FontUtils.h20(
+                        fontColor: AppColors.oxFF010101,
+                        fontWeight: FWT.semiBold)),
+                Opacity(
+                    opacity: 0,
+                    child: Text('Edit',
+                        style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
               ],
             ).paddingSymmetric(horizontal: 6, vertical: 5.h),
             const SizedBox(height: 10),
@@ -47,19 +53,30 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: textFieldWidget(hintText: 'Enter Name Here,', title: 'Name', controller: nameController),
+                      child: textFieldWidget(
+                          hintText: 'Enter Name Here,',
+                          title: 'Name',
+                          controller: nameController),
                     ),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: textFieldWidget(hintText: 'Enter Card Here,', title: 'Card number', controller: cardNumberController),
+                      child: textFieldWidget(
+                          hintText: 'Enter Card Here,',
+                          title: 'Card number',
+                          controller: cardNumberController),
                     ),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Row(
                         children: [
-                          Expanded(flex: 1, child: textFieldWidget(hintText: 'MM/DD', title: 'Valid until', controller: validUntilController)),
+                          Expanded(
+                              flex: 1,
+                              child: textFieldWidget(
+                                  hintText: 'MM/DD',
+                                  title: 'Valid until',
+                                  controller: validUntilController)),
                           const SizedBox(width: 10),
                           Expanded(
                             flex: 1,
@@ -67,7 +84,9 @@ class _AddCardScreenState extends State<AddCardScreen> {
                               hintText: '***',
                               title: 'CVV',
                               controller: cvvController,
-                              trailingWidget: const Icon(Icons.info_outline_rounded, color: AppColors.black),
+                              trailingWidget: const Icon(
+                                  Icons.info_outline_rounded,
+                                  color: AppColors.black),
                             ),
                           ),
                         ],
@@ -100,7 +119,11 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
   }
 
-  Widget textFieldWidget({String? title, String? hintText, TextEditingController? controller, Widget? trailingWidget}) {
+  Widget textFieldWidget(
+      {String? title,
+      String? hintText,
+      TextEditingController? controller,
+      Widget? trailingWidget}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,6 +132,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
           style: FontUtils.h16(fontColor: AppColors.black),
         ),
         TextFormField(
+          style: const TextStyle(color: Colors.black),
           controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
