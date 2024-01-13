@@ -26,11 +26,16 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   final JournalPlanRepository _repository = JournalPlanRepository();
 
-  _onSwapMealDetails(JournalSwapMealDetailsEvent event, Emitter<JournalMealPlanState> emit) async {
-    emit(JournalSwapMealDetailsState(similarMealData: event.similarMealData, day: event.day, mealId: event.mealId));
+  _onSwapMealDetails(JournalSwapMealDetailsEvent event,
+      Emitter<JournalMealPlanState> emit) async {
+    emit(JournalSwapMealDetailsState(
+        similarMealData: event.similarMealData,
+        day: event.day,
+        mealId: event.mealId));
   }
 
-  _onScanBarcode(JournalScanBarcodeEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onScanBarcode(
+      JournalScanBarcodeEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalBarcodeScannerState(barcode: event.barcode));
     emit(JournalBarcodeScannerLoadingState());
     try {
@@ -46,14 +51,17 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onFetchMealPlan(JournalPlanFetchEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onFetchMealPlan(
+      JournalPlanFetchEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalFetchMealPlanLoadingState());
 
     try {
       await _repository.fetchMealPlan().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(JournalFetchMealPlanSuccessState(mealPlanList: right.data == null ? [] : right.data!.reversed.toList()));
+        emit(JournalFetchMealPlanSuccessState(
+            mealPlanList:
+                right.data == null ? [] : right.data!.reversed.toList()));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -61,7 +69,8 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onGetMealLogByDate(GetMealLogByDateEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onGetMealLogByDate(
+      GetMealLogByDateEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(OnGetMealLogByDateLoadingState());
     try {
       await _repository.getMealLogByDate(event.date!).fold((left) {
@@ -76,7 +85,8 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onSkipMealPlan(JournalSkipMealPlanEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onSkipMealPlan(JournalSkipMealPlanEvent event,
+      Emitter<JournalMealPlanState> emit) async {
     emit(JournalSkipMealPlanLoadingState());
 
     try {
@@ -85,7 +95,8 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(JournalSkipMealPlanSuccessState(skipMealPlanData: right.data!, mealID: event.mealID));
+        emit(JournalSkipMealPlanSuccessState(
+            skipMealPlanData: right.data!, mealID: event.mealID));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -93,11 +104,14 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onAddToGroceryList(JournalAddToGroceryListEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onAddToGroceryList(JournalAddToGroceryListEvent event,
+      Emitter<JournalMealPlanState> emit) async {
     emit(JournalAddToGroceryLoadingState());
 
     try {
-      await _repository.recipeAddToGrocery(databaseIdOfRecipes: event.databaseIdOfRecipes).fold((left) {
+      await _repository
+          .recipeAddToGrocery(databaseIdOfRecipes: event.databaseIdOfRecipes)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
@@ -111,16 +125,20 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onFetchSwapMealItem(JournalFetchSwapMealItemEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onFetchSwapMealItem(JournalFetchSwapMealItemEvent event,
+      Emitter<JournalMealPlanState> emit) async {
     emit(JournalFetchSwapMealLoadingState());
 
     try {
-      await _repository.fetchSwapMealItem(recipeID: event.recipeID!, serving: event.serving!).fold((left) {
+      await _repository
+          .fetchSwapMealItem(recipeID: event.recipeID!, serving: event.serving!)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(JournalFetchSwapMealSuccessState(similarMealData: right.data!.recipeSwapOptions!.similar));
+        emit(JournalFetchSwapMealSuccessState(
+            similarMealData: right.data!.recipeSwapOptions!.similar));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -128,14 +146,33 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onAddToShoppingList(JournalAddToShoppingListEvent event, Emitter<JournalMealPlanState> emit) async {
-    emit(JournalAddToShoppingLoadingState(productId: event.productID, isAdd: event.isAdd, isRemove: event.isRemove));
+  _onAddToShoppingList(JournalAddToShoppingListEvent event,
+      Emitter<JournalMealPlanState> emit) async {
+    emit(JournalAddToShoppingLoadingState(
+        productId: event.productID,
+        isAdd: event.isAdd,
+        isRemove: event.isRemove));
 
     try {
-      await _repository.recipeAddToShoppingList(mealmeStoreId: event.mealmeStoreId, price: event.price, productID: event.productID, productName: event.productName, quantity: event.quantity, recipeId: event.recipeId, unitOfMeasurement: event.unitOfMeasurement, isChecked: event.isChecked, unitSize: event.unitSize).fold((left) {
+      await _repository
+          .recipeAddToShoppingList(
+              mealmeStoreId: event.mealmeStoreId,
+              price: event.price,
+              productID: event.productID,
+              productName: event.productName,
+              quantity: event.quantity,
+              recipeId: event.recipeId,
+              unitOfMeasurement: event.unitOfMeasurement,
+              isChecked: event.isChecked,
+              unitSize: event.unitSize)
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(JournalAddToShoppingSuccessState(isAdded: right.success ?? false, recipesAddToGroceryData: right.data, isAdd: event.isAdd, isRemove: event.isRemove));
+        emit(JournalAddToShoppingSuccessState(
+            isAdded: right.success ?? false,
+            recipesAddToGroceryData: right.data,
+            isAdd: event.isAdd,
+            isRemove: event.isRemove));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -181,14 +218,22 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
   //   }
   // }
 
-  _onSearchItem(JournalSearchEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onSearchItem(
+      JournalSearchEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalSearchLoadingState());
     try {
-      await _repository.grocerySearch(latitude: '37.7786357', longitude: '-122.3918135', grocerySearchModal: event.journalSearchModelList!).fold((left) {
+      await _repository
+          .grocerySearch(
+              latitude: '37.7786357',
+              longitude: '-122.3918135',
+              grocerySearchModal: event.journalSearchModelList!,
+              getUserAddress: event.getUserAddress)
+          .fold((left) {
         emit(JournalSearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(JournalSearchSuccessState(groceryMultiSearchProductList: right.data!.carts));
+        emit(JournalSearchSuccessState(
+            groceryMultiSearchProductList: right.data!.carts));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -196,14 +241,27 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     }
   }
 
-  _onAddEaten(JournalAddToEatenEvent event, Emitter<JournalMealPlanState> emit) async {
+  _onAddEaten(
+      JournalAddToEatenEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalAddEatenLoadingState(mealID: event.mealId!));
     try {
-      await _repository.addEatenMeal(mealId: event.mealId!, calorie: event.calorie, carbs: event.carbs, fat: event.fat, mealName: event.mealName, mealType: event.mealType, noOfServing: event.noOfServing, protein: event.protein, recipeId: event.recipeId).fold((left) {
+      await _repository
+          .addEatenMeal(
+              mealId: event.mealId!,
+              calorie: event.calorie,
+              carbs: event.carbs,
+              fat: event.fat,
+              mealName: event.mealName,
+              mealType: event.mealType,
+              noOfServing: event.noOfServing,
+              protein: event.protein,
+              recipeId: event.recipeId)
+          .fold((left) {
         emit(JournalSearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(JournalAddEatenSuccessState(isAdded: right.success, mealID: event.mealId!));
+        emit(JournalAddEatenSuccessState(
+            isAdded: right.success, mealID: event.mealId!));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -213,7 +271,8 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   /// ON FAIL
 
-  onFailError({required String text, required Emitter<JournalMealPlanState> emit}) {
+  onFailError(
+      {required String text, required Emitter<JournalMealPlanState> emit}) {
     showToast(isSuccess: false, message: text);
     emit(JournalFetchMealPlanErrorState());
   }

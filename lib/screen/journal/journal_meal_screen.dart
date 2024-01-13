@@ -16,6 +16,7 @@ import 'package:gymeats_mobile/screen/journal/scan_barcode_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
@@ -434,11 +435,12 @@ class JournalMealScreenArguments {
   final DateTime? dateTime;
   final String? mealType;
   final bool? isFromBarcodeScan;
+  final UserAddress? getUserAddress;
 
-  JournalMealScreenArguments({
-    required this.breakFastList,
-    required this.dateTime,
-    this.mealType,
-    this.isFromBarcodeScan,
-  });
+  JournalMealScreenArguments(
+      {required this.breakFastList,
+      required this.dateTime,
+      this.mealType,
+      this.isFromBarcodeScan,
+      required this.getUserAddress});
 }

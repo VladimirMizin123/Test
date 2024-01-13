@@ -21,11 +21,15 @@ import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/edit_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 import '../../app/functions.dart';
 import '../../bloc/journal/get_journal_data/get_user_journal_bloc.dart';
@@ -88,6 +92,9 @@ class _JournalScreenState extends State<JournalScreen> {
   AddNewMealBloc addNewMealBloc = AddNewMealBloc();
   bool isAllDataLoading = false;
   bool isRemoveWater = false;
+  UserAddress? getUserAddress;
+
+  RestaurantBloc restaurantBloc = RestaurantBloc();
 
   @override
   void initState() {
@@ -112,6 +119,9 @@ class _JournalScreenState extends State<JournalScreen> {
           date: dateTimeYYYYMMDD(dateTimeVal: selectedDateTime.toString())));
       bloc.add(DailyRecapEvent());
       accountBloc.add(GetUnitInfoEvent());
+      restaurantBloc.add(GetShoppingListEvent());
+      restaurantBloc.add(GetDeliveryStatusEvent());
+      restaurantBloc.add(GetUserAddressEvent());
     });
   }
 
@@ -1431,210 +1441,236 @@ class _JournalScreenState extends State<JournalScreen> {
       });
     }).toList();
 
-    return Column(
-      children: [
-        InkWell(
-          onTap: () async {
-            log("MEAL ID");
-            // Get.toNamed("/JournalMealScreen", arguments: [dataList]);
-            await Get.toNamed(
-              "/JournalMealScreen",
-              arguments: JournalMealScreenArguments(
-                  breakFastList: dataList,
-                  mealType: title,
-                  dateTime: selectedDateTime),
-            )!
-                .then((value) {
-              setState(() {
-                addNewMealBloc
-                    .add(GetCustomListEvent(dateTime: selectedDateTime));
-              });
-            });
-          },
-          child: dashBoardCardView(
-            width: double.infinity.w,
-            child: ListTile(
-              leading: Image.asset(
-                image,
-                height: 25.h,
-                width: 25.w,
-                color: AppColors.darkGray,
-              ),
-              title: Row(
-                children: [
-                  const SizedBox(width: 10),
-                  Text(
-                    title,
-                    style: textTheme?.headlineSmall
-                        ?.copyWith(color: AppColors.darkGray),
-                  ),
-                ],
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: 15.h,
-                color: const Color(0xFF010101),
-              ),
-              horizontalTitleGap: 0.0,
-            ),
-          ),
-        ),
-        commonBorderView(
-          child: InkWell(
-            onTap: () {
-              log("REDIRECT");
-              log("${dataList[0].recipe!.name}", name: "RECIPE NAME");
+    return BlocConsumer(
+      bloc: restaurantBloc,
+      builder: (context, state) {
+        if (state is GetUserAddressSuccessState) {
+          for (var i = 0; i < state.userAddress.length; i++) {
+            if (state.userAddress[i].isPrimary == true) {
+              getUserAddress = state.userAddress[i];
+              break;
+            }
+          }
+        }
 
-              Get.toNamed(
-                '/MealDetailsScreen',
-                arguments: MealPlanArguments(
-                  mealData: MealData(
-                    recipe: Recipe(
-                      id: dataList[0].recipe!.id,
-                      name: dataList[0].recipe!.name,
+        return Column(
+          children: [
+            InkWell(
+              onTap: () async {
+                log("MEAL ID");
+
+                await Get.toNamed(
+                  "/JournalMealScreen",
+                  arguments: JournalMealScreenArguments(
+                      getUserAddress: getUserAddress,
+                      breakFastList: dataList,
+                      mealType: title,
+                      dateTime: selectedDateTime),
+                )!
+                    .then((value) {
+                  setState(() {
+                    addNewMealBloc
+                        .add(GetCustomListEvent(dateTime: selectedDateTime));
+                  });
+                });
+              },
+              child: Container(
+                child: dashBoardCardView(
+                  width: double.infinity.w,
+                  child: ListTile(
+                    leading: Image.asset(
+                      image,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
                     ),
+                    title: Row(
+                      children: [
+                        const SizedBox(width: 10),
+                        Text(
+                          title,
+                          style: textTheme?.headlineSmall
+                              ?.copyWith(color: AppColors.darkGray),
+                        ),
+                      ],
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 15.h,
+                      color: const Color(0xFF010101),
+                    ),
+                    horizontalTitleGap: 0.0,
                   ),
                 ),
-              );
-              //Get.toNamed("/ForthJournalBGView");
-            },
-            child: commonJournalFoodData(
-              title: dataList![0].recipe!.name!,
-              subTitle: '$cal ${StringUtils.calCount}',
+              ),
+            ),
+            commonBorderView(
               child: InkWell(
                 onTap: () {
-                  if (!isEaten) {
-                    bloc.add(
-                      AddEatenMealData(
-                        value: 1,
-                        mealName: dataList[0].recipe!.name,
-                        recipeId: dataList[0].recipe!.id,
-                        mealType: dataList[0].meal,
-                        noOfServing: dataList[0].numOfServings,
-                        userId: PreferenceUtils.getString(prefUserData),
-                        calorie:
-                            dataList[0].recipe!.nutrientsPerServing!.calories,
-                        carbs: dataList[0].recipe!.nutrientsPerServing!.carbs,
-                        fat: dataList[0].recipe!.nutrientsPerServing!.fat,
-                        protein:
-                            dataList[0].recipe!.nutrientsPerServing!.protein,
-                        title: dataList[0].recipe!.name,
-                        mealId: dataList[0].id,
-                      ),
-                    );
-                  }
-                },
-                child: bloc.state is AddItemLoadingState &&
-                        (bloc.state as AddItemLoadingState).itemId.toString() ==
-                            dataList[0].id.toString()
-                    ? SizedBox(
-                        height: 25.h,
-                        width: 25.w,
-                        child: const AppCenterLoader())
-                    : Container(
-                        height: 25.h,
-                        width: 25.w,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.skyBlue,
-                        ),
-                        child: Center(
-                          child: Icon(
-                            isEaten ? Icons.check : Icons.add,
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                      ),
-              ),
-              textTheme: textTheme?.bodySmall?.copyWith(
-                  color: AppColors.darkGray, fontWeight: FontWeight.w400),
-              subTextTheme: textTheme?.bodySmall?.copyWith(
-                  color: AppColors.terracotta, fontWeight: FontWeight.w400),
-            ),
-          ),
-        ),
-        ...List.generate(
-          customDataList?.length ?? 0,
-          (index) => commonBorderView(
-            child: InkWell(
-              onTap: () {
-                Get.toNamed(
-                  '/GroceryItemDetails',
-                  arguments: GroceryItemDetailsArguments(
-                    productName: customDataList[index].name ?? '',
-                    //isFromJournalScreen: true,
-                    isFromCustomMealScreen: true,
-                    isShowData: true,
-                    imageUrl: customDataList[index].imageUrl ?? null,
-                    protein: customDataList[index].protein ?? 0.0,
-                    fat: customDataList[index].fat ?? 0.0,
-                    carbs: customDataList[index].carbs ?? 0.0,
-                    cal: customDataList[index].calorie ?? 0.0,
-                    quantity: customDataList[index].quantity ?? 0,
-                  ),
-                );
-                // Get.toNamed("/ForthJournalBGView");
-              },
-              child: commonJournalFoodData(
-                title: customDataList![index].name!,
-                subTitle:
-                    '${customDataList[index].calorie?.toStringAsFixed(2)} ${StringUtils.calCount}',
-                child: InkWell(
-                  onTap: () async {
-                    bloc.add(
-                      AddEatenMealData(
-                        value: 1,
-                        mealName: customDataList[index].name,
-                        mealType: customDataList[index].type,
-                        noOfServing: customDataList[index].quantity,
-                        userId: PreferenceUtils.getString(prefUserData),
-                        calorie: customDataList[index].calorie,
-                        carbs: customDataList[index].carbs,
-                        fat: customDataList[index].fat,
-                        protein: customDataList[index].protein,
-                        title: customDataList[index].name,
-                        mealId: customDataList[index].id,
-                      ),
-                    );
+                  log("REDIRECT");
+                  log("${dataList[0].recipe!.name}", name: "RECIPE NAME");
 
-                    // bloc.add(
-                    //     JournalGetDashboardDataEvent(dateTime: DateTime.now()));
-                  },
-                  child: bloc.state is AddItemLoadingState &&
-                          (bloc.state as AddItemLoadingState)
-                                  .itemId
-                                  .toString() ==
-                              customDataList[index].id.toString()
-                      ? SizedBox(
-                          height: 25.h,
-                          width: 25.w,
-                          child: const AppCenterLoader())
-                      : Container(
-                          height: 25.h,
-                          width: 25.w,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.skyBlue,
+                  Get.toNamed(
+                    '/MealDetailsScreen',
+                    arguments: MealPlanArguments(
+                      mealData: MealData(
+                        recipe: Recipe(
+                          id: dataList[0].recipe!.id,
+                          name: dataList[0].recipe!.name,
+                        ),
+                      ),
+                    ),
+                  );
+                  //Get.toNamed("/ForthJournalBGView");
+                },
+                child: commonJournalFoodData(
+                  title: dataList![0].recipe!.name!,
+                  subTitle: '$cal ${StringUtils.calCount}',
+                  child: InkWell(
+                    onTap: () {
+                      if (!isEaten) {
+                        bloc.add(
+                          AddEatenMealData(
+                            value: 1,
+                            mealName: dataList[0].recipe!.name,
+                            recipeId: dataList[0].recipe!.id,
+                            mealType: dataList[0].meal,
+                            noOfServing: dataList[0].numOfServings,
+                            userId: PreferenceUtils.getString(prefUserData),
+                            calorie: dataList[0]
+                                .recipe!
+                                .nutrientsPerServing!
+                                .calories,
+                            carbs:
+                                dataList[0].recipe!.nutrientsPerServing!.carbs,
+                            fat: dataList[0].recipe!.nutrientsPerServing!.fat,
+                            protein: dataList[0]
+                                .recipe!
+                                .nutrientsPerServing!
+                                .protein,
+                            title: dataList[0].recipe!.name,
+                            mealId: dataList[0].id,
                           ),
-                          child: Center(
-                            child: Icon(
-                              customDataList[index].isEaten
-                                  ? Icons.check
-                                  : Icons.add,
-                              color: AppColors.primaryBlue,
+                        );
+                      }
+                    },
+                    child: bloc.state is AddItemLoadingState &&
+                            (bloc.state as AddItemLoadingState)
+                                    .itemId
+                                    .toString() ==
+                                dataList[0].id.toString()
+                        ? SizedBox(
+                            height: 25.h,
+                            width: 25.w,
+                            child: const AppCenterLoader())
+                        : Container(
+                            height: 25.h,
+                            width: 25.w,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.skyBlue,
+                            ),
+                            child: Center(
+                              child: Icon(
+                                isEaten ? Icons.check : Icons.add,
+                                color: AppColors.primaryBlue,
+                              ),
                             ),
                           ),
-                        ),
+                  ),
+                  textTheme: textTheme?.bodySmall?.copyWith(
+                      color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                  subTextTheme: textTheme?.bodySmall?.copyWith(
+                      color: AppColors.terracotta, fontWeight: FontWeight.w400),
                 ),
-                textTheme: textTheme?.bodySmall?.copyWith(
-                    color: AppColors.darkGray, fontWeight: FontWeight.w400),
-                subTextTheme: textTheme?.bodySmall?.copyWith(
-                    color: AppColors.terracotta, fontWeight: FontWeight.w400),
               ),
             ),
-          ),
-        )
-      ],
-    ).paddingOnly(top: 20.h);
+            ...List.generate(
+              customDataList?.length ?? 0,
+              (index) => commonBorderView(
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed(
+                      '/GroceryItemDetails',
+                      arguments: GroceryItemDetailsArguments(
+                        productName: customDataList[index].name ?? '',
+                        //isFromJournalScreen: true,
+                        isFromCustomMealScreen: true,
+                        isShowData: true,
+                        imageUrl: customDataList[index].imageUrl ?? null,
+                        protein: customDataList[index].protein ?? 0.0,
+                        fat: customDataList[index].fat ?? 0.0,
+                        carbs: customDataList[index].carbs ?? 0.0,
+                        cal: customDataList[index].calorie ?? 0.0,
+                        quantity: customDataList[index].quantity ?? 0,
+                      ),
+                    );
+                    // Get.toNamed("/ForthJournalBGView");
+                  },
+                  child: commonJournalFoodData(
+                    title: customDataList![index].name!,
+                    subTitle:
+                        '${customDataList[index].calorie?.toStringAsFixed(2)} ${StringUtils.calCount}',
+                    child: InkWell(
+                      onTap: () async {
+                        bloc.add(
+                          AddEatenMealData(
+                            value: 1,
+                            mealName: customDataList[index].name,
+                            mealType: customDataList[index].type,
+                            noOfServing: customDataList[index].quantity,
+                            userId: PreferenceUtils.getString(prefUserData),
+                            calorie: customDataList[index].calorie,
+                            carbs: customDataList[index].carbs,
+                            fat: customDataList[index].fat,
+                            protein: customDataList[index].protein,
+                            title: customDataList[index].name,
+                            mealId: customDataList[index].id,
+                          ),
+                        );
+
+                        // bloc.add(
+                        //     JournalGetDashboardDataEvent(dateTime: DateTime.now()));
+                      },
+                      child: bloc.state is AddItemLoadingState &&
+                              (bloc.state as AddItemLoadingState)
+                                      .itemId
+                                      .toString() ==
+                                  customDataList[index].id.toString()
+                          ? SizedBox(
+                              height: 25.h,
+                              width: 25.w,
+                              child: const AppCenterLoader())
+                          : Container(
+                              height: 25.h,
+                              width: 25.w,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.skyBlue,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  customDataList[index].isEaten
+                                      ? Icons.check
+                                      : Icons.add,
+                                  color: AppColors.primaryBlue,
+                                ),
+                              ),
+                            ),
+                    ),
+                    textTheme: textTheme?.bodySmall?.copyWith(
+                        color: AppColors.darkGray, fontWeight: FontWeight.w400),
+                    subTextTheme: textTheme?.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ).paddingOnly(top: 20.h);
+      },
+      listener: (BuildContext context, Object? state) {},
+    );
   }
 }

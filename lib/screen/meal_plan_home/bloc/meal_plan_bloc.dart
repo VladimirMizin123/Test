@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 
 import '../../../repository/get_grocery_details.dart';
 import '../../../widget/app_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
   MealPlanBloc() : super(InitialState()) {
@@ -376,9 +377,11 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       await _repository
           .grocerySearch(
-              latitude: '37.7786357',
-              longitude: '-122.3918135',
-              grocerySearchModal: event.grocerySearchModelList!)
+        latitude: '37.7786357',
+        longitude: '-122.3918135',
+        grocerySearchModal: event.grocerySearchModelList!,
+        getUserAddress: event.getUserAddress,
+      )
           .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);

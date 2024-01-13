@@ -24,6 +24,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/model/user_restriction_moda
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 class MealPlanRepository {
   final ApiServices apiServices = ApiServices();
@@ -199,7 +200,7 @@ class MealPlanRepository {
   }
 
   Future<Either<ErrorModel, FetchMealDetailsModel>> fetchMealDetails(
-      {required String recipeID,required String recipeName}) async {
+      {required String recipeID, required String recipeName}) async {
     log('localdbtask fetchMealDetails');
     log('recipeName --  $recipeName');
     final response = await apiServices
@@ -212,7 +213,7 @@ class MealPlanRepository {
       hiveSingleton = HiveSingleton();
       var resultKeys = await hiveSingleton.getAllKeys();
       var resultKey = resultKeys.firstWhere(
-            (key) => key.toLowerCase() == recipeName.toLowerCase(),
+        (key) => key.toLowerCase() == recipeName.toLowerCase(),
         orElse: () => '',
       );
       if (resultKey.isNotEmpty) {
@@ -220,36 +221,58 @@ class MealPlanRepository {
         var specificValue = await hiveSingleton.getValueByKey(resultKey);
         log('rushankkkkkkk if Value associated with the key: $specificValue');
 
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = specificValue["nfCalories"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = specificValue["nfProtein"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = specificValue["nfTotalCabohydrate"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = specificValue["nfTotalFat"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = specificValue["nfCholesterol"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = specificValue["nfSodium"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = specificValue["nfSugar"] ?? 0;
-        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = specificValue["nfPotassium"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] =
+            specificValue["nfCalories"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] =
+            specificValue["nfProtein"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] =
+            specificValue["nfTotalCabohydrate"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] =
+            specificValue["nfTotalFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']
+            ['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] =
+            specificValue["nfCholesterol"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] =
+            specificValue["nfSodium"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']
+            ['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] =
+            specificValue["nfSugar"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] =
+            specificValue["nfPotassium"] ?? 0;
         String updatedJsonData = json.encode(recipeDetailsMap);
-        return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+        return Right(
+            FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
       } else {
         log('rushankkkkkkk else Key not found');
         var matchingKeys = await hiveSingleton.findKeysWithAnyWord(recipeName);
         if (matchingKeys != null) {
           var specificValue = await hiveSingleton.getValueByKey(matchingKeys);
           log('rushankkkkkkk if Data associated with matching key ($matchingKeys): $specificValue');
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = specificValue["nfCalories"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = specificValue["nfProtein"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = specificValue["nfTotalCabohydrate"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = specificValue["nfTotalFat"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = specificValue["nfCholesterol"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = specificValue["nfSodium"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = specificValue["nfSugar"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = specificValue["nfPotassium"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] =
+              specificValue["nfCalories"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] =
+              specificValue["nfProtein"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] =
+              specificValue["nfTotalCabohydrate"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] =
+              specificValue["nfTotalFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']
+              ['nfSaturatedFat'] = specificValue["nfSaturatedFat"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']
+              ['nfCholesterol'] = specificValue["nfCholesterol"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] =
+              specificValue["nfSodium"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']
+              ['nfDietaryFiber'] = specificValue["nfDietaryFiber"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] =
+              specificValue["nfSugar"] ?? 0;
+          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] =
+              specificValue["nfPotassium"] ?? 0;
           String updatedJsonData = json.encode(recipeDetailsMap);
-          return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+          return Right(
+              FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
         } else {
           log('rushankkkkkkk else No matching key found');
         }
@@ -261,111 +284,155 @@ class MealPlanRepository {
       final responseNxInfo = await apiServices.get(apiNxInfoURL);
       log(responseNxInfo.body, name: 'API RESPONSE :');
       Map<String, dynamic> jsonNxInfo = jsonDecode(responseNxInfo.body);
-      if(jsonNxInfo["success"] == false)
-      {
-        String apiNutritionixURL = '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$recipeName';
-        final responseNutritionix = await apiServices.getNutritionix(apiNutritionixURL);
-        Map<String, dynamic> jsonNutritionix = jsonDecode(responseNutritionix.body);
+      if (jsonNxInfo["success"] == false) {
+        String apiNutritionixURL =
+            '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$recipeName';
+        final responseNutritionix =
+            await apiServices.getNutritionix(apiNutritionixURL);
+        Map<String, dynamic> jsonNutritionix =
+            jsonDecode(responseNutritionix.body);
         log(responseNutritionix.body, name: 'API RESPONSE :');
-        if(jsonNutritionix['branded'] != null)
-        {
-          String apiNutritionixItemInfoURL = '${ApiUrls.getNxItemInfoData}?nix_item_id=${jsonNutritionix['branded'][0]['nix_item_id']}';
-          final responseNutritionixItemInfo = await apiServices.getNutritionix(apiNutritionixItemInfoURL);
-          Map<String, dynamic> jsonNutritionixItemInfo = jsonDecode(responseNutritionixItemInfo.body);
+        if (jsonNutritionix['branded'] != null) {
+          String apiNutritionixItemInfoURL =
+              '${ApiUrls.getNxItemInfoData}?nix_item_id=${jsonNutritionix['branded'][0]['nix_item_id']}';
+          final responseNutritionixItemInfo =
+              await apiServices.getNutritionix(apiNutritionixItemInfoURL);
+          Map<String, dynamic> jsonNutritionixItemInfo =
+              jsonDecode(responseNutritionixItemInfo.body);
           log(responseNutritionixItemInfo.body, name: 'API RESPONSE :');
-          if(jsonNutritionixItemInfo['foods'] != null)
-          {
-
-            var photos =  jsonNutritionixItemInfo['foods'][0]['photo'];
+          if (jsonNutritionixItemInfo['foods'] != null) {
+            var photos = jsonNutritionixItemInfo['foods'][0]['photo'];
             Map<String, dynamic> photoJsonData = {
               "thumb": photos['thumb'] ?? "",
               "highres": photos['highres'] ?? "",
               "is_user_uploaded": photos['is_user_uploaded'] ?? false
             };
             Map<String, dynamic> nxAddData = {
-              'foodName' : recipeName,
-              'brandName' : jsonNutritionixItemInfo['foods'][0]['brand_name'],
-              'servingQuantity' : jsonNutritionixItemInfo['foods'][0]['serving_qty'],
-              'servingUnit' : jsonNutritionixItemInfo['foods'][0]['serving_unit'],
-              'servingWeightGram' : jsonNutritionixItemInfo['foods'][0]['serving_weight_grams'].toString(),
-              'nfMetricQuantity' : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'] == null ? '0':jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'].toString(),
-              'nfMetricUom' : jsonNutritionixItemInfo['foods'][0]['nf_metric_uom'],
-              'nfCalories' : jsonNutritionixItemInfo['foods'][0]['nf_calories'],
-              'nfTotalFat' : jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
-              'nfSaturatedFat' : jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'],
-              'nfCholesterol' : jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'],
-              'nfSodium' : jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
-              'nfTotalCabohydrate' : jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'],
-              'nfDietaryFiber' : jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'],
-              'nfSugar' : jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
-              'nfProtein' : jsonNutritionixItemInfo['foods'][0]['nf_protein'],
-              'nfPotassium' : jsonNutritionixItemInfo['foods'][0]['nf_potassium'],
-              'nf_P' : jsonNutritionixItemInfo['foods'][0]['nf_p'],
-              'nfFullNutrients' : jsonNutritionixItemInfo['foods'][0]['full_nutrients'],
-              'nxBrandName' : jsonNutritionixItemInfo['foods'][0]['nix_brand_name'],
-              'nxBrandId' : jsonNutritionixItemInfo['foods'][0]['nix_brand_id'],
-              'nxItemName' : jsonNutritionixItemInfo['foods'][0]['nix_item_name'],
-              'nxItemId' : jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
-              'metadata' : jsonNutritionixItemInfo['foods'][0]['metadata'],
-              'source' : jsonNutritionixItemInfo['foods'][0]['source'],
-              'ndb_No' : jsonNutritionixItemInfo['foods'][0]['ndb_no'],
-              'tags' : jsonNutritionixItemInfo['foods'][0]['tags'],
-              'alt_Measure' : jsonNutritionixItemInfo['foods'][0]['alt_measures'],
-              'lat' : jsonNutritionixItemInfo['foods'][0]['lat'],
-              'lng' : jsonNutritionixItemInfo['foods'][0]['lng'],
-              'photo' : photoJsonData,
-              'note' : jsonNutritionixItemInfo['foods'][0]['note'],
-              'class_Code' : jsonNutritionixItemInfo['foods'][0]['class_code'],
-              'brick_Code' : jsonNutritionixItemInfo['foods'][0]['brick_code'],
-              'tag_Id' : jsonNutritionixItemInfo['foods'][0]['tag_id'],
-              'updated_At' : jsonNutritionixItemInfo['foods'][0]['updated_at'],
-              'nf_Ingredient_Statement' : jsonNutritionixItemInfo['foods'][0]['nf_ingredient_statement'],
+              'foodName': recipeName,
+              'brandName': jsonNutritionixItemInfo['foods'][0]['brand_name'],
+              'servingQuantity': jsonNutritionixItemInfo['foods'][0]
+                  ['serving_qty'],
+              'servingUnit': jsonNutritionixItemInfo['foods'][0]
+                  ['serving_unit'],
+              'servingWeightGram': jsonNutritionixItemInfo['foods'][0]
+                      ['serving_weight_grams']
+                  .toString(),
+              'nfMetricQuantity':
+                  jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'] == null
+                      ? '0'
+                      : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty']
+                          .toString(),
+              'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_metric_uom'],
+              'nfCalories': jsonNutritionixItemInfo['foods'][0]['nf_calories'],
+              'nfTotalFat': jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
+              'nfSaturatedFat': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_saturated_fat'],
+              'nfCholesterol': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_cholesterol'],
+              'nfSodium': jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
+              'nfTotalCabohydrate': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_total_carbohydrate'],
+              'nfDietaryFiber': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_dietary_fiber'],
+              'nfSugar': jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
+              'nfProtein': jsonNutritionixItemInfo['foods'][0]['nf_protein'],
+              'nfPotassium': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_potassium'],
+              'nf_P': jsonNutritionixItemInfo['foods'][0]['nf_p'],
+              'nfFullNutrients': jsonNutritionixItemInfo['foods'][0]
+                  ['full_nutrients'],
+              'nxBrandName': jsonNutritionixItemInfo['foods'][0]
+                  ['nix_brand_name'],
+              'nxBrandId': jsonNutritionixItemInfo['foods'][0]['nix_brand_id'],
+              'nxItemName': jsonNutritionixItemInfo['foods'][0]
+                  ['nix_item_name'],
+              'nxItemId': jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
+              'metadata': jsonNutritionixItemInfo['foods'][0]['metadata'],
+              'source': jsonNutritionixItemInfo['foods'][0]['source'],
+              'ndb_No': jsonNutritionixItemInfo['foods'][0]['ndb_no'],
+              'tags': jsonNutritionixItemInfo['foods'][0]['tags'],
+              'alt_Measure': jsonNutritionixItemInfo['foods'][0]
+                  ['alt_measures'],
+              'lat': jsonNutritionixItemInfo['foods'][0]['lat'],
+              'lng': jsonNutritionixItemInfo['foods'][0]['lng'],
+              'photo': photoJsonData,
+              'note': jsonNutritionixItemInfo['foods'][0]['note'],
+              'class_Code': jsonNutritionixItemInfo['foods'][0]['class_code'],
+              'brick_Code': jsonNutritionixItemInfo['foods'][0]['brick_code'],
+              'tag_Id': jsonNutritionixItemInfo['foods'][0]['tag_id'],
+              'updated_At': jsonNutritionixItemInfo['foods'][0]['updated_at'],
+              'nf_Ingredient_Statement': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_ingredient_statement'],
             };
-            final responseAddNxData = await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
+            final responseAddNxData =
+                await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
 
             await hiveSingleton.addValueToBox(recipeName, nxAddData);
 
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = jsonNutritionixItemInfo['foods'][0]['nf_calories'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNutritionixItemInfo['foods'][0]['nf_protein'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = jsonNutritionixItemInfo['foods'][0]['nf_total_fat'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = jsonNutritionixItemInfo['foods'][0]['nf_sodium'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = jsonNutritionixItemInfo['foods'][0]['nf_sugars'];
-            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = jsonNutritionixItemInfo['foods'][0]['nf_potassium'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_calories'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_protein'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_total_fat'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']
+                    ['nfSaturatedFat'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']
+                    ['nfCholesterol'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_sodium'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']
+                    ['nfDietaryFiber'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_sugars'];
+            recipeDetailsMap['data']['recipe']['nutritionalInfo']
+                    ['nfPotassium'] =
+                jsonNutritionixItemInfo['foods'][0]['nf_potassium'];
             String updatedJsonData = json.encode(recipeDetailsMap);
-            return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+            return Right(
+                FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
+          } else {
+            return Right(
+                FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
           }
-          else
-            {
-              return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
-            }
+        } else {
+          return Right(
+              FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
+        }
+      } else {
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] =
+            jsonNxInfo["data"]["nfCalories"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] =
+            jsonNxInfo["data"]["nfProtein"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] =
+            jsonNxInfo["data"]["nfTotalCabohydrate"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] =
+            jsonNxInfo["data"]["nfTotalFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']
+            ['nfSaturatedFat'] = jsonNxInfo["data"]["nfSaturatedFat"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] =
+            jsonNxInfo["data"]["nfCholesterol"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] =
+            jsonNxInfo["data"]["nfSodium"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']
+            ['nfDietaryFiber'] = jsonNxInfo["data"]["nfDietaryFiber"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] =
+            jsonNxInfo["data"]["nfSugar"] ?? 0;
+        recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] =
+            jsonNxInfo["data"]["nfPotassium"] ?? 0;
+        String updatedJsonData = json.encode(recipeDetailsMap);
 
-        }
-        else {
-          return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
-        }
+        await hiveSingleton.addValueToBox(recipeName, jsonNxInfo["data"]);
+        return Right(
+            FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
       }
-      else
-      {
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['calories'] = jsonNxInfo["data"]["nfCalories"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['protein'] = jsonNxInfo["data"]["nfProtein"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['carbs'] = jsonNxInfo["data"]["nfTotalCabohydrate"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['fat'] = jsonNxInfo["data"]["nfTotalFat"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSaturatedFat'] = jsonNxInfo["data"]["nfSaturatedFat"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfCholesterol'] = jsonNxInfo["data"]["nfCholesterol"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSodium'] = jsonNxInfo["data"]["nfSodium"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfDietaryFiber'] = jsonNxInfo["data"]["nfDietaryFiber"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfSugars'] = jsonNxInfo["data"]["nfSugar"] ?? 0;
-          recipeDetailsMap['data']['recipe']['nutritionalInfo']['nfPotassium'] = jsonNxInfo["data"]["nfPotassium"] ?? 0;
-          String updatedJsonData = json.encode(recipeDetailsMap);
-
-          await hiveSingleton.addValueToBox(recipeName, jsonNxInfo["data"]);
-          return Right(FetchMealDetailsModel.fromJson(jsonDecode(updatedJsonData)));
-        }
       // return Right(FetchMealDetailsModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
@@ -383,7 +450,7 @@ class MealPlanRepository {
     hiveSingleton = HiveSingleton();
     var resultKeys = await hiveSingleton.getAllKeys();
     var resultKey = resultKeys.firstWhere(
-          (key) => key.toLowerCase() == productName.toLowerCase(),
+      (key) => key.toLowerCase() == productName.toLowerCase(),
       orElse: () => '',
     );
     if (resultKey.isNotEmpty) {
@@ -396,8 +463,7 @@ class MealPlanRepository {
         'errorMessage': null,
         'data': specificValue
       };
-      return Right(
-          NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
     } else {
       log('rushankkkkkkk else Key not found');
       var matchingKeys = await hiveSingleton.findKeysWithAnyWord(productName);
@@ -410,14 +476,12 @@ class MealPlanRepository {
           'errorMessage': null,
           'data': specificValue
         };
-        return Right(
-            NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+        return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
       } else {
         log('rushankkkkkkk else No matching key found');
       }
     }
     /*--------------Hive box Nx Data--------------------*/
-
 
     String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
 
@@ -430,136 +494,172 @@ class MealPlanRepository {
       await hiveSingleton.addValueToBox(productName, json["data"]);
       return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
           jsonDecode(response.body)));
-    }else if(response.statusCode == 400) {
+    } else if (response.statusCode == 400) {
       Map<String, dynamic> json = jsonDecode(response.body);
-      if(json["success"] == false)
-      {
-        String apiNutritionixURL = '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$productName';
-        final responseNutritionix = await apiServices.getNutritionix(apiNutritionixURL);
-        Map<String, dynamic> jsonNutritionix = jsonDecode(responseNutritionix.body);
+      if (json["success"] == false) {
+        String apiNutritionixURL =
+            '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$productName';
+        final responseNutritionix =
+            await apiServices.getNutritionix(apiNutritionixURL);
+        Map<String, dynamic> jsonNutritionix =
+            jsonDecode(responseNutritionix.body);
         log(responseNutritionix.body, name: 'API RESPONSE :');
-        if(jsonNutritionix['branded'] != null)
-        {
-          String apiNutritionixItemInfoURL = '${ApiUrls.getNxItemInfoData}?nix_item_id=${jsonNutritionix['branded'][0]['nix_item_id']}';
-          final responseNutritionixItemInfo = await apiServices.getNutritionix(apiNutritionixItemInfoURL);
-          Map<String, dynamic> jsonNutritionixItemInfo = jsonDecode(responseNutritionixItemInfo.body);
+        if (jsonNutritionix['branded'] != null) {
+          String apiNutritionixItemInfoURL =
+              '${ApiUrls.getNxItemInfoData}?nix_item_id=${jsonNutritionix['branded'][0]['nix_item_id']}';
+          final responseNutritionixItemInfo =
+              await apiServices.getNutritionix(apiNutritionixItemInfoURL);
+          Map<String, dynamic> jsonNutritionixItemInfo =
+              jsonDecode(responseNutritionixItemInfo.body);
           log(responseNutritionixItemInfo.body, name: 'API RESPONSE :');
 
-          if(jsonNutritionixItemInfo['foods'] != null)
-          {
+          if (jsonNutritionixItemInfo['foods'] != null) {
             Map<String, dynamic> finalOutput = {
-              'success' : true,
-              'message' : null,
-              'errorMessage' : null,
-              'data' : {
-                'foodName' : productName,
-                'brandName' : jsonNutritionixItemInfo['foods'][0]['brand_name'],
-                'servingQuantity' : jsonNutritionixItemInfo['foods'][0]['serving_qty'],
-                'servingUnit' : jsonNutritionixItemInfo['foods'][0]['serving_unit'],
-                'servingWeightInGram' : jsonNutritionixItemInfo['foods'][0]['serving_weight_grams'].toString(),
-                'nfMetricQuantity' : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'],
-                'nfMetricUom' : jsonNutritionixItemInfo['foods'][0]['nf_metric_uom'],
-                'nfCalories' : jsonNutritionixItemInfo['foods'][0]['nf_calories'],
-                'nfTotalFat' : jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
-                'nfSaturatedFat' : jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'],
-                'nfCholesterol' : jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'],
-                'nfSodium' : jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
-                'nfTotalCabohydrate' : jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'],
-                'nfDietaryFiber' : jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'],
-                'nfSugar' : jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
-                'nfProtein' : jsonNutritionixItemInfo['foods'][0]['nf_protein'],
-                'nfPotassium' : jsonNutritionixItemInfo['foods'][0]['nf_potassium'],
-                'nf_P' : jsonNutritionixItemInfo['foods'][0]['nf_p'],
-                'nfFullNutrients' : jsonNutritionixItemInfo['foods'][0]['full_nutrients'],
-                'nxBrandname' : jsonNutritionixItemInfo['foods'][0]['nix_brand_name'],
-                'nxBrandId' : jsonNutritionixItemInfo['foods'][0]['nix_brand_id'],
-                'nxItemName' : jsonNutritionixItemInfo['foods'][0]['nix_item_name'],
-                'nxItemId' : jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
-                'metadata' : jsonNutritionixItemInfo['foods'][0]['metadata'],
-                'source' : jsonNutritionixItemInfo['foods'][0]['source'],
-                'ndb_No' : jsonNutritionixItemInfo['foods'][0]['ndb_no'],
-                'tags' : jsonNutritionixItemInfo['foods'][0]['tags'],
-                'alt_Measure' : jsonNutritionixItemInfo['foods'][0]['alt_measures'],
-                'lat' : jsonNutritionixItemInfo['foods'][0]['lat'],
-                'lng' : jsonNutritionixItemInfo['foods'][0]['lng'],
-                'photo' : jsonNutritionixItemInfo['foods'][0]['photo'],
-                'note' : jsonNutritionixItemInfo['foods'][0]['note'],
-                'class_Code' : jsonNutritionixItemInfo['foods'][0]['class_code'],
-                'brick_Code' : jsonNutritionixItemInfo['foods'][0]['brick_code'],
-                'tag_Id' : jsonNutritionixItemInfo['foods'][0]['tag_id'],
-                'updated_At' : jsonNutritionixItemInfo['foods'][0]['updated_at'],
-                'nf_Ingredient_Statement' : jsonNutritionixItemInfo['foods'][0]['nf_ingredient_statement'],
+              'success': true,
+              'message': null,
+              'errorMessage': null,
+              'data': {
+                'foodName': productName,
+                'brandName': jsonNutritionixItemInfo['foods'][0]['brand_name'],
+                'servingQuantity': jsonNutritionixItemInfo['foods'][0]
+                    ['serving_qty'],
+                'servingUnit': jsonNutritionixItemInfo['foods'][0]
+                    ['serving_unit'],
+                'servingWeightInGram': jsonNutritionixItemInfo['foods'][0]
+                        ['serving_weight_grams']
+                    .toString(),
+                'nfMetricQuantity': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_metric_qty'],
+                'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_metric_uom'],
+                'nfCalories': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_calories'],
+                'nfTotalFat': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_total_fat'],
+                'nfSaturatedFat': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_saturated_fat'],
+                'nfCholesterol': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_cholesterol'],
+                'nfSodium': jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
+                'nfTotalCabohydrate': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_total_carbohydrate'],
+                'nfDietaryFiber': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_dietary_fiber'],
+                'nfSugar': jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
+                'nfProtein': jsonNutritionixItemInfo['foods'][0]['nf_protein'],
+                'nfPotassium': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_potassium'],
+                'nf_P': jsonNutritionixItemInfo['foods'][0]['nf_p'],
+                'nfFullNutrients': jsonNutritionixItemInfo['foods'][0]
+                    ['full_nutrients'],
+                'nxBrandname': jsonNutritionixItemInfo['foods'][0]
+                    ['nix_brand_name'],
+                'nxBrandId': jsonNutritionixItemInfo['foods'][0]
+                    ['nix_brand_id'],
+                'nxItemName': jsonNutritionixItemInfo['foods'][0]
+                    ['nix_item_name'],
+                'nxItemId': jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
+                'metadata': jsonNutritionixItemInfo['foods'][0]['metadata'],
+                'source': jsonNutritionixItemInfo['foods'][0]['source'],
+                'ndb_No': jsonNutritionixItemInfo['foods'][0]['ndb_no'],
+                'tags': jsonNutritionixItemInfo['foods'][0]['tags'],
+                'alt_Measure': jsonNutritionixItemInfo['foods'][0]
+                    ['alt_measures'],
+                'lat': jsonNutritionixItemInfo['foods'][0]['lat'],
+                'lng': jsonNutritionixItemInfo['foods'][0]['lng'],
+                'photo': jsonNutritionixItemInfo['foods'][0]['photo'],
+                'note': jsonNutritionixItemInfo['foods'][0]['note'],
+                'class_Code': jsonNutritionixItemInfo['foods'][0]['class_code'],
+                'brick_Code': jsonNutritionixItemInfo['foods'][0]['brick_code'],
+                'tag_Id': jsonNutritionixItemInfo['foods'][0]['tag_id'],
+                'updated_At': jsonNutritionixItemInfo['foods'][0]['updated_at'],
+                'nf_Ingredient_Statement': jsonNutritionixItemInfo['foods'][0]
+                    ['nf_ingredient_statement'],
               }
             };
 
-            var photos =  jsonNutritionixItemInfo['foods'][0]['photo'];
+            var photos = jsonNutritionixItemInfo['foods'][0]['photo'];
             Map<String, dynamic> photoJsonData = {
               "thumb": photos['thumb'] ?? "",
               "highres": photos['highres'] ?? "",
               "is_user_uploaded": photos['is_user_uploaded'] ?? false
             };
             Map<String, dynamic> nxAddData = {
-              'foodName' : productName,
-              'brandName' : jsonNutritionixItemInfo['foods'][0]['brand_name'],
-              'servingQuantity' : jsonNutritionixItemInfo['foods'][0]['serving_qty'],
-              'servingUnit' : jsonNutritionixItemInfo['foods'][0]['serving_unit'],
-              'servingWeightGram' : jsonNutritionixItemInfo['foods'][0]['serving_weight_grams'].toString(),
-              'nfMetricQuantity' :jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'] == null ? '0':jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'].toString(),
-              'nfMetricUom' : jsonNutritionixItemInfo['foods'][0]['nf_metric_uom'],
-              'nfCalories' : jsonNutritionixItemInfo['foods'][0]['nf_calories'],
-              'nfTotalFat' : jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
-              'nfSaturatedFat' : jsonNutritionixItemInfo['foods'][0]['nf_saturated_fat'],
-              'nfCholesterol' : jsonNutritionixItemInfo['foods'][0]['nf_cholesterol'],
-              'nfSodium' : jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
-              'nfTotalCabohydrate' : jsonNutritionixItemInfo['foods'][0]['nf_total_carbohydrate'],
-              'nfDietaryFiber' : jsonNutritionixItemInfo['foods'][0]['nf_dietary_fiber'],
-              'nfSugar' : jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
-              'nfProtein' : jsonNutritionixItemInfo['foods'][0]['nf_protein'],
-              'nfPotassium' : jsonNutritionixItemInfo['foods'][0]['nf_potassium'],
-              'nf_P' : jsonNutritionixItemInfo['foods'][0]['nf_p'],
-              'nfFullNutrients' : jsonNutritionixItemInfo['foods'][0]['full_nutrients'],
-              'nxBrandName' : jsonNutritionixItemInfo['foods'][0]['nix_brand_name'],
-              'nxBrandId' : jsonNutritionixItemInfo['foods'][0]['nix_brand_id'],
-              'nxItemName' : jsonNutritionixItemInfo['foods'][0]['nix_item_name'],
-              'nxItemId' : jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
-              'metadata' : jsonNutritionixItemInfo['foods'][0]['metadata'],
-              'source' : jsonNutritionixItemInfo['foods'][0]['source'],
-              'ndb_No' : jsonNutritionixItemInfo['foods'][0]['ndb_no'],
-              'tags' : jsonNutritionixItemInfo['foods'][0]['tags'],
-              'alt_Measure' : jsonNutritionixItemInfo['foods'][0]['alt_measures'],
-              'lat' : jsonNutritionixItemInfo['foods'][0]['lat'],
-              'lng' : jsonNutritionixItemInfo['foods'][0]['lng'],
-              'photo' : photoJsonData,
-              'note' : jsonNutritionixItemInfo['foods'][0]['note'],
-              'class_Code' : jsonNutritionixItemInfo['foods'][0]['class_code'],
-              'brick_Code' : jsonNutritionixItemInfo['foods'][0]['brick_code'],
-              'tag_Id' : jsonNutritionixItemInfo['foods'][0]['tag_id'],
-              'updated_At' : jsonNutritionixItemInfo['foods'][0]['updated_at'],
-              'nf_Ingredient_Statement' : jsonNutritionixItemInfo['foods'][0]['nf_ingredient_statement'],
+              'foodName': productName,
+              'brandName': jsonNutritionixItemInfo['foods'][0]['brand_name'],
+              'servingQuantity': jsonNutritionixItemInfo['foods'][0]
+                  ['serving_qty'],
+              'servingUnit': jsonNutritionixItemInfo['foods'][0]
+                  ['serving_unit'],
+              'servingWeightGram': jsonNutritionixItemInfo['foods'][0]
+                      ['serving_weight_grams']
+                  .toString(),
+              'nfMetricQuantity':
+                  jsonNutritionixItemInfo['foods'][0]['nf_metric_qty'] == null
+                      ? '0'
+                      : jsonNutritionixItemInfo['foods'][0]['nf_metric_qty']
+                          .toString(),
+              'nfMetricUom': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_metric_uom'],
+              'nfCalories': jsonNutritionixItemInfo['foods'][0]['nf_calories'],
+              'nfTotalFat': jsonNutritionixItemInfo['foods'][0]['nf_total_fat'],
+              'nfSaturatedFat': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_saturated_fat'],
+              'nfCholesterol': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_cholesterol'],
+              'nfSodium': jsonNutritionixItemInfo['foods'][0]['nf_sodium'],
+              'nfTotalCabohydrate': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_total_carbohydrate'],
+              'nfDietaryFiber': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_dietary_fiber'],
+              'nfSugar': jsonNutritionixItemInfo['foods'][0]['nf_sugars'],
+              'nfProtein': jsonNutritionixItemInfo['foods'][0]['nf_protein'],
+              'nfPotassium': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_potassium'],
+              'nf_P': jsonNutritionixItemInfo['foods'][0]['nf_p'],
+              'nfFullNutrients': jsonNutritionixItemInfo['foods'][0]
+                  ['full_nutrients'],
+              'nxBrandName': jsonNutritionixItemInfo['foods'][0]
+                  ['nix_brand_name'],
+              'nxBrandId': jsonNutritionixItemInfo['foods'][0]['nix_brand_id'],
+              'nxItemName': jsonNutritionixItemInfo['foods'][0]
+                  ['nix_item_name'],
+              'nxItemId': jsonNutritionixItemInfo['foods'][0]['nix_item_id'],
+              'metadata': jsonNutritionixItemInfo['foods'][0]['metadata'],
+              'source': jsonNutritionixItemInfo['foods'][0]['source'],
+              'ndb_No': jsonNutritionixItemInfo['foods'][0]['ndb_no'],
+              'tags': jsonNutritionixItemInfo['foods'][0]['tags'],
+              'alt_Measure': jsonNutritionixItemInfo['foods'][0]
+                  ['alt_measures'],
+              'lat': jsonNutritionixItemInfo['foods'][0]['lat'],
+              'lng': jsonNutritionixItemInfo['foods'][0]['lng'],
+              'photo': photoJsonData,
+              'note': jsonNutritionixItemInfo['foods'][0]['note'],
+              'class_Code': jsonNutritionixItemInfo['foods'][0]['class_code'],
+              'brick_Code': jsonNutritionixItemInfo['foods'][0]['brick_code'],
+              'tag_Id': jsonNutritionixItemInfo['foods'][0]['tag_id'],
+              'updated_At': jsonNutritionixItemInfo['foods'][0]['updated_at'],
+              'nf_Ingredient_Statement': jsonNutritionixItemInfo['foods'][0]
+                  ['nf_ingredient_statement'],
             };
-            final responseAddNxData = await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
+            final responseAddNxData =
+                await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
             await hiveSingleton.addValueToBox(productName, nxAddData);
-            return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
-          }
-          else
-          {
+            return Right(
+                NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+          } else {
             return Left(ErrorModel.fromJson(jsonDecode(response.body)));
           }
-        }
-        else
-        {
+        } else {
           return Left(ErrorModel.fromJson(jsonDecode(response.body)));
         }
-      }
-      else
-      {
+      } else {
         return Left(ErrorModel.fromJson(jsonDecode(response.body)));
       }
 
       // return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
-    else {
+    } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
@@ -628,21 +728,30 @@ class MealPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch({
-    required String latitude,
-    required String longitude,
-    required List<GrocerySearchModel> grocerySearchModal,
-  }) async {
+  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch(
+      {required String latitude,
+      required String longitude,
+      required List<GrocerySearchModel> grocerySearchModal,
+      required UserAddress? getUserAddress}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
     // log(apiURL, name: 'API URL :');
+    Map<String, dynamic> data = {
+      "latitude": latitude,
+      "longitude": longitude,
+      "groceries": grocerySearchModal,
+      "user_street_num": getUserAddress?.streetNum,
+      "user_street_name": getUserAddress?.streetName,
+      "user_city": getUserAddress?.city,
+      "user_state": getUserAddress?.state,
+      "user_country": getUserAddress?.country,
+      "user_zipcode": getUserAddress?.zipcode,
+      "pickup": false,
+    };
+
     final response = await apiServices.post(
       apiURL,
-      {
-        "latitude": latitude,
-        "longitude": longitude,
-        "groceries": grocerySearchModal,
-      },
+      data,
     );
     // log(response.body, name: 'API RESPONSE :');
 

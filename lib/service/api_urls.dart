@@ -29,10 +29,6 @@ class ApiUrls {
   static const String productRestaurantSearch =
       '${baseUrl}api/MealMe/product-restaurantSearch-byName';
 
-//*
-  static const String mealSearchNearByRestaurant =
-      '$baseUrl/api/MealMe/MealSearch-NearByRestaurant';
-
   static const String requestPass = '${baseUrl}api/Auth/request-pass';
   static const String resetPass = '${baseUrl}api/Auth/reset-pass';
   static const String getSurvey = '${baseUrl}api/Survey/GetSurvey';
@@ -64,8 +60,7 @@ class ApiUrls {
   //Nutritionix
   // static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
 
-  static const String getNXJsonFile =
-      '${baseUrl}api/Nutritionix/GetNXJsonFile';
+  static const String getNXJsonFile = '${baseUrl}api/Nutritionix/GetNXJsonFile';
   static const String getNxMealInfoByName =
       '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
   static const String addNutritionDataToDb =
@@ -182,6 +177,10 @@ class ApiUrls {
 
   static const String setUserAddressPrimary =
       '${baseUrl}api/UserAddress/SetPrimaryAddress';
+
+  //*
+  static const String mealSearchNearByRestaurant =
+      '$baseUrl/api/MealMe/MealSearch-NearByRestaurant';
 
   static const String getRestaurantList =
       '${baseUrl}api/MealMe/GetRestaurantsNearBy';

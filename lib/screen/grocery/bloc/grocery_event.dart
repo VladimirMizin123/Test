@@ -3,6 +3,8 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.d
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 abstract class GroceryEvent {}
 
@@ -55,8 +57,10 @@ class RemoveGroceryEvent extends GroceryEvent {
 
 class GrocerySearchEvent extends GroceryEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
+  final userAddress.UserAddress? getUserAddress;
 
-  GrocerySearchEvent({required this.grocerySearchModelList});
+  GrocerySearchEvent(
+      {required this.grocerySearchModelList, required this.getUserAddress});
 }
 
 class GroceryDetailsMealInfoEvent extends GroceryEvent {

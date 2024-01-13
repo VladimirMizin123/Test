@@ -22,6 +22,8 @@ import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
 
 import '../../restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
@@ -100,28 +102,37 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch({
-    required String latitude,
-    required String longitude,
-    required List<GrocerySearchModel> grocerySearchModal,
-  }) async {
+  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch(
+      {required String latitude,
+      required String longitude,
+      required List<GrocerySearchModel> grocerySearchModal,
+      required userAddress.UserAddress? getUserAddress}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
     // log(apiURL, name: 'API URL :');
+    print("address json :${getUserAddress?.toJson()}");
+
+    Map<String, dynamic> data = {
+      "latitude": getUserAddress?.latitude,
+      "longitude": getUserAddress?.longitude,
+      "groceries": grocerySearchModal,
+      "user_street_num": getUserAddress?.streetNum,
+      "user_street_name": getUserAddress?.streetNum,
+      "user_city": getUserAddress?.city,
+      "user_state": getUserAddress?.state,
+      "user_country": getUserAddress?.country,
+      "user_zipcode": getUserAddress?.zipcode,
+      "pickup": false,
+    };
+
     final response = await apiServices.post(
       apiURL,
-      {
-        "latitude": latitude,
-        "longitude": longitude,
-        "groceries": grocerySearchModal,
-      },
+      data,
     );
+    print("data:$data");
 
-    log('latitude---------->>>>>> ${latitude}');
-
-    log('longitude---------->>>>>> ${longitude}');
-
-    // log(response.body, name: 'API RESPONSE :');
+    log("res:${response.body}");
+    print("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));
@@ -139,7 +150,7 @@ class GroceryRepository {
     hiveSingleton = HiveSingleton();
     var resultKeys = await hiveSingleton.getAllKeys();
     var resultKey = resultKeys.firstWhere(
-          (key) => key.toLowerCase() == productName.toLowerCase(),
+      (key) => key.toLowerCase() == productName.toLowerCase(),
       orElse: () => '',
     );
     if (resultKey.isNotEmpty) {
@@ -152,8 +163,7 @@ class GroceryRepository {
         'errorMessage': null,
         'data': specificValue
       };
-      return Right(
-          NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+      return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
     } else {
       log('localdbtask else Key not found');
       var matchingKeys = await hiveSingleton.findKeysWithAnyWord(productName);
@@ -166,8 +176,7 @@ class GroceryRepository {
           'errorMessage': null,
           'data': specificValue
         };
-        return Right(
-            NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
+        return Right(NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
       } else {
         log('localdbtask else No matching key found');
       }
@@ -185,7 +194,6 @@ class GroceryRepository {
       await hiveSingleton.addValueToBox(productName, json["data"]);
       return Right(NutritionixGetNxMealInfoByNameModel.fromJson(
           jsonDecode(response.body)));
-
     } else if (response.statusCode == 400) {
       Map<String, dynamic> json = jsonDecode(response.body);
       if (json["success"] == false) {
@@ -338,7 +346,7 @@ class GroceryRepository {
                 await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             log(responseAddNxData.body, name: 'API ADD RESPONSE :');
 
-           await hiveSingleton.addValueToBox(productName, nxAddData);
+            await hiveSingleton.addValueToBox(productName, nxAddData);
 
             return Right(
                 NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));

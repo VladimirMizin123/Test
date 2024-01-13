@@ -161,7 +161,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
               longitude: PreferenceUtils.getString(longitude).isNotEmpty
                   ? PreferenceUtils.getString(longitude)
                   : '-87.623177',
-              grocerySearchModal: event.grocerySearchModelList!)
+              grocerySearchModal: event.grocerySearchModelList!,
+              getUserAddress: event.getUserAddress)
           .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);

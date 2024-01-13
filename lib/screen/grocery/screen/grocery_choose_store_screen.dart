@@ -14,12 +14,18 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart'
+    as getresAddress;
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 //TEMP
+
 List<Product> dataList1 = [];
 List<Product> dataList2 = [];
 List<Product> dataList3 = [];
@@ -38,8 +44,11 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
 
   List<Cart> productsList = [];
   List<Cart> searchedProductsList = [];
+  RestaurantBloc restaurantBloc = RestaurantBloc();
 
   bool isSearchOn = false;
+  userAddress.UserAddress? getUserAddress;
+  List<GrocerySearchModel> edgesDummyList = [];
   @override
   void initState() {
     super.initState();
@@ -53,16 +62,18 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   }
 
   searchStore() {
-    List<GrocerySearchModel> edgesDummyList = [];
     for (var i = 0; i < widget.arguments!.edgesList.length; i++) {
       edgesDummyList.add(GrocerySearchModel(
         groceryName: widget.arguments!.edgesList[i].itemName,
         quantity: 0,
       ));
     }
+
+    // log("init:${widget.arguments?.getUserAddress?.toJson()}");
+
     widget.arguments!.groceryBloc!.add(GrocerySearchEvent(
-      grocerySearchModelList: edgesDummyList,
-    ));
+        grocerySearchModelList: edgesDummyList,
+        getUserAddress: widget.arguments?.getUserAddress));
   }
 
   @override
@@ -348,16 +359,16 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     /*if(dataList1.isNotEmpty){
-                                      if(dataList1[0].storeName ==  productsList[
-                                      index]
-                                          .store!.name){productsList[
-                                      index]
-                                          .store!
-                                          .isSelected = true;}
-
-                                    }
-                                    if(dataList2.isNotEmpty){}
-                                    if(dataList3.isNotEmpty){}*/
+                                          if(dataList1[0].storeName ==  productsList[
+                                          index]
+                                              .store!.name){productsList[
+                                          index]
+                                              .store!
+                                              .isSelected = true;}
+                  
+                                        }
+                                        if(dataList2.isNotEmpty){}
+                                        if(dataList3.isNotEmpty){}*/
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 6),

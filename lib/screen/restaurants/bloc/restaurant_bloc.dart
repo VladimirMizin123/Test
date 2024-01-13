@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
-import 'package:gymeats_mobile/screen/restaurants/res_category_data_service/res_categorydata_service.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';

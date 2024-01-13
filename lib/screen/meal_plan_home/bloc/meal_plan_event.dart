@@ -1,6 +1,8 @@
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 abstract class MealPlanEvent {}
 
@@ -24,7 +26,16 @@ class SkipMealPlanEvent extends MealPlanEvent {
   final num? fat;
   final num? carbs;
 
-  SkipMealPlanEvent({required this.mealID, this.mealName, this.calorie, this.mealType, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs});
+  SkipMealPlanEvent(
+      {required this.mealID,
+      this.mealName,
+      this.calorie,
+      this.mealType,
+      this.noOfServing,
+      this.recipeId,
+      this.protein,
+      this.fat,
+      this.carbs});
 }
 
 class AddToGroceryListEvent extends MealPlanEvent {
@@ -68,9 +79,9 @@ class FetchSwapMealItemEvent extends MealPlanEvent {
 }
 
 class FetchMealDetailsEvent extends MealPlanEvent {
-  final String? recipeID,recipeName;
+  final String? recipeID, recipeName;
 
-  FetchMealDetailsEvent({this.recipeID,this.recipeName});
+  FetchMealDetailsEvent({this.recipeID, this.recipeName});
 }
 
 class FetchMealDetailsByNameEvent extends MealPlanEvent {
@@ -81,8 +92,10 @@ class FetchMealDetailsByNameEvent extends MealPlanEvent {
 
 class GrocerySearchEvent extends MealPlanEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
+  final userAddress.UserAddress? getUserAddress;
 
-  GrocerySearchEvent({required this.grocerySearchModelList});
+  GrocerySearchEvent(
+      {required this.grocerySearchModelList, required this.getUserAddress});
 }
 
 class SwapMealDetailsEvent extends MealPlanEvent {
@@ -91,7 +104,8 @@ class SwapMealDetailsEvent extends MealPlanEvent {
   final DateTime? dateTime;
   final String? mealId;
 
-  SwapMealDetailsEvent({this.similarMealData,this.dateTime, this.day, this.mealId});
+  SwapMealDetailsEvent(
+      {this.similarMealData, this.dateTime, this.day, this.mealId});
 }
 
 class AddSwapMealEvent extends MealPlanEvent {
@@ -101,7 +115,12 @@ class AddSwapMealEvent extends MealPlanEvent {
   final String? mealId;
   final String? recipeId;
 
-  AddSwapMealEvent({required this.similarMealData, required this.day, required this.dateTime, required this.mealId, required this.recipeId});
+  AddSwapMealEvent(
+      {required this.similarMealData,
+      required this.day,
+      required this.dateTime,
+      required this.mealId,
+      required this.recipeId});
 }
 
 class RestaurantSearchEvent extends MealPlanEvent {
@@ -111,10 +130,16 @@ class RestaurantSearchEvent extends MealPlanEvent {
   final String? maximumMiles;
   final bool? pickup;
 
-  RestaurantSearchEvent({this.name, this.latitude, this.longitude, this.maximumMiles, this.pickup});
+  RestaurantSearchEvent(
+      {this.name,
+      this.latitude,
+      this.longitude,
+      this.maximumMiles,
+      this.pickup});
 }
 
 class GetAllRestrictionEvent extends MealPlanEvent {}
+
 class GetUserRestrictionEvent extends MealPlanEvent {}
 
 class AddUserRestrictionEvent extends MealPlanEvent {

@@ -11,7 +11,10 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 class GrocerySearchScreen extends StatefulWidget {
   const GrocerySearchScreen({super.key});
@@ -25,6 +28,8 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
   GroceryBloc groceryBloc = GroceryBloc();
 
   List<Cart> groceryMultiSearchModelDataList = [];
+  userAddress.UserAddress? getUserAddress;
+  RestaurantBloc restaurantBloc = RestaurantBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -144,42 +149,55 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                     ],
                   ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                   SizedBox(height: 15.h),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        boxShadow: boxShadowWidget,
-                      ),
-                      child: TextField(
-                        style: const TextStyle(color: Colors.black),
-                        controller: searchController,
-                        onSubmitted: (String value) {
-                          groceryBloc.add(
-                            GrocerySearchEvent(
-                              grocerySearchModelList: [
-                                GrocerySearchModel(
-                                    groceryName: searchController.text,
-                                    quantity: 0)
-                              ],
+                  BlocConsumer(
+                    bloc: restaurantBloc,
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      if (state is GetUserAddressSuccessState) {
+                        for (var i = 0; i < state.userAddress.length; i++) {
+                          if (state.userAddress[i].isPrimary == true) {
+                            getUserAddress = state.userAddress[i];
+                            break;
+                          }
+                        }
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
+                            boxShadow: boxShadowWidget,
+                          ),
+                          child: TextField(
+                            style: const TextStyle(color: Colors.black),
+                            controller: searchController,
+                            onSubmitted: (String value) {
+                              groceryBloc.add(
+                                GrocerySearchEvent(grocerySearchModelList: [
+                                  GrocerySearchModel(
+                                      groceryName: searchController.text,
+                                      quantity: 0)
+                                ], getUserAddress: getUserAddress),
+                              );
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon:
+                                  const Icon(Icons.search, color: Colors.black),
+                              hintText: 'Search for item',
+                              hintStyle: FontUtils.h16(),
+                              border: InputBorder.none,
+                              enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide.none),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide.none),
                             ),
-                          );
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon:
-                              const Icon(Icons.search, color: Colors.black),
-                          hintText: 'Search for item',
-                          hintStyle: FontUtils.h16(),
-                          border: InputBorder.none,
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
-                          focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                   SizedBox(height: 15.h),
                   Expanded(
