@@ -41,9 +41,7 @@ class AddNewMealRepository {
         filename: imageUrl.path,
         contentType: MediaType(
           'image',
-          imageUrl.path.split('/').last.split('.').last == 'png'
-              ? 'png'
-              : 'jpg',
+          imageUrl.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpg',
         ),
       );
 
@@ -64,8 +62,7 @@ class AddNewMealRepository {
 
     log('data----CUSTOM------>>>>>> $data');
 
-    final response = await apiServices.postMultipart(
-        url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
+    final response = await apiServices.postMultipart(url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       print("addMealresponse code:${response.statusCode}");
 
@@ -104,9 +101,7 @@ class AddNewMealRepository {
         filename: imageUrl.path,
         contentType: MediaType(
           'image',
-          imageUrl.path.split('/').last.split('.').last == 'png'
-              ? 'png'
-              : 'jpg',
+          imageUrl.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpg',
         ),
       );
 
@@ -126,8 +121,7 @@ class AddNewMealRepository {
       'UserId': userId.toString(),
     };
 
-    final response = await apiServices.putMultipart(
-        url: ApiUrls.updateMeal, body: data, files: mealItemImage);
+    final response = await apiServices.putMultipart(url: ApiUrls.updateMeal, body: data, files: mealItemImage);
     print("updateMeal code:${response.statusCode}");
     // print("update:${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -143,10 +137,10 @@ class AddNewMealRepository {
 
   /// GetUserGroceryList ====================================================================
 
-  Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(
-      String date) async {
+  Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(String? date) async {
+    log(date != null ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date' : '${ApiUrls.getCustomMeal}?userId=$userID', name: "CUSTOME LIST");
     final response = await apiServices.get(
-      '${ApiUrls.getCustomMeal}?userId=$userID&date=$date',
+      date != null ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date' : '${ApiUrls.getCustomMeal}?userId=$userID',
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

@@ -40,7 +40,7 @@ class _CustomMealListState extends State<CustomMealList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      addNewMealBloc.add(GetCustomListEvent(dateTime: widget.dateTime));
+      addNewMealBloc.add(GetCustomListEvent());
     });
   }
 
@@ -72,8 +72,7 @@ class _CustomMealListState extends State<CustomMealList> {
               for (var e in state.customMealDetails!) {
                 if (e.type == widget.type.toString().capitalizeFirst ||
                     e.type!.trim() == widget.type.trim() ||
-                    e.type ==
-                        '${widget.type[0].toLowerCase()}${widget.type.substring(1)}') {
+                    e.type == '${widget.type[0].toLowerCase()}${widget.type.substring(1)}') {
                   customMealList.add(e);
                 }
               }
@@ -112,21 +111,16 @@ class _CustomMealListState extends State<CustomMealList> {
                           color: AppColors.darkGray,
                         ),
                       ),
-                      Text('Custom List',
-                          style: FontUtils.h20(
-                              fontColor: AppColors.oxFF010101,
-                              fontWeight: FWT.semiBold)),
+                      Text('Custom List', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
                       const SizedBox()
                     ],
                   ).paddingSymmetric(horizontal: 20.w, vertical: 5.h),
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12.h),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
                         boxShadow: boxShadowWidget,
                       ),
                       child: TextFormField(
@@ -142,11 +136,8 @@ class _CustomMealListState extends State<CustomMealList> {
                               //         .contains(value!.toLowerCase()))
                               //     .toList();
 
-                              searchCustomMealList =
-                                  customMealList.where((item) {
-                                return item.name!
-                                    .toLowerCase()
-                                    .contains(value.toLowerCase());
+                              searchCustomMealList = customMealList.where((item) {
+                                return item.name!.toLowerCase().contains(value.toLowerCase());
                               }).toList();
                             });
                           } else {
@@ -155,9 +146,7 @@ class _CustomMealListState extends State<CustomMealList> {
                             });
                           }
                         },
-                        style: FontUtils.h16(
-                            fontColor: AppColors.black,
-                            fontWeight: FWT.regular),
+                        style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.regular),
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                           prefixIcon: const Icon(
@@ -167,10 +156,8 @@ class _CustomMealListState extends State<CustomMealList> {
                           hintText: 'Search',
                           // hintStyle: FontUtils.h16(),
                           border: InputBorder.none,
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
-                          focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
+                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -186,16 +173,12 @@ class _CustomMealListState extends State<CustomMealList> {
                                   padding: EdgeInsets.zero,
                                   scrollDirection: Axis.vertical,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
+                                  itemBuilder: (BuildContext context, int index) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 12),
+                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                                       child: Shimmer.fromColors(
-                                          baseColor: AppColors.disable
-                                              .withOpacity(0.20),
-                                          highlightColor: AppColors.disable
-                                              .withOpacity(0.20),
+                                          baseColor: AppColors.disable.withOpacity(0.20),
+                                          highlightColor: AppColors.disable.withOpacity(0.20),
                                           child: Column(
                                             children: [
                                               Row(
@@ -203,12 +186,7 @@ class _CustomMealListState extends State<CustomMealList> {
                                                   Container(
                                                     height: 30,
                                                     width: 240,
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            AppColors.disable,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5)),
+                                                    decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(5)),
                                                   ),
                                                 ],
                                               ),
@@ -219,20 +197,13 @@ class _CustomMealListState extends State<CustomMealList> {
                                                     flex: 4,
                                                     child: Container(
                                                       height: 20,
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              AppColors.disable,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(4)),
+                                                      decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(4)),
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
-                                              const Divider(
-                                                  color: AppColors.disable,
-                                                  thickness: 1.2),
+                                              const Divider(color: AppColors.disable, thickness: 1.2),
                                             ],
                                           )),
                                     );
@@ -244,13 +215,11 @@ class _CustomMealListState extends State<CustomMealList> {
                                   SizedBox(
                                     height: 50.h,
                                   ),
-                                  SvgPicture.asset(
-                                      AssetsUtils.emptyShoppingListIcon),
+                                  SvgPicture.asset(AssetsUtils.emptyShoppingListIcon),
                                   Text(
                                     'Your Custom Meal List is\n empty.',
                                     textAlign: TextAlign.center,
-                                    style:
-                                        FontUtils.h14(fontWeight: FWT.regular),
+                                    style: FontUtils.h14(fontWeight: FWT.regular),
                                   ),
                                 ],
                               )
@@ -264,12 +233,10 @@ class _CustomMealListState extends State<CustomMealList> {
                                     child: ListView.builder(
                                       itemCount: searchCustomMealList.length,
                                       shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 6),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                           child: GestureDetector(
                                             onTap: () {
                                               /*Get.toNamed(
@@ -304,77 +271,41 @@ class _CustomMealListState extends State<CustomMealList> {
                                               );*/
                                               Get.to(
                                                   () => AddNewItemScreen(
-                                                      id: searchCustomMealList[index]
-                                                          .id,
-                                                      name: searchCustomMealList[
-                                                              index]
-                                                          .name,
-                                                      cal: searchCustomMealList[
-                                                              index]
-                                                          .calorie
-                                                          .toString(),
-                                                      carbs: searchCustomMealList[
-                                                              index]
-                                                          .carbs
-                                                          .toString(),
-                                                      fat: searchCustomMealList[
-                                                              index]
-                                                          .fat
-                                                          .toString(),
-                                                      protein:
-                                                          searchCustomMealList[index]
-                                                              .protein
-                                                              .toString(),
-                                                      weight:
-                                                          searchCustomMealList[index]
-                                                              .quantity
-                                                              .toString(),
-                                                      imageUrl:
-                                                          searchCustomMealList[index]
-                                                              .imageUrl),
+                                                      id: searchCustomMealList[index].id,
+                                                      name: searchCustomMealList[index].name,
+                                                      cal: searchCustomMealList[index].calorie.toString(),
+                                                      carbs: searchCustomMealList[index].carbs.toString(),
+                                                      fat: searchCustomMealList[index].fat.toString(),
+                                                      protein: searchCustomMealList[index].protein.toString(),
+                                                      weight: searchCustomMealList[index].quantity.toString(),
+                                                      imageUrl: searchCustomMealList[index].imageUrl),
                                                   arguments: widget.type);
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  boxShadow: boxShadowWidget,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
+                                                  color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12),
+                                                padding: const EdgeInsets.all(12),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
                                                         SizedBox(
                                                           width: 280.w,
                                                           child: Text(
                                                             '${searchCustomMealList[index].name.toString().capitalizeFirst}',
-                                                            style: FontUtils.h16(
-                                                                fontColor:
-                                                                    AppColors
-                                                                        .black,
-                                                                fontWeight:
-                                                                    FWT.medium),
+                                                            style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
                                                           ),
                                                         ),
                                                         SizedBox(
                                                           width: 300.w,
                                                           child: Text(
                                                             'Calories : ${searchCustomMealList[index].calorie?.toStringAsFixed(2) ?? 0}, Protein : ${searchCustomMealList[index].protein?.toStringAsFixed(2) ?? 0} , Carbs : ${searchCustomMealList[index].carbs?.toStringAsFixed(2) ?? 0} , fat : ${searchCustomMealList[index].fat?.toStringAsFixed(2) ?? 0}',
-                                                            style:
-                                                                FontUtils.h12(
-                                                              fontColor: AppColors
-                                                                  .middleGray,
-                                                              fontWeight:
-                                                                  FWT.medium,
+                                                            style: FontUtils.h12(
+                                                              fontColor: AppColors.middleGray,
+                                                              fontWeight: FWT.medium,
                                                             ),
                                                           ),
                                                         ),
@@ -390,9 +321,7 @@ class _CustomMealListState extends State<CustomMealList> {
                                     ),
                                   )
                                 : const Center(
-                                    child: Text('No Search Found!',
-                                        style: TextStyle(
-                                            color: AppColors.middleGray)),
+                                    child: Text('No Search Found!', style: TextStyle(color: AppColors.middleGray)),
                                   )
 
                             ///Regular Data Display ===================================================
@@ -404,8 +333,7 @@ class _CustomMealListState extends State<CustomMealList> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                       child: GestureDetector(
                                         onTap: () {
                                           /* Get.toNamed(
@@ -432,59 +360,33 @@ class _CustomMealListState extends State<CustomMealList> {
 
                                           Get.to(
                                               () => AddNewItemScreen(
-                                                    id: customMealList[index]
-                                                        .id,
-                                                    name: customMealList[index]
-                                                        .name,
-                                                    cal: customMealList[index]
-                                                        .calorie
-                                                        .toString(),
-                                                    carbs: customMealList[index]
-                                                        .carbs
-                                                        .toString(),
-                                                    fat: customMealList[index]
-                                                        .fat
-                                                        .toString(),
-                                                    protein:
-                                                        customMealList[index]
-                                                            .protein
-                                                            .toString(),
-                                                    weight:
-                                                        customMealList[index]
-                                                            .quantity
-                                                            .toString(),
-                                                    imageUrl:
-                                                        customMealList[index]
-                                                            .imageUrl,
+                                                    id: customMealList[index].id,
+                                                    name: customMealList[index].name,
+                                                    cal: customMealList[index].calorie.toString(),
+                                                    carbs: customMealList[index].carbs.toString(),
+                                                    fat: customMealList[index].fat.toString(),
+                                                    protein: customMealList[index].protein.toString(),
+                                                    weight: customMealList[index].quantity.toString(),
+                                                    imageUrl: customMealList[index].imageUrl,
                                                   ),
                                               arguments: widget.type);
                                         },
                                         child: Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              boxShadow: boxShadowWidget,
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
+                                          decoration:
+                                              BoxDecoration(color: Colors.white, boxShadow: boxShadowWidget, borderRadius: BorderRadius.circular(8)),
                                           child: Padding(
                                             padding: const EdgeInsets.all(12),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     SizedBox(
                                                       width: 280.w,
                                                       child: Text(
                                                         '${customMealList[index].name.toString().capitalizeFirst}',
-                                                        style: FontUtils.h16(
-                                                            fontColor:
-                                                                AppColors.black,
-                                                            fontWeight:
-                                                                FWT.medium),
+                                                        style: FontUtils.h16(fontColor: AppColors.black, fontWeight: FWT.medium),
                                                       ),
                                                     ),
                                                     SizedBox(
@@ -492,10 +394,8 @@ class _CustomMealListState extends State<CustomMealList> {
                                                       child: Text(
                                                         'Calories : ${customMealList[index].calorie?.toStringAsFixed(2) ?? 0}, Protein : ${customMealList[index].protein?.toStringAsFixed(2) ?? 0} , Carbs : ${customMealList[index].carbs?.toStringAsFixed(2) ?? 0} , fat : ${customMealList[index].fat?.toStringAsFixed(2) ?? 0}',
                                                         style: FontUtils.h12(
-                                                          fontColor: AppColors
-                                                              .middleGray,
-                                                          fontWeight:
-                                                              FWT.medium,
+                                                          fontColor: AppColors.middleGray,
+                                                          fontWeight: FWT.medium,
                                                         ),
                                                       ),
                                                     ),
@@ -519,13 +419,11 @@ class _CustomMealListState extends State<CustomMealList> {
                           hasImage: false,
                           onPressed: () {
                             log("null");
-                            Get.toNamed("/AddNewItemScreen",
-                                arguments: widget.type);
+                            Get.toNamed("/AddNewItemScreen", arguments: widget.type);
                           },
                           textColor: Colors.white,
                           title: StringUtils.addNewItem,
-                        ).paddingOnly(
-                          bottom: 30.h, top: 10.h, right: 14, left: 14),
+                        ).paddingOnly(bottom: 30.h, top: 10.h, right: 14, left: 14),
                 ],
               ),
             ),

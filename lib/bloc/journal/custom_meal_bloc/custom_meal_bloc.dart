@@ -56,8 +56,7 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
     }
   }
 
-  _onUpdateNewMeal(
-      UpdateNewMealEvent event, Emitter<AddNewMealState> emit) async {
+  _onUpdateNewMeal(UpdateNewMealEvent event, Emitter<AddNewMealState> emit) async {
     emit(AddNewMealLoadingState(productId: event.id));
     try {
       await _repository
@@ -99,21 +98,16 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
     emit(AddNewMealErrorState());
   }
 
-  _onGetSelectedImagePath(
-      GetSelectedImagePath event, Emitter<AddNewMealState> emit) async {
+  _onGetSelectedImagePath(GetSelectedImagePath event, Emitter<AddNewMealState> emit) async {
     emit(SelectedImagePathState(imgPath: event.imagePath));
   }
 
   /// Get Grocery Item Bloc =================================================================
-  _onGetCustomMealListDetails(
-      GetCustomListEvent event, Emitter<AddNewMealState> emit) async {
+  _onGetCustomMealListDetails(GetCustomListEvent event, Emitter<AddNewMealState> emit) async {
     emit(GetCustomMealListLoadingState());
 
     try {
-      await _repository
-          .getCustomMealListData(
-              DateFormat('yyyy-MM-dd').format(event.dateTime!))
-          .fold((left) {
+      await _repository.getCustomMealListData(event.dateTime != null ? DateFormat('yyyy-MM-dd').format(event.dateTime!) : null).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('right.data---------->>>>>> ${right.data}');

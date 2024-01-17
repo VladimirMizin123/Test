@@ -96,14 +96,14 @@ Future<void> main() async {
   // cameras = await availableCameras();
   await PreferenceUtils.init();
   await Firebase.initializeApp(
-    name: 'GymEats',
+      /* name: 'GymEats',
     options: FirebaseOptions(
       apiKey: apiKey,
       appId: appId,
       messagingSenderId: messagingSenderId,
       projectId: projectId,
-    ),
-  );
+    ),*/
+      );
   await initDynamicLinks();
 
 // Subscribe to all events when app is started.
