@@ -303,6 +303,9 @@ class RestaurantRepository {
     final response = await apiServices.get('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      log(jsonDecode(response.body).toString(),
+          name: ""
+              "ORDER DETAILS");
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));

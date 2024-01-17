@@ -19,8 +19,7 @@ class GroceryOrderDetailsScreen extends StatefulWidget {
   const GroceryOrderDetailsScreen({super.key, required this.mealMeOrderId});
   final String mealMeOrderId;
   @override
-  State<GroceryOrderDetailsScreen> createState() =>
-      _GroceryOrderDetailsScreenState();
+  State<GroceryOrderDetailsScreen> createState() => _GroceryOrderDetailsScreenState();
 }
 
 class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
@@ -32,8 +31,7 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
     super.initState();
     loading = true;
     Future.delayed(const Duration(seconds: 10)).then((value) {
-      restaurantBloc
-          .add(GetOrderDetailsEvent(mealMeOrderId: widget.mealMeOrderId));
+      restaurantBloc.add(GetOrderDetailsEvent(mealMeOrderId: widget.mealMeOrderId));
     });
   }
 
@@ -77,19 +75,15 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                           Column(
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   GestureDetector(
-                                    onTap: () =>
-                                        Get.to(() => const GroceryBGView()),
+                                    onTap: () => Get.to(() => const GroceryBGView()),
                                     child: Container(
                                       height: 40.h,
                                       width: 40.w,
-                                      decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white),
+                                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                                       child: const Icon(
                                         Icons.arrow_back_ios,
                                         size: 18,
@@ -119,27 +113,21 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                                   ],
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 24.w, vertical: 12.h),
+                                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                                 child: Column(
                                   children: [
                                     Text(
                                       StringUtils.orderDetails,
-                                      style: textTheme.bodyLarge?.copyWith(
-                                          color: const Color(0xFF010101)),
+                                      style: textTheme.bodyLarge?.copyWith(color: const Color(0xFF010101)),
                                     ),
                                     Text(
                                       '${orderData[0].deliveryTimeMin}-${orderData[0].deliveryTimeMax} min',
-                                      style: textTheme.displayLarge?.copyWith(
-                                          color: AppColors.darkGray,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: -0.8),
+                                      style: textTheme.displayLarge
+                                          ?.copyWith(color: AppColors.darkGray, fontWeight: FontWeight.w900, letterSpacing: -0.8),
                                     ),
                                     Text(
                                       StringUtils.estimatedTimeText,
-                                      style: textTheme.bodySmall?.copyWith(
-                                          color: AppColors.middleGray,
-                                          fontWeight: FontWeight.w400),
+                                      style: textTheme.bodySmall?.copyWith(color: AppColors.middleGray, fontWeight: FontWeight.w400),
                                     ),
                                   ],
                                 ),
@@ -164,8 +152,7 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 10.0, bottom: 4),
+                                padding: const EdgeInsets.only(right: 10.0, bottom: 4),
                                 child: SvgPicture.asset(
                                   AssetsUtils.teracottLoader,
                                   height: 24.h,
@@ -173,10 +160,7 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                                 ),
                               ),
                               Text(StringUtils.trackOrder,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                                         color: const Color(0xFF010101),
                                       )),
                             ],
@@ -211,75 +195,46 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                                               width: 37.w,
                                             ),
                                             Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.67,
+                                                  width: MediaQuery.of(context).size.width * 0.67,
                                                   child: Text(
                                                     '${orderData[index].storeName}',
-                                                    style: textTheme
-                                                        .headlineSmall
-                                                        ?.copyWith(
-                                                            color: const Color(
-                                                                0xFF010101)),
+                                                    style: textTheme.headlineSmall?.copyWith(color: const Color(0xFF010101)),
                                                   ),
                                                 ),
                                                 Text(
                                                   'Order ${orderData[index].orderId}',
                                                   style: textTheme.bodySmall
-                                                      ?.copyWith(
-                                                          color: AppColors
-                                                              .middleGray,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          height: 1.2),
+                                                      ?.copyWith(color: AppColors.middleGray, fontWeight: FontWeight.w400, height: 1.2),
                                                 ),
                                               ],
                                             ).paddingOnly(left: 10.w)
                                           ],
                                         ),
                                         commonRowData(
-                                          title:
-                                              '${orderData[index].quantity}x ${orderData[index].productName}',
-                                          value:
-                                              '\$ ${orderData[index].price! / 100}',
-                                          textTheme: textTheme.bodyMedium!
-                                              .copyWith(color: Colors.black),
-                                          valueTextTheme: textTheme.bodyLarge!
-                                              .copyWith(color: Colors.black),
+                                          title: '${orderData[index].quantity}x ${orderData[index].productName}',
+                                          value: '\$ ${orderData[index].price! / 100}',
+                                          textTheme: textTheme.bodyMedium!.copyWith(color: Colors.black),
+                                          valueTextTheme: textTheme.bodyLarge!.copyWith(color: Colors.black),
                                         ),
                                         commonRowData(
                                           title: 'Total',
-                                          value:
-                                              '\$ ${orderData[index].price! / 100}',
-                                          textTheme: textTheme.bodyLarge!
-                                              .copyWith(
-                                                  color: AppColors.darkGray),
-                                          valueTextTheme: textTheme
-                                              .headlineSmall!
-                                              .copyWith(color: Colors.black),
+                                          value: '\$ ${orderData[index].price! / 100}',
+                                          textTheme: textTheme.bodyLarge!.copyWith(color: AppColors.darkGray),
+                                          valueTextTheme: textTheme.headlineSmall!.copyWith(color: Colors.black),
                                         ),
                                       ],
                                     ).paddingAll(12))
-                                        .paddingSymmetric(
-                                            horizontal: 20.w, vertical: 5),
+                                        .paddingSymmetric(horizontal: 20.w, vertical: 5),
                                   ),
                                 ),
                               ),
                             ),
                       const Text('Have any questions? Fill free to ask us!'),
-                      buildButton(
-                              context: context,
-                              bgColor: AppColors.primaryBlue,
-                              onPressed: () {},
-                              textColor: AppColors.skyBlue,
-                              title: 'Support')
-                          .paddingOnly(
-                              top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
+                      buildButton(context: context, bgColor: AppColors.primaryBlue, onPressed: () {}, textColor: AppColors.skyBlue, title: 'Support')
+                          .paddingOnly(top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
                     ],
                   ),
                 ),
@@ -298,9 +253,7 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-            width: MediaQuery.of(context).size.width * 0.65,
-            child: Text(title, style: textTheme)),
+        SizedBox(width: MediaQuery.of(context).size.width * 0.65, child: Text(title, style: textTheme)),
         Text(value, style: valueTextTheme),
       ],
     ).paddingSymmetric(vertical: 5);

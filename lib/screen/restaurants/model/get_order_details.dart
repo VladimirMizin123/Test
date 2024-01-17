@@ -4,11 +4,9 @@
 
 import 'dart:convert';
 
-GetOrderDetails getOrderDetailsFromJson(String str) =>
-    GetOrderDetails.fromJson(json.decode(str));
+GetOrderDetails getOrderDetailsFromJson(String str) => GetOrderDetails.fromJson(json.decode(str));
 
-String getOrderDetailsToJson(GetOrderDetails data) =>
-    json.encode(data.toJson());
+String getOrderDetailsToJson(GetOrderDetails data) => json.encode(data.toJson());
 
 class GetOrderDetails {
   bool? success;
@@ -23,24 +21,18 @@ class GetOrderDetails {
     this.data,
   });
 
-  factory GetOrderDetails.fromJson(Map<String, dynamic> json) =>
-      GetOrderDetails(
+  factory GetOrderDetails.fromJson(Map<String, dynamic> json) => GetOrderDetails(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null
-            ? []
-            : List<OrderData>.from(
-                json["data"]!.map((x) => OrderData.fromJson(x))),
+        data: json["data"] == null ? [] : List<OrderData>.from(json["data"]!.map((x) => OrderData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
         "errorMessage": errorMessage,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 }
 
@@ -55,6 +47,9 @@ class OrderData {
   String? purchaseDate;
   double? generatedProfit;
   dynamic partnerGeneratedProfit;
+  double? deliveryFee;
+  double? serviceFee;
+  double? serviceTaxFee;
   int? deliveryTimeMin;
   int? deliveryTimeMax;
   String? trackLink;
@@ -78,6 +73,9 @@ class OrderData {
     this.purchaseDate,
     this.generatedProfit,
     this.partnerGeneratedProfit,
+    this.deliveryFee,
+    this.serviceFee,
+    this.serviceTaxFee,
     this.deliveryTimeMin,
     this.deliveryTimeMax,
     this.trackLink,
@@ -102,6 +100,9 @@ class OrderData {
         purchaseDate: json["purchaseDate"],
         generatedProfit: json["generatedProfit"]?.toDouble(),
         partnerGeneratedProfit: json["partnerGeneratedProfit"],
+        deliveryFee: json["deliveryFee"]?.toDouble(),
+        serviceFee: json["serviceFee"]?.toDouble(),
+        serviceTaxFee: json["serviceTaxFee"]?.toDouble(),
         deliveryTimeMin: json["deliveryTimeMin"],
         deliveryTimeMax: json["deliveryTimeMax"],
         trackLink: json["trackLink"],
@@ -126,6 +127,9 @@ class OrderData {
         "purchaseDate": purchaseDate,
         "generatedProfit": generatedProfit,
         "partnerGeneratedProfit": partnerGeneratedProfit,
+        "deliveryFee": deliveryFee,
+        "serviceFee": serviceFee,
+        "serviceTaxFee": serviceTaxFee,
         "deliveryTimeMin": deliveryTimeMin,
         "deliveryTimeMax": deliveryTimeMax,
         "trackLink": trackLink,
