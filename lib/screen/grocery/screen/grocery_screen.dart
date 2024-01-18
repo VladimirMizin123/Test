@@ -843,6 +843,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                           )
                                                         : GestureDetector(
                                                             onTap: () async {
+                                                              log("DELETE");
                                                               // groceryBloc.add(
                                                               //     RemoveGroceryEvent(
                                                               //         productID:
@@ -917,6 +918,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                                     SizedBox(width: 8.w),
                                                     GestureDetector(
                                                       onTap: () {
+                                                        log("Add");
                                                         addNewGroceryItemBloc
                                                             .add(
                                                           UpdateAddNewGroceryItem(

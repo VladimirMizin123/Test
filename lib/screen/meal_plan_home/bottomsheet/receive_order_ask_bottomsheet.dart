@@ -140,6 +140,8 @@ class _ReceiveOrderAskBottomSheetState
                                 if (widget.isFrom == 'isFromCheckout') {
                                   Get.back();
                                 } else {
+                                  print("selectedEdgesList: : ${widget.selectedEdgesList!}");
+
                                   Get.toNamed('/GroceryCartScreen',
                                           arguments: GroceryCartScreenArguments(
                                               edgesList:
@@ -171,6 +173,7 @@ class _ReceiveOrderAskBottomSheetState
                                     ),
                                   );
                                 } else {
+                                  print("selectedEdgesList: : ${widget.selectedEdgesList!}");
                                   Get.toNamed('/GroceryCartScreen',
                                           arguments: GroceryCartScreenArguments(
                                               edgesList:

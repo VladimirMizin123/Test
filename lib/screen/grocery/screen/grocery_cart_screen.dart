@@ -60,6 +60,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
   @override
   void initState() {
     super.initState();
+
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       groceryBloc.add(GetUserAddressEvent());
       setState(() {
@@ -825,6 +826,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                         );
                                       }
 
+                                      ///grocery LOG
+
                                       groceryBloc.add(
                                         CreateOrderEvent(
                                           createGroceryOrderModel: CreateGroceryOrderModel(
@@ -846,6 +849,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             pickupTipCents: 0,
                                             userDropoffNotes: '',
                                           ),
+                                          orderId: widget.arguments!.edgesList,
                                         ),
                                       );
                                     }

@@ -4,6 +4,8 @@ import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
@@ -251,7 +253,19 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
         showToast(isSuccess: true, message: right.message ?? "Order Created Successfully");
 
         ///call Clear Shopping List api
-        await _repository.clearShoppingList().fold((left) {}, (right) {});
+        ///
+        if (event.orderId != null) {
+          event.orderId!.forEach((element) {
+            AddNewGroceryItemBloc().add(
+              RemoveGroceryItemEvent(
+                userGroceryListId: element.id,
+              ),
+            );
+          });
+        }
+
+        /// Clear All List
+        /* await _repository.clearShoppingList().fold((left) {}, (right) {});*/
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
