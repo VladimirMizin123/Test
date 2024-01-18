@@ -81,8 +81,8 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
 
     selectedLatLng = LatLng(position.latitude, position.longitude);
     findAddressURL(
-      lat: selectedLatLng?.latitude.toString(),
-      lng: selectedLatLng?.longitude.toString(),
+      lat: selectedLatLng?.latitude.toStringAsFixed(6).toString(),
+      lng: selectedLatLng?.longitude.toStringAsFixed(6).toString(),
     );
 
     currentPosition = CameraPosition(

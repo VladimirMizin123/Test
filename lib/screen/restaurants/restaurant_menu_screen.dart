@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
@@ -85,7 +86,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: bloc.BlocConsumer(
@@ -98,6 +98,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             }
             if (state is GetRestaurantMenuListSuccessState) {
               restaurantMenu = state.restaurantMenuList;
+
+              // print("response data List:${state.restaurantMenuList}");
 
               if (restaurantMenu != null) {
                 if (cartData.isNotEmpty) {
@@ -387,7 +389,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                             height: 40,
                                             width: 40,
                                             decoration: BoxDecoration(
-                                              color: AppColors.disable,
+                                              // color: AppColors.disable,
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                             ),
@@ -409,26 +411,24 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     : restaurantMenu == null
                         ? Expanded(
                             child: Center(
-                              child: Text(
-                                'Currently No Menu Found',
-                                style: FontUtils.h18(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.medium,
-                                ),
+                                child: Text(
+                              StringUtils.notfoundResmenuError,
+                              style: FontUtils.h18(
+                                fontColor: AppColors.darkGray,
+                                fontWeight: FWT.medium,
                               ),
-                            ),
+                            ).paddingAll(30)),
                           )
                         : restaurantMenu!.categories!.isEmpty
                             ? Expanded(
                                 child: Center(
-                                  child: Text(
-                                    'Currently No Menu Found',
-                                    style: FontUtils.h18(
-                                      fontColor: AppColors.darkGray,
-                                      fontWeight: FWT.medium,
-                                    ),
+                                    child: Text(
+                                  StringUtils.notfoundResmenuError,
+                                  style: FontUtils.h18(
+                                    fontColor: AppColors.darkGray,
+                                    fontWeight: FWT.medium,
                                   ),
-                                ),
+                                ).paddingAll(30)),
                               )
                             : Expanded(
                                 child: Column(
@@ -682,7 +682,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                             return Expanded(
                                               child: Center(
                                                 child: Text(
-                                                  'Currently No Menu Found',
+                                                  StringUtils
+                                                      .notfoundResmenuError,
                                                   style: FontUtils.h18(
                                                     fontColor:
                                                         AppColors.darkGray,
@@ -790,6 +791,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   Widget displayData({required int index}) {
     final size = MediaQuery.of(context).size;
+    // final RestaurantBloc restaurantBloc;
 
     return GestureDetector(
       onTap: () {
@@ -909,70 +911,74 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                             AssetsUtils.icCanEat,
                         width: 25.w,
                       ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      restaurantMenu!.categories![select].menuItemList![index]
-                          .formattedPrice
-                          .toString(),
-                      style: FontUtils.h18(
-                        fontColor: Colors.black,
-                        fontWeight: FWT.medium,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        for (var element in cartData) {
-                          if (element.productId ==
-                              restaurantMenu!.categories![select]
-                                  .menuItemList![index].productId) {
-                            selectedCartData = element;
-                          }
-                        }
+                Builder(builder: (context) {
+                  log("BUILDER:${restaurantMenu?.toJson().toString() ?? ""}");
 
-                        selectedCartData == null
-                            ? await Get.to(
-                                () => RestaurantMenuDetailsScreen(
-                                  data: restaurantMenu!
-                                      .categories![select].menuItemList![index],
-                                  restaurantId: widget.restaurantId,
-                                  cartCount: cartCount,
-                                  pickUp: widget.pickup,
-                                ),
-                                transition: Transition.fadeIn,
-                              )!
-                                .then((value) {
-                                if (value == true) {
-                                  restaurantBloc.add(GetShoppingListEvent());
-                                }
-                              })
-                            : await Get.to(
-                                () => RestaurantMenuDetailsScreen(
-                                  data: restaurantMenu!
-                                      .categories![select].menuItemList![index],
-                                  restaurantId: widget.restaurantId,
-                                  shoppingListData: selectedCartData,
-                                  cartCount: cartCount,
-                                  pickUp: widget.pickup,
-                                ),
-                                transition: Transition.fadeIn,
-                              )!
-                                .then((value) {
-                                if (value == true) {
-                                  restaurantBloc.add(GetShoppingListEvent());
-                                }
-                              });
-                      },
-                      child: Image.asset(
-                        AssetsUtils.icAdd,
-                        height: 22.h,
-                        alignment: Alignment.bottomRight,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        restaurantMenu!.categories![select].menuItemList![index]
+                            .formattedPrice
+                            .toString(),
+                        style: FontUtils.h18(
+                          fontColor: Colors.black,
+                          fontWeight: FWT.medium,
+                        ),
                       ),
-                    ),
-                  ],
-                )
+                      GestureDetector(
+                        onTap: () async {
+                          for (var element in cartData) {
+                            if (element.productId ==
+                                restaurantMenu!.categories![select]
+                                    .menuItemList![index].productId) {
+                              selectedCartData = element;
+                            }
+                          }
+
+                          selectedCartData == null
+                              ? await Get.to(
+                                  () => RestaurantMenuDetailsScreen(
+                                    data: restaurantMenu!.categories![select]
+                                        .menuItemList![index],
+                                    restaurantId: widget.restaurantId,
+                                    cartCount: cartCount,
+                                    pickUp: widget.pickup,
+                                  ),
+                                  transition: Transition.fadeIn,
+                                )!
+                                  .then((value) {
+                                  if (value == true) {
+                                    restaurantBloc.add(GetShoppingListEvent());
+                                  }
+                                })
+                              : await Get.to(
+                                  () => RestaurantMenuDetailsScreen(
+                                    data: restaurantMenu!.categories![select]
+                                        .menuItemList![index],
+                                    restaurantId: widget.restaurantId,
+                                    shoppingListData: selectedCartData,
+                                    cartCount: cartCount,
+                                    pickUp: widget.pickup,
+                                  ),
+                                  transition: Transition.fadeIn,
+                                )!
+                                  .then((value) {
+                                  if (value == true) {
+                                    restaurantBloc.add(GetShoppingListEvent());
+                                  }
+                                });
+                        },
+                        child: Image.asset(
+                          AssetsUtils.icAdd,
+                          height: 22.h,
+                          alignment: Alignment.bottomRight,
+                        ),
+                      ),
+                    ],
+                  );
+                })
               ],
             ),
           ),

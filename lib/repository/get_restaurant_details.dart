@@ -58,8 +58,8 @@ class RestaurantRepository {
       required int maximumMiles,
       required List categoriesData}) async {
     Map<String, dynamic> data = {
-      "latitude": latitude,
-      "longitude": longitude,
+      "latitude": latitude.toStringAsFixed(6),
+      "longitude": longitude.toStringAsFixed(6),
       "user_street_num": userStreetNum,
       "user_street_name": userStreetName,
       "user_city": userCity,
@@ -96,9 +96,9 @@ class RestaurantRepository {
     Map<String, dynamic> data = {
       "userId": userId,
       "mealType": mealType,
-      "latitude": getUserAddress?.latitude,
+      "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
       "restaurantId": restaurantId,
-      "longitude": getUserAddress?.longitude,
+      "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
       "user_street_num": getUserAddress?.streetNum,
       "user_street_name": getUserAddress?.streetName,
       "user_city": getUserAddress?.city,
@@ -137,8 +137,8 @@ class RestaurantRepository {
     required int maximumMiles,
   }) async {
     Map<String, dynamic> data = {
-      "latitude": latitude,
-      "longitude": longitude,
+      "latitude": latitude.toStringAsFixed(6),
+      "longitude": longitude.toStringAsFixed(6),
       "user_street_num": userStreetNum,
       "user_street_name": userStreetName,
       "user_city": userCity,
@@ -146,7 +146,7 @@ class RestaurantRepository {
       "user_country": userCountry,
       "user_zipcode": userZipcode,
       "pickup": pickup,
-      "maximum_miles": maximumMiles, //add category ///////
+      "maximum_miles": maximumMiles,
     };
 
     print("getCousinesListData:$data");
@@ -155,7 +155,8 @@ class RestaurantRepository {
       data,
     );
 
-    print("response print :${response.body}");
+    log("response print :${response.body}");
+    print("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetCousinesListModel.fromJson(jsonDecode(response.body)));

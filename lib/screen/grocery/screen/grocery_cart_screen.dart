@@ -207,7 +207,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
 
                     Get.toNamed('/ChooseStoreScreen',
                         arguments: GroceryCartScreenArguments(
-                          getUserAddress: getUserAddress,
+                          getUserAddress: widget.arguments?.getUserAddress ??
+                              getUserAddress,
                           edgesList: widget.arguments!.edgesList,
                           askReceiveOrder: widget.arguments!.askReceiveOrder,
                           groceryBloc: groceryBloc,

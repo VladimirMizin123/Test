@@ -64,10 +64,13 @@ class SignUpRepository {
       "UserDetail.SurveyId": model.surveyId ?? '',
       "UserDetail.DietId": model.dietId ?? "",
       "UserAddress.Latitude":
-          model.addAddressModel?.latitude.toString() ?? model.latitude ?? '0.0',
-      "UserAddress.Longitude": model.addAddressModel?.longitude?.toString() ??
-          model.longitude ??
-          "0.0",
+          model.addAddressModel?.latitude?.toStringAsFixed(6).toString() ??
+              model.latitude ??
+              '0.0',
+      "UserAddress.Longitude":
+          model.addAddressModel?.longitude?.toStringAsFixed(6).toString() ??
+              model.longitude ??
+              "0.0",
       "UserAddress.Street_Num": model.addAddressModel?.streetNum ?? "",
       "UserAddress.Street_Name": model.addAddressModel?.streetName ?? "",
       "UserAddress.City": model.addAddressModel?.city ?? "",

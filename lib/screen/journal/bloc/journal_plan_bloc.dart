@@ -232,11 +232,13 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
         emit(JournalSearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
+        print("call success :${right.data!.carts}");
         emit(JournalSearchSuccessState(
             groceryMultiSearchProductList: right.data!.carts));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      print("hello error:$e");
+      // showToast(isSuccess: false, message: e.toString());
       emit(JournalSearchErrorState());
     }
   }

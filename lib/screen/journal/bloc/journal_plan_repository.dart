@@ -108,9 +108,11 @@ class JournalPlanRepository {
 
     // log(apiURL, name: 'API URL :');
 
+    print("address:$getUserAddress");
+
     Map<String, dynamic> data = {
-      "latitude": getUserAddress?.latitude,
-      "longitude": getUserAddress?.longitude,
+      "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
+      "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
       "user_street_num": getUserAddress?.streetNum,
       "user_street_name": getUserAddress?.streetName,
       "user_city": getUserAddress?.city,
@@ -127,7 +129,7 @@ class JournalPlanRepository {
       data,
     );
 
-    log("body:${response.body}");
+    log("res body:${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));

@@ -28,8 +28,8 @@ class AddAddressRepository {
     required String userId,
   }) async {
     Map<String, dynamic> data = {
-      "latitude": latitude,
-      "longitude": longitude,
+      "latitude": latitude.toStringAsFixed(6),
+      "longitude": longitude.toStringAsFixed(6),
       "street_Num": streetNum,
       "street_Name": streetName,
       "city": city,
@@ -65,8 +65,8 @@ class AddAddressRepository {
     required String addressId,
   }) async {
     Map<String, dynamic> data = {
-      "latitude": latitude,
-      "longitude": longitude,
+      "latitude": latitude.toStringAsFixed(6),
+      "longitude": longitude.toStringAsFixed(6),
       "street_Num": streetNum,
       "street_Name": streetName,
       "city": city,

@@ -109,20 +109,30 @@ class GroceryRepository {
       required userAddress.UserAddress? getUserAddress}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
-    // log(apiURL, name: 'API URL :');
-    print("address json :${getUserAddress?.toJson()}");
+    String? tempGroceryName;
+    int? quantity;
+    for (var element in grocerySearchModal) {
+      tempGroceryName = element.groceryName ?? "";
+      quantity = element.quantity;
+    }
 
+    print("getUserAddress :${getUserAddress?.toJson()}");
     Map<String, dynamic> data = {
-      "latitude": getUserAddress?.latitude,
-      "longitude": getUserAddress?.longitude,
-      "groceries": grocerySearchModal,
+      "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
+      "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
       "user_street_num": getUserAddress?.streetNum,
-      "user_street_name": getUserAddress?.streetNum,
+      "user_street_name": getUserAddress?.streetName,
       "user_city": getUserAddress?.city,
       "user_state": getUserAddress?.state,
       "user_country": getUserAddress?.country,
       "user_zipcode": getUserAddress?.zipcode,
       "pickup": false,
+      "groceries": [
+        {
+          "groceryName": tempGroceryName,
+          "quantity": quantity,
+        }
+      ]
     };
 
     final response = await apiServices.post(
@@ -130,9 +140,9 @@ class GroceryRepository {
       data,
     );
     print("data:$data");
-
+    log(apiURL);
     log("res:${response.body}");
-    print("code:${response.statusCode}");
+    log("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));

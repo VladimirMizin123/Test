@@ -682,6 +682,9 @@ class _RestaurantMenuDetailsScreenState
                                                                           index1]
                                                                       .formattedPrice ??
                                                                   '',
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .black),
                                                             )
                                                           ],
                                                         ),

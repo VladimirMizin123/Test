@@ -737,8 +737,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                       );
 
                       Map<String, dynamic> addressData = {
-                        'latitude': selectedLatLng?.latitude,
-                        'longitude': selectedLatLng?.longitude,
+                        'latitude': selectedLatLng?.latitude.toStringAsFixed(6),
+                        'longitude':
+                            selectedLatLng?.longitude.toStringAsFixed(6),
                         'street_Num': streetNum,
                         'street_Name': streetName,
                         'city': city,

@@ -27,7 +27,8 @@ import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 
 class JournalMealScreen extends StatefulWidget {
-  const JournalMealScreen({Key? key}) : super(key: key);
+  final JournalMealScreenArguments? arguments;
+  const JournalMealScreen({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<JournalMealScreen> createState() => _JournalMealScreenState();
@@ -46,11 +47,10 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
   @override
   void initState() {
     super.initState();
-
-    log("SCREEN");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       journalPlanBloc.add(JournalPlanFetchEvent());
     });
+    log("arg:${(journalMealScreenArguments ?? widget.arguments)?.getUserAddress?.toJson()}");
   }
 
   @override
@@ -74,14 +74,24 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                       state.mealPlanList[i].date!.month,
                       state.mealPlanList[i].date!.day) ==
                   DateTime(
-                      journalMealScreenArguments!.dateTime!.year,
-                      journalMealScreenArguments!.dateTime!.month,
-                      journalMealScreenArguments!.dateTime!.day)) {
+                      (journalMealScreenArguments ?? widget.arguments)
+                              ?.dateTime
+                              ?.year ??
+                          0,
+                      (journalMealScreenArguments ?? widget.arguments)
+                              ?.dateTime
+                              ?.month ??
+                          0,
+                      (journalMealScreenArguments ?? widget.arguments)
+                              ?.dateTime
+                              ?.day ??
+                          0)) {
                 for (var j = 0; j < state.mealPlanList[i].meals!.length; j++) {
                   if (state.mealPlanList[i].meals![j].meal!
                           .trim()
                           .toLowerCase() ==
-                      journalMealScreenArguments!.mealType!
+                      (journalMealScreenArguments ?? widget.arguments)!
+                          .mealType!
                           .trim()
                           .toLowerCase()) {
                     mealList.add(state.mealPlanList[i].meals![j]);
@@ -169,7 +179,10 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                       ),
                     ),
                     Text(
-                      journalMealScreenArguments!.mealType!.capitalize ?? '',
+                      (journalMealScreenArguments ?? widget.arguments)
+                              ?.mealType!
+                              .capitalize ??
+                          '',
                       style: FontUtils.h20(
                         fontColor: AppColors.oxFF010101,
                       ),
@@ -179,8 +192,12 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                       onTap: () {
                         Get.to(
                           () => CustomMealList(
-                              type: journalMealScreenArguments!.mealType!,
-                              dateTime: journalMealScreenArguments!.dateTime!),
+                              type: (widget.arguments ??
+                                      journalMealScreenArguments)!
+                                  .mealType!,
+                              dateTime: (widget.arguments ??
+                                      journalMealScreenArguments)!
+                                  .dateTime!),
                         );
                       },
                       child: Image.asset(
@@ -229,7 +246,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                   builder: (context) {
                                     return JournalSearchScreen(
                                       journalMealScreenArguments:
-                                          journalMealScreenArguments!,
+                                          (widget.arguments ??
+                                              journalMealScreenArguments)!,
                                       isFrom: 'Journal',
                                     );
                                   },
@@ -276,10 +294,11 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                 "/ScanBarcodeScreen",
                                 arguments: ScanBarcodeArguments(
                                     journalPlanBloc: journalPlanBloc,
-                                    selectedDateTime:
-                                        journalMealScreenArguments!.dateTime,
-                                    type: journalMealScreenArguments!
-                                        .mealType!.capitalizeFirst!),
+                                    selectedDateTime: (widget.arguments ??
+                                            journalMealScreenArguments)!
+                                        .dateTime,
+                                    type: widget
+                                        .arguments!.mealType!.capitalizeFirst!),
                               );
                             },
                             child: const SvgImage(
@@ -363,9 +382,10 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                             arguments: MealPlanArguments(
                                               mealData: mealList[index],
                                               isFromScanner: false,
-                                              currentSelectedData:
-                                                  journalMealScreenArguments!
-                                                      .dateTime,
+                                              currentSelectedData: (widget
+                                                          .arguments ??
+                                                      journalMealScreenArguments)!
+                                                  .dateTime,
                                             ),
                                           );
                                         },
@@ -399,9 +419,11 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                   ),
                                 ),
                 ),
-                !(journalMealScreenArguments!.dateTime!.day ==
+                !((journalMealScreenArguments ?? widget.arguments)
+                            ?.dateTime!
+                            .day ==
                         DateTime.now().day)
-                    ? SizedBox()
+                    ? const SizedBox()
                     : buildButton(
                         context: context,
                         title: StringUtils.addNewItem,
@@ -410,7 +432,9 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                         onPressed: () {
                           Get.toNamed(
                             "/AddNewItemScreen",
-                            arguments: journalMealScreenArguments!.mealType!,
+                            arguments: (widget.arguments ??
+                                    journalMealScreenArguments)!
+                                .mealType!,
                           );
                           // bloc.add(SaveClickEvent(
                           //     userId: userId,

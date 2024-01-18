@@ -25,9 +25,13 @@ import 'package:gymeats_mobile/screen/grocery/screen/grocery_item_details.dart';
 import 'package:gymeats_mobile/screen/journal/journal_search_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/clear_all_item_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 class GroceryPlanScreen extends StatefulWidget {
   const GroceryPlanScreen({super.key});
@@ -56,6 +60,8 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
 
   bool isLoader = false;
   int? weightValue;
+  RestaurantBloc restaurantBloc = RestaurantBloc();
+  UserAddress? getUserAddress;
 
   @override
   void initState() {
@@ -67,6 +73,9 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
       addNewGroceryItemBloc.add(GetGroceryItemEvent());
       myAddressBloc.add(addressevent.GetUserAddressEvent());
       accountBloc.add(GetUnitInfoEvent());
+      restaurantBloc.add(GetShoppingListEvent());
+      restaurantBloc.add(GetDeliveryStatusEvent());
+      restaurantBloc.add(GetUserAddressEvent());
     });
   }
 
@@ -408,52 +417,69 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                               ),
                             ).paddingSymmetric(vertical: 10.h),
                           ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
-                          boxShadow: boxShadowWidget,
-                        ),
-                        child: TextFormField(
-                          style: const TextStyle(color: Colors.black),
-                          readOnly: true,
-                          onTap: () {
-                            // Get.toNamed('/GrocerySearchScreen')!.then((value) {
-                            //   groceryBloc.add(GroceryFetchEvent());
-                            // });
+                    BlocBuilder(
+                      bloc: restaurantBloc,
+                      builder: (context, state) {
+                        if (state is GetUserAddressSuccessState) {
+                          for (var i = 0; i < state.userAddress.length; i++) {
+                            if (state.userAddress[i].isPrimary == true) {
+                              getUserAddress = state.userAddress[i];
+                              print("in:${getUserAddress?.toJson()}");
+                              break;
+                            }
+                          }
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(12)),
+                              boxShadow: boxShadowWidget,
+                            ),
+                            child: TextFormField(
+                              style: const TextStyle(color: Colors.black),
+                              readOnly: true,
+                              onTap: () {
+                                // Get.toNamed('/GrocerySearchScreen')!.then((value) {
+                                //   groceryBloc.add(GroceryFetchEvent());
+                                // });
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return const JournalSearchScreen(
-                                    isFrom: 'Grocery',
-                                  );
-                                },
+                                print(
+                                    "journal screen :${getUserAddress?.toJson()}");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return JournalSearchScreen(
+                                        getUserAddress: getUserAddress,
+                                        isFrom: 'Grocery',
+                                      );
+                                    },
+                                  ),
+                                ).then((value) {
+                                  setState(() {
+                                    addNewGroceryItemBloc
+                                        .add(GetGroceryItemEvent());
+                                  });
+                                });
+                              },
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search,
+                                    color: Colors.black),
+                                hintText: 'Search for item',
+                                hintStyle: FontUtils.h16(),
+                                border: InputBorder.none,
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide.none),
                               ),
-                            ).then((value) {
-                              setState(() {
-                                addNewGroceryItemBloc
-                                    .add(GetGroceryItemEvent());
-                              });
-                            });
-                          },
-                          decoration: InputDecoration(
-                            prefixIcon:
-                                const Icon(Icons.search, color: Colors.black),
-                            hintText: 'Search for item',
-                            hintStyle: FontUtils.h16(),
-                            border: InputBorder.none,
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide.none),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide.none),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     SizedBox(height: 15.h),
                     Expanded(
@@ -1021,6 +1047,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         }
 
                         if (edgesDummyList.isNotEmpty) {
+                          print("tap bottomsheet:${getUserAddress?.toJson()}");
                           showModalBottomSheet(
                             context: context,
                             builder: (context) {
@@ -1030,6 +1057,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                 selectedEdgesList: edgesDummyList,
                                 isFrom: 'isFromGrocery',
                                 selectedIndex: selectedIndex,
+                                getUserAddress: getUserAddress,
                               );
                             },
                             isDismissible: false,
