@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
@@ -17,10 +16,11 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_mode
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart' as user;
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as user;
 
 class RestaurantRepository {
   final ApiServices apiServices = ApiServices();
@@ -71,14 +71,12 @@ class RestaurantRepository {
       "categories": categoriesData
     };
 
-    // log('myData $data');
+    log('data---------->>>>>> $data');
 
     final response = await apiServices.post(
       ApiUrls.getRestaurantList,
       data,
     );
-
-    // log("body${response.body.toString()}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetRestaurantListModel.fromJson(jsonDecode(response.body)));
@@ -92,33 +90,41 @@ class RestaurantRepository {
   /// Get Restaurant Menu List ====================================================================
 
   Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList(
-      {String? restaurantId, bool? pickup, String? mealType, user.UserAddress? getUserAddress}) async {
-    Map<String, dynamic> data = {
-      "userId": userId,
-      "mealType": mealType,
-      "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
-      "restaurantId": restaurantId,
-      "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
-      "user_street_num": getUserAddress?.streetNum,
-      "user_street_name": getUserAddress?.streetName,
-      "user_city": getUserAddress?.city,
-      "user_state": getUserAddress?.state,
-      "user_country": getUserAddress?.country,
-      "user_zipcode": getUserAddress?.zipcode,
-      "pickup": pickup
-    };
+      {String? restaurantId,
+      bool? pickup,
+      String? mealType,
+      user.UserAddress? getUserAddress}) async {
+    {
+      Map<String, dynamic> data = {
+        "userId": userId,
+        "mealType": mealType,
+        "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
+        "restaurantId": restaurantId,
+        "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
+        "user_street_num": getUserAddress?.streetNum,
+        "user_street_name": getUserAddress?.streetName,
+        "user_city": getUserAddress?.city,
+        "user_state": getUserAddress?.state,
+        "user_country": getUserAddress?.country,
+        "user_zipcode": getUserAddress?.zipcode,
+        "pickup": pickup
+      };
 
-    final response = await apiServices.post(ApiUrls.getRestaurantMenuList, data);
+      final response =
+          await apiServices.post(ApiUrls.getRestaurantMenuList, data);
 
-    log("body:${response.body.toString()}");
-    print("data:$data");
+      log("menu body:${response.body.toString()}");
+      print("data:$data");
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+      } else if (response.statusCode == 400) {
+        return Right(
+            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+      } else {
+        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      }
     }
   }
 
@@ -146,17 +152,13 @@ class RestaurantRepository {
       "user_country": userCountry,
       "user_zipcode": userZipcode,
       "pickup": pickup,
-      "maximum_miles": maximumMiles,
+      "maximum_miles": maximumMiles
     };
 
-    print("getCousinesListData:$data");
     final response = await apiServices.post(
       ApiUrls.getCousinesList,
       data,
     );
-
-    log("response print :${response.body}");
-    print("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetCousinesListModel.fromJson(jsonDecode(response.body)));
@@ -170,7 +172,8 @@ class RestaurantRepository {
   /// Add Shopping List ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> addMenuToCartRestaurant(
-      {required List<AddRestaurantItemsToShoppingListModel> addItemsToShoppingList}) async {
+      {required List<AddRestaurantItemsToShoppingListModel>
+          addItemsToShoppingList}) async {
     final response = await apiServices.post(
       ApiUrls.addItemsToShoppingList,
       {"userId": userID, "itemList": addItemsToShoppingList},
@@ -185,7 +188,8 @@ class RestaurantRepository {
   /// Get Shopping List ====================================================================
 
   Future<Either<ErrorModel, GetShoppingListData>> getShoppingList() async {
-    final response = await apiServices.get('${ApiUrls.getShoppingList}/$userID');
+    final response =
+        await apiServices.get('${ApiUrls.getShoppingList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetShoppingListData.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
@@ -198,7 +202,8 @@ class RestaurantRepository {
   /// Update Shopping List ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> updateMenuToCartRestaurant(
-      {required UpdateRestaurantItemsToShoppingListModel updateItemsToShoppingList}) async {
+      {required UpdateRestaurantItemsToShoppingListModel
+          updateItemsToShoppingList}) async {
     final response = await apiServices.put(
       ApiUrls.updateShoppingList,
       updateItemsToShoppingList,
@@ -217,8 +222,10 @@ class RestaurantRepository {
 
   /// Remove Shopping List Item====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> removeShoppingListItem({String? productID}) async {
-    final response = await apiServices.delete('${ApiUrls.removeProduct}?userId=$userID&productId=$productID');
+  Future<Either<ErrorModel, SuccessModel>> removeShoppingListItem(
+      {String? productID}) async {
+    final response = await apiServices
+        .delete('${ApiUrls.removeProduct}?userId=$userID&productId=$productID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     }
@@ -235,8 +242,10 @@ class RestaurantRepository {
 
   /// Clear Shopping List Item ====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> clearShoppingListItem({String? productID}) async {
-    final response = await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
+  Future<Either<ErrorModel, SuccessModel>> clearShoppingListItem(
+      {String? productID}) async {
+    final response =
+        await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     }
@@ -253,14 +262,16 @@ class RestaurantRepository {
 
   /// Create Order ====================================================================
 
-  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder({required CreateOrderModel createOrderModel}) async {
+  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
+      {required CreateOrderModel createOrderModel}) async {
     final response = await apiServices.post(
       ApiUrls.createOrder,
       createOrderModel,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -268,16 +279,16 @@ class RestaurantRepository {
 
   /// Create Product ====================================================================
 
-  Future<Either<ErrorModel, CreateProductResponseModel>> createProduct({required CreateProductRequestModel createProductRequestModel}) async {
-    log(ApiUrls.createProduct, name: "CREATE PRODUCT");
-    log(createProductRequestModel.toJson().toString(), name: "CREATE PRODUCT");
+  Future<Either<ErrorModel, CreateProductResponseModel>> createProduct(
+      {required CreateProductRequestModel createProductRequestModel}) async {
     final response = await apiServices.post(
       ApiUrls.createProduct,
       createProductRequestModel,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(CreateProductResponseModel.fromJson(jsonDecode(response.body)));
+      return Right(
+          CreateProductResponseModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -285,7 +296,8 @@ class RestaurantRepository {
 
   /// Create Checkout====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> createCheckout({required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
+  Future<Either<ErrorModel, SuccessModel>> createCheckout(
+      {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
     final response = await apiServices.post(
       ApiUrls.createCheckout,
       createCheckOutRequestModel,
@@ -300,13 +312,12 @@ class RestaurantRepository {
 
   /// Get Order Details====================================================================
 
-  Future<Either<ErrorModel, GetOrderDetails>> getOrderDetails({required String mealmeId}) async {
-    final response = await apiServices.get('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
+  Future<Either<ErrorModel, GetOrderDetails>> getOrderDetails(
+      {required String mealmeId}) async {
+    final response = await apiServices
+        .get('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      log(jsonDecode(response.body).toString(),
-          name: ""
-              "ORDER DETAILS");
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(GetOrderDetails.fromJson(jsonDecode(response.body)));
@@ -318,10 +329,11 @@ class RestaurantRepository {
   /// Get Delivery Status ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> getDeliveryStatus() async {
-    final response = await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
+    final response =
+        await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      log('response.body---------->>>>>> he ${response.body}');
+      log('response.body---------->>>>>> ${response.body}');
 
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
@@ -333,8 +345,10 @@ class RestaurantRepository {
 
   /// Update Delivery Status ====================================================================
 
-  Future<Either<ErrorModel, SuccessModel>> updateDeliveryStatus({bool? pickup}) async {
-    final response = await apiServices.put('${ApiUrls.updateDeliveryStatus}/$userId?isPickUp=$pickup', {});
+  Future<Either<ErrorModel, SuccessModel>> updateDeliveryStatus(
+      {bool? pickup}) async {
+    final response = await apiServices
+        .put('${ApiUrls.updateDeliveryStatus}/$userId?isPickUp=$pickup', {});
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
