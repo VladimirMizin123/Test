@@ -63,7 +63,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
         if (getUserAddress != null) {
           /// GET RESTAURANT LIST API-----------------------------------------------------------
-          log("Hello");
           restaurantBloc.add(
             GetRestaurantListEvent(
                 getUserAddress?.latitude ?? 0,
@@ -80,6 +79,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           );
 
           /// GET COUSINES LIST API-----------------------------------------------------------
+          print("calling");
           restaurantBloc.add(
             GetCousinesEvent(
               getUserAddress?.latitude ?? 0,
@@ -171,6 +171,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           child: bloc.BlocConsumer(
             bloc: restaurantBloc,
             listener: (context, state) {
+              print("state :$state");
               if (state is GetUserAddressSuccessState) {
                 if (state.userAddress.isEmpty) {
                   Get.to(() => const GetUserAddress(),
@@ -236,7 +237,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                 getCousinesLoadingState = true;
               }
               if (state is GetCousinesListSuccessState) {
+                print("list:${state.cousinesList}");
                 cousinesList = state.cousinesList;
+                print("cousine list:${cousinesList!.cousines}");
                 cousinesList!.cousines!.isEmpty
                     ? hasData = false
                     : hasData = true;
@@ -257,6 +260,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               }
             },
             builder: (context, state) {
+              print("loading state:${getCousinesLoadingState}");
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Column(
@@ -657,601 +661,697 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                             scrollDirection: Axis.horizontal,
                                             child: SizedBox(
                                               height: 40.h,
-                                              child: hasData == false
-                                                  ? const SizedBox()
-                                                  : Row(
-                                                      children: [
-                                                        GestureDetector(
-                                                          onTap: () async {
-                                                            print(
-                                                                "enter filter screen");
+                                              child: Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      print(
+                                                          "enter filter screen");
 
-                                                            await Get.to(
-                                                              () =>
-                                                                  FilterScreen(
-                                                                restaurantBloc:
-                                                                    restaurantBloc,
-                                                                result: result,
-                                                                getUserAddres:
-                                                                    getUserAddress,
-                                                                catgoryDataList:
-                                                                    categoryDataList,
-                                                                cousinesList:
-                                                                    cousinesList!,
-                                                                restaurantList:
-                                                                    allRestaurantList,
-                                                                selectedCategory:
-                                                                    selectedFoodOrigin,
-                                                                rating: rating,
-                                                                isFastDelivery:
-                                                                    isFastDelivery,
-                                                                isPickup: result ==
+                                                      await Get.to(
+                                                        () => FilterScreen(
+                                                          restaurantBloc:
+                                                              restaurantBloc,
+                                                          result: result,
+                                                          getUserAddres:
+                                                              getUserAddress,
+                                                          catgoryDataList:
+                                                              categoryDataList,
+                                                          // cousinesList:
+                                                          //     cousinesList!,
+                                                          restaurantList:
+                                                              allRestaurantList,
+                                                          selectedCategory:
+                                                              selectedFoodOrigin,
+                                                          rating: rating,
+                                                          isFastDelivery:
+                                                              isFastDelivery,
+                                                          isPickup: result ==
+                                                                  'Bring me the order'
+                                                              ? false
+                                                              : true,
+                                                        ),
+                                                      )!
+                                                          .then((value) {
+                                                        if (value != null) {
+                                                          setState(() {
+                                                            restaurantList = value[
+                                                                'restaurantData'];
+
+                                                            selectedFoodOrigin =
+                                                                value[
+                                                                    'filterTab'];
+                                                            log(selectedFoodOrigin
+                                                                .toString());
+                                                            rating =
+                                                                value['rating'];
+
+                                                            isFastDelivery = value[
+                                                                'fastDelivery'];
+                                                          });
+                                                        } else {}
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              right: 8),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 15),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            AppColors.lightGrey,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(100),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Center(
+                                                            child: Text(
+                                                              'All',
+                                                              style:
+                                                                  FontUtils.h18(
+                                                                fontColor:
+                                                                    AppColors
+                                                                        .darkGray,
+                                                                fontWeight:
+                                                                    FWT.medium,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 10),
+                                                            child: Icon(
+                                                              Icons
+                                                                  .arrow_forward_ios_outlined,
+                                                              size: 15,
+                                                              color: AppColors
+                                                                  .darkGray,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        categoryDataList.length,
+                                                    // cousinesList
+                                                    //     ?.cousines!
+                                                    //     .length,
+                                                    padding: EdgeInsets.zero,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    physics:
+                                                        const NeverScrollableScrollPhysics(),
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          /// TAB COLOR CHANGE ON TAP LOGIC ------------------------------------------------------
+
+                                                          if (selectedFoodOrigin
+                                                              .contains(
+                                                                  // cousinesList
+                                                                  //         ?.cousines![index],
+                                                                  categoryDataList[
+                                                                          index]
+                                                                      [
+                                                                      "title"])) {
+                                                            setState(() {
+                                                              selectedFoodOrigin.remove(
+                                                                  categoryDataList[
+                                                                          index]
+                                                                      [
+                                                                      "title"]);
+                                                            });
+                                                            restaurantBloc.add(
+                                                              GetRestaurantListEvent(
+                                                                getUserAddress
+                                                                        ?.latitude ??
+                                                                    0,
+                                                                getUserAddress
+                                                                        ?.longitude ??
+                                                                    0,
+                                                                getUserAddress
+                                                                        ?.streetNum ??
+                                                                    '',
+                                                                getUserAddress
+                                                                        ?.streetName ??
+                                                                    '',
+                                                                getUserAddress
+                                                                        ?.city ??
+                                                                    '',
+                                                                getUserAddress
+                                                                        ?.state ??
+                                                                    '',
+                                                                getUserAddress
+                                                                        ?.country ??
+                                                                    '',
+                                                                getUserAddress
+                                                                        ?.zipcode ??
+                                                                    '',
+                                                                result ==
                                                                         'Bring me the order'
                                                                     ? false
                                                                     : true,
+                                                                5,
+                                                                selectedFoodOrigin
+                                                                        .isNotEmpty
+                                                                    ? selectedFoodOrigin
+                                                                    : categoryDataList
+                                                                        .map((e) =>
+                                                                            e["title"])
+                                                                        .toList(),
                                                               ),
-                                                            )!
-                                                                .then((value) {
-                                                              if (value !=
-                                                                  null) {
-                                                                setState(() {
-                                                                  restaurantList =
-                                                                      value[
-                                                                          'restaurantData'];
-
-                                                                  selectedFoodOrigin =
-                                                                      value[
-                                                                          'filterTab'];
-                                                                  log(selectedFoodOrigin
-                                                                      .toString());
-                                                                  rating = value[
-                                                                      'rating'];
-
-                                                                  isFastDelivery =
-                                                                      value[
-                                                                          'fastDelivery'];
-                                                                });
-                                                              } else {}
-                                                            });
-                                                          },
-                                                          child: Container(
-                                                            margin:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    right: 8),
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        15),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: AppColors
-                                                                  .lightGrey,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          100),
-                                                            ),
-                                                            child: Row(
-                                                              children: [
-                                                                Center(
-                                                                  child: Text(
-                                                                    'All',
-                                                                    style:
-                                                                        FontUtils
-                                                                            .h18(
-                                                                      fontColor:
-                                                                          AppColors
-                                                                              .darkGray,
-                                                                      fontWeight:
-                                                                          FWT.medium,
-                                                                    ),
-                                                                  ),
+                                                            );
+                                                          } else {
+                                                            setState(() {
+                                                              selectedFoodOrigin.add(
+                                                                  categoryDataList[
+                                                                          index]
+                                                                      [
+                                                                      "title"]);
+                                                              restaurantBloc
+                                                                  .add(
+                                                                GetRestaurantListEvent(
+                                                                  getUserAddress
+                                                                          ?.latitude ??
+                                                                      0,
+                                                                  getUserAddress
+                                                                          ?.longitude ??
+                                                                      0,
+                                                                  getUserAddress
+                                                                          ?.streetNum ??
+                                                                      '',
+                                                                  getUserAddress
+                                                                          ?.streetName ??
+                                                                      '',
+                                                                  getUserAddress
+                                                                          ?.city ??
+                                                                      '',
+                                                                  getUserAddress
+                                                                          ?.state ??
+                                                                      '',
+                                                                  getUserAddress
+                                                                          ?.country ??
+                                                                      '',
+                                                                  getUserAddress
+                                                                          ?.zipcode ??
+                                                                      '',
+                                                                  result ==
+                                                                          'Bring me the order'
+                                                                      ? false
+                                                                      : true,
+                                                                  5,
+                                                                  selectedFoodOrigin
+                                                                          .isNotEmpty
+                                                                      ? selectedFoodOrigin
+                                                                      : categoryDataList
+                                                                          .map((e) =>
+                                                                              e["title"])
+                                                                          .toList(),
                                                                 ),
-                                                                const Padding(
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              10),
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .arrow_forward_ios_outlined,
-                                                                    size: 15,
-                                                                    color: AppColors
-                                                                        .darkGray,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          itemCount:
-                                                              categoryDataList
-                                                                  .length,
-                                                          // cousinesList
-                                                          //     ?.cousines!
-                                                          //     .length,
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          scrollDirection:
-                                                              Axis.horizontal,
-                                                          physics:
-                                                              const NeverScrollableScrollPhysics(),
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            return GestureDetector(
-                                                              onTap: () {
-                                                                /// TAB COLOR CHANGE ON TAP LOGIC ------------------------------------------------------
+                                                              );
+                                                            });
+                                                          }
 
-                                                                if (selectedFoodOrigin
-                                                                    .contains(
-                                                                        // cousinesList
-                                                                        //         ?.cousines![index],
-                                                                        categoryDataList[index]
-                                                                            [
-                                                                            "title"])) {
-                                                                  setState(() {
-                                                                    selectedFoodOrigin.remove(
-                                                                        categoryDataList[index]
-                                                                            [
-                                                                            "title"]);
-                                                                  });
-                                                                  restaurantBloc
-                                                                      .add(
-                                                                    GetRestaurantListEvent(
-                                                                      getUserAddress
-                                                                              ?.latitude ??
-                                                                          0,
-                                                                      getUserAddress
-                                                                              ?.longitude ??
-                                                                          0,
-                                                                      getUserAddress
-                                                                              ?.streetNum ??
-                                                                          '',
-                                                                      getUserAddress
-                                                                              ?.streetName ??
-                                                                          '',
-                                                                      getUserAddress
-                                                                              ?.city ??
-                                                                          '',
-                                                                      getUserAddress
-                                                                              ?.state ??
-                                                                          '',
-                                                                      getUserAddress
-                                                                              ?.country ??
-                                                                          '',
-                                                                      getUserAddress
-                                                                              ?.zipcode ??
-                                                                          '',
-                                                                      result ==
-                                                                              'Bring me the order'
-                                                                          ? false
-                                                                          : true,
-                                                                      5,
-                                                                      selectedFoodOrigin
-                                                                              .isNotEmpty
-                                                                          ? selectedFoodOrigin
-                                                                          : categoryDataList
-                                                                              .map((e) => e["title"])
-                                                                              .toList(),
-                                                                    ),
-                                                                  );
-                                                                } else {
-                                                                  setState(() {
-                                                                    selectedFoodOrigin.add(
-                                                                        categoryDataList[index]
-                                                                            [
-                                                                            "title"]);
-                                                                    restaurantBloc
-                                                                        .add(
-                                                                      GetRestaurantListEvent(
-                                                                        getUserAddress?.latitude ??
-                                                                            0,
-                                                                        getUserAddress?.longitude ??
-                                                                            0,
-                                                                        getUserAddress?.streetNum ??
-                                                                            '',
-                                                                        getUserAddress?.streetName ??
-                                                                            '',
-                                                                        getUserAddress?.city ??
-                                                                            '',
-                                                                        getUserAddress?.state ??
-                                                                            '',
-                                                                        getUserAddress?.country ??
-                                                                            '',
-                                                                        getUserAddress?.zipcode ??
-                                                                            '',
-                                                                        result ==
-                                                                                'Bring me the order'
-                                                                            ? false
-                                                                            : true,
-                                                                        5,
-                                                                        selectedFoodOrigin.isNotEmpty
-                                                                            ? selectedFoodOrigin
-                                                                            : categoryDataList.map((e) => e["title"]).toList(),
-                                                                      ),
-                                                                    );
-                                                                  });
+                                                          if (isSearchOn ==
+                                                              true) {
+                                                            ratingFilter = {};
+                                                            finalData = {};
+
+                                                            /// WHEN RATING IS SELECTED ------------------------------------------------------
+                                                            if (rating
+                                                                .isNotEmpty) {
+                                                              /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
+                                                              if (rating
+                                                                      .length ==
+                                                                  1) {
+                                                                ratingFilter.addAll(allSearchRestaurantList
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .weightedRatingValue! <=
+                                                                        int.parse(
+                                                                            rating.first))
+                                                                    .toList());
+                                                              }
+
+                                                              /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
+                                                              else {
+                                                                ratingFilter.addAll(allSearchRestaurantList
+                                                                    .where((element) =>
+                                                                        element.weightedRatingValue! >=
+                                                                            int.parse(rating
+                                                                                .first) &&
+                                                                        element.weightedRatingValue! <=
+                                                                            int.parse(rating.last))
+                                                                    .toList());
+                                                              }
+
+                                                              /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
+
+                                                              if (selectedFoodOrigin
+                                                                  .isNotEmpty) {
+                                                                for (var i = 0;
+                                                                    i <
+                                                                        ratingFilter
+                                                                            .length;
+                                                                    i++) {
+                                                                  for (var j =
+                                                                          0;
+                                                                      j <
+                                                                          ratingFilter
+                                                                              .elementAt(i)
+                                                                              .cuisines!
+                                                                              .length;
+                                                                      j++) {
+                                                                    for (var k =
+                                                                            0;
+                                                                        k < selectedFoodOrigin.length;
+                                                                        k++) {
+                                                                      if (ratingFilter
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .cuisines![
+                                                                              j]
+                                                                          .contains(
+                                                                              selectedFoodOrigin[k])) {
+                                                                        finalData
+                                                                            .add(ratingFilter.elementAt(i));
+                                                                      }
+                                                                    }
+                                                                  }
                                                                 }
 
-                                                                if (isSearchOn ==
+                                                                /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
+
+                                                                searchRestaurantList =
+                                                                    finalData;
+                                                              } else {
+                                                                searchRestaurantList =
+                                                                    allSearchRestaurantList;
+                                                              }
+                                                            }
+
+                                                            /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
+
+                                                            else if (selectedFoodOrigin
+                                                                .isNotEmpty) {
+                                                              for (var i = 0;
+                                                                  i <
+                                                                      allSearchRestaurantList
+                                                                          .length;
+                                                                  i++) {
+                                                                for (var j = 0;
+                                                                    j <
+                                                                        allSearchRestaurantList
+                                                                            .elementAt(i)
+                                                                            .cuisines!
+                                                                            .length;
+                                                                    j++) {
+                                                                  for (var k =
+                                                                          0;
+                                                                      k <
+                                                                          selectedFoodOrigin
+                                                                              .length;
+                                                                      k++) {
+                                                                    if (allSearchRestaurantList
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .cuisines![
+                                                                            j]
+                                                                        .contains(
+                                                                            selectedFoodOrigin[k])) {
+                                                                      finalData.add(
+                                                                          allSearchRestaurantList
+                                                                              .elementAt(i));
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+
+                                                              /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
+
+                                                              searchRestaurantList =
+                                                                  finalData;
+                                                            } else if (isFastDelivery ==
+                                                                true) {
+                                                              dataList.sort(
+                                                                (a, b) {
+                                                                  return a
+                                                                      .quotes!
+                                                                      .cheapestDelivery!
+                                                                      .timeEstimate!
+                                                                      .minimum!
+                                                                      .compareTo(b
+                                                                          .quotes!
+                                                                          .cheapestDelivery!
+                                                                          .timeEstimate!
+                                                                          .minimum!);
+                                                                },
+                                                              );
+
+                                                              finalData =
+                                                                  Set.from(
+                                                                      dataList);
+
+                                                              searchRestaurantList =
+                                                                  finalData;
+                                                            } else {
+                                                              searchRestaurantList =
+                                                                  allSearchRestaurantList;
+                                                            }
+                                                          }
+
+                                                          /// When Search is off
+                                                          else {
+                                                            restaurantList
+                                                                .clear();
+                                                            ratingFilter
+                                                                .clear();
+                                                            finalData.clear();
+
+                                                            /// WHEN RATING IS SELECTED ------------------------------------------------------
+                                                            if (rating
+                                                                .isNotEmpty) {
+                                                              /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
+                                                              if (rating
+                                                                      .length ==
+                                                                  1) {
+                                                                ratingFilter.addAll(allRestaurantList
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .weightedRatingValue! <=
+                                                                        int.parse(
+                                                                            rating.first))
+                                                                    .toList());
+                                                              }
+
+                                                              /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
+                                                              else {
+                                                                ratingFilter.addAll(allRestaurantList
+                                                                    .where((element) =>
+                                                                        element.weightedRatingValue! >=
+                                                                            int.parse(rating
+                                                                                .first) &&
+                                                                        element.weightedRatingValue! <=
+                                                                            int.parse(rating.last))
+                                                                    .toList());
+                                                              }
+
+                                                              /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
+
+                                                              if (selectedFoodOrigin
+                                                                  .isNotEmpty) {
+                                                                for (var i = 0;
+                                                                    i <
+                                                                        ratingFilter
+                                                                            .length;
+                                                                    i++) {
+                                                                  for (var j =
+                                                                          0;
+                                                                      j <
+                                                                          ratingFilter
+                                                                              .elementAt(i)
+                                                                              .cuisines!
+                                                                              .length;
+                                                                      j++) {
+                                                                    for (var k =
+                                                                            0;
+                                                                        k < selectedFoodOrigin.length;
+                                                                        k++) {
+                                                                      if (ratingFilter
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .cuisines![
+                                                                              j]
+                                                                          .contains(
+                                                                              selectedFoodOrigin[k])) {
+                                                                        finalData
+                                                                            .add(ratingFilter.elementAt(i));
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+
+                                                                /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
+
+                                                                if (isFastDelivery ==
                                                                     true) {
-                                                                  ratingFilter =
-                                                                      {};
-                                                                  finalData =
-                                                                      {};
+                                                                  List<RestaurantList>
+                                                                      data =
+                                                                      List.from(
+                                                                          finalData);
 
-                                                                  /// WHEN RATING IS SELECTED ------------------------------------------------------
-                                                                  if (rating
-                                                                      .isNotEmpty) {
-                                                                    /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
-                                                                    if (rating
-                                                                            .length ==
-                                                                        1) {
-                                                                      ratingFilter.addAll(allSearchRestaurantList
-                                                                          .where((element) =>
-                                                                              element.weightedRatingValue! <=
-                                                                              int.parse(rating.first))
-                                                                          .toList());
-                                                                    }
-
-                                                                    /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
-                                                                    else {
-                                                                      ratingFilter.addAll(allSearchRestaurantList
-                                                                          .where((element) =>
-                                                                              element.weightedRatingValue! >= int.parse(rating.first) &&
-                                                                              element.weightedRatingValue! <= int.parse(rating.last))
-                                                                          .toList());
-                                                                    }
-
-                                                                    /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
-
-                                                                    if (selectedFoodOrigin
-                                                                        .isNotEmpty) {
-                                                                      for (var i =
-                                                                              0;
-                                                                          i < ratingFilter.length;
-                                                                          i++) {
-                                                                        for (var j =
-                                                                                0;
-                                                                            j < ratingFilter.elementAt(i).cuisines!.length;
-                                                                            j++) {
-                                                                          for (var k = 0;
-                                                                              k < selectedFoodOrigin.length;
-                                                                              k++) {
-                                                                            if (ratingFilter.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                              finalData.add(ratingFilter.elementAt(i));
-                                                                            }
-                                                                          }
-                                                                        }
-                                                                      }
-
-                                                                      /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
-
-                                                                      searchRestaurantList =
-                                                                          finalData;
-                                                                    } else {
-                                                                      searchRestaurantList =
-                                                                          allSearchRestaurantList;
-                                                                    }
-                                                                  }
-
-                                                                  /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
-
-                                                                  else if (selectedFoodOrigin
-                                                                      .isNotEmpty) {
-                                                                    for (var i =
-                                                                            0;
-                                                                        i < allSearchRestaurantList.length;
-                                                                        i++) {
-                                                                      for (var j =
-                                                                              0;
-                                                                          j < allSearchRestaurantList.elementAt(i).cuisines!.length;
-                                                                          j++) {
-                                                                        for (var k =
-                                                                                0;
-                                                                            k < selectedFoodOrigin.length;
-                                                                            k++) {
-                                                                          if (allSearchRestaurantList
-                                                                              .elementAt(i)
-                                                                              .cuisines![j]
-                                                                              .contains(selectedFoodOrigin[k])) {
-                                                                            finalData.add(allSearchRestaurantList.elementAt(i));
-                                                                          }
-                                                                        }
-                                                                      }
-                                                                    }
-
-                                                                    /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
-
-                                                                    searchRestaurantList =
-                                                                        finalData;
-                                                                  } else if (isFastDelivery ==
-                                                                      true) {
-                                                                    dataList
-                                                                        .sort(
-                                                                      (a, b) {
-                                                                        return a
-                                                                            .quotes!
-                                                                            .cheapestDelivery!
-                                                                            .timeEstimate!
-                                                                            .minimum!
-                                                                            .compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                      },
-                                                                    );
-
-                                                                    finalData =
-                                                                        Set.from(
-                                                                            dataList);
-
-                                                                    searchRestaurantList =
-                                                                        finalData;
-                                                                  } else {
-                                                                    searchRestaurantList =
-                                                                        allSearchRestaurantList;
-                                                                  }
-                                                                }
-
-                                                                /// When Search is off
-                                                                else {
-                                                                  restaurantList
-                                                                      .clear();
-                                                                  ratingFilter
-                                                                      .clear();
-                                                                  finalData
-                                                                      .clear();
-
-                                                                  /// WHEN RATING IS SELECTED ------------------------------------------------------
-                                                                  if (rating
-                                                                      .isNotEmpty) {
-                                                                    /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
-                                                                    if (rating
-                                                                            .length ==
-                                                                        1) {
-                                                                      ratingFilter.addAll(allRestaurantList
-                                                                          .where((element) =>
-                                                                              element.weightedRatingValue! <=
-                                                                              int.parse(rating.first))
-                                                                          .toList());
-                                                                    }
-
-                                                                    /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
-                                                                    else {
-                                                                      ratingFilter.addAll(allRestaurantList
-                                                                          .where((element) =>
-                                                                              element.weightedRatingValue! >= int.parse(rating.first) &&
-                                                                              element.weightedRatingValue! <= int.parse(rating.last))
-                                                                          .toList());
-                                                                    }
-
-                                                                    /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
-
-                                                                    if (selectedFoodOrigin
-                                                                        .isNotEmpty) {
-                                                                      for (var i =
-                                                                              0;
-                                                                          i < ratingFilter.length;
-                                                                          i++) {
-                                                                        for (var j =
-                                                                                0;
-                                                                            j < ratingFilter.elementAt(i).cuisines!.length;
-                                                                            j++) {
-                                                                          for (var k = 0;
-                                                                              k < selectedFoodOrigin.length;
-                                                                              k++) {
-                                                                            if (ratingFilter.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                              finalData.add(ratingFilter.elementAt(i));
-                                                                            }
-                                                                          }
-                                                                        }
-                                                                      }
-
-                                                                      /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
-
-                                                                      if (isFastDelivery ==
-                                                                          true) {
-                                                                        List<RestaurantList>
-                                                                            data =
-                                                                            List.from(finalData);
-
-                                                                        data.sort(
-                                                                          (a, b) {
-                                                                            return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                          },
-                                                                        );
-
-                                                                        finalData =
-                                                                            Set.from(data);
-
-                                                                        restaurantList =
-                                                                            finalData;
-                                                                      } else {
-                                                                        restaurantList =
-                                                                            finalData;
-                                                                      }
-                                                                    } else {
-                                                                      if (isFastDelivery ==
-                                                                          true) {
-                                                                        List<RestaurantList>
-                                                                            data =
-                                                                            List.from(ratingFilter);
-
-                                                                        data.sort(
-                                                                          (a, b) {
-                                                                            return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                          },
-                                                                        );
-
-                                                                        ratingFilter =
-                                                                            Set.from(data);
-                                                                        restaurantList =
-                                                                            ratingFilter;
-                                                                      } else {
-                                                                        restaurantList =
-                                                                            ratingFilter;
-                                                                      }
-                                                                    }
-                                                                  }
-
-                                                                  /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
-
-                                                                  else if (selectedFoodOrigin
-                                                                      .isNotEmpty) {
-                                                                    for (var i =
-                                                                            0;
-                                                                        i < allRestaurantList.length;
-                                                                        i++) {
-                                                                      for (var j =
-                                                                              0;
-                                                                          j < allRestaurantList.elementAt(i).cuisines!.length;
-                                                                          j++) {
-                                                                        for (var k =
-                                                                                0;
-                                                                            k < selectedFoodOrigin.length;
-                                                                            k++) {
-                                                                          if (allRestaurantList
-                                                                              .elementAt(i)
-                                                                              .cuisines![j]
-                                                                              .contains(selectedFoodOrigin[k])) {
-                                                                            finalData.add(allRestaurantList.elementAt(i));
-                                                                          }
-                                                                        }
-                                                                      }
-                                                                    }
-
-                                                                    /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
-                                                                    if (isFastDelivery ==
-                                                                        true) {
-                                                                      List<RestaurantList>
-                                                                          data =
-                                                                          List.from(
-                                                                              finalData);
-
-                                                                      data.sort(
-                                                                        (a, b) {
-                                                                          return a
+                                                                  data.sort(
+                                                                    (a, b) {
+                                                                      return a
+                                                                          .quotes!
+                                                                          .cheapestDelivery!
+                                                                          .timeEstimate!
+                                                                          .minimum!
+                                                                          .compareTo(b
                                                                               .quotes!
                                                                               .cheapestDelivery!
                                                                               .timeEstimate!
-                                                                              .minimum!
-                                                                              .compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                        },
-                                                                      );
+                                                                              .minimum!);
+                                                                    },
+                                                                  );
 
-                                                                      finalData =
-                                                                          Set.from(
-                                                                              data);
+                                                                  finalData =
+                                                                      Set.from(
+                                                                          data);
 
-                                                                      restaurantList =
-                                                                          finalData;
+                                                                  restaurantList =
+                                                                      finalData;
+                                                                } else {
+                                                                  restaurantList =
+                                                                      finalData;
+                                                                }
+                                                              } else {
+                                                                if (isFastDelivery ==
+                                                                    true) {
+                                                                  List<RestaurantList>
+                                                                      data =
+                                                                      List.from(
+                                                                          ratingFilter);
+
+                                                                  data.sort(
+                                                                    (a, b) {
+                                                                      return a
+                                                                          .quotes!
+                                                                          .cheapestDelivery!
+                                                                          .timeEstimate!
+                                                                          .minimum!
+                                                                          .compareTo(b
+                                                                              .quotes!
+                                                                              .cheapestDelivery!
+                                                                              .timeEstimate!
+                                                                              .minimum!);
+                                                                    },
+                                                                  );
+
+                                                                  ratingFilter =
+                                                                      Set.from(
+                                                                          data);
+                                                                  restaurantList =
+                                                                      ratingFilter;
+                                                                } else {
+                                                                  restaurantList =
+                                                                      ratingFilter;
+                                                                }
+                                                              }
+                                                            }
+
+                                                            /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
+
+                                                            else if (selectedFoodOrigin
+                                                                .isNotEmpty) {
+                                                              for (var i = 0;
+                                                                  i <
+                                                                      allRestaurantList
+                                                                          .length;
+                                                                  i++) {
+                                                                for (var j = 0;
+                                                                    j <
+                                                                        allRestaurantList
+                                                                            .elementAt(i)
+                                                                            .cuisines!
+                                                                            .length;
+                                                                    j++) {
+                                                                  for (var k =
+                                                                          0;
+                                                                      k <
+                                                                          selectedFoodOrigin
+                                                                              .length;
+                                                                      k++) {
+                                                                    if (allRestaurantList
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .cuisines![
+                                                                            j]
+                                                                        .contains(
+                                                                            selectedFoodOrigin[k])) {
+                                                                      finalData.add(
+                                                                          allRestaurantList
+                                                                              .elementAt(i));
                                                                     }
+                                                                  }
+                                                                }
+                                                              }
 
-                                                                    /// WHEN FAST DELIVERY NOT SELECTED ------------------------------------------------------
-                                                                    else {
-                                                                      restaurantList =
-                                                                          finalData;
-                                                                    }
-                                                                  } else if (isFastDelivery ==
-                                                                      true) {
-                                                                    dataList
-                                                                        .sort(
-                                                                      (a, b) {
-                                                                        return a
+                                                              /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
+                                                              if (isFastDelivery ==
+                                                                  true) {
+                                                                List<RestaurantList>
+                                                                    data =
+                                                                    List.from(
+                                                                        finalData);
+
+                                                                data.sort(
+                                                                  (a, b) {
+                                                                    return a
+                                                                        .quotes!
+                                                                        .cheapestDelivery!
+                                                                        .timeEstimate!
+                                                                        .minimum!
+                                                                        .compareTo(b
                                                                             .quotes!
                                                                             .cheapestDelivery!
                                                                             .timeEstimate!
-                                                                            .minimum!
-                                                                            .compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                      },
-                                                                    );
+                                                                            .minimum!);
+                                                                  },
+                                                                );
 
-                                                                    finalData =
-                                                                        Set.from(
-                                                                            dataList);
+                                                                finalData =
+                                                                    Set.from(
+                                                                        data);
 
-                                                                    restaurantList =
-                                                                        finalData;
-                                                                  } else {
-                                                                    restaurantList =
-                                                                        Set.from(
-                                                                            allRestaurantList);
-                                                                  }
-                                                                }
-                                                              },
-                                                              child: Container(
-                                                                margin:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        right:
-                                                                            8),
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        15),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: selectedFoodOrigin.contains(
-                                                                          categoryDataList[index]
-                                                                              [
-                                                                              "title"])
-                                                                      // selectedFoodOrigin.contains(
-                                                                      //         cousinesList?.cousines![
-                                                                      //             index])
-                                                                      ? AppColors
-                                                                          .coral
-                                                                      : AppColors
-                                                                          .lightGrey,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              100),
-                                                                ),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        categoryDataList[index]
-                                                                            [
-                                                                            "title"],
-                                                                        // cousinesList!
-                                                                        //     .cousines![index],
-                                                                        style: FontUtils
-                                                                            .h18(
-                                                                          fontColor:
-                                                                              // selectedFoodOrigin.contains(cousinesList?.cousines![index])
-                                                                              selectedFoodOrigin.contains(categoryDataList[index]["title"]) ? AppColors.terracotta : AppColors.darkGray,
-                                                                          fontWeight:
-                                                                              FWT.medium,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    index == 0
-                                                                        ? Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 10),
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.arrow_forward_ios_outlined,
-                                                                              size: 15,
-                                                                              color:
-                                                                                  // selectedFoodOrigin.contains(cousinesList?.cousines![index])
-                                                                                  selectedFoodOrigin.contains(categoryDataList[index]["title"]) ? AppColors.terracotta : AppColors.darkGray,
-                                                                            ),
-                                                                          )
-                                                                        : const SizedBox()
-                                                                  ],
+                                                                restaurantList =
+                                                                    finalData;
+                                                              }
+
+                                                              /// WHEN FAST DELIVERY NOT SELECTED ------------------------------------------------------
+                                                              else {
+                                                                restaurantList =
+                                                                    finalData;
+                                                              }
+                                                            } else if (isFastDelivery ==
+                                                                true) {
+                                                              dataList.sort(
+                                                                (a, b) {
+                                                                  return a
+                                                                      .quotes!
+                                                                      .cheapestDelivery!
+                                                                      .timeEstimate!
+                                                                      .minimum!
+                                                                      .compareTo(b
+                                                                          .quotes!
+                                                                          .cheapestDelivery!
+                                                                          .timeEstimate!
+                                                                          .minimum!);
+                                                                },
+                                                              );
+
+                                                              finalData =
+                                                                  Set.from(
+                                                                      dataList);
+
+                                                              restaurantList =
+                                                                  finalData;
+                                                            } else {
+                                                              restaurantList =
+                                                                  Set.from(
+                                                                      allRestaurantList);
+                                                            }
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  right: 8),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      15),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: selectedFoodOrigin.contains(
+                                                                    categoryDataList[
+                                                                            index]
+                                                                        [
+                                                                        "title"])
+                                                                // selectedFoodOrigin.contains(
+                                                                //         cousinesList?.cousines![
+                                                                //             index])
+                                                                ? AppColors
+                                                                    .coral
+                                                                : AppColors
+                                                                    .lightGrey,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        100),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              Center(
+                                                                child: Text(
+                                                                  categoryDataList[
+                                                                          index]
+                                                                      ["title"],
+                                                                  // cousinesList!
+                                                                  //     .cousines![index],
+                                                                  style:
+                                                                      FontUtils
+                                                                          .h18(
+                                                                    fontColor:
+                                                                        // selectedFoodOrigin.contains(cousinesList?.cousines![index])
+                                                                        selectedFoodOrigin.contains(categoryDataList[index]["title"])
+                                                                            ? AppColors.terracotta
+                                                                            : AppColors.darkGray,
+                                                                    fontWeight:
+                                                                        FWT.medium,
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            );
-                                                          },
-                                                        )
-                                                        // : const SizedBox()
-                                                      ],
-                                                    ),
+                                                              index == 0
+                                                                  ? Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .only(
+                                                                          left:
+                                                                              10),
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .arrow_forward_ios_outlined,
+                                                                        size:
+                                                                            15,
+                                                                        color:
+                                                                            // selectedFoodOrigin.contains(cousinesList?.cousines![index])
+                                                                            selectedFoodOrigin.contains(categoryDataList[index]["title"])
+                                                                                ? AppColors.terracotta
+                                                                                : AppColors.darkGray,
+                                                                      ),
+                                                                    )
+                                                                  : const SizedBox()
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  )
+                                                  // : const SizedBox()
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),

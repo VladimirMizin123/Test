@@ -133,6 +133,8 @@ class StringUtils {
   static const showGroceryList = 'Show Grocery List';
   static const regenerateGroceryList = 'Regenerate Grocery List';
   static const readyToStep = 'Ready to take step\ntowards your goals!';
+  static const notfoundResmenuError =
+      "We are sorry, this restaurant is temporarily unable to provide delivery to the address, please check back later.";
   static const livingPresent =
       'Living in the present is like giving yourself a gift.';
   static const neverUnderestimate =

@@ -20,7 +20,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 class FilterScreen extends StatefulWidget {
   FilterScreen({
     super.key,
-    required this.cousinesList,
+    // required this.cousinesList,
     required this.restaurantList,
     required this.selectedCategory,
     required this.rating,
@@ -31,7 +31,7 @@ class FilterScreen extends StatefulWidget {
     required this.result,
     required this.restaurantBloc,
   });
-  final CousinesList cousinesList;
+  // final CousinesList cousinesList;
   final List<RestaurantList> restaurantList;
   List selectedCategory;
   final List rating;

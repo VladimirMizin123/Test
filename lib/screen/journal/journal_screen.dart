@@ -1459,6 +1459,8 @@ class _JournalScreenState extends State<JournalScreen> {
               onTap: () async {
                 log("MEAL ID");
 
+                print("tap:$getUserAddress");
+
                 await Get.toNamed(
                   "/JournalMealScreen",
                   arguments: JournalMealScreenArguments(

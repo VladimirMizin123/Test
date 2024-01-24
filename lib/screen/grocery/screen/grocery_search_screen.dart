@@ -174,7 +174,7 @@ class _GrocerySearchScreenState extends State<GrocerySearchScreen> {
                           child: TextField(
                             style: const TextStyle(color: Colors.black),
                             controller: searchController,
-                            onSubmitted: (String value) {
+                            onChanged: (value) {
                               groceryBloc.add(
                                 GrocerySearchEvent(grocerySearchModelList: [
                                   GrocerySearchModel(

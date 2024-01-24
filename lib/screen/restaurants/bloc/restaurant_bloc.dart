@@ -121,6 +121,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(GetCousinesListErrorState());
       }, (right) {
+        print("response success:${right.data!}");
         emit(GetCousinesListSuccessState(cousinesList: right.data!));
       });
     } catch (e) {

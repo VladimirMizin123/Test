@@ -89,6 +89,7 @@ late HiveSingleton hiveSingleton;
 // LATTEST CODE. . .
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // await Hive.initFlutter();
   hiveSingleton = HiveSingleton();
   await hiveSingleton.initHive();
@@ -523,8 +524,18 @@ class _MyAppState extends State<MyApp> {
             ),
             GetPage(
               name: '/JournalMealScreen',
-              page: () => const JournalMealScreen(),
+              page: () {
+                JournalMealScreenArguments? argument =
+                    (Get.arguments is JournalMealScreenArguments)
+                        ? Get.arguments
+                        : null;
+                return JournalMealScreen(arguments: argument);
+              },
             ),
+            // GetPage(
+            //   name: '/JournalMealScreen',
+            //   page: () => const JournalMealScreen(),
+            // ),
             GetPage(
               name: '/GoogleMapScreen',
               page: () => const GetUserAddress(),

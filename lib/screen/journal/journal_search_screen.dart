@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,12 +27,17 @@ import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
 import 'package:gymeats_mobile/screen/journal/journal_meal_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 class JournalSearchScreen extends StatefulWidget {
   final JournalMealScreenArguments? journalMealScreenArguments;
   final String? isFrom;
+  final UserAddress? getUserAddress;
   const JournalSearchScreen(
-      {super.key, this.journalMealScreenArguments, this.isFrom});
+      {super.key,
+      this.journalMealScreenArguments,
+      this.isFrom,
+      this.getUserAddress});
 
   @override
   State<JournalSearchScreen> createState() => _JournalSearchScreenState();
@@ -72,13 +80,14 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
             if (state is JournalFetchMealPlanSuccessState) {
               for (var i = 0; i < state.mealPlanList.length; i++) {
                 if (DateTime(
-                        state.mealPlanList[i].date!.year,
-                        state.mealPlanList[i].date!.month,
-                        state.mealPlanList[i].date!.day) ==
+                        state.mealPlanList[i].date?.year ?? 0,
+                        state.mealPlanList[i].date?.month ?? 0,
+                        state.mealPlanList[i].date?.day ?? 0) ==
                     DateTime(
-                        widget.journalMealScreenArguments!.dateTime!.year,
-                        widget.journalMealScreenArguments!.dateTime!.month,
-                        widget.journalMealScreenArguments!.dateTime!.day)) {
+                        widget.journalMealScreenArguments?.dateTime?.year ?? 0,
+                        widget.journalMealScreenArguments?.dateTime?.month ?? 0,
+                        widget.journalMealScreenArguments?.dateTime?.day ??
+                            0)) {
                   mealList = state.mealPlanList[i].meals ?? [];
                   break;
                 }
@@ -217,16 +226,20 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                       child: TextField(
                         style: const TextStyle(color: Colors.black),
                         controller: searchController,
-                        onSubmitted: (String value) {
-                          journalPlanBloc.add(JournalSearchEvent(
-                            getUserAddress: widget
-                                .journalMealScreenArguments?.getUserAddress,
-                            journalSearchModelList: [
-                              GrocerySearchModel(
-                                  groceryName: searchController.text,
-                                  quantity: 0)
-                            ],
-                          ));
+                        onChanged: (value) {
+                          ///one screen call
+                          Timer(const Duration(seconds: 1), () {
+                            journalPlanBloc.add(JournalSearchEvent(
+                              getUserAddress: widget.journalMealScreenArguments
+                                      ?.getUserAddress ??
+                                  widget.getUserAddress,
+                              journalSearchModelList: [
+                                GrocerySearchModel(
+                                    groceryName: searchController.text,
+                                    quantity: 0)
+                              ],
+                            ));
+                          });
                         },
                         decoration: InputDecoration(
                           prefixIcon:
@@ -504,9 +517,6 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                     }
                                   },
                                   builder: (context, state) {
-                                    print("state:$state");
-                                    // print(
-                                    //     "length${groceryMultiSearchModelDataList.length}");
                                     return Column(
                                       children: [
                                         Expanded(

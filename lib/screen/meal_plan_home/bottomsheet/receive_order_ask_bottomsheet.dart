@@ -18,6 +18,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
 enum AskReceiveOrder { bringTheOrder, pickMySelf }
 
@@ -27,13 +28,15 @@ class ReceiveOrderAskBottomSheet extends StatefulWidget {
   final List<GroceryDetails>? selectedEdgesList;
   final int? selectedIndex;
   final String? isFrom;
+  final UserAddress? getUserAddress;
   const ReceiveOrderAskBottomSheet(
       {super.key,
       this.addNewGroceryItemBloc,
       this.selectedEdgesList,
       this.groceryBloc,
       this.selectedIndex,
-      this.isFrom});
+      this.isFrom,
+      this.getUserAddress});
 
   @override
   State<ReceiveOrderAskBottomSheet> createState() =>
@@ -146,6 +149,8 @@ class _ReceiveOrderAskBottomSheetState
                                           arguments: GroceryCartScreenArguments(
                                               edgesList:
                                                   widget.selectedEdgesList!,
+                                              getUserAddress:
+                                                  widget.getUserAddress,
                                               askReceiveOrder:
                                                   selectedIndex == 0
                                                       ? AskReceiveOrder
@@ -176,6 +181,8 @@ class _ReceiveOrderAskBottomSheetState
                                   print("selectedEdgesList: : ${widget.selectedEdgesList!}");
                                   Get.toNamed('/GroceryCartScreen',
                                           arguments: GroceryCartScreenArguments(
+                                              getUserAddress:
+                                                  widget.getUserAddress,
                                               edgesList:
                                                   widget.selectedEdgesList!,
                                               askReceiveOrder:

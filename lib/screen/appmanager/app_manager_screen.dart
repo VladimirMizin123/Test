@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/home/home.dart';
 import 'package:gymeats_mobile/screen/journal/journal_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/meal_plan_home_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_screen.dart';

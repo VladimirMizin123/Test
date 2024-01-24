@@ -104,13 +104,6 @@ class AddNewGroceryItemBloc
       Emitter<AddNewGroceryItemState> emit) async {
     emit(UpdateAddGroceryListLoadingState(userGroceryListId: event.id));
     try {
-      log('event.id---------->>>>>> ${event.id.runtimeType}');
-      log('event.id---------->>>>>> ${event.itemName.runtimeType}');
-      log('event.id---------->>>>>> ${event.userId.runtimeType}');
-      log('event.id---------->>>>>> ${event.measurementType.runtimeType}');
-      log('event.id---------->>>>>> ${event.measurementValue.runtimeType}');
-      log('event.id---------->>>>>> ${event.quantity.runtimeType}');
-
       await _repository
           .updateGroceryItem(
         id: event.id,
