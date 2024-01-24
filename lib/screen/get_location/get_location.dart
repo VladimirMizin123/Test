@@ -537,10 +537,10 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                     child: BlocConsumer(
                       bloc: addressBloc,
                       builder: (context, state) {
-                        return userAddress == null
+                        return state is GetUserAddressLoadingState
                             ? const SizedBox()
                             : ListView.separated(
-                                itemCount: userAddress!.length,
+                                itemCount: userAddress?.length ?? 0,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (context, index) {
                                   return userAddress?[index].isSelected == true
@@ -643,61 +643,55 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
                   const SizedBox(height: 10),
 
-                  BlocConsumer(
-                    bloc: addressBloc,
-                    listener: (context, state) {},
-                    builder: (context, state) {
-                      return userAddress == null
-                          ? const SizedBox()
-                          : GestureDetector(
-                              onTap: () async {
-                                await findAddressURL(
-                                  lat: selectedLatLng?.latitude.toString(),
-                                  lng: selectedLatLng?.longitude.toString(),
-                                );
+                  GestureDetector(
+                    onTap: () async {
+                      await findAddressURL(
+                        lat: selectedLatLng?.latitude.toString(),
+                        lng: selectedLatLng?.longitude.toString(),
+                      );
 
-                                Map<String, dynamic> addressData = {
-                                  'latitude': selectedLatLng?.latitude.toStringAsFixed(6),
-                                  'longitude': selectedLatLng?.longitude.toStringAsFixed(6),
-                                  'street_Num': streetNum,
-                                  'street_Name': streetName,
-                                  'city': city,
-                                  'state': stateName.toString(),
-                                  'country': country,
-                                  'addressType': '',
-                                  'zipcode': zipcode,
-                                  'isPrimary': true,
-                                };
+                      Map<String, dynamic> addressData = {
+                        'latitude': selectedLatLng?.latitude.toStringAsFixed(6),
+                        'longitude': selectedLatLng?.longitude.toStringAsFixed(6),
+                        'street_Num': streetNum,
+                        'street_Name': streetName,
+                        'city': city,
+                        'state': stateName.toString(),
+                        'country': country,
+                        'addressType': '',
+                        'zipcode': zipcode,
+                        'isPrimary': true,
+                      };
 
-                                Get.to(
-                                  () => AddressConfirmation(
-                                    locationData: addressData,
-                                    arguments: argumentsValue,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 48.h,
-                                margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
-                                width: Get.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  color: const Color(0xffCE6B53),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Avenir',
-                                    ),
-                                  ),
-                                ),
+                      selectedLatLng != null
+                          ? Get.to(
+                              () => AddressConfirmation(
+                                locationData: addressData,
+                                arguments: argumentsValue,
                               ),
-                            );
+                            )
+                          : null;
                     },
+                    child: Container(
+                      height: 48.h,
+                      margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: const Color(0xffCE6B53),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Avenir',
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
 
                   Center(
