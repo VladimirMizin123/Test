@@ -658,8 +658,7 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
                                 Map<String, dynamic> addressData = {
                                   'latitude': selectedLatLng?.latitude.toStringAsFixed(6),
-                                  'longitude':
-                            selectedLatLng?.longitude.toStringAsFixed(6),
+                                  'longitude': selectedLatLng?.longitude.toStringAsFixed(6),
                                   'street_Num': streetNum,
                                   'street_Name': streetName,
                                   'city': city,
