@@ -13,8 +13,7 @@ import '../../bloc/google_map/add_address/add_address_event.dart';
 import '../../bloc/google_map/add_address/add_address_state.dart';
 
 class AddressConfirmation extends StatefulWidget {
-  const AddressConfirmation(
-      {super.key, required this.locationData, required this.arguments});
+  const AddressConfirmation({super.key, required this.locationData, required this.arguments});
   final dynamic locationData;
   final dynamic arguments;
 
@@ -91,11 +90,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
-                        child: Text('Address Type',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
+                        child: Text('Address Type', style: TextStyle(color: const Color(0xff373737), fontSize: 14.sp, fontWeight: FontWeight.w300)),
                       ),
                       commonTextField(
                           controller: addressType,
@@ -108,11 +103,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                           }),
                       Padding(
                         padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('Street',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
+                        child: Text('Street', style: TextStyle(color: const Color(0xff373737), fontSize: 14.sp, fontWeight: FontWeight.w300)),
                       ),
                       commonTextField(
                           controller: streetName,
@@ -125,11 +116,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                           }),
                       Padding(
                         padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('Apartment number',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
+                        child:
+                            Text('Apartment number', style: TextStyle(color: const Color(0xff373737), fontSize: 14.sp, fontWeight: FontWeight.w300)),
                       ),
                       commonTextField(
                         validator: (value) {
@@ -143,11 +131,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('City',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
+                        child: Text('City', style: TextStyle(color: const Color(0xff373737), fontSize: 14.sp, fontWeight: FontWeight.w300)),
                       ),
                       commonTextField(
                         validator: (value) {
@@ -163,10 +147,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                         padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                         child: Text(
                           'Zip',
-                          style: TextStyle(
-                              color: const Color(0xff373737),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300),
+                          style: TextStyle(color: const Color(0xff373737), fontSize: 14.sp, fontWeight: FontWeight.w300),
                         ),
                       ),
                       commonTextField(
@@ -193,15 +174,12 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                   if (formKey.currentState!.validate()) {
                     if (widget.arguments['string'] == 'isFromRegister') {
                       AddAddressModel addAddressModel = AddAddressModel();
-                      addAddressModel.latitude =
-                          widget.locationData['latitude'];
-                      addAddressModel.longitude =
-                          widget.locationData['longitude'];
+                      addAddressModel.latitude = widget.locationData['latitude'];
+                      addAddressModel.longitude = widget.locationData['longitude'];
                       addAddressModel.streetNum = apartmentName.text;
                       addAddressModel.streetName = streetName.text;
                       addAddressModel.city = city.text;
-                      addAddressModel.state =
-                          widget.locationData['state'].toString();
+                      addAddressModel.state = widget.locationData['state'].toString();
                       addAddressModel.country = widget.locationData['country'];
                       addAddressModel.addressType = addressType.text;
                       addAddressModel.zipcode = zipName.text;
@@ -213,8 +191,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                         email: widget.arguments['userData'].email,
                         password: widget.arguments['userData'].password,
                         userName: widget.arguments['userData'].email,
-                        confirmPassword:
-                            widget.arguments['userData'].confirmPassword,
+                        confirmPassword: widget.arguments['userData'].confirmPassword,
                         phoneNumber: widget.arguments['userData'].phoneNumber,
                         addAddressModel: addAddressModel,
                       );
@@ -223,13 +200,13 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     } else {
                       bloc.add(
                         SaveClickEvent(
-                          latitude: widget.locationData['latitude'],
-                          longitude: widget.locationData['longitude'],
+                          latitude: widget.locationData['latitude'] ?? 0.00,
+                          longitude: widget.locationData['longitude'] ?? 0.00,
                           streetNum: apartmentName.text.toString(),
                           streetName: streetName.text.toString(),
                           city: city.text.toString(),
-                          state: widget.locationData['state'],
-                          country: widget.locationData['country'],
+                          state: widget.locationData['state'] ?? '',
+                          country: widget.locationData['country'] ?? '',
                           addressType: addressType.text,
                           zipcode: zipName.text.toString(),
                           isPrimary: true,
@@ -249,8 +226,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                       )
                     : Container(
                         height: 48.h,
-                        margin: EdgeInsets.only(
-                            top: 0.h, bottom: 40.h, right: 20.w, left: 20.w),
+                        margin: EdgeInsets.only(top: 0.h, bottom: 40.h, right: 20.w, left: 20.w),
                         width: Get.width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
@@ -276,9 +252,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
     );
   }
 
-  Widget commonTextField(
-      {String? Function(String?)? validator,
-      TextEditingController? controller}) {
+  Widget commonTextField({String? Function(String?)? validator, TextEditingController? controller}) {
     return TextFormField(
       style: const TextStyle(color: Colors.black),
       autovalidateMode: AutovalidateMode.onUserInteraction,

@@ -35,8 +35,7 @@ class GetUserAddress extends StatefulWidget {
   State<GetUserAddress> createState() => _GetUserAddressState();
 }
 
-class _GetUserAddressState extends State<GetUserAddress>
-    with WidgetsBindingObserver {
+class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObserver {
   final routeName = '/GoogleMapScreen';
 
   late GoogleMapController mapController;
@@ -60,8 +59,7 @@ class _GetUserAddressState extends State<GetUserAddress>
     BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    customIcon = BitmapDescriptor.fromBytes(
-        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
+    customIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
 
     selectedLatLng = LatLng(position.latitude, position.longitude);
@@ -80,8 +78,7 @@ class _GetUserAddressState extends State<GetUserAddress>
     ];
 
     setState(() {
-      mapController
-          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
     });
     return true;
   }
@@ -89,12 +86,9 @@ class _GetUserAddressState extends State<GetUserAddress>
   /// Marker Icon for location ---------------------------------------------------------
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await s.rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
   }
 
   /// Permission Handler for location ---------------------------------------------------------
@@ -111,8 +105,7 @@ class _GetUserAddressState extends State<GetUserAddress>
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied) {
             Navigator.pop(context);
-            showToast(
-                message: 'Location permissions are denied', isSuccess: false);
+            showToast(message: 'Location permissions are denied', isSuccess: false);
             return false;
           }
         }
@@ -120,10 +113,7 @@ class _GetUserAddressState extends State<GetUserAddress>
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.deniedForever) {
             Get.back();
-            showToast(
-                message:
-                    'Location permissions are permanently denied, we cannot request permissions.',
-                isSuccess: false);
+            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
             return false;
           }
         }
@@ -135,8 +125,7 @@ class _GetUserAddressState extends State<GetUserAddress>
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           Navigator.pop(context);
-          showToast(
-              message: 'Location permissions are denied', isSuccess: false);
+          showToast(message: 'Location permissions are denied', isSuccess: false);
           return false;
         }
       }
@@ -147,35 +136,23 @@ class _GetUserAddressState extends State<GetUserAddress>
         if (permission == LocationPermission.deniedForever) {
           if (Get.arguments['string'] == 'isFromDashboard') {
             Get.back();
-            showToast(
-                message:
-                    'Location permissions are permanently denied, we cannot request permissions.',
-                isSuccess: false);
+            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
           } else {
             Get.offNamed('/PremiumScreen');
-            showToast(
-                message:
-                    'Location permissions are permanently denied, we cannot request permissions.',
-                isSuccess: false);
+            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
           }
-          showToast(
-              message:
-                  'Location permissions are permanently denied, we cannot request permissions.',
-              isSuccess: false);
+          showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
           return false;
         }
         if (permission == LocationPermission.denied) {
           if (Get.arguments['string'] == 'isFromDashboard') {
             Get.back();
-            showToast(
-                message: 'Location permissions are denied', isSuccess: false);
+            showToast(message: 'Location permissions are denied', isSuccess: false);
           } else {
             Get.offNamed('/PremiumScreen');
-            showToast(
-                message: 'Location permissions are denied', isSuccess: false);
+            showToast(message: 'Location permissions are denied', isSuccess: false);
           }
-          showToast(
-              message: 'Location permissions are denied', isSuccess: false);
+          showToast(message: 'Location permissions are denied', isSuccess: false);
           return false;
         }
       }
@@ -195,10 +172,7 @@ class _GetUserAddressState extends State<GetUserAddress>
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Text(
                 'Location permissions are permanently denied, Please Enable Location Permission.',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
@@ -231,8 +205,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        var permissionValue = await Geolocator.openAppSettings()
-                            .then((value) async {});
+                        var permissionValue = await Geolocator.openAppSettings().then((value) async {});
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -263,8 +236,7 @@ class _GetUserAddressState extends State<GetUserAddress>
     return value;
   }
 
-  final GoogleMapSearchRepository _googleMapSearchRepository =
-      GoogleMapSearchRepository();
+  final GoogleMapSearchRepository _googleMapSearchRepository = GoogleMapSearchRepository();
   List<Prediction> searchList = [];
   String streetNum = '';
   String streetName = '';
@@ -281,24 +253,17 @@ class _GetUserAddressState extends State<GetUserAddress>
     country = '';
     zipcode = '';
 
-    await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold(
-        (left) {
+    await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold((left) {
       showToast(isSuccess: false, message: left.errorMessage!);
     }, (right) {
       // showToast(isSuccess: true, message: right.message!);
-      FindAddressResponseModel(
-          plusCode: right.plusCode,
-          status: right.status,
-          results: right.results);
+      FindAddressResponseModel(plusCode: right.plusCode, status: right.status, results: right.results);
 
       if (right.results?.isNotEmpty ?? false) {
         right.results!.first.addressComponents?.forEach((element) {
           ///streetNum
 
-          List<String> streetNumList = element.types
-                  ?.where((element1) => element1 == 'premise')
-                  .toList() ??
-              [];
+          List<String> streetNumList = element.types?.where((element1) => element1 == 'premise').toList() ?? [];
 
           if (streetNumList.isNotEmpty) {
             streetNum = element.longName ?? "";
@@ -306,10 +271,7 @@ class _GetUserAddressState extends State<GetUserAddress>
 
           ///streetName
 
-          List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'sublocality_level_2')
-                  .toList() ??
-              [];
+          List<String> streetNameList = element.types?.where((element1) => element1 == 'sublocality_level_2').toList() ?? [];
 
           if (streetNameList.isNotEmpty) {
             streetName = element.longName ?? "";
@@ -317,10 +279,7 @@ class _GetUserAddressState extends State<GetUserAddress>
 
           ///city
 
-          List<String> cityList = element.types
-                  ?.where((element1) => element1 == 'locality')
-                  .toList() ??
-              [];
+          List<String> cityList = element.types?.where((element1) => element1 == 'locality').toList() ?? [];
 
           if (cityList.isNotEmpty) {
             city = element.longName ?? "";
@@ -328,11 +287,7 @@ class _GetUserAddressState extends State<GetUserAddress>
 
           ///State
 
-          List<String> stateList = element.types
-                  ?.where(
-                      (element1) => element1 == 'administrative_area_level_1')
-                  .toList() ??
-              [];
+          List<String> stateList = element.types?.where((element1) => element1 == 'administrative_area_level_1').toList() ?? [];
 
           if (stateList.isNotEmpty) {
             stateName = element.longName ?? "";
@@ -340,20 +295,14 @@ class _GetUserAddressState extends State<GetUserAddress>
 
           ///country
 
-          List<String> countryList = element.types
-                  ?.where((element1) => element1 == 'country')
-                  .toList() ??
-              [];
+          List<String> countryList = element.types?.where((element1) => element1 == 'country').toList() ?? [];
 
           if (countryList.isNotEmpty) {
             country = element.longName ?? "";
           }
 
           ///ZIP CODE
-          List<String> pinCodeList = element.types
-                  ?.where((element1) => element1 == 'postal_code')
-                  .toList() ??
-              [];
+          List<String> pinCodeList = element.types?.where((element1) => element1 == 'postal_code').toList() ?? [];
 
           if (pinCodeList.isNotEmpty) {
             zipcode = element.longName ?? "";
@@ -361,9 +310,7 @@ class _GetUserAddressState extends State<GetUserAddress>
         });
       }
 
-      searchTextController.text = right.results?.first.formattedAddress ??
-          right.plusCode?.compoundCode ??
-          "";
+      searchTextController.text = right.results?.first.formattedAddress ?? right.plusCode?.compoundCode ?? "";
       setState(() {});
     });
   }
@@ -373,13 +320,9 @@ class _GetUserAddressState extends State<GetUserAddress>
       showToast(isSuccess: false, message: left.errorMessage!);
     }, (right) async {
       // showToast(isSuccess: true, message: right.message!);
-      FindLatLngResponseModel(
-          result: right.result,
-          status: right.status,
-          htmlAttributions: right.htmlAttributions);
+      FindLatLngResponseModel(result: right.result, status: right.status, htmlAttributions: right.htmlAttributions);
 
-      selectedLatLng = LatLng(right.result!.geometry!.location!.lat!,
-          right.result!.geometry!.location!.lng!);
+      selectedLatLng = LatLng(right.result!.geometry!.location!.lat!, right.result!.geometry!.location!.lng!);
 
       BitmapDescriptor? customIcon;
 
@@ -402,15 +345,10 @@ class _GetUserAddressState extends State<GetUserAddress>
         markers.removeLast();
       }
       markers.add(
-        Marker(
-            markerId: const MarkerId('1'),
-            position:
-                LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude),
-            icon: customIcon!),
+        Marker(markerId: const MarkerId('1'), position: LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude), icon: customIcon!),
       );
 
-      mapController
-          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
       searchList.clear();
       setState(() {});
     });
@@ -474,14 +412,12 @@ class _GetUserAddressState extends State<GetUserAddress>
                       ),
                     );
 
-                    selectedLatLng =
-                        LatLng(argument.latitude, argument.longitude);
+                    selectedLatLng = LatLng(argument.latitude, argument.longitude);
                     currentPosition = CameraPosition(
                       target: LatLng(argument.latitude, argument.longitude),
                       zoom: 14.4746,
                     );
-                    mapController.animateCamera(
-                        CameraUpdate.newCameraPosition(currentPosition));
+                    mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
 
                     findAddressURL(
                       lat: argument.latitude.toString(),
@@ -491,8 +427,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                     setState(() {});
                   },
                 ),
-                Positioned(
-                    top: 40.h, left: 10.w, child: const BackButtonWidget())
+                Positioned(top: 40.h, left: 10.w, child: const BackButtonWidget())
               ],
             ),
           ),
@@ -536,11 +471,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
-                          BoxShadow(
-                              color: const Color(0xff004C63).withOpacity(0.08),
-                              offset: const Offset(0, 0),
-                              spreadRadius: 0,
-                              blurRadius: 16)
+                          BoxShadow(color: const Color(0xff004C63).withOpacity(0.08), offset: const Offset(0, 0), spreadRadius: 0, blurRadius: 16)
                         ],
                       ),
                       child: Row(
@@ -616,34 +547,25 @@ class _GetUserAddressState extends State<GetUserAddress>
                                       ? Center(
                                           child: Transform.scale(
                                             scale: 0.5,
-                                            child:
-                                                const CircularProgressIndicator(),
+                                            child: const CircularProgressIndicator(),
                                           ),
                                         )
                                       : GestureDetector(
                                           onTap: () {
-                                            if (userAddress![index].isPrimary ==
-                                                false) {
+                                            if (userAddress![index].isPrimary == false) {
                                               addressBloc.add(
-                                                SetPrimaryAddressEvent(
-                                                    addressId:
-                                                        userAddress![index].id),
+                                                SetPrimaryAddressEvent(addressId: userAddress![index].id),
                                               );
                                             }
                                           },
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Image.asset(
                                                 AssetsUtils.markerFlag,
                                                 height: 15.h,
                                                 width: 22.w,
-                                                color: userAddress![index]
-                                                            .isPrimary ==
-                                                        true
-                                                    ? AppColors.terracotta
-                                                    : AppColors.darkGray,
+                                                color: userAddress![index].isPrimary == true ? AppColors.terracotta : AppColors.darkGray,
                                               ),
                                               SizedBox(
                                                 width: 16.w,
@@ -654,36 +576,28 @@ class _GetUserAddressState extends State<GetUserAddress>
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: userAddress![index]
-                                                                .isPrimary ==
-                                                            true
-                                                        ? AppColors.terracotta
-                                                        : AppColors.darkGray,
+                                                    color: userAddress![index].isPrimary == true ? AppColors.terracotta : AppColors.darkGray,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         );
                                 },
-                                separatorBuilder: (context, index) =>
-                                    const Divider(),
+                                separatorBuilder: (context, index) => const Divider(),
                               );
                       },
                       listener: (context, state) {
                         if (state is SetAddressPrimarySuccessState) {
-                          if (argumentsValue['string'] == 'isFromRestaurant' ||
-                              argumentsValue['string'] == 'isFromCheckout') {
+                          if (argumentsValue['string'] == 'isFromRestaurant' || argumentsValue['string'] == 'isFromCheckout') {
                             Get.offAll(
                               () => const AppManagerScreen(
                                 selectIndex: 3,
                               ),
                             );
-                          } else if (argumentsValue['string'] ==
-                              'isFromGroceryCheckout') {
+                          } else if (argumentsValue['string'] == 'isFromGroceryCheckout') {
                             Get.offAll(
                               () => const AppManagerScreen(
                                 selectIndex: 1,
@@ -729,53 +643,61 @@ class _GetUserAddressState extends State<GetUserAddress>
 
                   const SizedBox(height: 10),
 
-                  GestureDetector(
-                    onTap: () async {
-                      await findAddressURL(
-                        lat: selectedLatLng?.latitude.toString(),
-                        lng: selectedLatLng?.longitude.toString(),
-                      );
+                  BlocConsumer(
+                    bloc: addressBloc,
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      return userAddress == null
+                          ? const SizedBox()
+                          : GestureDetector(
+                              onTap: () async {
+                                await findAddressURL(
+                                  lat: selectedLatLng?.latitude.toString(),
+                                  lng: selectedLatLng?.longitude.toString(),
+                                );
 
-                      Map<String, dynamic> addressData = {
-                        'latitude': selectedLatLng?.latitude,
-                        'longitude': selectedLatLng?.longitude,
-                        'street_Num': streetNum,
-                        'street_Name': streetName,
-                        'city': city,
-                        'state': stateName.toString(),
-                        'country': country,
-                        'addressType': '',
-                        'zipcode': zipcode,
-                        'isPrimary': true,
-                      };
+                                Map<String, dynamic> addressData = {
+                                  'latitude': selectedLatLng?.latitude,
+                                  'longitude': selectedLatLng?.longitude,
+                                  'street_Num': streetNum,
+                                  'street_Name': streetName,
+                                  'city': city,
+                                  'state': stateName.toString(),
+                                  'country': country,
+                                  'addressType': '',
+                                  'zipcode': zipcode,
+                                  'isPrimary': true,
+                                };
 
-                      Get.to(
-                        () => AddressConfirmation(
-                          locationData: addressData,
-                          arguments: argumentsValue,
-                        ),
-                      );
+                                Get.to(
+                                  () => AddressConfirmation(
+                                    locationData: addressData,
+                                    arguments: argumentsValue,
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 48.h,
+                                margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
+                                width: Get.width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  color: const Color(0xffCE6B53),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Save',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Avenir',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
                     },
-                    child: Container(
-                      height: 48.h,
-                      margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
-                      width: Get.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
-                        color: const Color(0xffCE6B53),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Avenir',
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
 
                   Center(
