@@ -174,8 +174,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                   if (formKey.currentState!.validate()) {
                     if (widget.arguments['string'] == 'isFromRegister') {
                       AddAddressModel addAddressModel = AddAddressModel();
-                      addAddressModel.latitude = widget.locationData['latitude'];
-                      addAddressModel.longitude = widget.locationData['longitude'];
+                      addAddressModel.latitude = double.parse(widget.locationData['latitude'].toString());
+                      addAddressModel.longitude = double.parse(widget.locationData['longitude'].toString());
                       addAddressModel.streetNum = apartmentName.text;
                       addAddressModel.streetName = streetName.text;
                       addAddressModel.city = city.text;

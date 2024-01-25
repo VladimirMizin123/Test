@@ -663,14 +663,14 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                         'isPrimary': true,
                       };
 
-                      selectedLatLng != null
+                      selectedLatLng != null || zipcode != "" || city != "" || stateName != "" || country != ""
                           ? Get.to(
                               () => AddressConfirmation(
                                 locationData: addressData,
                                 arguments: argumentsValue,
                               ),
                             )
-                          : null;
+                          : showToast(message: "Wait Fetching Address", isSuccess: false);
                     },
                     child: Container(
                       height: 48.h,
