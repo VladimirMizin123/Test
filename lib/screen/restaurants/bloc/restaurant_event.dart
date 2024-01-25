@@ -4,13 +4,18 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_mod
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 
 abstract class RestaurantEvent {}
 
 /// Get User Address Event ===============================================================
 class GetUserAddressEvent extends RestaurantEvent {}
+
+class MealPlanMatchEvent extends RestaurantEvent {
+  final String subcategoryId;
+
+  MealPlanMatchEvent({required this.subcategoryId});
+}
 
 /// Get Restaurant List Event ===============================================================
 class GetRestaurantListEvent extends RestaurantEvent {

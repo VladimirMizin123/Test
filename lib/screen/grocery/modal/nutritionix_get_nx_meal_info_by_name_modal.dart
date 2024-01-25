@@ -52,7 +52,7 @@ class NutritionixGetNxMealInfoByNameModelData {
   final String? servingWeightGrams;
   final num? nfMetricQty;
   final String? nfMetricUom;
-  final dynamic nfCalories;
+  final num? nfCalories;
   final dynamic nfTotalFat;
   final dynamic nfSaturatedFat;
   final num? nfCholesterol;

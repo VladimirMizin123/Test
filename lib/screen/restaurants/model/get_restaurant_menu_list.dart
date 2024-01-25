@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+
 GetRestaurantMenuListModel getRestaurantMenuListModelFromJson(String str) =>
     GetRestaurantMenuListModel.fromJson(json.decode(str));
 
@@ -42,15 +44,27 @@ class GetRestaurantMenuListModel {
 
 class RestaurantMenu {
   String? menuId;
+  double? breakfastCalorie;
+  double? lunchCalorie;
+  double? snackCalorie;
+  double? dinnerCalorie;
   List<Category>? categories;
 
   RestaurantMenu({
     this.menuId,
     this.categories,
+    this.breakfastCalorie,
+    this.lunchCalorie,
+    this.snackCalorie,
+    this.dinnerCalorie,
   });
 
   factory RestaurantMenu.fromJson(Map<String, dynamic> json) => RestaurantMenu(
         menuId: json["menu_id"],
+        breakfastCalorie: json["breakfastCalorie"],
+        lunchCalorie: json["lunchCalorie"],
+        snackCalorie: json["snackCalorie"],
+        dinnerCalorie: json["dinnerCalorie"],
         categories: json["categories"] == null
             ? []
             : List<Category>.from(
@@ -59,6 +73,10 @@ class RestaurantMenu {
 
   Map<String, dynamic> toJson() => {
         "menu_id": menuId,
+        "breakfastCalorie": breakfastCalorie,
+        "lunchCalorie": lunchCalorie,
+        "snackCalorie": snackCalorie,
+        "dinnerCalorie": dinnerCalorie,
         "categories": categories == null
             ? []
             : List<dynamic>.from(categories!.map((x) => x.toJson())),
@@ -118,6 +136,7 @@ class MenuItemList {
   bool isAdded;
   bool isAddUpdated;
   bool isRemoveUpdated;
+  NutritionixGetNxMealInfoByNameModelData? mealInfoData;
 
   MenuItemList({
     this.name,
@@ -143,6 +162,7 @@ class MenuItemList {
     this.isAdded = false,
     this.isAddUpdated = false,
     this.isRemoveUpdated = false,
+    this.mealInfoData,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(
@@ -194,6 +214,7 @@ class MenuItemList {
         "should_fetch_customizations": shouldFetchCustomizations,
         "supports_image_scaling": supportsImageScaling,
         "highLightedColor": highLightedColor,
+        "mealInfoData": mealInfoData?.toJson(),
       };
 }
 

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,6 +69,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   List<MenuItemList> menuItem = [];
   bool hasCartData = false;
   bool iCanEat = false;
+
+  List<String> mealPlanId = [];
 
   @override
   void initState() {
@@ -449,8 +449,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               onTap: () async {
                                                 setState(() {
                                                   select = index;
-                                                  // tabMenu[controller.select];
                                                 });
+                                                _handleCanEat(restaurantMenu
+                                                        ?.categories?[index]
+                                                        .subcategoryId ??
+                                                    "");
                                               },
                                               child: Container(
                                                 height: 30.h,
@@ -519,7 +522,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                 //         .add(mealType[index]);
                                                 //   });
                                                 // }
-
                                                 if (index != 0) {
                                                   showModalBottomSheet(
                                                     context: context,
@@ -571,11 +573,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                     }
                                                   });
                                                 } else {
+                                                  String subId = restaurantMenu!
+                                                          .categories?[select]
+                                                          .subcategoryId ??
+                                                      "";
                                                   setState(() {
                                                     iCanEat = !iCanEat;
                                                   });
-
-                                                  log('iCanEat---------->>>>>> $iCanEat');
+                                                  _handleCanEat(subId);
                                                 }
                                               },
                                               child: Container(
@@ -716,37 +721,36 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                     ? (priceValue == "40"
                                                             ? int.parse(
                                                                     priceValue) <=
-                                                                ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
+                                                                ((restaurantMenu!
+                                                                        .categories![
+                                                                            select]
+                                                                        .menuItemList![
+                                                                            index]
+                                                                        .originalPrice)! /
                                                                     100)
-                                                            : int.parse(priceValue.split('-').first) <=
-                                                                    ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
+                                                            : int.parse(priceValue
+                                                                        .split(
+                                                                            '-')
+                                                                        .first) <=
+                                                                    ((restaurantMenu!
+                                                                            .categories![
+                                                                                select]
+                                                                            .menuItemList![
+                                                                                index]
+                                                                            .originalPrice)! /
                                                                         100) &&
-                                                                int.parse(priceValue.split('-').last) >=
-                                                                    ((restaurantMenu!.categories![select].menuItemList![index].originalPrice)! /
+                                                                int.parse(priceValue
+                                                                        .split(
+                                                                            '-')
+                                                                        .last) >=
+                                                                    ((restaurantMenu!
+                                                                            .categories![select]
+                                                                            .menuItemList![index]
+                                                                            .originalPrice)! /
                                                                         100))
-                                                        ? iCanEat == true
-                                                            ? restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
-                                                                        'Green' ||
-                                                                    restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
-                                                                        'Yellow'
-                                                                ? displayData(
-                                                                    index:
-                                                                        index)
-                                                                : const SizedBox()
-                                                            : displayData(
-                                                                index: index)
+                                                        ? displayData(index: index)
                                                         : const SizedBox()
-                                                    : iCanEat == true
-                                                        ? restaurantMenu!.categories![select].menuItemList![index].highLightedColor ==
-                                                                    'Green' ||
-                                                                restaurantMenu!
-                                                                        .categories![select]
-                                                                        .menuItemList![index]
-                                                                        .highLightedColor ==
-                                                                    'Yellow'
-                                                            ? displayData(index: index)
-                                                            : const SizedBox()
-                                                        : displayData(index: index);
+                                                    : displayData(index: index);
                                               }),
                                         );
                                       },
@@ -791,14 +795,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   Widget displayData({required int index}) {
     final size = MediaQuery.of(context).size;
-    // final RestaurantBloc restaurantBloc;
+    MenuItemList menuItem =
+        restaurantMenu!.categories![select].menuItemList![index];
 
     return GestureDetector(
       onTap: () {
         for (var element in cartData) {
-          if (element.productId ==
-              restaurantMenu!
-                  .categories![select].menuItemList![index].productId) {
+          if (element.productId == menuItem.productId) {
             selectedCartData = element;
           }
         }
@@ -806,11 +809,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         selectedCartData == null
             ? Get.to(
                     () => RestaurantMealDetails(
-                          data: restaurantMenu!
-                              .categories![select].menuItemList![index],
+                          data: menuItem,
                           restaurantId: widget.restaurantId,
                           cartCount: cartCount,
                           pickUp: widget.pickup,
+                          matchMealStatus: iCanEat &&
+                                  menuItem.mealInfoData?.nfCalories != null
+                              ? status(menuItem)
+                              : null,
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -820,12 +826,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               })
             : Get.to(
                     () => RestaurantMealDetails(
-                          data: restaurantMenu!
-                              .categories![select].menuItemList![index],
+                          data: menuItem,
                           restaurantId: widget.restaurantId,
                           shoppingListData: selectedCartData,
                           cartCount: cartCount,
                           pickUp: widget.pickup,
+                          matchMealStatus: iCanEat &&
+                                  menuItem.mealInfoData?.nfCalories != null
+                              ? status(menuItem)
+                              : null,
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -847,16 +856,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                restaurantMenu!
-                            .categories![select].menuItemList![index].image ==
-                        null
+                menuItem.image == null
                     ? Image.asset(
                         AssetsUtils.food1,
                         width: 80.w,
                       )
                     : Image.network(
-                        restaurantMenu!
-                            .categories![select].menuItemList![index].image!,
+                        menuItem.image!,
                         width: 80.w,
                       ),
                 Column(
@@ -865,8 +871,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     SizedBox(
                       width: 130.w,
                       child: Text(
-                        restaurantMenu!
-                            .categories![select].menuItemList![index].name!,
+                        menuItem.name!,
                         style: FontUtils.h16(
                           fontColor: AppColors.darkGray,
                           fontWeight: FWT.regular,
@@ -876,9 +881,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     SizedBox(
                       width: 150.w,
                       child: Text(
-                        restaurantMenu!.categories![select].menuItemList![index]
-                                .description ??
-                            '',
+                        menuItem.description ?? '',
                         style: FontUtils.h14(
                           fontColor: const Color(0xffA2A4A7),
                           fontWeight: FWT.light,
@@ -887,41 +890,19 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     )
                   ],
                 ),
-                restaurantMenu!.categories![select].menuItemList![index]
-                                .highLightedColor ==
-                            null ||
-                        restaurantMenu!.categories![select].menuItemList![index]
-                            .highLightedColor
-                            .toString()
-                            .isEmpty
-                    ? const SizedBox()
-                    : Image.asset(
-                        restaurantMenu!.categories![select].menuItemList![index]
-                                    .highLightedColor ==
-                                'Red'
-                            ? AssetsUtils.canEatRed
-                            :
-                            /*: restaurantMenu!
-                                        .categories![select]
-                                        .menuItemList![index]
-                                        .highLightedColor ==
-                                    'Yellow'
-                                ? AssetsUtils.canEatYellow
-                                : */
-                            AssetsUtils.icCanEat,
+                iCanEat && menuItem.mealInfoData?.nfCalories != null
+                    ? Image.asset(
+                        matchIcon(status(menuItem)),
                         width: 25.w,
-                      ),
+                      )
+                    : const SizedBox.shrink(),
                 Builder(builder: (context) {
-                  log("BUILDER:${restaurantMenu?.toJson().toString() ?? ""}");
-
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        restaurantMenu!.categories![select].menuItemList![index]
-                            .formattedPrice
-                            .toString(),
+                        menuItem.formattedPrice.toString(),
                         style: FontUtils.h18(
                           fontColor: Colors.black,
                           fontWeight: FWT.medium,
@@ -930,9 +911,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                       GestureDetector(
                         onTap: () async {
                           for (var element in cartData) {
-                            if (element.productId ==
-                                restaurantMenu!.categories![select]
-                                    .menuItemList![index].productId) {
+                            if (element.productId == menuItem.productId) {
                               selectedCartData = element;
                             }
                           }
@@ -940,8 +919,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           selectedCartData == null
                               ? await Get.to(
                                   () => RestaurantMenuDetailsScreen(
-                                    data: restaurantMenu!.categories![select]
-                                        .menuItemList![index],
+                                    data: menuItem,
                                     restaurantId: widget.restaurantId,
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
@@ -955,8 +933,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                 })
                               : await Get.to(
                                   () => RestaurantMenuDetailsScreen(
-                                    data: restaurantMenu!.categories![select]
-                                        .menuItemList![index],
+                                    data: menuItem,
                                     restaurantId: widget.restaurantId,
                                     shoppingListData: selectedCartData,
                                     cartCount: cartCount,
@@ -982,9 +959,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               ],
             ),
           ),
-          restaurantMenu!
-                      .categories![select].menuItemList![index].cartQuantity ==
-                  0
+          menuItem.cartQuantity == 0
               ? const SizedBox()
               : Container(
                   width: MediaQuery.of(context).size.width,
@@ -1003,7 +978,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          '\$${double.parse((restaurantMenu!.categories![select].menuItemList![index].cartPrice / 100).toString()).toStringAsFixed(2)}',
+                          '\$${double.parse((menuItem.cartPrice / 100).toString()).toStringAsFixed(2)}',
                           style: FontUtils.h18(
                               fontColor: const Color(0xff010101),
                               fontWeight: FWT.semiBold)),
@@ -1013,20 +988,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           GestureDetector(
                             onTap: () {
                               for (var element in cartData) {
-                                if (element.productId ==
-                                    restaurantMenu!.categories![select]
-                                        .menuItemList![index].productId) {
+                                if (element.productId == menuItem.productId) {
                                   isRemoveUpdate = true;
 
-                                  if (restaurantMenu!.categories![select]
-                                          .menuItemList![index].cartQuantity ==
-                                      1) {
+                                  if (menuItem.cartQuantity == 1) {
                                     restaurantBloc.add(
                                         RemoveShoppingListItemEvent(
-                                            productID: restaurantMenu!
-                                                .categories![select]
-                                                .menuItemList![index]
-                                                .productId!));
+                                            productID: menuItem.productId!));
                                   } else {
                                     restaurantBloc.add(
                                       UpdateRestaurantCartEvent(
@@ -1036,24 +1004,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               element.productName ?? '',
                                           oldProductId: element.productId ?? '',
                                           newProductId: '',
-                                          quantity: restaurantMenu!
-                                                  .categories![select]
-                                                  .menuItemList![index]
-                                                  .cartQuantity! -
-                                              1,
-                                          price: (restaurantMenu!
-                                                      .categories![select]
-                                                      .menuItemList![index]
-                                                      .cartPrice! /
-                                                  restaurantMenu!
-                                                      .categories![select]
-                                                      .menuItemList![index]
-                                                      .cartQuantity!) *
-                                              (restaurantMenu!
-                                                      .categories![select]
-                                                      .menuItemList![index]
-                                                      .cartQuantity! -
-                                                  1),
+                                          quantity: menuItem.cartQuantity! - 1,
+                                          price: (menuItem.cartPrice! /
+                                                  menuItem.cartQuantity!) *
+                                              (menuItem.cartQuantity! - 1),
                                           itemOptions: [],
                                           productType: element.productType ??
                                               'Restaurant',
@@ -1082,22 +1036,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   border:
                                       Border.all(color: AppColors.terracotta)),
                               child: Center(
-                                child: restaurantMenu!
-                                            .categories![select]
-                                            .menuItemList![index]
-                                            .isRemoveUpdated ==
-                                        true
+                                child: menuItem.isRemoveUpdated == true
                                     ? Transform.scale(
                                         scale: 0.5,
                                         child: const CircularProgressIndicator(
                                           color: AppColors.terracotta,
                                         ),
                                       )
-                                    : restaurantMenu!
-                                                .categories![select]
-                                                .menuItemList![index]
-                                                .cartQuantity ==
-                                            1
+                                    : menuItem.cartQuantity == 1
                                         ? SvgPicture.asset(
                                             AssetsUtils.icDelete,
                                             color: AppColors.terracotta,
@@ -1120,7 +1066,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                             ),
                             child: Center(
                                 child: Text(
-                              '${restaurantMenu!.categories![select].menuItemList![index].cartQuantity}',
+                              '${menuItem.cartQuantity}',
                               style: FontUtils.h18(
                                   fontWeight: FWT.semiBold,
                                   fontColor: AppColors.darkGray),
@@ -1130,9 +1076,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           GestureDetector(
                             onTap: () {
                               for (var element in cartData) {
-                                if (element.productId ==
-                                    restaurantMenu!.categories![select]
-                                        .menuItemList![index].productId) {
+                                if (element.productId == menuItem.productId) {
                                   isAddUpdate = true;
 
                                   restaurantBloc.add(
@@ -1142,24 +1086,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                         productName: element.productName ?? '',
                                         oldProductId: element.productId ?? '',
                                         newProductId: '',
-                                        quantity: restaurantMenu!
-                                                .categories![select]
-                                                .menuItemList![index]
-                                                .cartQuantity! +
-                                            1,
-                                        price: (restaurantMenu!
-                                                    .categories![select]
-                                                    .menuItemList![index]
-                                                    .cartPrice! /
-                                                restaurantMenu!
-                                                    .categories![select]
-                                                    .menuItemList![index]
-                                                    .cartQuantity!) *
-                                            (restaurantMenu!
-                                                    .categories![select]
-                                                    .menuItemList![index]
-                                                    .cartQuantity! +
-                                                1),
+                                        quantity: menuItem.cartQuantity! + 1,
+                                        price: (menuItem.cartPrice! /
+                                                menuItem.cartQuantity!) *
+                                            (menuItem.cartQuantity! + 1),
                                         itemOptions: [],
                                         productType:
                                             element.productType ?? 'Restaurant',
@@ -1186,11 +1116,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                 color: AppColors.coral,
                               ),
                               child: Center(
-                                child: restaurantMenu!
-                                            .categories![select]
-                                            .menuItemList![index]
-                                            .isAddUpdated ==
-                                        true
+                                child: menuItem.isAddUpdated == true
                                     ? Transform.scale(
                                         scale: 0.5,
                                         child: const CircularProgressIndicator(
@@ -1218,5 +1144,56 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         ],
       ),
     );
+  }
+
+  String matchIcon(int status) {
+    switch (status) {
+      case 0:
+        return AssetsUtils.icCanEat;
+      case 1:
+        return AssetsUtils.canEatYellow;
+      default:
+        return AssetsUtils.canEatRed;
+    }
+  }
+
+  void _handleCanEat(String subId) {
+    if (iCanEat && !mealPlanId.contains(subId)) {
+      mealPlanId.add(subId);
+      restaurantBloc.add(MealPlanMatchEvent(subcategoryId: subId));
+    }
+  }
+
+  int status(MenuItemList menu) {
+    double requiredCalorie = 0.0;
+    double calorie = menu.mealInfoData?.nfCalories?.toDouble() ?? 0.0;
+
+    switch (widget.mealType) {
+      case "BreakFast":
+        requiredCalorie = restaurantMenu?.breakfastCalorie ?? 0;
+        break;
+      case "Lunch":
+        requiredCalorie = restaurantMenu?.lunchCalorie ?? 0;
+        break;
+      case "Dinner":
+        requiredCalorie = restaurantMenu?.dinnerCalorie ?? 0;
+        break;
+      case "Snack":
+        requiredCalorie = restaurantMenu?.snackCalorie ?? 0;
+        break;
+    }
+
+    double greenMin = requiredCalorie - (requiredCalorie * 20) / 100;
+    double greenMax = requiredCalorie + (requiredCalorie * 10) / 100;
+    double yellowMin = requiredCalorie - (requiredCalorie * 25) / 100;
+    double yellowMax = requiredCalorie + (requiredCalorie * 15) / 100;
+
+    if (calorie > greenMin && calorie < greenMax) {
+      return 0;
+    } else if (calorie > yellowMin && calorie < yellowMax) {
+      return 1;
+    } else {
+      return 2;
+    }
   }
 }

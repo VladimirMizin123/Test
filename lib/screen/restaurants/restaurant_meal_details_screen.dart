@@ -18,7 +18,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
-import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
+
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 
@@ -30,12 +30,14 @@ class RestaurantMealDetails extends StatefulWidget {
     this.shoppingListData,
     required this.cartCount,
     required this.pickUp,
+    this.matchMealStatus,
   });
 
   final String restaurantId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
   final int cartCount;
+  final int? matchMealStatus;
   final bool pickUp;
 
   @override
@@ -67,7 +69,6 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () => Future(() => false),
       child: Scaffold(
@@ -125,18 +126,13 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        widget.data.highLightedColor == null ||
-                                widget.data.highLightedColor.toString().isEmpty
-                            ? const SizedBox()
-                            : Image.asset(
-                                widget.data.highLightedColor == 'Red'
-                                    ? AssetsUtils.canEatRed
-                                    : AssetsUtils.icCanEat,
-                                width: 25.w,
-                              ),
+                        if (widget.matchMealStatus != null) ...[
+                          const SizedBox(width: 5),
+                          Image.asset(
+                            matchIcon(widget.matchMealStatus!),
+                            width: 25.w,
+                          ),
+                        ],
                       ],
                     ),
                     Expanded(
@@ -548,6 +544,17 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                     fontWeight: FWT.lightMedium)),
           ],
         ));
+  }
+
+  String matchIcon(int status) {
+    switch (status) {
+      case 0:
+        return AssetsUtils.icCanEat;
+      case 1:
+        return AssetsUtils.canEatYellow;
+      default:
+        return AssetsUtils.canEatRed;
+    }
   }
 
   Widget commonProgressBar(
