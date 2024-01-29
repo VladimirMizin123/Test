@@ -108,10 +108,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             isLoader = false;
 
             weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
-
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              accountBloc.add(GetUnitInfoEvent());
-            });
           }
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -431,10 +427,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
                       weightValue =
                           state.unitData?.weightType == 'Pound' ? 1 : 2;
-
-                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        accountBloc.add(GetUnitInfoEvent());
-                      });
                     }
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -563,10 +555,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         state.unitData?.energyType == 'Kilojoules' ? 1 : 2;
                     waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
                     unitId = state.unitData?.unitId;
-
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      accountBloc.add(GetUnitInfoEvent());
-                    });
                   }
                   return Expanded(
                     child: Builder(builder: (context) {

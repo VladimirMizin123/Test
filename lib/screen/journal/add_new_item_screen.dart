@@ -13,7 +13,8 @@ import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_st
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart' as account;
+import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart'
+    as account;
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
@@ -32,7 +33,16 @@ class AddNewItemScreen extends StatefulWidget {
   final String? weight;
   final String? imageUrl;
 
-  const AddNewItemScreen({super.key, this.id, this.cal, this.fat, this.carbs, this.protein, this.name, this.weight, this.imageUrl});
+  const AddNewItemScreen(
+      {super.key,
+      this.id,
+      this.cal,
+      this.fat,
+      this.carbs,
+      this.protein,
+      this.name,
+      this.weight,
+      this.imageUrl});
 
   @override
   State<AddNewItemScreen> createState() => _AddNewItemScreenState();
@@ -120,7 +130,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           style: textTheme.displayMedium?.copyWith(color: Colors.black),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
+          icon:
+              Icon(Icons.arrow_back_ios, color: AppColors.darkGray, size: 20.h),
           onPressed: () => Navigator.pop(context),
         ).paddingOnly(left: 10.w),
       ),
@@ -137,15 +148,23 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                   isButtonEnable = false;
                 } else if (weightController.text.isEmpty) {
                   isButtonEnable = false;
-                } else if (calController.text.isEmpty || (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))) {
+                } else if (calController.text.isEmpty ||
+                    (double.parse(calController.text) >
+                        double.parse(
+                            PreferenceUtils.getString(totalCalorie)))) {
                   isButtonEnable = false;
-                } else if (fatController.text.isEmpty || (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))) {
+                } else if (fatController.text.isEmpty ||
+                    (double.parse(fatController.text) >
+                        double.parse(PreferenceUtils.getString(totalFat)))) {
                   isButtonEnable = false;
                 } else if (carbsController.text.isEmpty ||
-                    (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                    (double.parse(carbsController.text) >
+                        double.parse(PreferenceUtils.getString(totalCarbs)))) {
                   isButtonEnable = false;
                 } else if (proteinController.text.isEmpty ||
-                    (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))) {
+                    (double.parse(proteinController.text) >
+                        double.parse(
+                            PreferenceUtils.getString(totalProtein)))) {
                   isButtonEnable = false;
                 } else {
                   isButtonEnable = true;
@@ -184,16 +203,28 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     } else if (weightController.text.isEmpty) {
                                       isButtonEnable = false;
                                     } else if (calController.text.isEmpty ||
-                                        (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))) {
+                                        (double.parse(calController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalCalorie)))) {
                                       isButtonEnable = false;
                                     } else if (fatController.text.isEmpty ||
-                                        (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))) {
+                                        (double.parse(fatController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalFat)))) {
                                       isButtonEnable = false;
                                     } else if (carbsController.text.isEmpty ||
-                                        (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                                        (double.parse(carbsController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalCarbs)))) {
                                       isButtonEnable = false;
                                     } else if (proteinController.text.isEmpty ||
-                                        (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))) {
+                                        (double.parse(proteinController.text) >
+                                            double.parse(
+                                                PreferenceUtils.getString(
+                                                    totalProtein)))) {
                                       isButtonEnable = false;
                                     } else {
                                       isButtonEnable = true;
@@ -203,7 +234,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                       child: Container(
                                         height: 160.h,
                                         width: double.infinity.w,
-                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8.r),
+                                            color: AppColors.disable),
                                         child: Image.file(
                                           File(pickedImageFilePath),
                                           fit: BoxFit.cover,
@@ -217,7 +251,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                         child: Container(
                                           height: 160.h,
                                           width: double.infinity.w,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                              color: AppColors.disable),
                                           child: Image.network(
                                             widget.imageUrl ?? '',
                                             fit: BoxFit.cover,
@@ -227,11 +264,17 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     : Container(
                                         height: 160.h,
                                         width: double.infinity.w,
-                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), color: AppColors.disable),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8.r),
+                                            color: AppColors.disable),
                                         child: Center(
                                           child: Text(
                                             StringUtils.addPhoto,
-                                            style: textTheme.headlineSmall?.copyWith(color: AppColors.middleGray),
+                                            style: textTheme.headlineSmall
+                                                ?.copyWith(
+                                                    color:
+                                                        AppColors.middleGray),
                                           ),
                                         ),
                                       ),
@@ -246,19 +289,29 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             controller: nameController,
                             cursorColor: AppColors.darkGray,
                             keyboardType: TextInputType.text,
-                            style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                            style: const TextStyle(
+                                fontSize: 16, color: AppColors.darkGray),
                             decoration: InputDecoration(
                               hintText: 'Item Name',
-                              hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
+                              hintStyle: const TextStyle(
+                                  fontSize: 14, color: AppColors.grayColor),
                               isDense: true,
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.grayColor)),
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.grayColor)),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
                               disabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primaryBlue)),
                             ),
                             onChanged: (value) {
                               setState(() {
@@ -316,36 +369,54 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                 //         ? 1
                                 //         : 2;
 
-                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                  accountBloc.add(GetUnitInfoEvent());
-                                });
+                                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                //   accountBloc.add(GetUnitInfoEvent());
+                                // });
                               }
                               return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                       // "${StringUtils.weight} / ${Get.arguments?["weightValue"] == 1 ? "Pound" : "Kg"}",
                                       "${StringUtils.weight} ",
-                                      style: textTheme.bodyLarge?.copyWith(color: Colors.black)),
+                                      style: textTheme.bodyLarge
+                                          ?.copyWith(color: Colors.black)),
                                   SizedBox(
                                     width: 80.w,
                                     child: TextFormField(
                                       controller: weightController,
                                       cursorColor: AppColors.darkGray,
                                       keyboardType: TextInputType.number,
-                                      style: const TextStyle(fontSize: 16, color: AppColors.darkGray),
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.darkGray),
                                       decoration: InputDecoration(
                                         hintText: '00',
-                                        hintStyle: const TextStyle(fontSize: 14, color: AppColors.grayColor),
+                                        hintStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.grayColor),
                                         isDense: true,
                                         enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
                                         border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
                                         disabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
                                         focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.primaryBlue)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.primaryBlue)),
                                       ),
                                       onChanged: (value) {
                                         setState(
@@ -377,7 +448,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
 
                                             if (nameController.text.isEmpty) {
                                               isButtonEnable = false;
-                                            } else if (weightController.text.isEmpty) {
+                                            } else if (weightController
+                                                .text.isEmpty) {
                                               isButtonEnable = false;
                                             } else if (calController.text
                                                     .isEmpty /*||
@@ -477,13 +549,23 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     title: 'Cal',
                                     percent: calController.text.isEmpty
                                         ? 0
-                                        : (double.parse(calController.text) > double.parse(PreferenceUtils.getString(totalCalorie)))
+                                        : (double.parse(calController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCalorie)))
                                             ? 1
-                                            : (double.parse(calController.text) / double.parse(PreferenceUtils.getString(totalCalorie))),
-                                    gramCount: calController.text.isEmpty ? '0' : calController.text,
+                                            : (double.parse(
+                                                    calController.text) /
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCalorie))),
+                                    gramCount: calController.text.isEmpty
+                                        ? '0'
+                                        : calController.text,
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
-                                    totalGram: '${double.parse(PreferenceUtils.getString(totalCalorie)).toStringAsFixed(2)} cal',
+                                    totalGram:
+                                        '${double.parse(PreferenceUtils.getString(totalCalorie)).toStringAsFixed(2)} cal',
                                     controller: calController,
                                   ),
                                 ),
@@ -498,10 +580,19 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     title: 'Fat',
                                     percent: fatController.text.isEmpty
                                         ? 0
-                                        : (double.parse(fatController.text) > double.parse(PreferenceUtils.getString(totalFat)))
+                                        : (double.parse(fatController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalFat)))
                                             ? 1
-                                            : (double.parse(fatController.text) / double.parse(PreferenceUtils.getString(totalFat))),
-                                    gramCount: fatController.text.isEmpty ? '0' : fatController.text,
+                                            : (double.parse(
+                                                    fatController.text) /
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalFat))),
+                                    gramCount: fatController.text.isEmpty
+                                        ? '0'
+                                        : fatController.text,
                                     // weightKGToPound(
                                     //     textValue: int.tryParse(
                                     //         fatController.text),
@@ -538,10 +629,19 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     isWeight: true,
                                     percent: carbsController.text.isEmpty
                                         ? 0
-                                        : (double.parse(carbsController.text) > double.parse(PreferenceUtils.getString(totalCarbs)))
+                                        : (double.parse(carbsController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCarbs)))
                                             ? 1
-                                            : (double.parse(carbsController.text) / double.parse(PreferenceUtils.getString(totalCarbs))),
-                                    gramCount: carbsController.text.isEmpty ? '0' : carbsController.text,
+                                            : (double.parse(
+                                                    carbsController.text) /
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalCarbs))),
+                                    gramCount: carbsController.text.isEmpty
+                                        ? '0'
+                                        : carbsController.text,
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
@@ -568,10 +668,20 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
 
                                     percent: proteinController.text.isEmpty
                                         ? 0
-                                        : (double.parse(proteinController.text) > double.parse(PreferenceUtils.getString(totalProtein)))
+                                        : (double.parse(
+                                                    proteinController.text) >
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalProtein)))
                                             ? 1
-                                            : (double.parse(proteinController.text) / double.parse(PreferenceUtils.getString(totalProtein))),
-                                    gramCount: proteinController.text.isEmpty ? '0' : proteinController.text,
+                                            : (double.parse(
+                                                    proteinController.text) /
+                                                double.parse(
+                                                    PreferenceUtils.getString(
+                                                        totalProtein))),
+                                    gramCount: proteinController.text.isEmpty
+                                        ? '0'
+                                        : proteinController.text,
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
@@ -602,7 +712,9 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                     } else {
                       return buildButton(
                         context: context,
-                        bgColor: isButtonEnable ? AppColors.primaryBlue : AppColors.disable,
+                        bgColor: isButtonEnable
+                            ? AppColors.primaryBlue
+                            : AppColors.disable,
                         hasImage: false,
                         onPressed: () {
                           // ADD NEW ITEM API,
@@ -610,37 +722,43 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             Fluttertoast.showToast(msg: 'Please Select Image');
                           } else*/
                           if (nameController.text.isEmpty) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Name value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Name value');
                           } else if (weightController.text.isEmpty) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Weight value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Weight value');
                           } else if (calController.text
                                   .isEmpty /*||
                               (double.parse(calController.text) >
                                   double.parse(PreferenceUtils.getString(
                                       totalCalorie)))*/
                               ) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Cal value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Cal value');
                           } else if (fatController.text
                                   .isEmpty /*||
                               (double.parse(fatController.text) >
                                   double.parse(
                                       PreferenceUtils.getString(totalFat)))*/
                               ) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Fat value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Fat value');
                           } else if (carbsController.text
                                   .isEmpty /*||
                               (double.parse(carbsController.text) >
                                   double.parse(
                                       PreferenceUtils.getString(totalCarbs)))*/
                               ) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Carbs value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Carbs value');
                           } else if (proteinController.text
                                   .isEmpty /*||
                               (double.parse(proteinController.text) >
                                   double.parse(PreferenceUtils.getString(
                                       totalProtein)))*/
                               ) {
-                            Fluttertoast.showToast(msg: 'Please fill correct Protein value');
+                            Fluttertoast.showToast(
+                                msg: 'Please fill correct Protein value');
                           } else {
                             log("LAST");
                             (widget.protein != null)
@@ -648,12 +766,16 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     UpdateNewMealEvent(
                                         id: widget.id!,
                                         name: nameController.text,
-                                        imageUrl: pickedImageFilePath != '' ? File(pickedImageFilePath) : null,
+                                        imageUrl: pickedImageFilePath != ''
+                                            ? File(pickedImageFilePath)
+                                            : null,
                                         protein: proteinController.text,
                                         fat: fatController.text,
                                         carbs: carbsController.text,
                                         calorie: calController.text,
-                                        type: nameController.text.toString().removeAllWhitespace,
+                                        type: nameController.text
+                                            .toString()
+                                            .removeAllWhitespace,
                                         userId: userId,
                                         quantity: weightController.text),
                                     // UpdateNewMealEvent(
@@ -695,15 +817,20 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   )
                                 : getAddNewMealBloc.add(
                                     AddNewMeal(
-                                        name: nameController.text,
-                                        imageUrl: pickedImageFilePath != '' ? File(pickedImageFilePath) : null,
-                                        protein: proteinController.text,
-                                        fat: fatController.text,
-                                        carbs: carbsController.text,
-                                        calorie: calController.text,
-                                        type: Get.arguments.toString().removeAllWhitespace,
-                                        userId: userId,
-                                        quantity: weightController.text,),
+                                      name: nameController.text,
+                                      imageUrl: pickedImageFilePath != ''
+                                          ? File(pickedImageFilePath)
+                                          : null,
+                                      protein: proteinController.text,
+                                      fat: fatController.text,
+                                      carbs: carbsController.text,
+                                      calorie: calController.text,
+                                      type: Get.arguments
+                                          .toString()
+                                          .removeAllWhitespace,
+                                      userId: userId,
+                                      quantity: weightController.text,
+                                    ),
                                     // AddNewMeal(
                                     //   name: nameController.text,
                                     //   imageUrl: pickedImageFilePath != ''
@@ -743,7 +870,9 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           }
                         },
                         textColor: Colors.white,
-                        title: (widget.protein != null) ? StringUtils.saveChanges : StringUtils.saveNewItem,
+                        title: (widget.protein != null)
+                            ? StringUtils.saveChanges
+                            : StringUtils.saveNewItem,
                       ).paddingOnly(bottom: 30.h, top: 10.h);
                     }
                   },
@@ -777,12 +906,17 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            commonProgressbar(progressColor: progressColor, width: 70.w, lineHeight: 8.0, percent: percent ?? 0.5),
+            commonProgressbar(
+                progressColor: progressColor,
+                width: 70.w,
+                lineHeight: 8.0,
+                percent: percent ?? 0.5),
           ],
         ),
         Text(
           '$gramCount / $totalGram',
-          style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray, height: 1.7),
+          style: textTheme?.bodyMedium
+              ?.copyWith(color: AppColors.darkGray, height: 1.7),
         ),
         SizedBox(
           width: 70,
@@ -899,7 +1033,11 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     );
   }
 
-  Widget commonProgressbar({Color? progressColor, double? width, double? lineHeight, double? percent}) {
+  Widget commonProgressbar(
+      {Color? progressColor,
+      double? width,
+      double? lineHeight,
+      double? percent}) {
     return LinearPercentIndicator(
       width: width,
       barRadius: Radius.circular(10.r),

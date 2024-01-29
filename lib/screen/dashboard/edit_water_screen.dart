@@ -62,11 +62,6 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
 
                         waterValue =
                             state.unitData?.waterType == 'Floz' ? 1 : 2;
-
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) {
-                          accountBloc.add(GetUnitInfoEvent());
-                        });
                       }
                       return SizedBox(
                         height: size.height.h,

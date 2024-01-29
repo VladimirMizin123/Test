@@ -424,10 +424,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                           weightValue =
                               state.unitData?.weightType == 'Pound' ? 1 : 2;
 
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((timeStamp) {
-                            accountBloc.add(GetUnitInfoEvent());
-                          });
+                          // WidgetsBinding.instance
+                          //     .addPostFrameCallback((timeStamp) {
+                          //   accountBloc.add(GetUnitInfoEvent());
+                          // });
                         }
                         return mealPlanList.isEmpty
                             ? const SizedBox()

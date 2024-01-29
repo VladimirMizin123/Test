@@ -80,9 +80,9 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                     if (state is GetUnitInfoSuccessState) {
                       waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
 
-                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        accountBloc.add(GetUnitInfoEvent());
-                      });
+                      // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      //   accountBloc.add(GetUnitInfoEvent());
+                      // });
                     }
                     return Column(
                       children: [

@@ -482,13 +482,6 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         'Pound'
                                                     ? 1
                                                     : 2;
-
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback(
-                                                    (timeStamp) {
-                                              accountBloc
-                                                  .add(GetUnitInfoEvent());
-                                            });
                                           }
                                           return GridView(
                                             gridDelegate:
@@ -644,13 +637,6 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         'Pound'
                                                     ? 1
                                                     : 2;
-
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback(
-                                                    (timeStamp) {
-                                              accountBloc
-                                                  .add(GetUnitInfoEvent());
-                                            });
                                           }
                                           return Row(
                                             mainAxisAlignment:
@@ -691,13 +677,6 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         'Pound'
                                                     ? 1
                                                     : 2;
-
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback(
-                                                    (timeStamp) {
-                                              accountBloc
-                                                  .add(GetUnitInfoEvent());
-                                            });
                                           }
 
                                           return Row(
@@ -738,13 +717,6 @@ class _GroceryItemDetailsState extends State<GroceryItemDetails> {
                                                         'Pound'
                                                     ? 1
                                                     : 2;
-
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback(
-                                                    (timeStamp) {
-                                              accountBloc
-                                                  .add(GetUnitInfoEvent());
-                                            });
                                           }
                                           return Row(
                                             mainAxisAlignment:

@@ -413,6 +413,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                             child: Center(
                                 child: Text(
                               StringUtils.notfoundResmenuError,
+                              textAlign: TextAlign.center,
                               style: FontUtils.h18(
                                 fontColor: AppColors.darkGray,
                                 fontWeight: FWT.medium,
@@ -424,6 +425,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                 child: Center(
                                     child: Text(
                                   StringUtils.notfoundResmenuError,
+                                  textAlign: TextAlign.center,
                                   style: FontUtils.h18(
                                     fontColor: AppColors.darkGray,
                                     fontWeight: FWT.medium,
@@ -688,7 +690,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               child: Center(
                                                 child: Text(
                                                   StringUtils
-                                                      .notfoundResmenuError,
+                                                      .thereIsNoMealInPriceRange,
                                                   style: FontUtils.h18(
                                                     fontColor:
                                                         AppColors.darkGray,

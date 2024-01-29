@@ -529,11 +529,11 @@ class _JournalScreenState extends State<JournalScreen> {
                                                   ? 1
                                                   : 2;
 
-                                          WidgetsBinding.instance
-                                              .addPostFrameCallback(
-                                                  (timeStamp) {
-                                            accountBloc.add(GetUnitInfoEvent());
-                                          });
+                                          // WidgetsBinding.instance
+                                          //     .addPostFrameCallback(
+                                          //         (timeStamp) {
+                                          //   accountBloc.add(GetUnitInfoEvent());
+                                          // });
                                         }
                                         return Row(
                                           mainAxisAlignment:

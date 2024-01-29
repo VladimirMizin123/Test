@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -76,4 +77,20 @@ String dateTimeDDMMMYYYY({required String dateTimeVal}) {
   DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(dateTimeVal);
   String formattedDate = DateFormat("dd MMM yyyy").format(dateTime);
   return formattedDate;
+}
+
+class Debouncer {
+  int? milliseconds;
+  VoidCallback? action;
+  Timer? timer;
+
+  run(VoidCallback action) {
+    if (null != timer) {
+      timer!.cancel();
+    }
+    timer = Timer(
+      const Duration(milliseconds: Duration.millisecondsPerSecond),
+      action,
+    );
+  }
 }

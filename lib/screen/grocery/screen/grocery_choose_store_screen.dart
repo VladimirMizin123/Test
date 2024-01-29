@@ -23,6 +23,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart'
     as getresAddress;
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as userAddress;
+import 'package:gymeats_mobile/widget/network_image_widget.dart';
 
 //TEMP
 
@@ -196,45 +197,22 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                   child: Row(
                                                     children: [
                                                       (productsList[index]
-                                                                      .store!
-                                                                      .logoPhotos![
-                                                                  0] !=
-                                                              "")
+                                                                  .store!
+                                                                  .logoPhotos
+                                                                  ?.isNotEmpty ??
+                                                              false)
                                                           ? Expanded(
-                                                              flex: 4,
-                                                              child: Center(
-                                                                child:
-                                                                    CachedNetworkImage(
-                                                                  imageUrl: productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .logoPhotos![0],
-                                                                  height: 60.h,
-                                                                  // width: 40.h,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      const Center(
-                                                                          child:
-                                                                              Icon(Icons.error)),
-                                                                  placeholder: (context,
-                                                                          url) =>
-                                                                      const Center(
-                                                                          child:
-                                                                              CircularProgressIndicator(
-                                                                    color: AppColors
-                                                                        .lightGrey,
-                                                                  )),
-                                                                ),
-                                                                // Image(
-                                                                //   image:  (searchedProductsList[index].store!.logoPhotos![0]),
-                                                                //   height: 60.h,
-                                                                //   // width: 40.h,
-                                                                //   fit: BoxFit.cover,
-                                                                // ),
-                                                              ))
+                                                              flex: 6,
+                                                              child:
+                                                                  NetworkImageWidget(
+                                                                url: productsList[
+                                                                            index]
+                                                                        .store!
+                                                                        .logoPhotos?[0] ??
+                                                                    '',
+                                                                height: 90.h,
+                                                              ),
+                                                            )
                                                           : const SizedBox
                                                               .shrink(),
                                                       const SizedBox(width: 10),
@@ -393,57 +371,23 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                       vertical: 12),
                                               child: Row(
                                                 children: [
-                                                  const Expanded(
-                                                      flex: 4,
-                                                      child: Center(
-                                                          child: Image(
-                                                              image: AssetImage(
-                                                                  AssetsUtils
-                                                                      .icDemoIcon)))),
                                                   (productsList[index]
-                                                                  .store!
-                                                                  .logoPhotos !=
-                                                              null ||
-                                                          productsList[index]
-                                                                  .store
-                                                                  ?.logoPhotos !=
-                                                              "")
+                                                              .store!
+                                                              .logoPhotos
+                                                              ?.isNotEmpty ??
+                                                          false)
                                                       ? Expanded(
-                                                          flex: 4,
-                                                          child: Center(
-                                                            child:
-                                                                CachedNetworkImage(
-                                                              imageUrl: productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .logoPhotos?[0] ??
-                                                                  '',
-                                                              height: 60.h,
-                                                              // width: 40.h,
-                                                              fit: BoxFit.cover,
-                                                              errorWidget: (context,
-                                                                      url,
-                                                                      error) =>
-                                                                  const Center(
-                                                                      child: Icon(
-                                                                          Icons
-                                                                              .error)),
-                                                              placeholder: (context,
-                                                                      url) =>
-                                                                  const Center(
-                                                                      child:
-                                                                          CircularProgressIndicator(
-                                                                color: AppColors
-                                                                    .lightGrey,
-                                                              )),
-                                                            ),
-                                                            // Image(
-                                                            //   image: NetworkImage(productsList[index].store!.logoPhotos![0]),
-                                                            //   height: 60.h,
-                                                            //   // width: 40.h,
-                                                            //   fit: BoxFit.cover,
-                                                            // ),
-                                                          ))
+                                                          flex: 6,
+                                                          child:
+                                                              NetworkImageWidget(
+                                                            url: productsList[
+                                                                        index]
+                                                                    .store!
+                                                                    .logoPhotos?[0] ??
+                                                                '',
+                                                            height: 90.h,
+                                                          ),
+                                                        )
                                                       : const SizedBox.shrink(),
                                                   const SizedBox(width: 10),
                                                   Expanded(

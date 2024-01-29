@@ -313,4 +313,6 @@ class StringUtils {
   static const drinks = 'Drinks';
   static const hiveBoxVersionName = 'nxBoxVersion';
   static const hiveBoxNxName = 'nxBoxData';
+  static const thereIsNoMealInPriceRange = "There is no meal in price range.";
+  static const noDataFound = "No data found.";
 }

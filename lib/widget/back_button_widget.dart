@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 
 class BackButtonWidget extends StatelessWidget {
-  const BackButtonWidget({super.key});
+  const BackButtonWidget({super.key, this.onTap});
+  final Function? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,11 @@ class BackButtonWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 2),
       child: GestureDetector(
           onTap: () {
-            Get.back();
+            if (onTap == null) {
+              Get.back();
+            } else {
+              onTap?.call();
+            }
           },
           child: SvgPicture.asset(AssetsUtils.icBackArrow)),
     );

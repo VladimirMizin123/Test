@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/functions.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
@@ -50,6 +51,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
   AddNewMealBloc getAddNewMealBloc = AddNewMealBloc();
   List<Cart> groceryMultiSearchModelDataList = [];
   List<MealData> mealList = [];
+  final _debouncer = Debouncer();
 
   List<Map<String, dynamic>> groceryDetails = [];
 
@@ -228,7 +230,19 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                         controller: searchController,
                         onChanged: (value) {
                           ///one screen call
-                          Timer(const Duration(seconds: 1), () {
+                          // Timer(const Duration(seconds: 1), () {
+                          //   journalPlanBloc.add(JournalSearchEvent(
+                          //     getUserAddress: widget.journalMealScreenArguments
+                          //             ?.getUserAddress ??
+                          //         widget.getUserAddress,
+                          //     journalSearchModelList: [
+                          //       GrocerySearchModel(
+                          //           groceryName: searchController.text,
+                          //           quantity: 0)
+                          //     ],
+                          //   ));
+                          // });
+                          _debouncer.run(() async {
                             journalPlanBloc.add(JournalSearchEvent(
                               getUserAddress: widget.journalMealScreenArguments
                                       ?.getUserAddress ??

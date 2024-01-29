@@ -629,11 +629,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                                         state.unitData?.weightType == 'Pound'
                                             ? 1
                                             : 2;
-
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((timeStamp) {
-                                      accountBloc.add(GetUnitInfoEvent());
-                                    });
                                   }
                                   return ListView.builder(
                                     itemCount: groceryDetails.length,

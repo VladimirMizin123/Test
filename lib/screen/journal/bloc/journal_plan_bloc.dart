@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
@@ -229,8 +230,13 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
               grocerySearchModal: event.journalSearchModelList!,
               getUserAddress: event.getUserAddress)
           .fold((left) {
+        emit(JournalSearchSuccessState(groceryMultiSearchProductList: []));
         emit(JournalSearchErrorState());
-        onFailError(emit: emit, text: left.errorMessage!);
+        onFailError(
+            emit: emit,
+            text: (left.errorMessage?.trim().isNotEmpty ?? false)
+                ? left.errorMessage!
+                : StringUtils.noDataFound);
       }, (right) {
         print("call success :${right.data!.carts}");
         emit(JournalSearchSuccessState(
@@ -275,7 +281,10 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   onFailError(
       {required String text, required Emitter<JournalMealPlanState> emit}) {
-    showToast(isSuccess: false, message: text);
+    if (text.trim().isNotEmpty) {
+      showToast(isSuccess: false, message: text);
+    }
+
     emit(JournalFetchMealPlanErrorState());
   }
 
