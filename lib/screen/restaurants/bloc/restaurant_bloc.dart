@@ -4,11 +4,13 @@ import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -30,6 +32,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<UpdateDeliveryStatusEvent>(_onUpdateDeliveryStatus);
     on<ClearShoppingListItemEvent>(_onClearShoppingList);
     on<MealPlanMatchEvent>(_onMatchMealPlan);
+    on<CheckDeliverableGroceryEvent>(_onCheckDeliverableGroceryStore);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -493,6 +496,52 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(UpdateDeliveryStatusErrorState());
+    }
+  }
+
+  _onCheckDeliverableGroceryStore(
+      CheckDeliverableGroceryEvent event, Emitter<RestaurantState> emit) async {
+    try {
+      emit(DeliverableLoaderState());
+      List<Cart> cartList = [];
+      for (int i = 0; i < event.cartList.length; i++) {
+        Store? store = event.cartList[i].store;
+        if (store?.isSelected ?? false) {
+          Map<String, dynamic> requestData = {
+            "latitude": event.address?.latitude,
+            "longitude": event.address?.longitude,
+            "storeId": store?.id,
+            "user_street_num": "${event.address?.streetNum}",
+            "user_street_name": "${event.address?.streetName}",
+            "user_city": "${event.address?.city}",
+            "user_state": "${event.address?.state}",
+            "user_country": "${event.address?.country}",
+            "user_zipcode": "${event.address?.zipcode}",
+            "pickup": false,
+          };
+          log("Url : ${ApiUrls.checkDeliverableGroceryStore}");
+          log("Request Data : $requestData");
+          var response = await ApiServices()
+              .post(ApiUrls.checkDeliverableGroceryStore, requestData);
+          dynamic data = jsonDecode(response.body);
+          log(response.body.toString());
+          if (data is Map && data["success"] == true) {
+            cartList.add(event.cartList[i]);
+          } else {
+            if (data is Map && data["errorMessage"] != null) {
+              showToast(
+                message: data["errorMessage"].toString(),
+                isSuccess: false,
+              );
+            }
+          }
+        }
+      }
+      event.callback(cartList);
+    } catch (e) {
+      event.callback([]);
+    } finally {
+      emit(DeliverableSuccessState());
     }
   }
 

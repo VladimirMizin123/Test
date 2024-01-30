@@ -1,3 +1,4 @@
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
@@ -5,6 +6,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
     as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as user_add;
 
 abstract class RestaurantEvent {}
 
@@ -156,4 +159,16 @@ class UpdateDeliveryStatusEvent extends RestaurantEvent {
   final bool pickUp;
 
   UpdateDeliveryStatusEvent({required this.pickUp});
+}
+
+class CheckDeliverableGroceryEvent extends RestaurantEvent {
+  final List<Cart> cartList;
+  final user_add.UserAddress? address;
+  final Function(List<Cart>) callback;
+
+  CheckDeliverableGroceryEvent({
+    required this.cartList,
+    required this.callback,
+    required this.address,
+  });
 }

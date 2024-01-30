@@ -15,6 +15,8 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.d
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
+import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
@@ -629,28 +631,37 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                   const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: simpleTextBorderButton(
-                      context: context,
-                      color: AppColors.green,
-                      buttonLable: 'Confirm',
-                      height: screenSize.height * 0.065,
-                      width: screenSize.width,
-                      isLoadingWidget: false,
-                      onTap: () {
-                        List<Cart> selectedProductStore = [];
-                        for (var i = 0; i < productsList.length; i++) {
-                          if (productsList[i].store!.isSelected) {
-                            selectedProductStore.add(productsList[i]);
-                          }
-                        }
-
-                        widget.arguments!.groceryBloc!.add(
-                            GrocerySelectedStoreEvent(
-                                productsList: selectedProductStore));
-                        Navigator.pop(context);
-                      },
-                      isDarkColor: true,
-                      isFillColor: true,
+                    child: BlocBuilder<RestaurantBloc, RestaurantState>(
+                      bloc: restaurantBloc,
+                      builder: (context, state) => simpleTextBorderButton(
+                        context: context,
+                        color: AppColors.green,
+                        buttonLable: 'Confirm',
+                        height: screenSize.height * 0.065,
+                        width: screenSize.width,
+                        isLoadingWidget: state is DeliverableLoaderState,
+                        onTap: () async {
+                          restaurantBloc.add(
+                            CheckDeliverableGroceryEvent(
+                              cartList: productsList,
+                              address: widget.arguments?.getUserAddress,
+                              callback: (cart) {
+                                log("Cart List :$cart");
+                                if (cart.isNotEmpty) {
+                                  widget.arguments!.groceryBloc!.add(
+                                    GrocerySelectedStoreEvent(
+                                      productsList: cart,
+                                    ),
+                                  );
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                          );
+                        },
+                        isDarkColor: true,
+                        isFillColor: true,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

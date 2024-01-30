@@ -24,6 +24,10 @@ class GetUserAddressSuccessState extends RestaurantState {
 
 class GetUserAddressLoadingState extends RestaurantState {}
 
+class DeliverableLoaderState extends RestaurantState {}
+
+class DeliverableSuccessState extends RestaurantState {}
+
 class GetUserAddressErrorState extends RestaurantState {}
 
 ///================================================================================================================
