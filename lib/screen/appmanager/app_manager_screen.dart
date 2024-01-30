@@ -17,10 +17,12 @@ import '../grocery/screen/grocery_screen.dart';
 class AppManagerScreen extends StatefulWidget {
   final String routeName;
   final int? selectIndex;
+  final bool isOrderComplete;
   const AppManagerScreen({
     super.key,
     this.routeName = '',
     this.selectIndex,
+    this.isOrderComplete = false,
   });
 
   @override
@@ -119,7 +121,7 @@ class _AppManagerScreenState extends State<AppManagerScreen>
       case 1:
         return const GroceryPlanScreen();
       case 2:
-        return const DashBoardScreen();
+        return DashBoardScreen(isOrderComplete: widget.isOrderComplete);
       case 3:
         return const RestaurantScreen();
       case 4:

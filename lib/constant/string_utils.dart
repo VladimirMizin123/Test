@@ -315,4 +315,5 @@ class StringUtils {
   static const hiveBoxNxName = 'nxBoxData';
   static const thereIsNoMealInPriceRange = "There is no meal in price range.";
   static const noDataFound = "No data found.";
+  static const youCanCheckYourOrderHere = "You can check your order here!";
 }

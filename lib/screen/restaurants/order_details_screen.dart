@@ -18,6 +18,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_bg.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/order_bill_widget.dart';
 import 'package:livechatt/livechatt.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,10 +26,12 @@ class RestaurantOrderDetailsScreen extends StatefulWidget {
   const RestaurantOrderDetailsScreen({super.key, required this.mealMeOrderId});
   final String mealMeOrderId;
   @override
-  State<RestaurantOrderDetailsScreen> createState() => _RestaurantOrderDetailsScreenState();
+  State<RestaurantOrderDetailsScreen> createState() =>
+      _RestaurantOrderDetailsScreenState();
 }
 
-class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScreen> {
+class _RestaurantOrderDetailsScreenState
+    extends State<RestaurantOrderDetailsScreen> {
   RestaurantBloc restaurantBloc = RestaurantBloc();
   List<OrderData> orderData = [];
   bool loading = false;
@@ -41,7 +44,8 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
     loading = true;
     accountBloc.add(GetProfileDetailsEvent());
     Future.delayed(const Duration(seconds: 10)).then((value) {
-      restaurantBloc.add(GetOrderDetailsEvent(mealMeOrderId: widget.mealMeOrderId));
+      restaurantBloc
+          .add(GetOrderDetailsEvent(mealMeOrderId: widget.mealMeOrderId));
     });
   }
 
@@ -85,7 +89,8 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                           Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   GestureDetector(
@@ -95,7 +100,9 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                                     child: Container(
                                       height: 40.h,
                                       width: 40.w,
-                                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                                      decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
                                       child: const Icon(
                                         Icons.arrow_back_ios,
                                         size: 18,
@@ -125,18 +132,21 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                                   ],
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
-                                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 24.w, vertical: 12.h),
                                 child: Column(
                                   children: [
                                     Text(
                                       StringUtils.orderDetails,
-                                      style: textTheme.bodyLarge?.copyWith(color: const Color(0xFF010101)),
+                                      style: textTheme.bodyLarge?.copyWith(
+                                          color: const Color(0xFF010101)),
                                     ),
                                     orderData.isEmpty
                                         ? const SizedBox()
                                         : Text(
                                             '${orderData[0].deliveryTimeMin}-${orderData[0].deliveryTimeMax} min',
-                                            style: textTheme.displayLarge?.copyWith(
+                                            style: textTheme.displayLarge
+                                                ?.copyWith(
                                               color: AppColors.darkGray,
                                               fontWeight: FontWeight.w900,
                                               letterSpacing: -0.8,
@@ -162,7 +172,8 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                         child: ElevatedButton(
                           onPressed: () async {
                             if (orderData.isNotEmpty) {
-                              await launchUrl(Uri.parse(orderData[0].trackLink!));
+                              await launchUrl(
+                                  Uri.parse(orderData[0].trackLink!));
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -176,7 +187,8 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(right: 10.0, bottom: 4),
+                                padding: const EdgeInsets.only(
+                                    right: 10.0, bottom: 4),
                                 child: SvgPicture.asset(
                                   AssetsUtils.teracottLoader,
                                   height: 24.h,
@@ -184,7 +196,10 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                                 ),
                               ),
                               Text(StringUtils.trackOrder,
-                                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .copyWith(
                                         color: const Color(0xFF010101),
                                       )),
                             ],
@@ -208,69 +223,22 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                                 child: Column(
                                   children: List.generate(
                                     orderData.length,
-                                    (index) => dashBoardCardView(
-                                            child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                              AssetsUtils.defaultLogo,
-                                              height: 37.h,
-                                              width: 37.w,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  width: MediaQuery.of(context).size.width * 0.67,
-                                                  child: Text(
-                                                    '${orderData[index].storeName}',
-                                                    style: textTheme.headlineSmall?.copyWith(color: const Color(0xFF010101)),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'Order ${orderData[index].orderId}',
-                                                  style: textTheme.bodySmall
-                                                      ?.copyWith(color: AppColors.middleGray, fontWeight: FontWeight.w400, height: 1.2),
-                                                ),
-                                              ],
-                                            ).paddingOnly(left: 10.w)
-                                          ],
-                                        ),
-                                        commonRowData(
-                                          title: '${orderData[index].quantity}x ${orderData[index].productName}',
-                                          value: '\$ ${orderData[index].price! / 100}',
-                                          textTheme: textTheme.bodyMedium!.copyWith(color: Colors.black),
-                                          valueTextTheme: textTheme.bodyLarge!.copyWith(color: Colors.black),
-                                        ),
-                                        commonRowData(
-                                          title: 'Delivery Fee',
-                                          value: '\$ ${orderData[index].deliveryFee! / 100}',
-                                          textTheme: textTheme.bodyMedium!.copyWith(color: Colors.black),
-                                          valueTextTheme: textTheme.bodyLarge!.copyWith(color: Colors.black),
-                                        ),
-                                        commonRowData(
-                                          title: 'Service Fee',
-                                          value: '\$ ${orderData[index].serviceFee! / 100}',
-                                          textTheme: textTheme.bodyMedium!.copyWith(color: Colors.black),
-                                          valueTextTheme: textTheme.bodyLarge!.copyWith(color: Colors.black),
-                                        ),
-                                        commonRowData(
-                                          title: 'Service Tax Fee',
-                                          value: '\$ ${orderData[index].serviceTaxFee! / 100}',
-                                          textTheme: textTheme.bodyMedium!.copyWith(color: Colors.black),
-                                          valueTextTheme: textTheme.bodyLarge!.copyWith(color: Colors.black),
-                                        ),
-                                        commonRowData(
-                                          title: 'Total',
-                                          value:
-                                              '\$ ${((orderData[index].price! / 100) + (orderData[index].deliveryFee! / 100) + (orderData[index].serviceFee! / 100) + (orderData[index].serviceTaxFee! / 100)).toStringAsFixed(2)}',
-                                          textTheme: textTheme.bodyLarge!.copyWith(color: AppColors.darkGray),
-                                          valueTextTheme: textTheme.headlineSmall!.copyWith(color: Colors.black),
-                                        ),
-                                      ],
-                                    ).paddingAll(12))
-                                        .paddingSymmetric(horizontal: 20.w, vertical: 5),
+                                    (index) {
+                                      OrderData order = orderData[index];
+                                      return dashBoardCardView(
+                                              child: OrderBillWidget(
+                                        storeName: order.storeName,
+                                        productName: order.productName,
+                                        orderId: order.orderId,
+                                        quantity: order.quantity ?? 0,
+                                        price: order.price ?? 0,
+                                        deliveryFee: order.deliveryFee ?? 0,
+                                        serviceFee: order.serviceFee ?? 0,
+                                        serviceTaxFee: order.serviceTaxFee ?? 0,
+                                      ).paddingAll(12))
+                                          .paddingSymmetric(
+                                              horizontal: 20.w, vertical: 5);
+                                    },
                                   ),
                                 ),
                               ),
@@ -280,7 +248,8 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                         bloc: accountBloc,
                         listener: (context, state) {
                           if (state is GetProfileDetailsSuccessState) {
-                            fullName = '${state.profileDetails?.firstName} ${state.profileDetails?.lastName}';
+                            fullName =
+                                '${state.profileDetails?.firstName} ${state.profileDetails?.lastName}';
                             setState(() {});
                           }
                         },
@@ -293,12 +262,16 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
                               '0',
                               'Enter name',
                               PreferenceUtils.getString(prefUserEmail),
-                              <String, String>{'org': PreferenceUtils.getString(prefUserData), 'position': 'user'},
+                              <String, String>{
+                                'org': PreferenceUtils.getString(prefUserData),
+                                'position': 'user'
+                              },
                             );
                           },
                           textColor: AppColors.skyBlue,
                           title: 'Support',
-                        ).paddingOnly(top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
+                        ).paddingOnly(
+                            top: 8.h, bottom: 20.h, left: 20.w, right: 20.w),
                       ),
                     ],
                   ),
@@ -306,21 +279,5 @@ class _RestaurantOrderDetailsScreenState extends State<RestaurantOrderDetailsScr
         ),
       ),
     );
-  }
-
-  Widget commonRowData({
-    required String title,
-    required String value,
-    required TextStyle textTheme,
-    required TextStyle valueTextTheme,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(width: MediaQuery.of(context).size.width * 0.65, child: Text(title, style: textTheme)),
-        Text(value, style: valueTextTheme),
-      ],
-    ).paddingSymmetric(vertical: 5);
   }
 }

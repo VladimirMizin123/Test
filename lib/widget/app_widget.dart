@@ -610,6 +610,7 @@ Widget simpleTextBorderButton({
   bool isLoadingWidget = false,
   Color? color,
   Color? lableColor,
+  Color? txtColor,
 }) {
   final screenSize = MediaQuery.of(context!).size;
   return GestureDetector(
@@ -642,7 +643,7 @@ Widget simpleTextBorderButton({
                   buttonLable!,
                   style: isFillColor
                       ? FontUtils.h16(
-                          fontColor: AppColors.whiteColor,
+                          fontColor: txtColor ?? AppColors.whiteColor,
                           fontWeight: isDarkColor ? FWT.semiBold : FWT.regular)
                       : FontUtils.h16(
                           fontColor: lableColor ?? AppColors.primaryBlue,

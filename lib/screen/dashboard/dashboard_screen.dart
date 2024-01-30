@@ -20,6 +20,7 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/order_history_hint_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
@@ -35,9 +36,11 @@ import '../../constant/string_utils.dart';
 import '../../models/fetch_meal_plan_model.dart';
 import '../../models/get_dashboard_model.dart';
 import '../../widget/app_center_loader.dart';
+import '../grocery/screen/payment/payment_success_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
-  const DashBoardScreen({super.key});
+  const DashBoardScreen({super.key, this.isOrderComplete = false});
+  final bool isOrderComplete;
 
   @override
   State<DashBoardScreen> createState() => _DashBoardScreenState();
@@ -93,6 +96,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       accountBloc.add(GetUnitInfoEvent());
     });
+
+    if (widget.isOrderComplete && !PreferenceUtils.getBool(showOrderHint)) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        showGeneralDialog(
+          context: context,
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const OrderHistoryHintScreen(),
+        );
+        PreferenceUtils.setBool(showOrderHint, true);
+      });
+    }
   }
 
   @override

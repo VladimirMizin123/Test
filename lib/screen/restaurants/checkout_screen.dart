@@ -16,6 +16,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
@@ -24,6 +25,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart'
     as order;
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart'
     as product;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
@@ -152,6 +154,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log((widget.orderData as CreateOrderData)
+            .finalQuote
+            ?.quote
+            ?.toJson()
+            .toString() ??
+        "");
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -272,10 +280,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           final GroceryRepository repository =
                               GroceryRepository();
                           await repository.clearShoppingList();
-                          Get.to(() => RestaurantOrderDetailsScreen(
-                                mealMeOrderId:
-                                    productData?.priceId?.mealmeOrderId ?? '',
-                              ));
+
+                          Get.to(const PaymentSuccessScreen());
+                          // Get.to(() => RestaurantOrderDetailsScreen(
+                          //       mealMeOrderId:
+                          //           productData?.priceId?.mealmeOrderId ?? '',
+                          //     ));
                         } else {
                           restaurantBloc.add(ClearShoppingListItemEvent());
                         }
@@ -293,11 +303,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             }
 
             if (state is ClearShoppingListItemSuccessState) {
-              Get.to(
-                () => RestaurantOrderDetailsScreen(
-                  mealMeOrderId: productData?.priceId?.mealmeOrderId ?? '',
-                ),
-              );
+              // Get.to(
+              //   () => RestaurantOrderDetailsScreen(
+              //     mealMeOrderId: productData?.priceId?.mealmeOrderId ?? '',
+              //   ),
+              // );
+
+              Get.to(const PaymentSuccessScreen());
             }
 
             /// Update Delivery Status ---------------------------------------------------
@@ -560,6 +572,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         isDismissible: false,
                                         enableDrag: false,
                                         showDragHandle: false,
+                                        isScrollControlled: true,
                                         shape: OutlineInputBorder(
                                           borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(16.r),

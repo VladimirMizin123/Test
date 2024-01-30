@@ -264,6 +264,7 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateOrderModel createOrderModel}) async {
+    log("Request Data : ${createOrderModel.toJson()}");
     final response = await apiServices.post(
       ApiUrls.createOrder,
       createOrderModel,
@@ -285,7 +286,6 @@ class RestaurantRepository {
       ApiUrls.createProduct,
       createProductRequestModel,
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           CreateProductResponseModel.fromJson(jsonDecode(response.body)));
@@ -314,6 +314,8 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, GetOrderDetails>> getOrderDetails(
       {required String mealmeId}) async {
+    log('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
+
     final response = await apiServices
         .get('${ApiUrls.getOrderDetails}/$mealmeId?userId=$userId');
 

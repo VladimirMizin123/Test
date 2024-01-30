@@ -353,17 +353,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                                 0xFF010101)),
                                                   ),
                                                 ),
-                                                subtitle: Text(
-                                                  StringUtils.storeAddress,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(
-                                                          color: const Color(
-                                                              0xFF010101),
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                ),
                                                 contentPadding:
                                                     const EdgeInsets.only(
                                                         left: 15.0,
