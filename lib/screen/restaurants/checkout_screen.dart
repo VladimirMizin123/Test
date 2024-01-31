@@ -154,12 +154,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log((widget.orderData as CreateOrderData)
-            .finalQuote
-            ?.quote
-            ?.toJson()
-            .toString() ??
-        "");
+    double subTotal =
+        (widget.orderData!.finalQuote?.quote?.subtotal ?? 0) / 100;
+    double deliveryFee =
+        (widget.orderData?.finalQuote?.quote?.deliveryFeeCents ?? 0) / 100;
+    double serviceFee =
+        widget.orderData?.finalQuote!.quote!.serviceFeeCents! / 100;
+    double serviceFeeTax =
+        (widget.orderData?.finalQuote?.quote?.salesTaxCents ?? 0) / 100;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -920,7 +923,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                   const Spacer(),
                                   Text(
-                                    '\$${(widget.orderData!.finalQuote?.quote?.subtotal ?? 0) / 100}',
+                                    '\$$subTotal',
                                     style: FontUtils.h14(
                                       fontColor: AppColors.darkGray,
                                       fontWeight: FWT.lightMedium,
@@ -944,7 +947,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   const Icon(Icons.info_outline, size: 20),
                                   const Spacer(),
                                   Text(
-                                    '\$${(widget.orderData?.finalQuote?.quote?.deliveryFeeCents ?? 0) / 100}',
+                                    '\$$deliveryFee',
                                     style: FontUtils.h14(
                                       fontColor: AppColors.darkGray,
                                       fontWeight: FWT.lightMedium,
@@ -968,7 +971,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     const Icon(Icons.info_outline, size: 20),
                                     const Spacer(),
                                     Text(
-                                      '\$${widget.orderData?.finalQuote!.quote!.serviceFeeCents! / 100}',
+                                      '\$$serviceFee',
                                       style: FontUtils.h14(
                                         fontColor: AppColors.darkGray,
                                         fontWeight: FWT.lightMedium,
@@ -988,7 +991,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                   const Spacer(),
                                   Text(
-                                    '\$${(widget.orderData?.finalQuote?.quote?.salesTaxCents ?? 0) / 100}',
+                                    '\$$serviceFeeTax',
                                     style: FontUtils.h14(
                                       fontColor: AppColors.darkGray,
                                       fontWeight: FWT.lightMedium,
@@ -1009,7 +1012,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     ),
                                     const Spacer(),
                                     Text(
-                                      '\$ ${(widget.orderData?.finalQuote?.quote?.totalWithoutTips ?? 0) / 100}',
+                                      '\$ ${(subTotal + deliveryFee + serviceFee + serviceFeeTax).toStringAsFixed(2)}',
                                       style: FontUtils.h24(
                                         fontColor: const Color(0xff010101),
                                         fontWeight: FWT.medium,
