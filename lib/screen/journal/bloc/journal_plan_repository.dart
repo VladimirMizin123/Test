@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
+import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
@@ -108,17 +109,31 @@ class JournalPlanRepository {
 
     // log(apiURL, name: 'API URL :');
 
-    print("address:$getUserAddress");
+    UserAddress? address = getUserAddress;
+
+    if (address == null) {
+      log("Address null waiting for api call........");
+      await GetAddressRepository().getUserAddressData().fold((left) => null,
+          (right) {
+        right.data?.forEach((element) async {
+          if (element.isPrimary == true) {
+            address = element;
+          }
+        });
+      });
+    }
+
+    log("User Address Journal Plan :$address");
 
     Map<String, dynamic> data = {
-      "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
-      "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
-      "user_street_num": getUserAddress?.streetNum,
-      "user_street_name": getUserAddress?.streetName,
-      "user_city": getUserAddress?.city,
-      "user_state": getUserAddress?.state,
-      "user_country": getUserAddress?.country,
-      "user_zipcode": getUserAddress?.zipcode,
+      "latitude": address?.latitude?.toStringAsFixed(6),
+      "longitude": address?.longitude?.toStringAsFixed(6),
+      "user_street_num": address?.streetNum,
+      "user_street_name": address?.streetName,
+      "user_city": address?.city,
+      "user_state": address?.state,
+      "user_country": address?.country,
+      "user_zipcode": address?.zipcode,
       "pickup": false,
       "groceries": grocerySearchModal,
     };

@@ -2,6 +2,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.d
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
@@ -171,4 +172,11 @@ class CheckDeliverableGroceryEvent extends RestaurantEvent {
     required this.callback,
     required this.address,
   });
+}
+
+class FetchCustomizationEvent extends RestaurantEvent {
+  final String productId;
+  final Function(MenuItemList) callback;
+
+  FetchCustomizationEvent({required this.productId, required this.callback});
 }

@@ -320,13 +320,13 @@ Widget commonSearchTextField({
   );
 }
 
-showToast({required String message, required bool isSuccess}) {
+showToast({required String message, required bool isSuccess, Color? color}) {
   if (isSuccess) {
     Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: color ?? Colors.green,
         textColor: Colors.white,
         fontSize: 16.0);
   } else {
@@ -335,7 +335,7 @@ showToast({required String message, required bool isSuccess}) {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         textColor: Colors.white,
-        backgroundColor: Colors.red,
+        backgroundColor: color ?? Colors.red,
         fontSize: 16.0);
   }
 }

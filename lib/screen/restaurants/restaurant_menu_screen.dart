@@ -818,6 +818,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   menuItem.mealInfoData?.nfCalories != null
                               ? status(menuItem)
                               : null,
+                          onCustomizationChange: (p0) {
+                            menuItem.customizations = p0;
+                            setState(() {});
+                          },
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -836,6 +840,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   menuItem.mealInfoData?.nfCalories != null
                               ? status(menuItem)
                               : null,
+                          onCustomizationChange: (p0) {
+                            menuItem.customizations = p0;
+                            setState(() {});
+                          },
                         ),
                     transition: Transition.fadeIn)!
                 .then((value) {
@@ -924,6 +932,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     restaurantId: widget.restaurantId,
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
+                                    onCustomizationChange: (p0) {
+                                      menuItem.customizations = p0;
+                                      setState(() {});
+                                    },
                                   ),
                                   transition: Transition.fadeIn,
                                 )!
@@ -939,6 +951,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     shoppingListData: selectedCartData,
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
+                                    onCustomizationChange: (p0) {
+                                      menuItem.customizations = p0;
+                                      setState(() {});
+                                    },
                                   ),
                                   transition: Transition.fadeIn,
                                 )!

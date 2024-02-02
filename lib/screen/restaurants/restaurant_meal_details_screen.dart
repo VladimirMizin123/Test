@@ -7,9 +7,6 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
@@ -31,6 +28,7 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.cartCount,
     required this.pickUp,
     this.matchMealStatus,
+    this.onCustomizationChange,
   });
 
   final String restaurantId;
@@ -39,6 +37,7 @@ class RestaurantMealDetails extends StatefulWidget {
   final int cartCount;
   final int? matchMealStatus;
   final bool pickUp;
+  final Function(List<Customization>)? onCustomizationChange;
 
   @override
   State<RestaurantMealDetails> createState() => _RestaurantMealDetailsState();
@@ -427,6 +426,10 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                         widget.restaurantId,
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
+                                                    onCustomizationChange:
+                                                        (p0) => widget
+                                                            .onCustomizationChange
+                                                            ?.call(p0),
                                                   ),
                                                 )
                                               : Get.to(
@@ -439,6 +442,10 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                         widget.shoppingListData,
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
+                                                    onCustomizationChange:
+                                                        (p0) => widget
+                                                            .onCustomizationChange
+                                                            ?.call(p0),
                                                   ),
                                                 );
                                         },

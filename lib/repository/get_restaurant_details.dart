@@ -345,6 +345,21 @@ class RestaurantRepository {
     }
   }
 
+  Future<Either<ErrorModel, MenuItemList>> fetchCustomization(
+      String productId) async {
+    final response =
+        await apiServices.get("${ApiUrls.fetchCustomization}/$productId");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          MenuItemList.fromJson(jsonDecode(response.body)?["data"] ?? {}));
+    } else if (response.statusCode == 400) {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   /// Update Delivery Status ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> updateDeliveryStatus(

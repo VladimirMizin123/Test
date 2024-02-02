@@ -192,6 +192,8 @@ class ApiUrls {
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
   static const String checkDeliverableGroceryStore =
       '${baseUrl}api/MealMe/CheckDeliverableGroceryStore';
+  static const String fetchCustomization =
+      '${baseUrl}api/MealMe/FetchCustomization';
 
   static const String createOrder = '${baseUrl}api/MealmeOrder/CreateOrder';
 

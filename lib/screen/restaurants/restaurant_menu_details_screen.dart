@@ -20,20 +20,24 @@ import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.
 import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
-  const RestaurantMenuDetailsScreen(
-      {super.key,
-      required this.data,
-      required this.restaurantId,
-      this.shoppingListData,
-      required this.cartCount,
-      required this.pickUp});
+  const RestaurantMenuDetailsScreen({
+    super.key,
+    required this.data,
+    required this.restaurantId,
+    this.shoppingListData,
+    required this.cartCount,
+    required this.pickUp,
+    this.onCustomizationChange,
+  });
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
   final int cartCount;
   final bool pickUp;
+  final Function(List<Customization>)? onCustomizationChange;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>
@@ -56,6 +60,7 @@ class _RestaurantMenuDetailsScreenState
   List<Map<String, dynamic>> optionsList = [];
   List<Map<String, dynamic>> secondOptionsList = [];
   ShoppingListData? shoppingListData;
+  List<Customization> customizationList = [];
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
@@ -66,24 +71,35 @@ class _RestaurantMenuDetailsScreenState
     selectedOption.clear();
     secondOptionsList.clear();
     optionsList.clear();
-    if (widget.data.customizations != null) {
-      for (var element in widget.data.customizations!) {
-        selectedData.addAll(
-          {
-            element.name!: [],
-            'isRequired': element.minChoiceOptions,
-          },
-        );
-      }
+    for (Customization element in customizationList) {
+      selectedData.addAll(
+        {
+          element.name!: [],
+          'isRequired': element.minChoiceOptions,
+        },
+      );
     }
-
     if (shoppingListData != null) {
       for (var element in shoppingListData!.options!) {
         selectedOption.add(element.optionId);
       }
     }
-
     item = widget.data.cartQuantity!;
+  }
+
+  void _handleCustomization() {
+    if (customizationList.isEmpty &&
+        (widget.data.shouldFetchCustomizations ?? false)) {
+      restaurantBloc.add(FetchCustomizationEvent(
+        productId: widget.data.productId ?? "",
+        callback: (menu) {
+          customizationList = menu.customizations ?? [];
+          widget.onCustomizationChange?.call(customizationList);
+          setState(() {});
+          log(customizationList.length.toString());
+        },
+      ));
+    }
   }
 
   @override
@@ -91,7 +107,9 @@ class _RestaurantMenuDetailsScreenState
     super.initState();
     shoppingListData = widget.shoppingListData;
     cartCount = widget.cartCount;
+    customizationList = widget.data.customizations ?? [];
     getData();
+    _handleCustomization();
   }
 
   @override
@@ -355,8 +373,7 @@ class _RestaurantMenuDetailsScreenState
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: SizedBox(
-                            height: widget.data.customizations == null ||
-                                    widget.data.customizations!.isEmpty
+                            height: customizationList.isEmpty
                                 ? size.height * 0.55
                                 : null,
                             child: Column(
@@ -396,30 +413,39 @@ class _RestaurantMenuDetailsScreenState
                                     ),
                                   ),
                                 ),
-                                widget.data.customizations == null ||
-                                        widget.data.customizations!.isEmpty
+                                bloc.BlocBuilder(
+                                  bloc: restaurantBloc,
+                                  builder: (context, state) {
+                                    return state
+                                            is FetchCustomizationLoaderState
+                                        ? const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              AppCenterLoader(),
+                                            ],
+                                          ).paddingOnly(top: 20, bottom: 20)
+                                        : const SizedBox.shrink();
+                                  },
+                                ),
+                                customizationList.isEmpty
                                     ? const SizedBox()
                                     : Column(
                                         children: List.generate(
-                                          widget.data.customizations!.length,
+                                          customizationList.length,
                                           (index) => Column(
                                             children: [
                                               Row(
                                                 children: [
                                                   SizedBox(
-                                                    width: widget
-                                                                .data
-                                                                .customizations?[
+                                                    width: customizationList[
                                                                     index]
                                                                 .minChoiceOptions ==
                                                             0
                                                         ? 250.w
                                                         : 140.w,
                                                     child: Text(
-                                                      widget
-                                                              .data
-                                                              .customizations?[
-                                                                  index]
+                                                      customizationList[index]
                                                               .name ??
                                                           '',
                                                       style: FontUtils.h18(
@@ -430,10 +456,7 @@ class _RestaurantMenuDetailsScreenState
                                                     ),
                                                   ),
                                                   const Spacer(),
-                                                  widget
-                                                              .data
-                                                              .customizations?[
-                                                                  index]
+                                                  customizationList[index]
                                                               .minChoiceOptions ==
                                                           0
                                                       ? Text(
@@ -448,7 +471,7 @@ class _RestaurantMenuDetailsScreenState
                                                       : Row(
                                                           children: [
                                                             Text(
-                                                              'Choose ${widget.data.customizations?[index].minChoiceOptions ?? 1} option',
+                                                              'Choose ${customizationList[index].minChoiceOptions ?? 1} option',
                                                               style:
                                                                   FontUtils.h14(
                                                                 fontColor:
@@ -511,9 +534,7 @@ class _RestaurantMenuDetailsScreenState
                                                         width: 1)),
                                                 child: Column(
                                                   children: List.generate(
-                                                    widget
-                                                        .data
-                                                        .customizations![index]
+                                                    customizationList[index]
                                                         .options!
                                                         .length,
                                                     (index1) => Column(
@@ -545,32 +566,28 @@ class _RestaurantMenuDetailsScreenState
                                                                     (key,
                                                                         value) {
                                                                       if (key ==
-                                                                          widget
-                                                                              .data
-                                                                              .customizations![index]
+                                                                          customizationList[index]
                                                                               .name) {
-                                                                        if (value.toString().contains(widget
-                                                                            .data
-                                                                            .customizations![index]
-                                                                            .options![index1]
-                                                                            .name!)) {
+                                                                        if (value
+                                                                            .toString()
+                                                                            .contains(customizationList[index].options![index1].name!)) {
                                                                           value.removeWhere((element) =>
                                                                               element ==
-                                                                              widget.data.customizations![index].options![index1].name!);
+                                                                              customizationList[index].options![index1].name!);
 
                                                                           widget.data.isAdded == true
-                                                                              ? secondOptionsList.removeWhere((element) => element['option_id'] == widget.data.customizations?[index].options?[index1].optionId)
-                                                                              : optionsList.removeWhere((element) => element['option_id'] == widget.data.customizations?[index].options?[index1].optionId);
+                                                                              ? secondOptionsList.removeWhere((element) => element['option_id'] == customizationList[index].options?[index1].optionId)
+                                                                              : optionsList.removeWhere((element) => element['option_id'] == customizationList[index].options?[index1].optionId);
                                                                         } else {
-                                                                          if (widget.data.customizations![index].maxChoiceOptions! <
+                                                                          if (customizationList[index].maxChoiceOptions! <
                                                                               value.length + 1) {
                                                                             value.removeAt(0);
 
                                                                             if (widget.data.isAdded ==
                                                                                 true) {
-                                                                              for (var j = 0; j < widget.data.customizations![index].options!.length; j++) {
+                                                                              for (var j = 0; j < customizationList[index].options!.length; j++) {
                                                                                 for (var i = 0; i < secondOptionsList.length; i++) {
-                                                                                  if (widget.data.customizations![index].options![j].optionId!.contains(secondOptionsList[i]['option_id'])) {
+                                                                                  if (customizationList[index].options![j].optionId!.contains(secondOptionsList[i]['option_id'])) {
                                                                                     secondOptionsList.removeAt(i);
 
                                                                                     break;
@@ -579,14 +596,14 @@ class _RestaurantMenuDetailsScreenState
                                                                               }
 
                                                                               secondOptionsList.add({
-                                                                                "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                                "option_id": customizationList[index].options?[index1].optionId ?? '',
                                                                                 "quantity": 1,
-                                                                                "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                                "marked_price": customizationList[index].options?[index1].price
                                                                               });
                                                                             } else {
-                                                                              for (var j = 0; j < widget.data.customizations![index].options!.length; j++) {
+                                                                              for (var j = 0; j < customizationList[index].options!.length; j++) {
                                                                                 for (var i = 0; i < optionsList.length; i++) {
-                                                                                  if (widget.data.customizations![index].options![j].optionId!.contains(optionsList[i]['option_id'])) {
+                                                                                  if (customizationList[index].options![j].optionId!.contains(optionsList[i]['option_id'])) {
                                                                                     optionsList.removeAt(i);
 
                                                                                     break;
@@ -595,29 +612,29 @@ class _RestaurantMenuDetailsScreenState
                                                                               }
 
                                                                               optionsList.add({
-                                                                                "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                                "option_id": customizationList[index].options?[index1].optionId ?? '',
                                                                                 "quantity": 1,
-                                                                                "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                                "marked_price": customizationList[index].options?[index1].price
                                                                               });
                                                                             }
 
-                                                                            value.add(widget.data.customizations![index].options![index1].name);
+                                                                            value.add(customizationList[index].options![index1].name);
                                                                           } else {
-                                                                            value.add(widget.data.customizations![index].options![index1].name);
+                                                                            value.add(customizationList[index].options![index1].name);
 
                                                                             widget.data.isAdded == true
                                                                                 ? secondOptionsList.add({
-                                                                                    "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                                    "option_id": customizationList[index].options?[index1].optionId ?? '',
                                                                                     "quantity": 1,
-                                                                                    "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                                    "marked_price": customizationList[index].options?[index1].price
                                                                                   })
                                                                                 :
 
                                                                                 /// add data in option list
                                                                                 optionsList.add({
-                                                                                    "option_id": widget.data.customizations?[index].options?[index1].optionId ?? '',
+                                                                                    "option_id": customizationList[index].options?[index1].optionId ?? '',
                                                                                     "quantity": 1,
-                                                                                    "marked_price": widget.data.customizations?[index].options?[index1].price
+                                                                                    "marked_price": customizationList[index].options?[index1].price
                                                                                   });
                                                                           }
                                                                         }
@@ -628,17 +645,9 @@ class _RestaurantMenuDetailsScreenState
                                                               },
                                                               child:
                                                                   Image.asset(
-                                                                selectedData[widget.data.customizations![index].name].contains(widget
-                                                                            .data
-                                                                            .customizations![
-                                                                                index]
-                                                                            .options![
-                                                                                index1]
-                                                                            .name) ||
-                                                                        selectedOption.contains(widget
-                                                                            .data
-                                                                            .customizations![
-                                                                                index]
+                                                                (selectedData[customizationList[index].name]?.contains(customizationList[index].options![index1].name) ??
+                                                                            false) ||
+                                                                        selectedOption.contains(customizationList[index]
                                                                             .options![
                                                                                 index1]
                                                                             .optionId)
@@ -655,9 +664,7 @@ class _RestaurantMenuDetailsScreenState
                                                             SizedBox(
                                                               width: 230.w,
                                                               child: Text(
-                                                                widget
-                                                                        .data
-                                                                        .customizations?[
+                                                                customizationList[
                                                                             index]
                                                                         .options?[
                                                                             index1]
@@ -674,9 +681,7 @@ class _RestaurantMenuDetailsScreenState
                                                               ),
                                                             ),
                                                             Text(
-                                                              widget
-                                                                      .data
-                                                                      .customizations?[
+                                                              customizationList[
                                                                           index]
                                                                       .options?[
                                                                           index1]
@@ -688,10 +693,7 @@ class _RestaurantMenuDetailsScreenState
                                                             )
                                                           ],
                                                         ),
-                                                        widget
-                                                                        .data
-                                                                        .customizations![
-                                                                            index]
+                                                        customizationList[index]
                                                                         .options!
                                                                         .length -
                                                                     1 ==
@@ -712,8 +714,7 @@ class _RestaurantMenuDetailsScreenState
                                           ),
                                         ),
                                       ),
-                                widget.data.customizations == null ||
-                                        widget.data.customizations!.isEmpty
+                                customizationList.isEmpty
                                     ? const Spacer()
                                     : const SizedBox(),
                                 Padding(
@@ -815,8 +816,8 @@ class _RestaurantMenuDetailsScreenState
                                                             .productId!),
                                                   );
                                                 } else {
-                                                  for (var element in widget
-                                                      .data.customizations!) {
+                                                  for (var element
+                                                      in customizationList) {
                                                     if (selectedData[element
                                                                     .name]
                                                                 .length >=
@@ -981,8 +982,8 @@ class _RestaurantMenuDetailsScreenState
                                             isAddUpdate = true;
 
                                             if (shoppingListData == null) {
-                                              for (var element in widget
-                                                  .data.customizations!) {
+                                              for (var element
+                                                  in customizationList) {
                                                 if (selectedData[element.name]
                                                             .length >=
                                                         element
@@ -1087,8 +1088,8 @@ class _RestaurantMenuDetailsScreenState
                                                   );
                                                 }
                                               } else {
-                                                for (var element in widget
-                                                    .data.customizations!) {
+                                                for (var element
+                                                    in customizationList) {
                                                   if (selectedData[element.name]
                                                               .length >=
                                                           element
@@ -1219,12 +1220,20 @@ class _RestaurantMenuDetailsScreenState
                                 ),
                                 isAdding == true
                                     ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
+                                        child: CircularProgressIndicator())
                                     : RestaurantMealAddButtonWidget(
                                         onTap: () {
+                                          if (state ==
+                                              FetchCustomizationLoaderState) {
+                                            showToast(
+                                              message:
+                                                  'Please wait for customization',
+                                              isSuccess: false,
+                                              color: Colors.black,
+                                            );
+                                            return;
+                                          }
                                           bool isSelected = false;
-
                                           if (widget.data.isAdded == false) {
                                             if (item > 0) {
                                               for (var element in widget

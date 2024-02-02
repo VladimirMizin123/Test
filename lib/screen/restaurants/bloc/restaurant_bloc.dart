@@ -34,6 +34,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<ClearShoppingListItemEvent>(_onClearShoppingList);
     on<MealPlanMatchEvent>(_onMatchMealPlan);
     on<CheckDeliverableGroceryEvent>(_onCheckDeliverableGroceryStore);
+    on<FetchCustomizationEvent>(_onfetchCustomization);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -566,5 +567,24 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   onFailError({required String text, required Emitter<RestaurantState> emit}) {
     // showToast(isSuccess: false, message: text);
     emit(ErrorState());
+  }
+
+  _onfetchCustomization(
+      FetchCustomizationEvent event, Emitter<RestaurantState> emit) async {
+    try {
+      emit(FetchCustomizationLoaderState());
+      await _repository.fetchCustomization(event.productId).fold(
+        (left) {
+          showToast(isSuccess: false, message: left.errorMessage ?? "");
+        },
+        (right) {
+          event.callback(right);
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(FetchCustomizationSuccessState());
+    }
   }
 }

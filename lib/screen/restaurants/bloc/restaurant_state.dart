@@ -14,6 +14,11 @@ class InitialState extends RestaurantState {}
 
 class ErrorState extends RestaurantState {}
 
+/// Fetch Customization State
+class FetchCustomizationLoaderState extends RestaurantState {}
+
+class FetchCustomizationSuccessState extends RestaurantState {}
+
 /// Get User Address State ===============================================================
 
 class GetUserAddressSuccessState extends RestaurantState {
