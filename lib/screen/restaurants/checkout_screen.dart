@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -13,24 +11,21 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart'
     as checkout;
-import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart'
-    as order;
-import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart';
+
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart'
     as product;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/order_details_screen.dart';
+
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -764,71 +759,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           ],
                                         ),
                                         child: Column(
-                                          children: List.generate(
-                                            widget.cartData.length,
-                                            (index) => Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 8),
-                                              margin: const EdgeInsets.only(
-                                                  bottom: 0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        '${widget.cartData[index]?.quantity ?? ''}x',
-                                                        style: FontUtils.h14(
-                                                          fontColor:
-                                                              Colors.black,
-                                                          fontWeight:
-                                                              FWT.medium,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 230.w,
-                                                        child: Text(
-                                                          '${widget.cartData[index].productName}',
-                                                          style: FontUtils.h15(
-                                                              fontColor:
-                                                                  AppColors
-                                                                      .darkGray,
-                                                              fontWeight:
-                                                                  FWT.regular),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        '\$${widget.cartData[index].price! / 100}',
-                                                        style: FontUtils.h15(
-                                                          fontColor:
-                                                              Colors.black,
-                                                          fontWeight:
-                                                              FWT.medium,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Container(
-                                                    height: 0.2,
-                                                    color: Colors.black,
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                      vertical: 8,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                          children: _yourOrder(),
                                         ),
                                       ),
                                     ],
@@ -1161,6 +1092,95 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             }
           },
         ),
+      ),
+    );
+  }
+
+  List<Widget> _yourOrder() {
+    if (widget.cartData is List<ShoppingListData>) {
+      List<ShoppingListData> cartList =
+          widget.cartData as List<ShoppingListData>;
+      return List.generate(
+        cartList.length,
+        (index) {
+          ShoppingListData cart = cartList[index];
+          return _orderCardWidget(
+            cart.quantity ?? 0,
+            cart.productName ?? "",
+            cart.price,
+          );
+        },
+      );
+    }
+    List<Cart> cart =
+        widget.cartData is List<Cart> ? widget.cartData as List<Cart> : [];
+    return List.generate(
+      cart.length,
+      (index) {
+        List<GroceryResult> groceryList = cart[index].groceryResult ?? [];
+
+        return Column(
+          children: groceryList
+              .map((e) =>
+                  e.products
+                      ?.where((element) => element.isAddedToShoppingList)
+                      .map(
+                        (e) => _orderCardWidget(
+                            e.cartItemCount, '${e.itemName}', e.price),
+                      )
+                      .toList() ??
+                  [])
+              .toList()
+              .expand((element) => element)
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _orderCardWidget(int qty, String productName, int? price) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      margin: const EdgeInsets.only(bottom: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${qty}x',
+                style: FontUtils.h14(
+                  fontColor: Colors.black,
+                  fontWeight: FWT.medium,
+                ),
+              ),
+              SizedBox(
+                width: 230.w,
+                child: Text(
+                  productName,
+                  style: FontUtils.h15(
+                      fontColor: AppColors.darkGray, fontWeight: FWT.regular),
+                ),
+              ),
+              Text(
+                '\$${(price ?? 0) / 100}',
+                style: FontUtils.h15(
+                  fontColor: Colors.black,
+                  fontWeight: FWT.medium,
+                ),
+              )
+            ],
+          ),
+          Container(
+            height: 0.2,
+            color: Colors.black,
+            margin: const EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+          )
+        ],
       ),
     );
   }

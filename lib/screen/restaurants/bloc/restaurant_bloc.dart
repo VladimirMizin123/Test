@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
@@ -82,6 +83,12 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         emit(GetRestaurantListErrorState());
       }, (right) {
         emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
+        for (int i = 0; i < (right.data?.length ?? 0); i++) {
+          if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
+            PreferenceUtils.setString("${right.data?[i].id}_img",
+                right.data?[i].logoPhotos?[0] ?? "");
+          }
+        }
       });
     } catch (e) {
       // showToast(isSuccess: false, message: e.toString());
@@ -504,6 +511,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       emit(DeliverableLoaderState());
       List<Cart> cartList = [];
+      List<Future> futureList = [];
       for (int i = 0; i < event.cartList.length; i++) {
         Store? store = event.cartList[i].store;
         if (store?.isSelected ?? false) {
@@ -521,22 +529,30 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           };
           log("Url : ${ApiUrls.checkDeliverableGroceryStore}");
           log("Request Data : $requestData");
-          var response = await ApiServices()
-              .post(ApiUrls.checkDeliverableGroceryStore, requestData);
-          dynamic data = jsonDecode(response.body);
-          log(response.body.toString());
-          if (data is Map && data["success"] == true) {
-            cartList.add(event.cartList[i]);
-          } else {
-            if (data is Map && data["errorMessage"] != null) {
-              showToast(
-                message: data["errorMessage"].toString(),
-                isSuccess: false,
-              );
-            }
-          }
+
+          futureList.add(
+            ApiServices()
+                .post(ApiUrls.checkDeliverableGroceryStore, requestData)
+                .then(
+              (response) {
+                dynamic data = jsonDecode(response.body);
+                log(response.body.toString());
+                if (data is Map && data["success"] == true) {
+                  cartList.add(event.cartList[i]);
+                } else {
+                  if (data is Map && data["errorMessage"] != null) {
+                    showToast(
+                      message: data["errorMessage"].toString(),
+                      isSuccess: false,
+                    );
+                  }
+                }
+              },
+            ),
+          );
         }
       }
+      await Future.wait(futureList);
       event.callback(cartList);
     } catch (e) {
       event.callback([]);

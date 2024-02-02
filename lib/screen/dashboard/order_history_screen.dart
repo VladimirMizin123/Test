@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
 import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_event.dart';
 import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_state.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_string.dart';
 import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 
@@ -42,17 +42,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             if (state is GetOrderInvoiceSuccessState) {
               invoiceData = state.invoiceData;
 
-              // for (var element in state.invoiceData) {
-              //   bool isAdded = false;
-              //   for (int i = 0; i < (element.items ?? []).length; i++) {
-              //     if (element.items?[i].type == "1") {
-              //       isAdded = true;
-              //     }
-              //   }
-              //   if (isAdded == true) {
-              //     invoiceData.add(element);
-              //   }
-              // }
               loading = false;
             }
             if (state is GetOrderInvoiceLoadingState) {
@@ -334,10 +323,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                         horizontal: 0,
                                                         vertical: 0),
                                                 minVerticalPadding: 0,
-                                                leading: Image.asset(
-                                                  AssetsUtils.storeImage,
-                                                  width: 40.w,
-                                                ),
+                                                leading:
+                                                    "${invoiceData[index].items?[0].stores?.storeId}"
+                                                        .storeImg(40),
                                                 title: SizedBox(
                                                   child: Text(
                                                     invoiceData[index]

@@ -41,7 +41,9 @@ class AddNewMealRepository {
         filename: imageUrl.path,
         contentType: MediaType(
           'image',
-          imageUrl.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpg',
+          imageUrl.path.split('/').last.split('.').last == 'png'
+              ? 'png'
+              : 'jpg',
         ),
       );
 
@@ -49,12 +51,13 @@ class AddNewMealRepository {
     } else {
       mealItemImage = [];
     }
+
     Map<String, String> data = {
       'Name': name.toString(),
-      'Protein': protein.toString(),
-      'Fat': fat.toString(),
-      'Carbs': carbs.toString(),
-      'Calorie': calorie.toString(),
+      'Protein': num.tryParse(protein) == null ? "0" : protein.toString(),
+      'Fat': num.tryParse(fat) == null ? "0" : fat.toString(),
+      'Carbs': num.tryParse(carbs) == null ? "0" : carbs.toString(),
+      'Calorie': num.tryParse(calorie) == null ? "0" : calorie.toString(),
       'Type': type.toString(),
       'UserId': userId.toString(),
       'Quantity': quantity.toString()
@@ -62,7 +65,8 @@ class AddNewMealRepository {
 
     log('data----CUSTOM------>>>>>> $data');
 
-    final response = await apiServices.postMultipart(url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
+    final response = await apiServices.postMultipart(
+        url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
     if (response.statusCode == 200 || response.statusCode == 201) {
       print("addMealresponse code:${response.statusCode}");
 
@@ -101,7 +105,9 @@ class AddNewMealRepository {
         filename: imageUrl.path,
         contentType: MediaType(
           'image',
-          imageUrl.path.split('/').last.split('.').last == 'png' ? 'png' : 'jpg',
+          imageUrl.path.split('/').last.split('.').last == 'png'
+              ? 'png'
+              : 'jpg',
         ),
       );
 
@@ -121,7 +127,8 @@ class AddNewMealRepository {
       'UserId': userId.toString(),
     };
 
-    final response = await apiServices.putMultipart(url: ApiUrls.updateMeal, body: data, files: mealItemImage);
+    final response = await apiServices.putMultipart(
+        url: ApiUrls.updateMeal, body: data, files: mealItemImage);
     print("updateMeal code:${response.statusCode}");
     // print("update:${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -137,10 +144,17 @@ class AddNewMealRepository {
 
   /// GetUserGroceryList ====================================================================
 
-  Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(String? date) async {
-    log(date != null ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date' : '${ApiUrls.getCustomMeal}?userId=$userID', name: "CUSTOME LIST");
+  Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(
+      String? date) async {
+    log(
+        date != null
+            ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date'
+            : '${ApiUrls.getCustomMeal}?userId=$userID',
+        name: "CUSTOME LIST");
     final response = await apiServices.get(
-      date != null ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date' : '${ApiUrls.getCustomMeal}?userId=$userID',
+      date != null
+          ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date'
+          : '${ApiUrls.getCustomMeal}?userId=$userID',
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

@@ -756,7 +756,17 @@ class MealPlanRepository {
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));
+      GroceryMultiSearchModel searchModel =
+          GroceryMultiSearchModel.fromJson(jsonDecode(response.body));
+      for (int i = 0; i < (searchModel.data?.carts?.length ?? 0); i++) {
+        if (searchModel.data?.carts?[i].store?.logoPhotos?.isNotEmpty ??
+            false) {
+          PreferenceUtils.setString(
+              "${searchModel.data?.carts?[i].store?.id}_img",
+              searchModel.data?.carts?[i].store?.logoPhotos?[0] ?? "");
+        }
+      }
+      return Right(searchModel);
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

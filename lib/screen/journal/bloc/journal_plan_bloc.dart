@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
@@ -26,6 +28,7 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
   }
 
   final JournalPlanRepository _repository = JournalPlanRepository();
+  final GroceryRepository _grocery = GroceryRepository();
 
   _onSwapMealDetails(JournalSwapMealDetailsEvent event,
       Emitter<JournalMealPlanState> emit) async {
@@ -237,13 +240,37 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
             text: (left.errorMessage?.trim().isNotEmpty ?? false)
                 ? left.errorMessage!
                 : StringUtils.noDataFound);
-      }, (right) {
-        print("call success :${right.data!.carts}");
-        emit(JournalSearchSuccessState(
-            groceryMultiSearchProductList: right.data!.carts));
+      }, (right) async {
+        List<Cart> cartList = right.data?.carts ?? [];
+        emit(
+            JournalSearchSuccessState(groceryMultiSearchProductList: cartList));
+
+        List<Future> futureList = [];
+
+        for (int i = 0; i < cartList.length; i++) {
+          List<GroceryResult> groceryList = cartList[i].groceryResult ?? [];
+          for (int j = 0; j < groceryList.length; j++) {
+            List<Product> productList = groceryList[j].products ?? [];
+
+            for (int k = 0; k < productList.length; k++) {
+              futureList.add(_grocery
+                  .groceryDetailsMealInfo(
+                      productName: productList[k].itemName!, needCal: true)
+                  .fold((left) {}, (right) {
+                Map<String, dynamic> json = productList[k]
+                    .toJson()
+                    .map((key, value) => MapEntry(key, value));
+                json["calorie"] = right.data?.nfCalories;
+                productList[k] = Product.fromJson(json);
+              }));
+            }
+          }
+        }
+        await Future.wait(futureList);
+        emit(
+            JournalSearchSuccessState(groceryMultiSearchProductList: cartList));
       });
     } catch (e) {
-      print("hello error:$e");
       // showToast(isSuccess: false, message: e.toString());
       emit(JournalSearchErrorState());
     }

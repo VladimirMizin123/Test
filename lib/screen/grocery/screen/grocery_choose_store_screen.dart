@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,10 +20,8 @@ import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
-import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart'
-    as getresAddress;
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
-    as userAddress;
+    as user_address;
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
 
 //TEMP
@@ -50,7 +47,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   RestaurantBloc restaurantBloc = RestaurantBloc();
 
   bool isSearchOn = false;
-  userAddress.UserAddress? getUserAddress;
+  user_address.UserAddress? getUserAddress;
   List<GrocerySearchModel> edgesDummyList = [];
   @override
   void initState() {
@@ -76,9 +73,12 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
 
     print("argu :${widget.arguments?.getUserAddress?.toJson()}");
 
-    widget.arguments!.groceryBloc!.add(GrocerySearchEvent(
+    widget.arguments!.groceryBloc!.add(
+      GrocerySearchEvent(
         grocerySearchModelList: edgesDummyList,
-        getUserAddress: widget.arguments?.getUserAddress));
+        getUserAddress: widget.arguments?.getUserAddress,
+      ),
+    );
   }
 
   @override

@@ -116,7 +116,6 @@ class GroceryRepository {
       quantity = element.quantity;
     }
 
-    print("getUserAddress :${getUserAddress?.toJson()}");
     Map<String, dynamic> data = {
       "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
       "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
@@ -127,25 +126,36 @@ class GroceryRepository {
       "user_country": getUserAddress?.country,
       "user_zipcode": getUserAddress?.zipcode,
       "pickup": false,
-      "groceries": [
-        {
-          "groceryName": tempGroceryName,
-          "quantity": quantity,
-        }
-      ]
+      "groceries": grocerySearchModal
+          .map(
+            (e) => {
+              "groceryName": e.groceryName ?? "",
+              "quantity": e.quantity,
+            },
+          )
+          .toList(),
     };
-
+    log("Url : $apiURL");
+    log("Data: $data");
     final response = await apiServices.post(
       apiURL,
       data,
     );
-    print("data:$data");
-    log(apiURL);
     log("res:${response.body}");
     log("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GroceryMultiSearchModel.fromJson(jsonDecode(response.body)));
+      GroceryMultiSearchModel searchModel =
+          GroceryMultiSearchModel.fromJson(jsonDecode(response.body));
+      for (int i = 0; i < (searchModel.data?.carts?.length ?? 0); i++) {
+        if (searchModel.data?.carts?[i].store?.logoPhotos?.isNotEmpty ??
+            false) {
+          PreferenceUtils.setString(
+              "${searchModel.data?.carts?[i].store?.id}_img",
+              searchModel.data?.carts?[i].store?.logoPhotos?[0] ?? "");
+        }
+      }
+      return Right(searchModel);
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -154,6 +164,7 @@ class GroceryRepository {
   Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>>
       groceryDetailsMealInfo({
     required String productName,
+    bool needCal = false,
   }) async {
     /*--------------Hive box Nx Data--------------------*/
     late HiveSingleton hiveSingleton;
@@ -166,7 +177,7 @@ class GroceryRepository {
     if (resultKey.isNotEmpty) {
       log('localdbtask Key found: $resultKey');
       var specificValue = await hiveSingleton.getValueByKey(resultKey);
-      log('localdbtask if Value associated with the key: $specificValue');
+      // log('localdbtask if Value associated with the key: $specificValue');
       Map<String, dynamic> finalOutput = {
         'success': true,
         'message': null,
@@ -179,7 +190,6 @@ class GroceryRepository {
       var matchingKeys = await hiveSingleton.findKeysWithAnyWord(productName);
       if (matchingKeys != null) {
         var specificValue = await hiveSingleton.getValueByKey(matchingKeys);
-        log('localdbtask if Data associated with matching key ($matchingKeys): $specificValue');
         Map<String, dynamic> finalOutput = {
           'success': true,
           'message': null,
@@ -213,12 +223,13 @@ class GroceryRepository {
             await apiServices.getNutritionix(apiNutritionixURL);
         Map<String, dynamic> jsonNutritionix =
             jsonDecode(responseNutritionix.body);
-        log(responseNutritionix.body, name: 'API RESPONSE :');
+        // log(responseNutritionix.body, name: 'API RESPONSE :');
         if (jsonNutritionix['branded'] != null) {
           String apiNutritionixItemInfoURL =
               '${ApiUrls.getNxItemInfoData}?nix_item_id=${jsonNutritionix['branded'][0]['nix_item_id']}';
           final responseNutritionixItemInfo =
               await apiServices.getNutritionix(apiNutritionixItemInfoURL);
+
           Map<String, dynamic> jsonNutritionixItemInfo =
               jsonDecode(responseNutritionixItemInfo.body);
           // log(responseNutritionixItemInfo.body, name: 'API RESPONSE :');
@@ -352,16 +363,26 @@ class GroceryRepository {
               'nf_Ingredient_Statement': jsonNutritionixItemInfo['foods'][0]
                   ['nf_ingredient_statement'],
             };
-            final responseAddNxData =
-                await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
-            log(responseAddNxData.body, name: 'API ADD RESPONSE :');
-
+            await apiServices.post(ApiUrls.addNutritionDataToDb, nxAddData);
             await hiveSingleton.addValueToBox(productName, nxAddData);
-
             return Right(
                 NutritionixGetNxMealInfoByNameModel.fromJson(finalOutput));
           } else {
-            return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+            if (needCal) {
+              return Right(
+                NutritionixGetNxMealInfoByNameModel.fromJson({
+                  'success': true,
+                  'message': null,
+                  'errorMessage': null,
+                  'data': {
+                    'foodName': productName,
+                    'nfCalories': jsonNutritionix['branded'][0]["nf_calories"],
+                  },
+                }),
+              );
+            } else {
+              return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+            }
           }
         } else {
           return Left(ErrorModel.fromJson(jsonDecode(response.body)));
@@ -429,7 +450,7 @@ class GroceryRepository {
         'Carbs': carbs ?? '',
         'Calorie': calorie ?? '',
         'Type': type ?? '',
-        'userId': userID ?? '',
+        'userId': userID,
       },
       files: [],
     );

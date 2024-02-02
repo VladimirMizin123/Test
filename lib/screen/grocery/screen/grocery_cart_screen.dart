@@ -76,6 +76,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       body: BlocConsumer<GroceryBloc, GroceryState>(
         bloc: groceryBloc,
@@ -256,33 +257,44 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                               color: selectedStoreProductList.isEmpty
                                   ? AppColors.middleGray
                                   : AppColors.green),
-                          selectedStoreProductList.isEmpty
-                              ? Text(
-                                  'Choose a Store',
-                                  style: FontUtils.h14(
+                          Expanded(
+                            child: selectedStoreProductList.isEmpty ||
+                                    selectedIndex == 0
+                                ? Text(
+                                    selectedStoreProductList.isEmpty
+                                        ? 'Choose a Store'
+                                        : 'All',
+                                    textAlign: TextAlign.center,
+                                    style: FontUtils.h14(
                                       fontColor:
                                           selectedStoreProductList.isEmpty
                                               ? AppColors.middleGray
                                               : AppColors.green,
-                                      fontWeight: FWT.semiBold),
-                                )
-                              : selectedStoreProductList[0].store!.logoPhotos ==
-                                      null
-                                  ? const SizedBox()
-                                  : CachedNetworkImage(
-                                      height: 20,
-                                      imageUrl: selectedStoreProductList[0]
-                                          .store!
-                                          .logoPhotos![0],
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          const Center(
-                                              child: CircularProgressIndicator(
-                                        color: AppColors.lightGrey,
-                                      )),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
+                                      fontWeight: FWT.semiBold,
                                     ),
+                                  )
+                                : selectedStoreProductList[selectedIndex - 1]
+                                            .store!
+                                            .logoPhotos ==
+                                        null
+                                    ? const SizedBox.shrink()
+                                    : Text(
+                                        selectedStoreProductList[
+                                                    selectedIndex - 1]
+                                                .store
+                                                ?.name ??
+                                            "",
+                                        textAlign: TextAlign.center,
+                                        style: FontUtils.h14(
+                                            fontColor:
+                                                selectedStoreProductList.isEmpty
+                                                    ? AppColors.middleGray
+                                                    : AppColors.green,
+                                            fontWeight: FWT.semiBold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                          ),
                           const Icon(
                             Icons.keyboard_arrow_down_rounded,
                             color: AppColors.green,

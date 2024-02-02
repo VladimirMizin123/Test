@@ -518,16 +518,6 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                               physics: const BouncingScrollPhysics(),
                               padding: const EdgeInsets.all(12),
                               itemBuilder: (context, index) {
-                                int indexAt = widget.selectedStoreProductList
-                                    .indexWhere((element) =>
-                                        element.groceryResult![0].products ==
-                                        groceryResult);
-                                String? name = widget
-                                    .selectedStoreProductList[
-                                        indexAt >= 0 ? indexAt : 0]
-                                    .store
-                                    ?.name;
-
                                 return GestureDetector(
                                   onTap: () {
                                     // Get.toNamed('/GroceryProductDetails');

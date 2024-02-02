@@ -799,7 +799,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     final size = MediaQuery.of(context).size;
     MenuItemList menuItem =
         restaurantMenu!.categories![select].menuItemList![index];
-
     return GestureDetector(
       onTap: () {
         for (var element in cartData) {
@@ -904,7 +903,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        menuItem.formattedPrice.toString(),
+                        "${menuItem.price == 0 ? "\$${((menuItem.minPrice ?? 0) / 100).toStringAsFixed(2)}" : menuItem.formattedPrice}",
                         style: FontUtils.h18(
                           fontColor: Colors.black,
                           fontWeight: FWT.medium,

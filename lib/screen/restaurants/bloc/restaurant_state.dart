@@ -213,7 +213,7 @@ class CreateCheckoutErrorState extends RestaurantState {}
 class GetOrderLoadingState extends RestaurantState {}
 
 class GetOrderSuccessState extends RestaurantState {
-  final List<OrderData> data;
+  final OrderData data;
 
   GetOrderSuccessState({required this.data});
 }

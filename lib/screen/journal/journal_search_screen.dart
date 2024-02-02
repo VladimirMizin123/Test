@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -711,7 +708,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                                                                         protein: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].protein ?? '0',
                                                                                         fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat ?? '0',
                                                                                         carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs ?? '0',
-                                                                                        calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie ?? '0',
+                                                                                        calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie?.toString() ?? '0',
                                                                                         type: widget.journalMealScreenArguments!.mealType.toString().removeAllWhitespace ?? '',
                                                                                         userId: userId.toString(),
                                                                                         quantity: '1',

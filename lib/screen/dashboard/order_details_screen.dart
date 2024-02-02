@@ -37,7 +37,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   AccountBloc accountBloc = AccountBloc();
   RestaurantBloc restaurantBloc = RestaurantBloc();
   String fullName = '';
-  List<OrderData> orderData = [];
+  OrderData? orderData;
   bool loading = false;
 
   @override
@@ -205,30 +205,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           child: dashBoardCardView(
                               child: Column(
                         children: [
-                          ListView.separated(
-                            padding: const EdgeInsets.all(12),
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: orderData.length,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              OrderData order = orderData[index];
-
-                              return OrderBillWidget(
-                                storeName: order.storeName,
-                                productName: order.productName,
-                                orderId: order.orderId,
-                                quantity: order.quantity ?? 0,
-                                price: order.price ?? 0,
-                                deliveryFee: order.deliveryFee ?? 0,
-                                serviceFee: order.serviceFee ?? 0,
-                                serviceTaxFee: order.serviceTaxFee ?? 0,
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                              return const Divider();
-                            },
-                          )
+                          OrderBillWidget(orderData: orderData),
                         ],
                       )).paddingOnly(left: 20.w, right: 20.w, bottom: 5.w)),
                     ),
