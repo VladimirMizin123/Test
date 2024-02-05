@@ -95,6 +95,7 @@ class _RestaurantMenuDetailsScreenState
         callback: (menu) {
           customizationList = menu.customizations ?? [];
           widget.onCustomizationChange?.call(customizationList);
+          getData();
           setState(() {});
           log(customizationList.length.toString());
         },

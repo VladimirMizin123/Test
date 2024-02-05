@@ -747,6 +747,10 @@ class MealPlanRepository {
             address = element;
           }
         });
+        if ((right.data?.isNotEmpty ?? false) &&
+            !right.data!.any((element) => (element.isPrimary ?? false))) {
+          address = right.data?.first;
+        }
       });
     }
 

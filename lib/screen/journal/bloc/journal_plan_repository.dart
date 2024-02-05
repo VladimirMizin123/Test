@@ -118,8 +118,15 @@ class JournalPlanRepository {
         right.data?.forEach((element) async {
           if (element.isPrimary == true) {
             address = element;
+            log("User has primary data");
           }
         });
+        if ((right.data?.isNotEmpty ?? false) &&
+            !right.data!.any((element) => (element.isPrimary ?? false))) {
+          address = right.data?.first;
+        } else {
+          log("Address added");
+        }
       });
     }
 
@@ -139,10 +146,7 @@ class JournalPlanRepository {
     };
     print('data:$data');
 
-    final response = await apiServices.post(
-      apiURL,
-      data,
-    );
+    final response = await apiServices.post(apiURL, data);
 
     log("res body:${response.body}");
 
