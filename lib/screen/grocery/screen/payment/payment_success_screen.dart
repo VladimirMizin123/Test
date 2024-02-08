@@ -7,7 +7,8 @@ import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
-  const PaymentSuccessScreen({super.key});
+  const PaymentSuccessScreen({super.key, this.createMultipleOrder = false});
+  final bool createMultipleOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +43,21 @@ class PaymentSuccessScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(6)),
-                  child: Center(
-                    child: SvgPicture.asset(AssetsUtils.paymentSuccess)
-                        .paddingOnly(left: 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(AssetsUtils.paymentSuccess)
+                          .paddingOnly(left: 30),
+                      const SizedBox(height: 30),
+                      Text(
+                        "Your order${createMultipleOrder ? "s" : ""} are successfully placed.",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Avenir",
+                          color: AppColors.middleGray,
+                        ),
+                      ).paddingOnly(right: 10, left: 10),
+                    ],
                   ),
                 ),
                 const Spacer(),

@@ -222,6 +222,9 @@ class GetUserAddressErrorState extends GroceryState {}
 
 class CreateOrderLoadingState extends GroceryState {}
 
+/// Multiple Order Create State
+class CreateMultiOrderSuccessState extends GroceryState {}
+
 class CreateOrderSuccessState extends GroceryState {
   final order.CreateOrderData? orderData;
 

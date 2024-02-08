@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -320,15 +318,21 @@ Widget commonSearchTextField({
   );
 }
 
-showToast({required String message, required bool isSuccess, Color? color}) {
+showToast(
+    {required String message,
+    required bool isSuccess,
+    Color? color,
+    int? timeInSecForIosWeb}) {
   if (isSuccess) {
     Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: color ?? Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0);
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: color ?? Colors.green,
+      textColor: Colors.white,
+      timeInSecForIosWeb: timeInSecForIosWeb ?? 1,
+      fontSize: 16.0,
+    );
   } else {
     Fluttertoast.showToast(
         msg: message,

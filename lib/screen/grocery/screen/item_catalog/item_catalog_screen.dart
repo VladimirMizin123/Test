@@ -321,14 +321,16 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                                       AppColors.middleGray,
                                                   fontWeight: FWT.semiBold),
                                             ),
-                                            Text(
-                                              filterResult[index].storeName ??
-                                                  '',
-                                              style: FontUtils.h12(
-                                                  fontColor: AppColors.black,
-                                                  fontWeight: FWT.semiBold),
-                                            ),
                                           ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          filterResult[index].storeName ?? '',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: FontUtils.h12(
+                                              fontColor: AppColors.black,
+                                              fontWeight: FWT.semiBold),
                                         ),
                                         const SizedBox(height: 10),
                                         !filterResult[index]
@@ -604,22 +606,23 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                                             Text(
                                               'Available in: ',
                                               style: FontUtils.h12(
-                                                  fontColor:
-                                                      AppColors.middleGray,
-                                                  fontWeight: FWT.semiBold),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                groceryResult[index]
-                                                        .storeName ??
-                                                    '',
-                                                style: FontUtils.h12(
-                                                    fontColor: AppColors.black,
-                                                    fontWeight: FWT.semiBold),
+                                                fontColor: AppColors.middleGray,
+                                                fontWeight: FWT.semiBold,
                                               ),
                                             ),
                                           ],
                                         ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          groceryResult[index].storeName ?? '',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: FontUtils.h12(
+                                            fontColor: AppColors.black,
+                                            fontWeight: FWT.semiBold,
+                                          ),
+                                        ).paddingOnly(left: 5, right: 5),
                                         const SizedBox(height: 10),
                                         !groceryResult[index]
                                                 .isAddedToShoppingList

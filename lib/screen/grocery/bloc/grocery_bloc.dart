@@ -1,15 +1,14 @@
 import 'dart:developer';
-
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
-import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
-import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
-import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
@@ -30,6 +29,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<CreateProductEvent>(_onCreateProduct);
     on<CreateCheckoutEvent>(_onCreateCheckout);
     on<GetDeliveryStatusEvent>(_onGetDeliveryStatus);
+    on<CreateMultipleOrderEvent>(_onMultipleOrderCreate);
   }
 
   final GroceryRepository _repository = GroceryRepository();
@@ -278,34 +278,97 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
 
         emit(CreateOrderErrorState());
       }, (right) async {
-        emit(CreateOrderSuccessState(orderData: right.data));
+        if (event.onSuccess != null) {
+          event.onSuccess?.call(right.data);
+        } else {
+          emit(CreateOrderSuccessState(orderData: right.data));
+        }
 
-        /// After order success
-        Get.offAll(
-          () => const AppManagerScreen(selectIndex: 2),
-        );
-        Get.toNamed('/OrderHistoryScreen');
         showToast(
             isSuccess: true,
             message: right.message ?? "Order Created Successfully");
-
-        ///call Clear Shopping List api
-        ///
-        if (event.orderId != null) {
-          event.orderId!.forEach((element) {
-            AddNewGroceryItemBloc().add(
-              RemoveGroceryItemEvent(
-                userGroceryListId: element.id,
-              ),
-            );
-          });
-        }
-
-        /// Clear All List
-        /* await _repository.clearShoppingList().fold((left) {}, (right) {});*/
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
+      emit(CreateOrderErrorState());
+    }
+  }
+
+  _onMultipleOrderCreate(
+      CreateMultipleOrderEvent event, Emitter<GroceryState> emit) async {
+    try {
+      emit(CreateOrderLoadingState());
+      List<CreateOrderGroceryItems> uniqueStore = event.data
+          .map((e) => e)
+          .toList()
+          .unique((element) => element.storeId);
+
+      for (int i = 0; i < uniqueStore.length; i++) {
+        log("Started ${i + 1}");
+        bool isLastElement = i == uniqueStore.length - 1;
+
+        var res = await GroceryRepository().createOrder(
+          createOrderModel: CreateGroceryOrderModel(
+            userId: userId,
+            pickup: event.askReceiveOrder == 0 ? false : true,
+            groceryItems: event.data
+                .where((element) => element.storeId == uniqueStore[i].storeId)
+                .toList(),
+            userAddress: UserAddress(
+              streetName: event.address?.streetName ?? '',
+              streetNum: event.address?.streetNum ?? '',
+              latitude: (event.address?.latitude ?? 0.0),
+              longitude: (event.address?.longitude ?? 0.0),
+              city: event.address?.city ?? '',
+              country: event.address?.country ?? '',
+              state: event.address?.state ?? "",
+              zipcode: event.address?.zipcode ?? '',
+            ),
+            userPhone: 1234567890,
+            driverTipCents: 0,
+            pickupTipCents: 0,
+            userDropoffNotes: '',
+          ),
+        );
+        if (res.isRight) {
+          var result = await Get.to(
+            () => CheckOutScreen(
+              isFromGrocery: true,
+              cartData: event.selectedStoreProductList
+                  .where((element) =>
+                      element.store?.name == uniqueStore[i].storeId)
+                  .toList(),
+              orderData: res.right.data,
+              getUserAddress: event.address,
+              groceryList: event.edgesList
+                      ?.where((element) =>
+                          element.product?.storeName == uniqueStore[i].storeId)
+                      .toList() ??
+                  [],
+              hasMultipleStore: !isLastElement,
+              createMultipleOrder: uniqueStore.length > 1 && isLastElement,
+            ),
+          );
+
+          if (result == true) {
+            showToast(
+              message:
+                  "Order#${i + 1} of ${uniqueStore.length} is succesfully placed. Now preparing Order#${i + 2} of ${uniqueStore.length}",
+              isSuccess: true,
+              timeInSecForIosWeb: 3,
+            );
+            continue;
+          } else {
+            break;
+          }
+        } else {
+          onFailError(emit: emit, text: res.left.errorMessage!);
+          showToast(isSuccess: false, message: res.left.errorMessage ?? "");
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
       emit(CreateOrderErrorState());
     }
   }

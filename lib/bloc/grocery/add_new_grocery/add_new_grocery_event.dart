@@ -57,19 +57,24 @@ class GetGroceryItemEvent extends AddNewGroceryItemEvent {}
 /// Remove Grocery Item Event ===============================================================
 class RemoveGroceryItemEvent extends AddNewGroceryItemEvent {
   final String? userGroceryListId;
+  final bool showToast;
 
-  RemoveGroceryItemEvent({required this.userGroceryListId});
+  RemoveGroceryItemEvent({
+    required this.userGroceryListId,
+    this.showToast = true,
+  });
 }
 
 /// Clear Grocery Event ===============================================================
 class ClearGroceryEvent extends AddNewGroceryItemEvent {}
 
-
-class AddGroceryToShoppingListFromSuggesticEvent extends AddNewGroceryItemEvent {
+class AddGroceryToShoppingListFromSuggesticEvent
+    extends AddNewGroceryItemEvent {
   final String? latitude;
   final String? longitude;
 
-  AddGroceryToShoppingListFromSuggesticEvent({required this.latitude, required this.longitude});
+  AddGroceryToShoppingListFromSuggesticEvent(
+      {required this.latitude, required this.longitude});
 }
 
 class ClearUserGroceryEvent extends AddNewGroceryItemEvent {}

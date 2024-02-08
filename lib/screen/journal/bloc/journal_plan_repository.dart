@@ -144,7 +144,18 @@ class JournalPlanRepository {
       "pickup": false,
       "groceries": grocerySearchModal,
     };
-    print('data:$data');
+    log({
+      "latitude": address?.latitude?.toStringAsFixed(6),
+      "longitude": address?.longitude?.toStringAsFixed(6),
+      "user_street_num": address?.streetNum,
+      "user_street_name": address?.streetName,
+      "user_city": address?.city,
+      "user_state": address?.state,
+      "user_country": address?.country,
+      "user_zipcode": address?.zipcode,
+      "pickup": false,
+      "groceries": grocerySearchModal.map((e) => e.toJson()),
+    }.toString());
 
     final response = await apiServices.post(apiURL, data);
 

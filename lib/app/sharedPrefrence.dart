@@ -20,6 +20,7 @@ const String totalProtein = 'totalProtein';
 const String totalFat = 'totalFat';
 const String totalCarbs = 'totalCarbs';
 const String showOrderHint = 'showOrderHint';
+const String paymentCard = 'paymentCard';
 
 class PreferenceUtils {
   static Future<SharedPreferences> get _instance async =>

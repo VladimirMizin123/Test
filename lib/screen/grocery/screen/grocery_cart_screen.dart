@@ -8,10 +8,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
@@ -115,6 +116,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   cartData: selectedStoreProductList,
                   orderData: orderData,
                   getUserAddress: getUserAddress,
+                  groceryList: widget.arguments?.edgesList ?? [],
                 ),
               );
             }
@@ -917,11 +919,11 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                         .isNotEmpty
                                     ? AppColors.green
                                     : AppColors.gray,
-                                buttonLable: 'Checkout',
+                                buttonLable: StringUtils.checkout,
                                 height: screenSize.height * 0.065,
                                 width: screenSize.width,
                                 isLoadingWidget: false,
-                                onTap: () {
+                                onTap: () async {
                                   int emptyIndex = edgesList
                                       .where(
                                           (element) => element.product != null)
@@ -937,7 +939,7 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                         fontSize: 16.0,
                                       );
                                     } else {
-                                      loadCreateOrder = true;
+                                      // loadCreateOrder = true;
                                       setState(() {});
                                       List<CreateOrderGroceryItems> data = [];
 
@@ -958,54 +960,91 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                                     .product?.originalPrice ??
                                                 0,
                                             selectedOptions: [],
+                                            storeId: element.product?.storeName,
                                           ),
                                         );
                                       }
 
-                                      ///grocery LOG
+                                      bool allow = false;
 
-                                      groceryBloc.add(
-                                        CreateOrderEvent(
-                                          createGroceryOrderModel:
-                                              CreateGroceryOrderModel(
-                                            userId: userId,
-                                            pickup: widget
-                                                        .arguments!
-                                                        .askReceiveOrder
-                                                        .index ==
-                                                    0
-                                                ? false
-                                                : true,
-                                            groceryItems: data,
-                                            userAddress: UserAddress(
-                                              streetName:
-                                                  getUserAddress?.streetName ??
-                                                      '',
-                                              streetNum:
-                                                  getUserAddress?.streetNum ??
-                                                      '',
-                                              latitude:
-                                                  (getUserAddress?.latitude ??
-                                                      0.0),
-                                              longitude:
-                                                  (getUserAddress?.longitude ??
-                                                      0.0),
-                                              city: getUserAddress?.city ?? '',
-                                              country:
-                                                  getUserAddress?.country ?? '',
-                                              state:
-                                                  getUserAddress?.state ?? "",
-                                              zipcode:
-                                                  getUserAddress?.zipcode ?? '',
-                                            ),
-                                            userPhone: 1234567890,
-                                            driverTipCents: 0,
-                                            pickupTipCents: 0,
-                                            userDropoffNotes: '',
-                                          ),
-                                          orderId: widget.arguments!.edgesList,
-                                        ),
-                                      );
+                                      List<CreateOrderGroceryItems>
+                                          uniqueStore = data
+                                              .map((e) => e)
+                                              .toList()
+                                              .unique(
+                                                  (element) => element.storeId);
+
+                                      if (uniqueStore.length == 1) {
+                                        allow = true;
+                                      } else {
+                                        allow = (await showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text(
+                                                  StringUtils.placeOrder,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: AppColors.black,
+                                                    fontFamily: "Avenir",
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                  StringUtils
+                                                      .yourCartContainsItemsFromDifferentStores,
+                                                  style: const TextStyle(
+                                                    color: AppColors.black,
+                                                    fontFamily: "Avenir",
+                                                  ),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        24, 15, 24, 15),
+                                                actions: [
+                                                  ElevatedButton(
+                                                    child: const Text(
+                                                      StringUtils.cancel,
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: "Avenir",
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      Get.back(result: false);
+                                                    },
+                                                  ),
+                                                  ElevatedButton(
+                                                    child: Text(
+                                                      StringUtils.continueTxt,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: "Avenir",
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      Get.back(result: true);
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            ) ??
+                                            false);
+                                      }
+
+                                      if (allow) {
+                                        groceryBloc
+                                            .add(CreateMultipleOrderEvent(
+                                          data: data,
+                                          selectedStoreProductList:
+                                              selectedStoreProductList,
+                                          address: getUserAddress,
+                                          askReceiveOrder: widget
+                                              .arguments?.askReceiveOrder.index,
+                                          edgesList:
+                                              widget.arguments?.edgesList,
+                                        ));
+                                      }
                                     }
                                   } else {
                                     Fluttertoast.showToast(
@@ -1128,56 +1167,66 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                displayData[index].product!.itemName ??
-                                    '', // 'Milk Almond Breeze 500ml, 1.5% fat',
-                                textAlign: TextAlign.start,
-                                style: FontUtils.h17(
-                                  fontColor: AppColors.darkGray,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.info_outline_rounded,
-                                    color: AppColors.terracotta,
-                                    size: 20,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          displayData[index]
+                                                  .product!
+                                                  .itemName ??
+                                              '', // 'Milk Almond Breeze 500ml, 1.5% fat',
+                                          textAlign: TextAlign.start,
+                                          style: FontUtils.h17(
+                                            fontColor: AppColors.darkGray,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const Icon(
+                                                Icons.info_outline_rounded,
+                                                color: AppColors.terracotta,
+                                                size: 20),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              'Available in: ',
+                                              style: FontUtils.h12(
+                                                fontColor: AppColors.middleGray,
+                                                fontWeight: FWT.semiBold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(width: 3),
+                                  const SizedBox(width: 10),
                                   Text(
-                                    'Available in: ',
-                                    style: FontUtils.h12(
-                                      fontColor: AppColors.middleGray,
-                                      fontWeight: FWT.semiBold,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      displayData[index].product!.storeName ??
-                                          '',
-                                      style: FontUtils.h12(
-                                        fontColor: AppColors.black,
-                                        fontWeight: FWT.semiBold,
-                                      ),
-                                    ),
+                                    '\$ ${(((displayData[index].product!.price ?? 0) / 100) * displayData[index].product!.cartItemCount).toStringAsFixed(2)}', // '\$ 5.99',
+                                    style: FontUtils.h17(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.semiBold),
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              Text(
+                                displayData[index].product!.storeName ?? '',
+                                style: FontUtils.h12(
+                                  fontColor: AppColors.black,
+                                  fontWeight: FWT.semiBold,
+                                ),
+                              )
                             ],
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '\$ ${(((displayData[index].product!.price ?? 0) / 100) * displayData[index].product!.cartItemCount).toStringAsFixed(2)}', // '\$ 5.99',
-                          style: FontUtils.h17(
-                              fontColor: AppColors.darkGray,
-                              fontWeight: FWT.semiBold),
-                        ),
-                        const SizedBox(height: 10),
                       ],
                     ),
                     const SizedBox(height: 10),

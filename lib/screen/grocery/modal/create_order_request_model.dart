@@ -106,14 +106,17 @@ class CreateOrderGroceryItems {
   dynamic productMarkedPrice;
   List<SelectedOptions>? selectedOptions;
   int? productType;
+  String? storeId;
 
-  CreateOrderGroceryItems(
-      {this.productId,
-      this.notes,
-      this.quantity,
-      this.productMarkedPrice,
-      this.selectedOptions,
-      this.productType});
+  CreateOrderGroceryItems({
+    this.productId,
+    this.notes,
+    this.quantity,
+    this.productMarkedPrice,
+    this.selectedOptions,
+    this.productType,
+    this.storeId,
+  });
 
   CreateOrderGroceryItems.fromJson(Map<String, dynamic> json) {
     productId = json['product_id'];
@@ -127,6 +130,7 @@ class CreateOrderGroceryItems {
       });
     }
     productType = json['productType'];
+    storeId = json["store_id"];
   }
 
   Map<String, dynamic> toJson() {
@@ -140,6 +144,7 @@ class CreateOrderGroceryItems {
           selectedOptions!.map((v) => v.toJson()).toList();
     }
     data['productType'] = productType;
+    data['store_id'] = storeId;
     return data;
   }
 }

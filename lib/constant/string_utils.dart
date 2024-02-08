@@ -316,4 +316,10 @@ class StringUtils {
   static const thereIsNoMealInPriceRange = "There is no meal in price range.";
   static const noDataFound = "No data found.";
   static const youCanCheckYourOrderHere = "You can check your order here!";
+
+  static String yourCartContainsItemsFromDifferentStores =
+      "Your cart contains items from different stores, separate orders will be created.";
+  static String placeOrder = "Place Order";
+  static String continueTxt = "Continue";
+  static String checkout = "Checkout";
 }

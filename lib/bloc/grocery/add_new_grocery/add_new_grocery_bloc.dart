@@ -84,7 +84,9 @@ class AddNewGroceryItemBloc
         // emit(RemoveGroceryItemErrorState(
         //     userGroceryListId: event.userGroceryListId));
       }, (right) {
-        showToast(isSuccess: true, message: right.message!);
+        if (event.showToast) {
+          showToast(isSuccess: true, message: right.message!);
+        }
 
         emit(RemoveGroceryItemSuccessState(
             userGroceryListId: event.userGroceryListId,

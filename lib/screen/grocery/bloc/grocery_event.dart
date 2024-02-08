@@ -1,10 +1,12 @@
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart' as userAddress;
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as userAddress;
 
 abstract class GroceryEvent {}
 
@@ -59,7 +61,8 @@ class GrocerySearchEvent extends GroceryEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
   final userAddress.UserAddress? getUserAddress;
 
-  GrocerySearchEvent({required this.grocerySearchModelList, required this.getUserAddress});
+  GrocerySearchEvent(
+      {required this.grocerySearchModelList, required this.getUserAddress});
 }
 
 class GroceryDetailsMealInfoEvent extends GroceryEvent {
@@ -97,7 +100,8 @@ class AddNewCustomMealEvent extends GroceryEvent {
   final String? calorie;
   final String? type;
 
-  AddNewCustomMealEvent({this.name, this.protein, this.fat, this.carbs, this.calorie, this.type});
+  AddNewCustomMealEvent(
+      {this.name, this.protein, this.fat, this.carbs, this.calorie, this.type});
 }
 
 /// Create Order ==============================================================================
@@ -105,7 +109,30 @@ class AddNewCustomMealEvent extends GroceryEvent {
 class CreateOrderEvent extends GroceryEvent {
   final CreateGroceryOrderModel createGroceryOrderModel;
   final List<GroceryDetails>? orderId;
-  CreateOrderEvent({required this.createGroceryOrderModel, this.orderId});
+  final Function(CreateOrderData?)? onSuccess;
+  CreateOrderEvent({
+    required this.createGroceryOrderModel,
+    this.orderId,
+    this.onSuccess,
+  });
+}
+
+/// Multiple Order Create ============
+
+class CreateMultipleOrderEvent extends GroceryEvent {
+  final List<CreateOrderGroceryItems> data;
+  final userAddress.UserAddress? address;
+  final int? askReceiveOrder;
+  final List<Cart> selectedStoreProductList;
+  List<GroceryDetails>? edgesList;
+
+  CreateMultipleOrderEvent({
+    required this.data,
+    this.address,
+    this.askReceiveOrder,
+    required this.selectedStoreProductList,
+    this.edgesList,
+  });
 }
 
 /// Create Product ==============================================================================
