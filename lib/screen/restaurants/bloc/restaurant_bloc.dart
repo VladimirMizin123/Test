@@ -354,8 +354,10 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository.clearShoppingListItem().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
+        event.onCallback?.call();
         emit(ClearShoppingListItemErrorState());
       }, (right) {
+        event.onCallback?.call();
         emit(ClearShoppingListItemSuccessState());
       });
     } catch (e) {
@@ -526,7 +528,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             "user_state": "${event.address?.state}",
             "user_country": "${event.address?.country}",
             "user_zipcode": "${event.address?.zipcode}",
-            "pickup": false,
+            "pickup": event.askReceiveOrder?.index == 1,
           };
           log("Url : ${ApiUrls.checkDeliverableGroceryStore}");
           log("Request Data : $requestData");

@@ -275,16 +275,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       fontWeight: FWT.semiBold,
                                     ),
                                   )
-                                : selectedStoreProductList[selectedIndex - 1]
-                                            .store!
-                                            .logoPhotos ==
-                                        null
+                                : allData[selectedIndex - 1].isEmpty
                                     ? const SizedBox.shrink()
                                     : Text(
-                                        selectedStoreProductList[
-                                                    selectedIndex - 1]
-                                                .store
-                                                ?.name ??
+                                        allData[selectedIndex - 1]
+                                                .first
+                                                .storeName ??
                                             "",
                                         textAlign: TextAlign.center,
                                         style: FontUtils.h14(

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/models/payment_status_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
@@ -371,6 +372,21 @@ class RestaurantRepository {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, PaymentStatusModel>> checkPaymentStatus(
+      {String? userId, String? orderId}) async {
+    final response = await apiServices.get(
+      ApiUrls.checkPaymentStatus,
+      body: {"userId": userId, "orderId": orderId},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      log(response.body.toString());
+      return Right(PaymentStatusModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

@@ -157,14 +157,16 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     try {
       await _repository
           .grocerySearch(
-              latitude: PreferenceUtils.getString(latitude).isNotEmpty
-                  ? PreferenceUtils.getString(latitude)
-                  : '41.881832',
-              longitude: PreferenceUtils.getString(longitude).isNotEmpty
-                  ? PreferenceUtils.getString(longitude)
-                  : '-87.623177',
-              grocerySearchModal: event.grocerySearchModelList!,
-              getUserAddress: event.getUserAddress)
+        latitude: PreferenceUtils.getString(latitude).isNotEmpty
+            ? PreferenceUtils.getString(latitude)
+            : '41.881832',
+        longitude: PreferenceUtils.getString(longitude).isNotEmpty
+            ? PreferenceUtils.getString(longitude)
+            : '-87.623177',
+        grocerySearchModal: event.grocerySearchModelList!,
+        getUserAddress: event.getUserAddress,
+        askReceiveOrder: event.askReceiveOrder,
+      )
           .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);

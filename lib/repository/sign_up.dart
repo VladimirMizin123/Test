@@ -77,6 +77,7 @@ class SignUpRepository {
       "UserAddress.State": model.addAddressModel?.state ?? "",
       "UserAddress.Country": model.addAddressModel?.country ?? "",
       "UserAddress.Zipcode": model.addAddressModel?.zipcode ?? "",
+      "UserAddress.addressType": model.addAddressModel?.addressType ?? "",
     };
     log("DATA:----------> ${jsonEncode(data)}");
     final response = await apiServices.postMultipart(

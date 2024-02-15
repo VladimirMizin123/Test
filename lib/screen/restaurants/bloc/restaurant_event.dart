@@ -1,4 +1,5 @@
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
@@ -116,7 +117,11 @@ class RemoveShoppingListItemEvent extends RestaurantEvent {
 
 /// Clear Shopping List Item Event ===============================================================
 
-class ClearShoppingListItemEvent extends RestaurantEvent {}
+class ClearShoppingListItemEvent extends RestaurantEvent {
+  final Function? onCallback;
+
+  ClearShoppingListItemEvent({this.onCallback});
+}
 
 /// Create Order ==============================================================================
 
@@ -166,11 +171,13 @@ class CheckDeliverableGroceryEvent extends RestaurantEvent {
   final List<Cart> cartList;
   final user_add.UserAddress? address;
   final Function(List<Cart>) callback;
+  final AskReceiveOrder? askReceiveOrder;
 
   CheckDeliverableGroceryEvent({
     required this.cartList,
     required this.callback,
     required this.address,
+    this.askReceiveOrder,
   });
 }
 

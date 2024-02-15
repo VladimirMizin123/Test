@@ -569,7 +569,8 @@ Widget mealPlanCard({
                                     style: FontUtils.h16(
                                         fontColor: AppColors.darkGray,
                                         fontWeight: FWT.regular)),
-                                Text(mealData.calories!.toStringAsFixed(2),
+                                Text(
+                                    "${mealData.calories!.toStringAsFixed(2)} cal",
                                     style: FontUtils.h14(
                                         fontColor: AppColors.letsEatButton,
                                         fontWeight: FWT.lightMedium)),

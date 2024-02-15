@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -36,7 +37,7 @@ class MapAddressScreen extends StatefulWidget {
 class _MapAddressScreenState extends State<MapAddressScreen> {
   late GoogleMapController mapController;
   final formKey = GlobalKey<FormState>();
-  static const List<String> addressTypeList = ['Home', 'Office'];
+
   AddAddressBloc bloc = AddAddressBloc();
 
   final GoogleMapSearchRepository _googleMapSearchRepository =
@@ -409,8 +410,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
     //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
     // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
     apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
-    floorNumberController.text =
-        widget.userAddress?.streetName?.split(',').last.split(' ').last ?? '';
+    floorNumberController.text = widget.userAddress?.floor?.toString() ?? "";
     zipCodeController.text = widget.userAddress?.zipcode ?? "";
 
     currentPosition = CameraPosition(
@@ -564,6 +564,10 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 title: "Floor",
                                 //initialValue: floorNumberController.text,
                                 textEditingController: floorNumberController,
+                                type: TextInputType.number,
+                                inputFormatters: [
+                                  s.FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return 'Please Enter Floor number';
@@ -619,6 +623,9 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                         PreferenceUtils.getString(prefUserData),
                                     isFrom: 'isFromProfile',
                                     addressId: widget.userAddress?.id ?? '',
+                                    floor: int.tryParse(
+                                            floorNumberController.text) ??
+                                        0,
                                   ),
                                 );
                               } else {

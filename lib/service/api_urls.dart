@@ -245,4 +245,7 @@ class ApiUrls {
 
   static const String updateUnitInfo =
       '${baseUrl}api/UnitConvertInfo/UpdateUnitInfo';
+
+  static const String checkPaymentStatus =
+      '${baseUrl}api/StripePayment/CheckPaymentStatus';
 }

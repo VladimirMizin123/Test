@@ -43,8 +43,6 @@ class GroceryPlanScreen extends StatefulWidget {
 class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
   final routeName = '/GroceryPlanScreen';
   int selectedItemCount = 0;
-  String _selectProduct = 'Spoon';
-  List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   AddNewGroceryItemBloc addNewGroceryItemBloc = AddNewGroceryItemBloc();
   MyAddressBloc myAddressBloc = MyAddressBloc();
@@ -424,7 +422,6 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                           for (var i = 0; i < state.userAddress.length; i++) {
                             if (state.userAddress[i].isPrimary == true) {
                               getUserAddress = state.userAddress[i];
-                              print("in:${getUserAddress?.toJson()}");
                               break;
                             }
                           }
@@ -481,6 +478,7 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                         );
                       },
                     ),
+
                     SizedBox(height: 15.h),
                     Expanded(
                       child: groceryDetails.isEmpty

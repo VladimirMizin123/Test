@@ -1,4 +1,3 @@
-
 abstract class AddressEvent {}
 
 class SaveClickEvent extends AddressEvent {
@@ -45,6 +44,7 @@ class UpdateClickEvent extends AddressEvent {
   final String userId;
   final String isFrom;
   final String addressId;
+  final int floor;
 
   UpdateClickEvent({
     required this.latitude,
@@ -60,6 +60,7 @@ class UpdateClickEvent extends AddressEvent {
     required this.userId,
     required this.isFrom,
     required this.addressId,
+    required this.floor,
   });
 }
 

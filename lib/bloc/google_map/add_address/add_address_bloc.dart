@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -93,6 +91,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         zipcode: event.zipcode,
         isPrimary: event.isPrimary,
         addressId: event.addressId,
+        floor: event.floor,
       )
           .fold(
         (left) {

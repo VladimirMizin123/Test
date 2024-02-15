@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/screen/account_screen/profile/profile_screen_widget.dart';
 
 import '../../../constant/color_utils.dart';
 
-Widget mapDetailWidget({
-  String? title,
-  String? initialValue,
-  TextEditingController? textEditingController,
-  String? Function(String?)? validator,
-  bool readOnly = false,
-  VoidCallback? onTap,
-  Widget? suffixIcon,
-}) {
+Widget mapDetailWidget(
+    {String? title,
+    String? initialValue,
+    TextEditingController? textEditingController,
+    String? Function(String?)? validator,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    Widget? suffixIcon,
+    TextInputType? type,
+    List<TextInputFormatter>? inputFormatters}) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,6 +45,8 @@ Widget mapDetailWidget({
         readOnly: readOnly,
         validator: validator,
         onTap: onTap,
+        inputFormatters: inputFormatters,
+        textInputType: type,
       ),
     ],
   ).paddingOnly(top: 10.h);

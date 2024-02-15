@@ -18,6 +18,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart'
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/remove_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
@@ -107,7 +108,8 @@ class GroceryRepository {
       {required String latitude,
       required String longitude,
       required List<GrocerySearchModel> grocerySearchModal,
-      required userAddress.UserAddress? getUserAddress}) async {
+      required userAddress.UserAddress? getUserAddress,
+      AskReceiveOrder? askReceiveOrder}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
     userAddress.UserAddress? address = getUserAddress;
@@ -139,7 +141,7 @@ class GroceryRepository {
       "user_state": address?.state,
       "user_country": address?.country,
       "user_zipcode": address?.zipcode,
-      "pickup": false,
+      "pickup": askReceiveOrder?.index == 1,
       "groceries": grocerySearchModal
           .map(
             (e) => {

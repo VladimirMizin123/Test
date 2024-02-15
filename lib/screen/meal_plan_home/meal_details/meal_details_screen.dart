@@ -182,6 +182,12 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             }
           },
           builder: (context, state) {
+            num weight = fetchModelData?.recipe?.servingWeight ?? 0;
+            num servingGram = num.tryParse(
+                    nutritionixGetNxMealInfoByNameModelData
+                            ?.servingWeightGrams ??
+                        "") ??
+                0;
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: SafeArea(
@@ -264,7 +270,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                       alignment:
                                                           Alignment.centerLeft,
                                                       child: Text(
-                                                        '${nutritionixGetNxMealInfoByNameModelData!.servingUnit} serving, ${nutritionixGetNxMealInfoByNameModelData!.nfCalories}g',
+                                                        '${nutritionixGetNxMealInfoByNameModelData!.servingUnit} serving${servingGram > 0 ? ", ${nutritionixGetNxMealInfoByNameModelData!.servingWeightGrams}g" : ""}',
                                                         style: FontUtils.h14(
                                                             fontColor: AppColors
                                                                 .middleGray,
@@ -678,7 +684,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                           Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                '${fetchModelData!.recipe!.serving} serving, ${fetchModelData!.recipe!.nutrientsPerServing!.calories}g',
+                                                '${fetchModelData!.recipe!.serving} serving${weight > 0 ? ", ${weight.toStringAsFixed(2)}g" : ""}',
                                                 style: FontUtils.h14(
                                                     fontColor:
                                                         AppColors.middleGray,
@@ -851,65 +857,69 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                     children: [
                                                       myProgressBarCardView(
                                                           'Cal',
-                                                          double.parse(
-                                                              fetchModelData!
-                                                                  .recipe!
-                                                                  .nutritionalInfo!
-                                                                  .calories!
-                                                                  .toString()),
-                                                          double.parse(PreferenceUtils
-                                                                  .getString(
-                                                                      totalCalorie))
-                                                              .floor()
-                                                              .toDouble(),
+                                                          double.tryParse(fetchModelData!
+                                                                      .recipe!
+                                                                      .nutrientsPerServing
+                                                                      ?.calories
+                                                                      .toString() ??
+                                                                  "0.0") ??
+                                                              0.0,
+                                                          double.tryParse(PreferenceUtils
+                                                                      .getString(
+                                                                          totalCalorie))
+                                                                  ?.floor()
+                                                                  .toDouble() ??
+                                                              0,
                                                           AppColors.primaryBlue,
                                                           'cal'),
                                                       myProgressBarCardView(
                                                         'Fat',
-                                                        double.parse(
-                                                            fetchModelData!
+                                                        double.tryParse(fetchModelData!
                                                                 .recipe!
-                                                                .nutritionalInfo!
+                                                                .nutrientsPerServing!
                                                                 .fat!
-                                                                .toString()),
-                                                        double.parse(
-                                                                PreferenceUtils
+                                                                .toString()) ??
+                                                            0.0,
+                                                        double.tryParse(PreferenceUtils
                                                                     .getString(
                                                                         totalFat))
-                                                            .floor()
-                                                            .toDouble(),
+                                                                ?.floor()
+                                                                .toDouble() ??
+                                                            0.0,
                                                         AppColors.coral,
                                                         "g",
                                                       ),
                                                       myProgressBarCardView(
                                                         'Carbs',
-                                                        double.parse(
-                                                            fetchModelData!
+                                                        double.tryParse(fetchModelData!
                                                                 .recipe!
-                                                                .nutritionalInfo!
+                                                                .nutrientsPerServing!
                                                                 .carbs!
-                                                                .toString()),
-                                                        double.parse(PreferenceUtils
-                                                                .getString(
-                                                                    totalCarbs))
-                                                            .floor()
-                                                            .toDouble(),
+                                                                .toString()) ??
+                                                            0.0,
+                                                        double.tryParse(PreferenceUtils
+                                                                    .getString(
+                                                                        totalCarbs))
+                                                                ?.floor()
+                                                                .toDouble() ??
+                                                            0.0,
                                                         AppColors.mint,
                                                         "g",
                                                       ),
                                                       myProgressBarCardView(
                                                         'Protein',
-                                                        double.parse(
-                                                            fetchModelData!
+                                                        double.tryParse(fetchModelData!
                                                                 .recipe!
-                                                                .nutritionalInfo!
+                                                                .nutrientsPerServing!
                                                                 .protein!
-                                                                .toString()),
-                                                        double.parse(PreferenceUtils
-                                                                .getString(
-                                                                    totalProtein))
-                                                            .floor()
-                                                            .toDouble(),
+                                                                .toString()) ??
+                                                            0,
+                                                        double.tryParse(PreferenceUtils
+                                                                    .getString(
+                                                                        totalProtein))
+                                                                ?.floor()
+                                                                .toDouble() ??
+                                                            0,
                                                         AppColors.skyBlue,
                                                         "g",
                                                       ),
@@ -1606,6 +1616,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   Widget myProgressBarCardView(String title, double value, double totalValue,
       Color progressBarColor, String unit) {
     final screenSize = MediaQuery.of(context).size;
+
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -1627,10 +1638,12 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 commonProgressBar(
-                    progressColor: progressBarColor,
-                    width: screenSize.width * 0.27,
-                    lineHeight: 12,
-                    percent: value / totalValue),
+                  progressColor: progressBarColor,
+                  width: screenSize.width * 0.27,
+                  lineHeight: 12,
+                  percent:
+                      (value / totalValue).isInfinite ? 0 : value / totalValue,
+                ),
               ],
             ),
             Text('$value / $totalValue $unit',

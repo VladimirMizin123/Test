@@ -77,6 +77,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
       GrocerySearchEvent(
         grocerySearchModelList: edgesDummyList,
         getUserAddress: widget.arguments?.getUserAddress,
+        askReceiveOrder: widget.arguments?.askReceiveOrder,
       ),
     );
   }
@@ -181,6 +182,12 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
+                                        Store? store =
+                                            searchedProductsList[index].store;
+                                        Address? address =
+                                            searchedProductsList[index]
+                                                .store!
+                                                .address;
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 6),
@@ -198,19 +205,15 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                       vertical: 12),
                                                   child: Row(
                                                     children: [
-                                                      (productsList[index]
-                                                                  .store!
-                                                                  .logoPhotos
+                                                      (store?.logoPhotos
                                                                   ?.isNotEmpty ??
                                                               false)
                                                           ? Expanded(
                                                               flex: 6,
                                                               child:
                                                                   NetworkImageWidget(
-                                                                url: productsList[
-                                                                            index]
-                                                                        .store!
-                                                                        .logoPhotos?[0] ??
+                                                                url: store?.logoPhotos?[
+                                                                        0] ??
                                                                     '',
                                                                 height: 90.h,
                                                               ),
@@ -226,24 +229,26 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .name ??
-                                                                  '', // 'The nearest time for pickup,',
+                                                              store?.name ?? '',
                                                               style: FontUtils.h14(
                                                                   fontColor:
                                                                       AppColors
                                                                           .black),
                                                             ),
                                                             Text(
-                                                              'tomorrow at 10am',
-                                                              style: FontUtils.h12(
-                                                                  fontColor:
-                                                                      AppColors
-                                                                          .black,
-                                                                  fontWeight: FWT
-                                                                      .semiBold),
+                                                              getAddress(
+                                                                  address),
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontFamily:
+                                                                    'Avenir',
+                                                                fontSize: 12,
+                                                                color: AppColors
+                                                                    .darkGray,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
@@ -253,17 +258,13 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                         child: GestureDetector(
                                                           onTap: () {
                                                             setState(() {
-                                                              if (searchedProductsList[
-                                                                      index]
-                                                                  .store!
+                                                              if (store
                                                                   .isSelected) {
                                                                 if (selectedStoreCount ==
                                                                     0) {
                                                                 } else {
-                                                                  searchedProductsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .isSelected = false;
+                                                                  store.isSelected =
+                                                                      false;
                                                                   selectedStoreCount =
                                                                       selectedStoreCount -
                                                                           1;
@@ -272,10 +273,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                 if (selectedStoreCount ==
                                                                     3) {
                                                                 } else {
-                                                                  searchedProductsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .isSelected = true;
+                                                                  store.isSelected =
+                                                                      true;
                                                                   selectedStoreCount =
                                                                       selectedStoreCount +
                                                                           1;
@@ -304,9 +303,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                       .center,
                                                               children: [
                                                                 Visibility(
-                                                                  visible: searchedProductsList[
-                                                                          index]
-                                                                      .store!
+                                                                  visible: store!
                                                                       .isSelected,
                                                                   child:
                                                                       Container(
@@ -345,17 +342,9 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
-                                    /*if(dataList1.isNotEmpty){
-                                          if(dataList1[0].storeName ==  productsList[
-                                          index]
-                                              .store!.name){productsList[
-                                          index]
-                                              .store!
-                                              .isSelected = true;}
-                  
-                                        }
-                                        if(dataList2.isNotEmpty){}
-                                        if(dataList3.isNotEmpty){}*/
+                                    Store? store = productsList[index].store;
+                                    Address? address = store?.address;
+
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 6),
@@ -373,20 +362,17 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                       vertical: 12),
                                               child: Row(
                                                 children: [
-                                                  (productsList[index]
-                                                              .store!
-                                                              .logoPhotos
+                                                  (store!.logoPhotos
                                                               ?.isNotEmpty ??
                                                           false)
                                                       ? Expanded(
                                                           flex: 6,
                                                           child:
                                                               NetworkImageWidget(
-                                                            url: productsList[
-                                                                        index]
-                                                                    .store!
-                                                                    .logoPhotos?[0] ??
-                                                                '',
+                                                            url:
+                                                                store.logoPhotos?[
+                                                                        0] ??
+                                                                    '',
                                                             height: 90.h,
                                                           ),
                                                         )
@@ -400,9 +386,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          productsList[index]
-                                                                  .store!
-                                                                  .name ??
+                                                          store.name ??
                                                               '', // 'The nearest time for pickup,',
                                                           style: FontUtils.h14(
                                                               fontColor:
@@ -410,13 +394,17 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                       .black),
                                                         ),
                                                         Text(
-                                                          'tomorrow at 10am',
-                                                          style: FontUtils.h12(
-                                                              fontColor:
-                                                                  AppColors
-                                                                      .black,
-                                                              fontWeight:
-                                                                  FWT.semiBold),
+                                                          getAddress(address),
+                                                          style:
+                                                              const TextStyle(
+                                                            fontFamily:
+                                                                'Avenir',
+                                                            fontSize: 12,
+                                                            color: AppColors
+                                                                .darkGray,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -426,17 +414,12 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                     child: GestureDetector(
                                                       onTap: () {
                                                         setState(() {
-                                                          if (productsList[
-                                                                  index]
-                                                              .store!
+                                                          if (store
                                                               .isSelected) {
                                                             if (selectedStoreCount ==
                                                                 0) {
                                                             } else {
-                                                              productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .isSelected =
+                                                              store.isSelected =
                                                                   false;
                                                               if (selectedStoreCount ==
                                                                   1) {
@@ -461,86 +444,70 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                             if (selectedStoreCount ==
                                                                 3) {
                                                             } else {
-                                                              productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .isSelected =
+                                                              store.isSelected =
                                                                   true;
                                                               selectedStoreCount =
                                                                   selectedStoreCount +
                                                                       1;
-                                                              log(selectedStoreCount
-                                                                  .toString());
                                                               if (selectedStoreCount ==
                                                                   1) {
                                                                 dataList1
                                                                     .clear();
-                                                                log("CLEAR");
-                                                                (productsList[index]
+                                                                for (var grocery
+                                                                    in (productsList[index]
                                                                             .groceryResult ??
-                                                                        [])
-                                                                    .forEach(
-                                                                        (grocery) {
-                                                                  log("ADD");
-                                                                  (grocery.products ??
-                                                                          [])
-                                                                      .forEach(
-                                                                          (element) {
-                                                                    element
-                                                                        .storeName = productsList[index]
-                                                                            .store
-                                                                            ?.name ??
-                                                                        '';
+                                                                        [])) {
+                                                                  for (var element
+                                                                      in (grocery
+                                                                              .products ??
+                                                                          [])) {
+                                                                    element.storeName =
+                                                                        store.name ??
+                                                                            '';
                                                                     dataList1.add(
                                                                         element);
-                                                                  });
-                                                                });
+                                                                  }
+                                                                }
                                                               }
                                                               if (selectedStoreCount ==
                                                                   2) {
                                                                 dataList2
                                                                     .clear();
-                                                                (productsList[index]
+                                                                for (var grocery
+                                                                    in (productsList[index]
                                                                             .groceryResult ??
-                                                                        [])
-                                                                    .forEach(
-                                                                        (grocery) {
-                                                                  (grocery.products ??
-                                                                          [])
-                                                                      .forEach(
-                                                                          (element) {
-                                                                    element
-                                                                        .storeName = productsList[index]
-                                                                            .store
-                                                                            ?.name ??
-                                                                        '';
+                                                                        [])) {
+                                                                  for (var element
+                                                                      in (grocery
+                                                                              .products ??
+                                                                          [])) {
+                                                                    element.storeName =
+                                                                        store.name ??
+                                                                            '';
                                                                     dataList2.add(
                                                                         element);
-                                                                  });
-                                                                });
+                                                                  }
+                                                                }
                                                               }
                                                               if (selectedStoreCount ==
                                                                   3) {
                                                                 dataList3
                                                                     .clear();
-                                                                (productsList[index]
+                                                                for (var grocery
+                                                                    in (productsList[index]
                                                                             .groceryResult ??
-                                                                        [])
-                                                                    .forEach(
-                                                                        (grocery) {
-                                                                  (grocery.products ??
-                                                                          [])
-                                                                      .forEach(
-                                                                          (element) {
-                                                                    element
-                                                                        .storeName = productsList[index]
-                                                                            .store
-                                                                            ?.name ??
-                                                                        '';
+                                                                        [])) {
+                                                                  for (var element
+                                                                      in (grocery
+                                                                              .products ??
+                                                                          [])) {
+                                                                    element.storeName =
+                                                                        store.name ??
+                                                                            '';
                                                                     dataList3.add(
                                                                         element);
-                                                                  });
-                                                                });
+                                                                  }
+                                                                }
                                                               }
 
                                                               /// Create Seperate List
@@ -550,31 +517,6 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                         allData.sort((a, b) =>
                                                             b.length.compareTo(
                                                                 a.length));
-                                                        log(
-                                                            dataList1.length
-                                                                .toString(),
-                                                            name:
-                                                                "DATA LIST 1");
-                                                        log(
-                                                            dataList2.length
-                                                                .toString(),
-                                                            name:
-                                                                "DATA LIST 2");
-                                                        log(
-                                                            dataList3.length
-                                                                .toString(),
-                                                            name:
-                                                                "DATA LIST 2");
-
-                                                        log(
-                                                            productsList[index]
-                                                                .groceryResult![
-                                                                    0]
-                                                                .products!
-                                                                .length
-                                                                .toString(),
-                                                            name:
-                                                                "productsList");
                                                       },
                                                       child: Container(
                                                         height: 22.h,
@@ -597,11 +539,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                   .center,
                                                           children: [
                                                             Visibility(
-                                                              visible:
-                                                                  productsList[
-                                                                          index]
-                                                                      .store!
-                                                                      .isSelected,
+                                                              visible: store
+                                                                  .isSelected,
                                                               child: Container(
                                                                 decoration: const BoxDecoration(
                                                                     shape: BoxShape
@@ -645,6 +584,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                             CheckDeliverableGroceryEvent(
                               cartList: productsList,
                               address: widget.arguments?.getUserAddress,
+                              askReceiveOrder:
+                                  widget.arguments?.askReceiveOrder,
                               callback: (cart) {
                                 log("Cart List :$cart");
                                 if (cart.isNotEmpty) {
@@ -670,5 +611,15 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
             ),
           );
         });
+  }
+
+  String getAddress(Address? address) {
+    List<String?> addresslist = [
+      address?.streetAddr,
+      address?.city,
+      address?.state
+    ]..removeWhere((element) => element == null || element.trim().isEmpty);
+
+    return addresslist.join(" , ");
   }
 }

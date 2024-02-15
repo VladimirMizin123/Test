@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui' as ui;
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -14,7 +16,11 @@ import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_even
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
+import 'package:gymeats_mobile/models/payment_status_model.dart';
+import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
@@ -80,6 +86,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   LatLng? selectedLatLng;
   String? selectedLocationValue;
   List<Marker> markers = [];
+  bool paymentStatusLoader = false;
 
   /// Get Current location ---------------------------------------------------------
   Future getCurrentLocation({dynamic latitude, dynamic longitude}) async {
@@ -291,41 +298,76 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       onPageFinished: (String url) {},
                       onWebResourceError: (WebResourceError error) {},
                       onNavigationRequest: (NavigationRequest request) async {
+                        log("Request Url After Payment Completed ${request.url}");
+                        log(widget.orderData?.orderId.toString() ?? "");
+
                         if (request.url
                             .startsWith('https://gymeats.azurewebsites.net/')) {
-                          if (widget.isFromGrocery) {
-                            final GroceryRepository repository =
-                                GroceryRepository();
-                            await repository.clearShoppingList();
+                          // Check
+                          webViewOpen = false;
+                          paymentStatusLoader = true;
+                          setState(() {});
+                          await Future.delayed(const Duration(seconds: 5));
+                          Either<ErrorModel, PaymentStatusModel> res =
+                              await RestaurantRepository().checkPaymentStatus(
+                            orderId: widget.orderData?.orderId,
+                            userId: userId,
+                          );
+                          paymentStatusLoader = false;
+                          if (res.isRight) {
+                            log(res.right.data?.status.toString() ?? "");
+                            if (res.right.data?.status == "Success") {
+                              if (widget.isFromGrocery) {
+                                final GroceryRepository repository =
+                                    GroceryRepository();
+                                await repository.clearShoppingList();
 
-                            if (!widget.hasMultipleStore) {
-                              PreferenceUtils.removePref(paymentCard);
-                              Get.to(
-                                () => PaymentSuccessScreen(
-                                  createMultipleOrder:
-                                      widget.createMultipleOrder,
-                                ),
-                              );
-                            } else {
-                              Get.back(result: true);
-                            }
+                                if (!widget.hasMultipleStore) {
+                                  PreferenceUtils.removePref(paymentCard);
+                                  Get.to(
+                                    () => PaymentSuccessScreen(
+                                      createMultipleOrder:
+                                          widget.createMultipleOrder,
+                                    ),
+                                  );
+                                } else {
+                                  Get.back(result: true);
+                                }
 
-                            if (widget.groceryList?.isNotEmpty ?? false) {
-                              widget.groceryList?.forEach((element) {
-                                AddNewGroceryItemBloc().add(
-                                  RemoveGroceryItemEvent(
-                                    userGroceryListId: element.id,
-                                    showToast: false,
-                                  ),
+                                if (widget.groceryList?.isNotEmpty ?? false) {
+                                  widget.groceryList?.forEach((element) {
+                                    AddNewGroceryItemBloc().add(
+                                      RemoveGroceryItemEvent(
+                                        userGroceryListId: element.id,
+                                        showToast: false,
+                                      ),
+                                    );
+                                  });
+                                }
+                              } else {
+                                restaurantBloc.add(
+                                  ClearShoppingListItemEvent(onCallback: () {
+                                    PreferenceUtils.removePref(paymentCard);
+                                    Get.to(() => const PaymentSuccessScreen());
+                                  }),
                                 );
-                              });
+                              }
+                            } else {
+                              showToast(
+                                message: StringUtils.paymentWasUnsuccessfull,
+                                isSuccess: false,
+                                timeInSecForIosWeb: 4,
+                              );
+
+                              setState(() {});
                             }
-                            // Get.to(() => RestaurantOrderDetailsScreen(
-                            //       mealMeOrderId:
-                            //           productData?.priceId?.mealmeOrderId ?? '',
-                            //     ));
                           } else {
-                            restaurantBloc.add(ClearShoppingListItemEvent());
+                            showToast(
+                              message: "Order not found please wait",
+                              isSuccess: false,
+                              timeInSecForIosWeb: 4,
+                            );
+                            setState(() {});
                           }
 
                           return NavigationDecision.prevent;
@@ -340,11 +382,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   );
               }
 
-              if (state is ClearShoppingListItemSuccessState) {
-                PreferenceUtils.removePref(paymentCard);
-                Get.to(() => const PaymentSuccessScreen());
-              }
-
               /// Update Delivery Status ---------------------------------------------------
 
               if (state is GetDeliveryStatusSuccessState) {
@@ -352,6 +389,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               }
             },
             builder: (context, state) {
+              if (paymentStatusLoader) {
+                return const Center(child: CircularProgressIndicator());
+              }
               if (webViewOpen == true) {
                 return WebViewWidget(controller: controller);
               } else {

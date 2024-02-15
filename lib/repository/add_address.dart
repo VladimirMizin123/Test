@@ -63,6 +63,7 @@ class AddAddressRepository {
     required String zipcode,
     required bool isPrimary,
     required String addressId,
+    required int floor,
   }) async {
     Map<String, dynamic> data = {
       "latitude": latitude.toStringAsFixed(6),
@@ -72,6 +73,7 @@ class AddAddressRepository {
       "city": city,
       "state": state,
       "country": country,
+      "floor": floor,
       "addressType": addressType,
       "zipcode": zipcode,
       "isPrimary": isPrimary,

@@ -13,6 +13,7 @@ import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
@@ -104,7 +105,8 @@ class JournalPlanRepository {
       {required String latitude,
       required String longitude,
       required List<GrocerySearchModel> grocerySearchModal,
-      required UserAddress? getUserAddress}) async {
+      required UserAddress? getUserAddress,
+      AskReceiveOrder? askReceiveOrder}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
     // log(apiURL, name: 'API URL :');
@@ -141,21 +143,9 @@ class JournalPlanRepository {
       "user_state": address?.state,
       "user_country": address?.country,
       "user_zipcode": address?.zipcode,
-      "pickup": false,
+      "pickup": askReceiveOrder?.index == 1,
       "groceries": grocerySearchModal,
     };
-    log({
-      "latitude": address?.latitude?.toStringAsFixed(6),
-      "longitude": address?.longitude?.toStringAsFixed(6),
-      "user_street_num": address?.streetNum,
-      "user_street_name": address?.streetName,
-      "user_city": address?.city,
-      "user_state": address?.state,
-      "user_country": address?.country,
-      "user_zipcode": address?.zipcode,
-      "pickup": false,
-      "groceries": grocerySearchModal.map((e) => e.toJson()),
-    }.toString());
 
     final response = await apiServices.post(apiURL, data);
 

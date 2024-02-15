@@ -48,6 +48,7 @@ class UserAddress {
   String? id;
   double? latitude;
   double? longitude;
+  num? floor;
   String? streetNum;
   String? streetName;
   String? city;
@@ -64,6 +65,7 @@ class UserAddress {
     this.id,
     this.latitude,
     this.longitude,
+    this.floor,
     this.streetNum,
     this.streetName,
     this.city,
@@ -81,6 +83,7 @@ class UserAddress {
         id: json["id"],
         latitude: json["latitude"]?.toDouble(),
         longitude: json["longitude"]?.toDouble(),
+        floor: json["floor"],
         streetNum: json["street_Num"],
         streetName: json["street_Name"],
         city: json["city"],
@@ -97,6 +100,7 @@ class UserAddress {
         "id": id,
         "latitude": latitude,
         "longitude": longitude,
+        "floor": floor,
         "street_Num": streetNum,
         "street_Name": streetName,
         "city": city,

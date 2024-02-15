@@ -322,4 +322,5 @@ class StringUtils {
   static String placeOrder = "Place Order";
   static String continueTxt = "Continue";
   static String checkout = "Checkout";
+  static String paymentWasUnsuccessfull = "Payment was unsuccessfull";
 }

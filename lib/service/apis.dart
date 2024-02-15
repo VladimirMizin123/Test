@@ -12,7 +12,7 @@ import 'api_urls.dart';
 class ApiServices {
   String token = PreferenceUtils.getString(prefToken);
 
-  Future<dynamic> get(String url) async {
+  Future<dynamic> get(String url, {Map<String, dynamic>? body}) async {
     token = PreferenceUtils.getString(prefToken);
     try {
       Map<String, String>? headers;
@@ -27,6 +27,34 @@ class ApiServices {
           'accept': '*/*',
           'Api_Key': ApiUrls.apiKey,
         };
+      }
+
+      if (body != null) {
+        headers.addAll(
+          {
+            'Content-Type': 'application/json',
+          },
+        );
+
+        http.Request req = http.Request('GET', Uri.parse(url));
+        req.body = jsonEncode(body);
+        req.headers.addAll(headers);
+
+        var response = await req.send();
+        log(response.statusCode.toString());
+
+        if (response.statusCode == 200) {
+          return http.Response(
+            await response.stream.bytesToString(),
+            response.statusCode,
+            reasonPhrase: response.reasonPhrase,
+          );
+        }
+        return http.Response(
+          await response.stream.bytesToString(),
+          response.statusCode,
+          reasonPhrase: response.reasonPhrase,
+        );
       }
 
       final response = await http.get(Uri.parse(url), headers: headers);

@@ -88,6 +88,19 @@ class PreferenceUtils {
 
   static Future<bool> clearPrefs() async {
     var prefs = await _instance;
-    return _prefsInstance != null ? prefs.clear() : Future.value(false);
+    String calorie = PreferenceUtils.getString(totalCalorie);
+    String protein = PreferenceUtils.getString(totalProtein);
+    String fat = PreferenceUtils.getString(totalFat);
+    String carbs = PreferenceUtils.getString(totalCarbs);
+
+    Future<bool> value =
+        _prefsInstance != null ? prefs.clear() : Future.value(false);
+
+    PreferenceUtils.setString(totalCalorie, calorie);
+    PreferenceUtils.setString(totalProtein, protein);
+    PreferenceUtils.setString(totalFat, fat);
+    PreferenceUtils.setString(totalCarbs, carbs);
+
+    return value;
   }
 }

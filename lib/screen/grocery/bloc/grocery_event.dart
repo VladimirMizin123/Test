@@ -5,6 +5,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as userAddress;
 
@@ -60,9 +61,13 @@ class RemoveGroceryEvent extends GroceryEvent {
 class GrocerySearchEvent extends GroceryEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
   final userAddress.UserAddress? getUserAddress;
+  final AskReceiveOrder? askReceiveOrder;
 
-  GrocerySearchEvent(
-      {required this.grocerySearchModelList, required this.getUserAddress});
+  GrocerySearchEvent({
+    required this.grocerySearchModelList,
+    required this.getUserAddress,
+    this.askReceiveOrder,
+  });
 }
 
 class GroceryDetailsMealInfoEvent extends GroceryEvent {
