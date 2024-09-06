@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-AddUserRestrictionModal addUserRestrictionModalFromJson(String str) => AddUserRestrictionModal.fromJson(json.decode(str));
+AddUserRestrictionModal addUserRestrictionModalFromJson(String str) =>
+    AddUserRestrictionModal.fromJson(json.decode(str));
 
-String addUserRestrictionModalToJson(AddUserRestrictionModal data) => json.encode(data.toJson());
+String addUserRestrictionModalToJson(AddUserRestrictionModal data) =>
+    json.encode(data.toJson());
 
 class AddUserRestrictionModal {
   final bool success;
@@ -21,11 +23,13 @@ class AddUserRestrictionModal {
     required this.data,
   });
 
-  factory AddUserRestrictionModal.fromJson(Map<String, dynamic> json) => AddUserRestrictionModal(
+  factory AddUserRestrictionModal.fromJson(Map<String, dynamic> json) =>
+      AddUserRestrictionModal(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: List<AddUserRestrictionDataModal>.from(json["data"].map((x) => AddUserRestrictionDataModal.fromJson(x))),
+        data: List<AddUserRestrictionDataModal>.from(
+            json["data"].map((x) => AddUserRestrictionDataModal.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,7 +53,8 @@ class AddUserRestrictionDataModal {
     required this.meals,
   });
 
-  factory AddUserRestrictionDataModal.fromJson(Map<String, dynamic> json) => AddUserRestrictionDataModal(
+  factory AddUserRestrictionDataModal.fromJson(Map<String, dynamic> json) =>
+      AddUserRestrictionDataModal(
         day: json["day"],
         date: DateTime.parse(json["date"]),
         calories: json["calories"]?.toDouble(),
@@ -58,7 +63,8 @@ class AddUserRestrictionDataModal {
 
   Map<String, dynamic> toJson() => {
         "day": day,
-        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date":
+            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "calories": calories,
         "meals": List<dynamic>.from(meals.map((x) => x.toJson())),
       };
@@ -118,7 +124,7 @@ class Recipe {
   final String mainImage;
   final int ingredientsCount;
   final int weightInGrams;
-  final int servingWeight;
+  final num servingWeight;
   final dynamic instructions;
   final dynamic nutritionalInfo;
 
@@ -147,7 +153,8 @@ class Recipe {
 
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
         id: json["id"],
-        nutrientsPerServing: NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
+        nutrientsPerServing:
+            NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
         parsedIngredientLines: json["parsedIngredientLines"],
         databaseId: json["databaseId"],
         totalTime: json["totalTime"],
@@ -205,7 +212,8 @@ class NutrientsPerServing {
     required this.carbs,
   });
 
-  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) => NutrientsPerServing(
+  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) =>
+      NutrientsPerServing(
         calories: json["calories"]?.toDouble(),
         fat: json["fat"]?.toDouble(),
         protein: json["protein"]?.toDouble(),

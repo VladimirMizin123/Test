@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
@@ -41,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isUpdateProfileImageLoader = false;
   bool isUpdateProfileDetailsLoader = false;
 
-  List<String> goalFocusList = ["lose weight", "gain weight"];
   List<String> genderList = ["Male", "Female", "Non-binary"];
 
   String? selectedGoalFocus;
@@ -124,13 +123,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     : state.profileDetails?.heightInCm.toString() ?? "";
                 heightController.text =
                     heightController.text.replaceAll('.', "'");
-                if (state.profileDetails?.goal == 1) {
-                  goalFocusController.text = goalFocusList.first.toString();
-                  selectedGoalFocus = goalFocusList.first.toString();
-                } else if (state.profileDetails?.goal == 2) {
+                if ((state.profileDetails?.goal ?? 0) < dialGoalList.length) {
                   goalFocusController.text =
-                      goalFocusList.last.toString() ?? '';
-                  selectedGoalFocus = goalFocusList.last.toString();
+                      dialGoalList[(state.profileDetails?.goal ?? 0)]
+                          .toString();
+                  selectedGoalFocus =
+                      dialGoalList[(state.profileDetails?.goal ?? 0)]
+                          .toString();
                 }
 
                 if (state.profileDetails?.birthDate?.isNotEmpty ?? false) {
@@ -206,459 +205,482 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       const AlwaysScrollableScrollPhysics(),
                                   child: Form(
                                     key: formKey,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(top: 8.h),
-                                          child: Column(
-                                            children: [
-                                              if (pickedImageFile != null)
-                                                Container(
-                                                  height: 100.w,
-                                                  width: 100.w,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            100.r),
-                                                    child: Image.file(
-                                                      File(pickedImageFile
-                                                              ?.path ??
-                                                          ""),
-                                                      fit: BoxFit.cover,
+                                    child: Builder(builder: (context) {
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(top: 8.h),
+                                            child: Column(
+                                              children: [
+                                                if (pickedImageFile != null)
+                                                  Container(
+                                                    height: 100.w,
+                                                    width: 100.w,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      shape: BoxShape.circle,
                                                     ),
-                                                  ),
-                                                )
-                                              else if (profileImageUrl
-                                                  .isNotEmpty)
-                                                Container(
-                                                  height: 100.w,
-                                                  width: 100.w,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            100.r),
-                                                    child: Image.network(
-                                                      profileImageUrl,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                )
-                                              else
-                                                Container(
-                                                  height: 100.w,
-                                                  width: 100.w,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: AppColors.lightGrey,
-                                                  ),
-                                                  child: Center(
                                                     child: ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               100.r),
-                                                      child: Image.asset(
-                                                        AssetsUtils
-                                                            .personProfileImage,
-                                                        fit: BoxFit.fill,
-                                                        height: 80.w,
-                                                        width: 80.w,
-                                                        color: Colors.grey,
+                                                      child: Image.file(
+                                                        File(pickedImageFile
+                                                                ?.path ??
+                                                            ""),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  )
+                                                else if (profileImageUrl
+                                                    .isNotEmpty)
+                                                  Container(
+                                                    height: 100.w,
+                                                    width: 100.w,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100.r),
+                                                      child: Image.network(
+                                                        profileImageUrl,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  )
+                                                else
+                                                  Container(
+                                                    height: 100.w,
+                                                    width: 100.w,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color:
+                                                          AppColors.lightGrey,
+                                                    ),
+                                                    child: Center(
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100.r),
+                                                        child: Image.asset(
+                                                          AssetsUtils
+                                                              .personProfileImage,
+                                                          fit: BoxFit.fill,
+                                                          height: 80.w,
+                                                          width: 80.w,
+                                                          color: Colors.grey,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
+                                                SizedBox(
+                                                  height: 12.h,
                                                 ),
-                                              SizedBox(
-                                                height: 2.h,
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return ProfileImagePickerBottomSheet(
-                                                        accountBloc:
-                                                            accountBloc,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                child: Text(
-                                                  "Edit profile photo",
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.w300),
+                                                InkWell(
+                                                  onTap: () {
+                                                    showModalBottomSheet(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return ProfileImagePickerBottomSheet(
+                                                          accountBloc:
+                                                              accountBloc,
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Text(
+                                                    "Edit profile photo",
+                                                    style: TextStyle(
+                                                        color: const Color(
+                                                            0xff000000),
+                                                        fontSize: 14.sp,
+                                                        fontWeight:
+                                                            FontWeight.w300),
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 10.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "First Name",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "First Name",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                                style: const TextStyle(
+                                                    color: Colors.black),
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return 'Please Enter First Name';
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                                textEditingController:
+                                                    firstNameController,
+                                                enableBorderColor:
+                                                    AppColors.primaryBlueColor,
+                                                obscureText: false,
+                                                width: 140.w,
+                                                horizontal: 10,
+                                                vertical: 0,
+                                                hintText: "First Name"),
+                                          ),
+                                          SizedBox(
+                                            height: 3.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "Last Name",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                                style: const TextStyle(
+                                                    color: Colors.black),
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return 'Please Enter Last Name';
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                                textEditingController:
+                                                    lastNameController,
+                                                enableBorderColor:
+                                                    AppColors.primaryBlueColor,
+                                                obscureText: false,
+                                                width: 140.w,
+                                                horizontal: 10,
+                                                vertical: 0,
+                                                hintText: "Last Name"),
+                                          ),
+                                          SizedBox(
+                                            height: 3.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "Phone Number",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                                style: const TextStyle(
+                                                    color: Colors.black),
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return 'Please Enter Phone Number';
+                                                  } else if (value.length !=
+                                                      10) {
+                                                    return 'Please Enter Valid Phone Number';
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                                textEditingController:
+                                                    phoneNumberController,
+                                                enableBorderColor:
+                                                    AppColors.primaryBlueColor,
+                                                obscureText: false,
+                                                width: 140.w,
+                                                horizontal: 10,
+                                                vertical: 0,
+                                                textInputType:
+                                                    TextInputType.number,
+                                                hintText: "Phone Number"),
+                                          ),
+                                          SizedBox(
+                                            height: 3.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "Goal/Focus",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
                                               style: const TextStyle(
                                                   color: Colors.black),
                                               validator: (value) {
                                                 if (value!.isEmpty) {
-                                                  return 'Please Enter First Name';
+                                                  return 'Please Select Goal/Focus';
                                                 } else {
                                                   return null;
                                                 }
                                               },
                                               textEditingController:
-                                                  firstNameController,
+                                                  goalFocusController,
                                               enableBorderColor:
                                                   AppColors.primaryBlueColor,
                                               obscureText: false,
                                               width: 140.w,
                                               horizontal: 10,
                                               vertical: 0,
-                                              hintText: "First Name"),
-                                        ),
-                                        SizedBox(
-                                          height: 3.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "Last Name",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
+                                              hintText: "Goal/Focus",
+                                              suffixIcon: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: DropdownButton(
+                                                  value: selectedGoalFocus,
+                                                  hint:
+                                                      const Text("Goal/Focus"),
+                                                  items: List.generate(
+                                                    dialGoalList.length,
+                                                    (index) => DropdownMenuItem(
+                                                      value:
+                                                          dialGoalList[index],
+                                                      child: Text(
+                                                        dialGoalList[index],
+                                                        maxLines: 1,
+                                                        style: const TextStyle(
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  underline: const SizedBox(),
+                                                  isExpanded: true,
+                                                  onChanged: (value) {
+                                                    goalFocusController.text =
+                                                        value ?? "";
+                                                    selectedGoalFocus = value;
+                                                    setState(() {});
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          profileDataWidget(
+                                            text: "Weight",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
                                               style: const TextStyle(
                                                   color: Colors.black),
                                               validator: (value) {
                                                 if (value!.isEmpty) {
-                                                  return 'Please Enter Last Name';
+                                                  return 'Please Enter Weight';
                                                 } else {
                                                   return null;
                                                 }
                                               },
                                               textEditingController:
-                                                  lastNameController,
+                                                  weightController,
                                               enableBorderColor:
                                                   AppColors.primaryBlueColor,
-                                              obscureText: false,
                                               width: 140.w,
                                               horizontal: 10,
                                               vertical: 0,
-                                              hintText: "Last Name"),
-                                        ),
-                                        SizedBox(
-                                          height: 3.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "Phone Number",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                              style: const TextStyle(
-                                                  color: Colors.black),
-                                              validator: (value) {
-                                                if (value!.isEmpty) {
-                                                  return 'Please Enter Phone Number';
-                                                } else if (value.length != 10) {
-                                                  return 'Please Enter Valid Phone Number';
-                                                } else {
-                                                  return null;
-                                                }
-                                              },
-                                              textEditingController:
-                                                  phoneNumberController,
-                                              enableBorderColor:
-                                                  AppColors.primaryBlueColor,
-                                              obscureText: false,
-                                              width: 140.w,
-                                              horizontal: 10,
-                                              vertical: 0,
+                                              hintText: "Weight",
                                               textInputType:
                                                   TextInputType.number,
-                                              hintText: "Phone Number"),
-                                        ),
-                                        SizedBox(
-                                          height: 3.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "Goal/Focus",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Select Goal/Focus';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                goalFocusController,
-                                            enableBorderColor:
-                                                AppColors.primaryBlueColor,
-                                            obscureText: false,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            hintText: "Goal/Focus",
-                                            suffixIcon: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: DropdownButton(
-                                                value: selectedGoalFocus,
-                                                hint: const Text("Goal/Focus"),
-                                                items: List.generate(
-                                                  goalFocusList.length,
-                                                  (index) => DropdownMenuItem(
-                                                    value: goalFocusList[index],
-                                                    child: Text(
-                                                      goalFocusList[index],
+                                            ),
+                                          ),
+                                          profileDataWidget(
+                                            text: "Target Weight",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please Enter Target Weight';
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              textEditingController:
+                                                  targetWeightController,
+                                              enableBorderColor:
+                                                  AppColors.primaryBlueColor,
+                                              width: 140.w,
+                                              horizontal: 10,
+                                              vertical: 0,
+                                              hintText: "Target Weight",
+                                              textInputType:
+                                                  TextInputType.number,
+                                            ),
+                                          ),
+                                          profileDataWidget(
+                                            text: "Height",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please Enter Height';
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              textEditingController:
+                                                  heightController,
+                                              enableBorderColor:
+                                                  AppColors.middleGray,
+                                              width: 140.w,
+                                              horizontal: 10,
+                                              vertical: 0,
+                                              hintText: 'Height',
+                                              hintStyle: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w300,
+                                                color: AppColors.middleGray,
+                                              ),
+                                              inputFormatters: <TextInputFormatter>[
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(
+                                                        r"^\d+\'?\d{0,2}")),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 3.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "Birthdate",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please Select Birthdate';
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              textEditingController:
+                                                  dobController,
+                                              enableBorderColor:
+                                                  AppColors.primaryBlueColor,
+                                              obscureText: false,
+                                              width: 140.w,
+                                              horizontal: 10,
+                                              vertical: 0,
+                                              readOnly: true,
+                                              hintText: "DOB",
+                                              onTap: () {
+                                                showCupertinoModalPopup(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      CupertinoActionSheet(
+                                                    actions: [
+                                                      buildDatePicker(),
+                                                    ],
+                                                    cancelButton:
+                                                        CupertinoActionSheetAction(
+                                                      onPressed: () {
+                                                        isClick = true;
+                                                        dobController
+                                                            .text = DateFormat(
+                                                                'MM/dd/yyyy')
+                                                            .format(dateTime);
+                                                        selectedDOB = dateTime;
+                                                        print(
+                                                            '==selectedDOB=>$selectedDOB');
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: const Text(
+                                                        "Done",
+                                                        style: TextStyle(
+                                                            color: AppColors
+                                                                .errorRedColor),
+                                                      ),
                                                     ),
                                                   ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 8.h,
+                                          ),
+                                          profileDataWidget(
+                                            text: "Gender",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400),
+                                            widget: commonTextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please Select Gender';
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              textEditingController:
+                                                  genderController,
+                                              enableBorderColor:
+                                                  AppColors.primaryBlueColor,
+                                              obscureText: false,
+                                              width: 140.w,
+                                              horizontal: 10,
+                                              vertical: 0,
+                                              hintText: "Gender",
+                                              suffixIcon: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: DropdownButton(
+                                                  hint: Text(
+                                                    genderController.text == ""
+                                                        ? "Gender"
+                                                        : genderController.text,
+                                                    style: TextStyle(
+                                                      color: genderController
+                                                                  .text ==
+                                                              ""
+                                                          ? Colors.grey.shade200
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                  items: List.generate(
+                                                    genderList.length,
+                                                    (index) => DropdownMenuItem(
+                                                      value: genderList[index],
+                                                      child: Text(
+                                                        genderList[index],
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  underline: const SizedBox(),
+                                                  isExpanded: true,
+                                                  onChanged: (value) {
+                                                    genderController.text =
+                                                        value ?? "";
+                                                    setState(() {});
+                                                  },
                                                 ),
-                                                underline: const SizedBox(),
-                                                isExpanded: true,
-                                                onChanged: (value) {
-                                                  goalFocusController.text =
-                                                      value ?? "";
-                                                  selectedGoalFocus = value;
-                                                  setState(() {});
-                                                },
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        profileDataWidget(
-                                          text: "Weight",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Enter Weight';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                weightController,
-                                            enableBorderColor:
-                                                AppColors.primaryBlueColor,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            hintText: "Weight",
-                                            textInputType: TextInputType.number,
-                                          ),
-                                        ),
-                                        profileDataWidget(
-                                          text: "Target Weight",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Enter Target Weight';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                targetWeightController,
-                                            enableBorderColor:
-                                                AppColors.primaryBlueColor,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            hintText: "Target Weight",
-                                            textInputType: TextInputType.number,
-                                          ),
-                                        ),
-                                        profileDataWidget(
-                                          text: "Height",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Enter Height';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                heightController,
-                                            enableBorderColor:
-                                                AppColors.middleGray,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            hintText: 'Height',
-                                            hintStyle: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w300,
-                                              color: AppColors.middleGray,
-                                            ),
-                                            inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r"^\d+\'?\d{0,2}")),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 3.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "Birthdate",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Select Birthdate';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                dobController,
-                                            enableBorderColor:
-                                                AppColors.primaryBlueColor,
-                                            obscureText: false,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            readOnly: true,
-                                            hintText: "DOB",
-                                            onTap: () {
-                                              showCupertinoModalPopup(
-                                                context: context,
-                                                builder: (context) =>
-                                                    CupertinoActionSheet(
-                                                  actions: [
-                                                    buildDatePicker(),
-                                                  ],
-                                                  cancelButton:
-                                                      CupertinoActionSheetAction(
-                                                    onPressed: () {
-                                                      isClick = true;
-                                                      dobController.text =
-                                                          DateFormat(
-                                                                  'MM/dd/yyyy')
-                                                              .format(dateTime);
-                                                      selectedDOB = dateTime;
-                                                      print(
-                                                          '==selectedDOB=>$selectedDOB');
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text(
-                                                      "Done",
-                                                      style: TextStyle(
-                                                          color: AppColors
-                                                              .errorRedColor),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 8.h,
-                                        ),
-                                        profileDataWidget(
-                                          text: "Gender",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                          widget: commonTextFormField(
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Select Gender';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textEditingController:
-                                                genderController,
-                                            enableBorderColor:
-                                                AppColors.primaryBlueColor,
-                                            obscureText: false,
-                                            width: 140.w,
-                                            horizontal: 10,
-                                            vertical: 0,
-                                            hintText: "Gender",
-                                            suffixIcon: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: DropdownButton(
-                                                hint: Text(
-                                                  genderController.text == ""
-                                                      ? "Gender"
-                                                      : genderController.text,
-                                                  style: TextStyle(
-                                                    color: genderController
-                                                                .text ==
-                                                            ""
-                                                        ? Colors.grey.shade200
-                                                        : Colors.black,
-                                                  ),
-                                                ),
-                                                items: List.generate(
-                                                  genderList.length,
-                                                  (index) => DropdownMenuItem(
-                                                    value: genderList[index],
-                                                    child: Text(
-                                                      genderList[index],
-                                                    ),
-                                                  ),
-                                                ),
-                                                underline: const SizedBox(),
-                                                isExpanded: true,
-                                                onChanged: (value) {
-                                                  genderController.text =
-                                                      value ?? "";
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ).paddingOnly(
-                                        right: 16.w, left: 16.w, bottom: 10.w),
+                                        ],
+                                      ).paddingOnly(
+                                          right: 16.w,
+                                          left: 16.w,
+                                          bottom: 10.w);
+                                    }),
                                   ),
                                 ),
                         ),
@@ -689,11 +711,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   firstName: firstNameController.text,
                                   lastName: lastNameController.text,
                                   phoneNumber: phoneNumberController.text,
-                                  goal: selectedGoalFocus == goalFocusList.first
-                                      ? 1
-                                      : selectedGoalFocus == goalFocusList.last
-                                          ? 2
-                                          : 0,
+                                  goal: dialGoalList.indexWhere((element) =>
+                                      element == selectedGoalFocus),
                                   weight: int.parse(weightController.text),
                                   targetWeight:
                                       int.parse(targetWeightController.text),

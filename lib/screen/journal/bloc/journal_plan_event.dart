@@ -25,9 +25,9 @@ class JournalAddToGroceryListEvent extends JournalPlanEvent {
 
 class JournalFetchSwapMealItemEvent extends JournalPlanEvent {
   final String? recipeID;
-  final int? serving;
+  final int? noOfServing;
 
-  JournalFetchSwapMealItemEvent({this.recipeID, this.serving});
+  JournalFetchSwapMealItemEvent({this.recipeID, this.noOfServing});
 }
 
 class JournalFetchMealDetailsEvent extends JournalPlanEvent {

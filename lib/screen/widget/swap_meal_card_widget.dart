@@ -12,7 +12,14 @@ class SwapMealCardWidget extends StatelessWidget {
   final VoidCallback? onSwapMealTap;
   final VoidCallback? onTap;
   final bool isCardSelected;
-  const SwapMealCardWidget({super.key, this.similarMealData, required this.context, this.onSkipMealTap, this.onSwapMealTap, this.onTap,  this.isCardSelected =false});
+  const SwapMealCardWidget(
+      {super.key,
+      this.similarMealData,
+      required this.context,
+      this.onSkipMealTap,
+      this.onSwapMealTap,
+      this.onTap,
+      this.isCardSelected = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +28,16 @@ class SwapMealCardWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: similarMealData!.isSelectedForSwap ? AppColors.middleGray : Colors.transparent),
-          boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 76, 99, 0.08), blurRadius: 5, spreadRadius: 2)],
+          border: Border.all(
+              color: similarMealData!.isSelectedForSwap!
+                  ? AppColors.middleGray
+                  : Colors.transparent),
+          boxShadow: const [
+            BoxShadow(
+                color: Color.fromRGBO(0, 76, 99, 0.08),
+                blurRadius: 5,
+                spreadRadius: 2)
+          ],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Padding(
@@ -50,22 +65,29 @@ class SwapMealCardWidget extends StatelessWidget {
                         child: CircularProgressIndicator(
                       color: AppColors.lightGrey,
                     )),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: SizedBox(
-                  height: 70.h,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(similarMealData!.name ?? '', overflow: TextOverflow.ellipsis, maxLines: 2, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.regular)),
-                      Text('${similarMealData!.nutrientsPerServing!.calories} cal', style: FontUtils.h14(fontColor: AppColors.letsEatButton, fontWeight: FWT.lightMedium)),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(similarMealData!.name ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: FontUtils.h16(
+                            fontColor: AppColors.darkGray,
+                            fontWeight: FWT.regular)),
+                    Text(
+                        '${similarMealData!.nutrientsPerServing!.calories} cal',
+                        style: FontUtils.h14(
+                            fontColor: AppColors.letsEatButton,
+                            fontWeight: FWT.lightMedium)),
+                  ],
                 ),
               ),
               const SizedBox(width: 10),
@@ -81,9 +103,11 @@ class SwapMealCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Visibility(
-                      visible: similarMealData!.isSelectedForSwap,
+                      visible: (similarMealData!.isSelectedForSwap ?? false),
                       child: Container(
-                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryBlue),
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primaryBlue),
                         height: 16.h,
                         width: 16.w,
                       ),

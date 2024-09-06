@@ -10,8 +10,6 @@ import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_st
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:image_picker/image_picker.dart';
 

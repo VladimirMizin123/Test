@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
@@ -71,9 +73,13 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
   }
 
   _onSurveyCheck(CheckSurveyData event, Emitter<UserSurveyState> emit) {
-    getNewSurvey!.options![event.index].isSelect =
-        !getNewSurvey!.options![event.index].isSelect;
-    emit(LoadSurveyData(surveyData: getNewSurvey!));
+    try {
+      getNewSurvey!.options![event.index].isSelect =
+          !getNewSurvey!.options![event.index].isSelect;
+      emit(LoadSurveyData(surveyData: getNewSurvey!));
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   _onSearchData(SearchData event, Emitter<UserSurveyState> emit) {
@@ -96,14 +102,19 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
     if (event.isNext) {
       bool isTrueInList =
           getNewSurvey!.options!.any((element) => element.isSelect == true);
-      if (isTrueInList) {
-        if (getNewSurvey!.options![event.index].questionDiet == 1) {
-          getNewSurvey = getNewSurvey!.options![event.index].question;
+
+      bool? isRestricted = event.searchEdgesRestrictionList
+          ?.any((element) => element.node.isRestricted);
+      int index = event.index.isNegative ? 0 : event.index;
+
+      if (isTrueInList || ((isRestricted ?? false) && event.pageIndex == 1)) {
+        if (getNewSurvey!.options![index].questionDiet == 1) {
+          getNewSurvey = getNewSurvey!.options![index].question;
           listSurveyData.add(getNewSurvey!);
           emit(LoadSurveyData(surveyData: getNewSurvey!));
         } else {
-          emit(NextScreenState(
-              dietId: getNewSurvey!.options![event.index].diet!.id!));
+          emit(
+              NextScreenState(dietId: getNewSurvey!.options![index].diet!.id!));
         }
       } else {
         showToast(

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,7 +10,6 @@ import 'package:gymeats_mobile/screen/restaurants/res_category_data_service/res_
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 
@@ -657,16 +654,9 @@ class _FilterScreenState extends State<FilterScreen> {
                               GetRestaurantListEvent(
                                 widget.getUserAddres?.latitude ?? 0,
                                 widget.getUserAddres?.longitude ?? 0,
-                                widget.getUserAddres?.streetNum ?? '',
-                                widget.getUserAddres?.streetName ?? '',
-                                widget.getUserAddres?.city ?? '',
-                                widget.getUserAddres?.state ?? '',
-                                widget.getUserAddres?.country ?? '',
-                                widget.getUserAddres?.zipcode ?? '',
                                 widget.result == 'Bring me the order'
                                     ? false
                                     : true,
-                                5,
                                 localList.isNotEmpty
                                     ? localList
                                     : categoryDataList
@@ -714,16 +704,9 @@ class _FilterScreenState extends State<FilterScreen> {
                           GetRestaurantListEvent(
                             widget.getUserAddres?.latitude ?? 0,
                             widget.getUserAddres?.longitude ?? 0,
-                            widget.getUserAddres?.streetNum ?? '',
-                            widget.getUserAddres?.streetName ?? '',
-                            widget.getUserAddres?.city ?? '',
-                            widget.getUserAddres?.state ?? '',
-                            widget.getUserAddres?.country ?? '',
-                            widget.getUserAddres?.zipcode ?? '',
                             widget.result == 'Bring me the order'
                                 ? false
                                 : true,
-                            5,
                             selectedCategoryData.isNotEmpty
                                 ? selectedCategoryData
                                 : categoryDataList

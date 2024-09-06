@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-FetchMealPlanModel fetchMealPlanModelFromJson(String str) => FetchMealPlanModel.fromJson(json.decode(str));
+FetchMealPlanModel fetchMealPlanModelFromJson(String str) =>
+    FetchMealPlanModel.fromJson(json.decode(str));
 
-String fetchMealPlanModelToJson(FetchMealPlanModel data) => json.encode(data.toJson());
+String fetchMealPlanModelToJson(FetchMealPlanModel data) =>
+    json.encode(data.toJson());
 
 class FetchMealPlanModel {
   final bool? success;
@@ -21,18 +23,24 @@ class FetchMealPlanModel {
     this.data,
   });
 
-  factory FetchMealPlanModel.fromJson(Map<String, dynamic> json) => FetchMealPlanModel(
+  factory FetchMealPlanModel.fromJson(Map<String, dynamic> json) =>
+      FetchMealPlanModel(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? [] : List<FetchMealPlanData>.from(json["data"]!.map((x) => FetchMealPlanData.fromJson(x))),
+        data: json["data"] == null
+            ? []
+            : List<FetchMealPlanData>.from(
+                json["data"]!.map((x) => FetchMealPlanData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
         "errorMessage": errorMessage,
-        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
+        "data": data == null
+            ? []
+            : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 }
 
@@ -49,20 +57,32 @@ class FetchMealPlanData {
     this.meals,
   });
 
-  factory FetchMealPlanData.fromJson(Map<String, dynamic> json) => FetchMealPlanData(
+  factory FetchMealPlanData.fromJson(Map<String, dynamic> json) =>
+      FetchMealPlanData(
         day: json["day"],
         date: json["date"] == null ? null : DateTime.parse(json["date"]),
         calories: json["calories"]?.toDouble(),
-        meals: json["meals"] == null ? [] : List<MealData>.from(json["meals"]!.map((x) => MealData.fromJson(x))),
+        meals: json["meals"] == null
+            ? []
+            : List<MealData>.from(
+                json["meals"]!.map((x) => MealData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "day": day,
-        "date": "${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}",
+        "date":
+            "${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}",
         "calories": calories,
-        "meals": meals == null ? [] : List<dynamic>.from(meals!.map((x) => x.toJson())),
+        "meals": meals == null
+            ? []
+            : List<dynamic>.from(meals!.map((x) => x.toJson())),
       };
 }
+
+// mealDataModelFromJson
+
+List<MealData> mealDataModelFromJson(String str) =>
+    List<MealData>.from(json.decode(str).map((x) => MealData.fromJson(x)));
 
 class MealData {
   String? id;
@@ -153,7 +173,9 @@ class Recipe {
 
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
         id: json["id"],
-        nutrientsPerServing: json["nutrientsPerServing"] == null ? null : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
+        nutrientsPerServing: json["nutrientsPerServing"] == null
+            ? null
+            : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
         parsedIngredientLines: json["parsedIngredientLines"],
         databaseId: json["databaseId"],
         totalTime: json["totalTime"],
@@ -211,7 +233,8 @@ class NutrientsPerServing {
     this.carbs,
   });
 
-  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) => NutrientsPerServing(
+  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) =>
+      NutrientsPerServing(
         calories: json["calories"]?.toDouble(),
         fat: json["fat"]?.toDouble(),
         protein: json["protein"]?.toDouble(),

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
-import 'package:video_player/video_player.dart';
+import 'package:gymeats_mobile/main.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import '../../constant/string_utils.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../widget/app_widget.dart';
@@ -17,67 +19,59 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final routeName = '/';
-  //final videoPath = "assets/video/big_buck_bunny_720p_30mb.mp4";
   final videoPath = "assets/video/gym_eats_presentation.mp4";
-  late VideoPlayerController _videoPlayerController;
-  // late ChewieController chewieController;
+
+  late final Player player = Player();
+  late final VideoController controller;
 
   @override
   void initState() {
-    _videoPlayerController = VideoPlayerController.asset(videoPath)
-      ..initialize().then((_) => setState(() {
-            _videoPlayerController.play();
-            _videoPlayerController.setLooping(true);
-          }));
+    controller = VideoController(player, configuration: configuration.value);
 
+    player.open(Media("asset:///$videoPath"));
+    player.setPlaylistMode(PlaylistMode.loop);
+    player.stream.error.listen((error) => debugPrint(error));
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appLinks = AppLinks();
-      appLinks.allUriLinkStream.listen((uri) {
+      appLinks.allUriLinkStream.listen((uri) async {
         if (uri.path == '/auth/setNewPassword') {
           final token = PreferenceUtils.getString(forgetPassToken);
           if (token != '') {
             // navigate to password reset screen
-
-            Get.offAllNamed(
-              '/setNewPassword',
-            );
+            player.pause();
+            await Get.offAllNamed('/setNewPassword');
+            player.play();
           } else {
             showToast(message: 'Link has Expired', isSuccess: false);
           }
         } else {
-          Get.offAllNamed(
-            '/LoginScreen',
-          );
+          player.pause();
+          await Get.offAllNamed('/LoginScreen');
+          player.play();
         }
       });
     });
-
-    // videoPlayerController =
-    //     VideoPlayerController.networkUrl(Uri.parse(videoPath));
-    // videoPlayerController.initialize().then((value) {
-    //   setState(() {});
-    // });
-    // chewieController = ChewieController(
-    //   videoPlayerController: videoPlayerController,
-    //   autoPlay: true,
-    //   looping: true,
-    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    // print(
-    //     "Is Vide Controller Initialized : ${videoPlayerController.value.isInitialized}");
     return Scaffold(
       body: Stack(
         children: [
-          if (_videoPlayerController.value.isInitialized)
-            Center(
-              child: VideoPlayer(_videoPlayerController),
+          SizedBox(
+            height: context.height,
+            width: context.width,
+            child: Video(
+              controller: controller,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.medium,
+              controls: (state) => const SizedBox.shrink(),
+              pauseUponEnteringBackgroundMode: true,
+              resumeUponEnteringForegroundMode: true,
             ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -87,8 +81,10 @@ class _HomeState extends State<Home> {
                   buildButton(
                     context: context,
                     title: StringUtils.letsEat,
-                    onPressed: () {
-                      Get.toNamed('/GymEatsMenuScreen');
+                    onPressed: () async {
+                      player.pause();
+                      await Get.toNamed('/GymEatsMenuScreen');
+                      player.play();
                     },
                     bgColor: AppColors.letsEatButton,
                     textColor: AppColors.letsEat,

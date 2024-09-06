@@ -56,6 +56,7 @@ class CustomMealDetails {
   String? type;
   String? userId;
   bool isEaten;
+  bool isSkipped;
 
   CustomMealDetails({
     this.id,
@@ -69,6 +70,7 @@ class CustomMealDetails {
     this.type,
     this.userId,
     this.isEaten = false,
+    this.isSkipped = false,
   });
 
   factory CustomMealDetails.fromJson(Map<String, dynamic> json) =>

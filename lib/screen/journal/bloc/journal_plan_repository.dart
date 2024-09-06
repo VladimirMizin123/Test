@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:either_dart/either.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
@@ -91,9 +92,9 @@ class JournalPlanRepository {
   }
 
   Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem(
-      {required String recipeID, required int serving}) async {
+      {required String recipeID, required int noOfServing}) async {
     final response = await apiServices.get(
-        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
+        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&noOfServing=$noOfServing');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -198,6 +199,7 @@ class JournalPlanRepository {
     num? protein,
     num? fat,
     num? carbs,
+    String? date,
   }) async {
     Map<String, dynamic> data = {
       "mealName": mealName ?? '',
@@ -212,6 +214,7 @@ class JournalPlanRepository {
       "value": 2,
       "userId": userID,
     };
+    data.addIf(date != null, "date", date);
     final response = await apiServices.post(ApiUrls.addMealLog, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));

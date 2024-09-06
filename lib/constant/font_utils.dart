@@ -3,6 +3,7 @@ import 'package:gymeats_mobile/constant/color_utils.dart';
 
 enum FWT {
   bold,
+  boldMedium,
   semiBold,
   medium,
   regular,
@@ -23,6 +24,8 @@ class FontUtils {
         return FontWeight.w500;
       case FWT.semiBold:
         return FontWeight.w600;
+      case FWT.boldMedium:
+        return FontWeight.w800;
       case FWT.bold:
         return FontWeight.w900;
     }

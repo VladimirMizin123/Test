@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/models/get_user_details_byId.dart';
@@ -14,7 +15,7 @@ class GetUserDetailsByIDDataRepository {
       String userId) async {
     final response =
         await apiServices.get('${ApiUrls.getUserDetailsById}/$userId');
-
+    log(response.body.toString());
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetUserDetailsById.fromJson(jsonDecode(response.body)));
     } else {

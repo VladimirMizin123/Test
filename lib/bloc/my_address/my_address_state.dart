@@ -20,8 +20,14 @@ class GetUserAddressErrorState extends MyAddressState {}
 
 class SetAddressPrimarySuccessState extends MyAddressState {
   final String? id;
+  final double? lat;
+  final double? lng;
 
-  SetAddressPrimarySuccessState({this.id});
+  SetAddressPrimarySuccessState({
+    this.id,
+    this.lat,
+    this.lng,
+  });
 }
 
 class SetAddressPrimaryLoadingState extends MyAddressState {

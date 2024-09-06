@@ -1,9 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
-import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
 
 extension ExtString on String {
@@ -18,12 +16,12 @@ extension ExtString on String {
                 child: NetworkImageWidget(
                   url: restaurantImg,
                   fit: BoxFit.cover,
+                  placeholder: AssetsUtils.restaurantGrocery,
                 ),
               )
             : Center(
-                child: SvgPicture.asset(
-                  AssetsUtils.gymEatsLogoRound,
-                  color: AppColors.green,
+                child: Image.asset(
+                  AssetsUtils.restaurantGrocery,
                   height: 30,
                 ),
               ),

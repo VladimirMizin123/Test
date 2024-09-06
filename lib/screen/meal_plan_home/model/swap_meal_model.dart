@@ -1,147 +1,146 @@
-// To parse this JSON data, do
-//
-//     final swapMealModel = swapMealModelFromJson(jsonString);
-
 import 'dart:convert';
 
-SwapMealModel swapMealModelFromJson(String str) => SwapMealModel.fromJson(json.decode(str));
+SwapMealModel swapMealModelFromJson(String str) =>
+    SwapMealModel.fromJson(json.decode(str));
 
 String swapMealModelToJson(SwapMealModel data) => json.encode(data.toJson());
 
 class SwapMealModel {
-  final bool? success;
-  final dynamic message;
-  final dynamic errorMessage;
-  final Data? data;
+  bool success;
+  dynamic message;
+  dynamic errorMessage;
+  Data data;
 
   SwapMealModel({
-    this.success,
-    this.message,
-    this.errorMessage,
-    this.data,
+    required this.success,
+    required this.message,
+    required this.errorMessage,
+    required this.data,
   });
 
   factory SwapMealModel.fromJson(Map<String, dynamic> json) => SwapMealModel(
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
         "errorMessage": errorMessage,
-        "data": data?.toJson(),
+        "data": data.toJson(),
       };
 }
 
 class Data {
-  final RecipeSwapOptions? recipeSwapOptions;
+  List<SimilarMealData>? similarCaloriesRecipes;
 
   Data({
-    this.recipeSwapOptions,
+    required this.similarCaloriesRecipes,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        recipeSwapOptions: json["recipeSwapOptions"] == null ? null : RecipeSwapOptions.fromJson(json["recipeSwapOptions"]),
+        similarCaloriesRecipes: List<SimilarMealData>.from(
+            json["similarCaloriesRecipes"]
+                .map((x) => SimilarMealData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "recipeSwapOptions": recipeSwapOptions?.toJson(),
-      };
-}
-
-class RecipeSwapOptions {
-  final List<SimilarMealData>? similar;
-
-  RecipeSwapOptions({
-    this.similar,
-  });
-
-  factory RecipeSwapOptions.fromJson(Map<String, dynamic> json) => RecipeSwapOptions(
-        similar: json["similar"] == null ? [] : List<SimilarMealData>.from(json["similar"]!.map((x) => SimilarMealData.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "similar": similar == null ? [] : List<dynamic>.from(similar!.map((x) => x.toJson())),
+        "similarCaloriesRecipes": List<dynamic>.from(
+            similarCaloriesRecipes?.map((x) => x.toJson()) ?? []),
       };
 }
 
 class SimilarMealData {
-  final String? id;
-  final String? databaseId;
-  final String? name;
-  final List<String>? mealTags;
-  final int? serving;
-  final int? numberOfServings;
-  final String? mainImage;
-  final NutrientsPerServing? nutrientsPerServing;
-  final List<String>? instructions;
-  bool isSelectedForSwap;
+  String? id;
+  String? name;
+  int? serving;
+  int? numberOfServings;
+  List<String>? instructions;
+  String? databaseId;
+  List<dynamic>? mealTags;
+  String? mainImage;
+  NutrientsPerServing? nutrientsPerServing;
+  bool? isSelectedForSwap;
 
   SimilarMealData({
     this.id,
-    this.databaseId,
     this.name,
-    this.mealTags,
     this.serving,
     this.numberOfServings,
+    this.instructions,
+    this.databaseId,
+    this.mealTags,
     this.mainImage,
     this.nutrientsPerServing,
-    this.instructions,
     this.isSelectedForSwap = false,
   });
 
-  factory SimilarMealData.fromJson(Map<String, dynamic> json) => SimilarMealData(
+  factory SimilarMealData.fromJson(Map<String, dynamic> json) =>
+      SimilarMealData(
         id: json["id"],
-        databaseId: json["databaseId"],
         name: json["name"],
-        mealTags: json["mealTags"] == null ? [] : List<String>.from(json["mealTags"]!.map((x) => x)),
         serving: json["serving"],
         numberOfServings: json["numberOfServings"],
+        instructions: List<String>.from(json["instructions"].map((x) => x)),
+        databaseId: json["databaseId"],
+        mealTags: json["mealTags"],
         mainImage: json["mainImage"],
-        nutrientsPerServing: json["nutrientsPerServing"] == null ? null : NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
-        instructions: json["instructions"] == null ? [] : List<String>.from(json["instructions"]!.map((x) => x)),
+        nutrientsPerServing:
+            NutrientsPerServing.fromJson(json["nutrientsPerServing"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "databaseId": databaseId,
         "name": name,
-        "mealTags": mealTags == null ? [] : List<dynamic>.from(mealTags!.map((x) => x)),
         "serving": serving,
         "numberOfServings": numberOfServings,
+        "instructions": List<dynamic>.from(instructions?.map((x) => x) ?? []),
+        "databaseId": databaseId,
+        "mealTags": mealTags,
         "mainImage": mainImage,
         "nutrientsPerServing": nutrientsPerServing?.toJson(),
-        "instructions": instructions == null ? [] : List<dynamic>.from(instructions!.map((x) => x)),
       };
 }
 
 class NutrientsPerServing {
-  final double? calories;
-  final double? fat;
-  final double? protein;
-  final double? carbs;
+  double calories;
+  double carbs;
+  double fat;
+  double protein;
 
   NutrientsPerServing({
-    this.calories,
-    this.fat,
-    this.protein,
-    this.carbs,
+    required this.calories,
+    required this.carbs,
+    required this.fat,
+    required this.protein,
   });
 
-  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) => NutrientsPerServing(
-        calories: json["calories"]?.toDouble(),
-        fat: json["fat"]?.toDouble(),
-        protein: json["protein"]?.toDouble(),
-        carbs: json["carbs"]?.toDouble(),
+  factory NutrientsPerServing.fromJson(Map<String, dynamic> json) =>
+      NutrientsPerServing(
+        calories: json["calories"].toDouble(),
+        carbs: json["carbs"].toDouble(),
+        fat: json["fat"].toDouble(),
+        protein: json["protein"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
         "calories": calories,
+        "carbs": carbs,
         "fat": fat,
         "protein": protein,
-        "carbs": carbs,
       };
+}
+
+class EnumValues<T> {
+  Map<String, T> map;
+  late Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => MapEntry(v, k));
+    return reverseMap;
+  }
 }

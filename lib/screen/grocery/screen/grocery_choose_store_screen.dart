@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_utils/src/extensions/widget_extensions.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -14,7 +14,6 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.d
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
-import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -43,8 +42,10 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   int selectedStoreCount = 0;
 
   List<Cart> productsList = [];
+  bool pageLoader = false;
   List<Cart> searchedProductsList = [];
   RestaurantBloc restaurantBloc = RestaurantBloc();
+  GroceryBloc groceryBloc = GroceryBloc();
 
   bool isSearchOn = false;
   user_address.UserAddress? getUserAddress;
@@ -59,6 +60,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
     log(dataList2.length.toString(), name: "DATA LIST 2");
     log(dataList3.length.toString(), name: "DATA LIST 3");
     searchStore();
+    // GrocerySearchEvent
   }
 
   searchStore() {
@@ -71,9 +73,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
 
     // print("grocery list:${edgesDummyList.first.groceryName}");
 
-    print("argu :${widget.arguments?.getUserAddress?.toJson()}");
-
-    widget.arguments!.groceryBloc!.add(
+    groceryBloc.add(
       GrocerySearchEvent(
         grocerySearchModelList: edgesDummyList,
         getUserAddress: widget.arguments?.getUserAddress,
@@ -83,13 +83,24 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   }
 
   @override
+  void dispose() {
+    groceryBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return BlocConsumer<GroceryBloc, GroceryState>(
-        bloc: widget.arguments!.groceryBloc!,
+        bloc: groceryBloc,
         listener: (context, state) {
           if (state is GrocerySearchSuccessState) {
             productsList = state.groceryMultiSearchProductList ?? [];
+          }
+
+          if (state is GroceryPageLoaderState) {
+            pageLoader = state.isLoading;
+            setState(() {});
           }
         },
         builder: (context, state) {
@@ -164,7 +175,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                   SizedBox(height: 15.h),
                   Expanded(
                     child: productsList.isEmpty
-                        ? state is GrocerySearchLoadingState
+                        ? state is GrocerySearchLoadingState || pageLoader
                             ? const AppCenterLoader()
                             : Center(
                                 child: Text(
@@ -177,11 +188,16 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                             ? searchedProductsList.isNotEmpty
                                 ? SingleChildScrollView(
                                     child: ListView.builder(
-                                      itemCount: searchedProductsList.length,
+                                      itemCount: searchedProductsList.length +
+                                          (pageLoader ? 1 : 0),
                                       shrinkWrap: true,
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
+                                        if (index > productsList.length - 1) {
+                                          return const AppCenterLoader()
+                                              .paddingOnly(top: 20, bottom: 20);
+                                        }
                                         Store? store =
                                             searchedProductsList[index].store;
                                         Address? address =
@@ -216,6 +232,9 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                         0] ??
                                                                     '',
                                                                 height: 90.h,
+                                                                placeholder:
+                                                                    AssetsUtils
+                                                                        .restaurantGrocery,
                                                               ),
                                                             )
                                                           : const SizedBox
@@ -338,10 +357,16 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                   )
                             : SingleChildScrollView(
                                 child: ListView.builder(
-                                  itemCount: productsList.length,
+                                  itemCount: productsList.length +
+                                      (pageLoader ? 1 : 0),
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
+                                    if (index > productsList.length - 1) {
+                                      return const AppCenterLoader()
+                                          .paddingOnly(top: 20, bottom: 20);
+                                    }
+
                                     Store? store = productsList[index].store;
                                     Address? address = store?.address;
 
@@ -374,6 +399,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                                                                         0] ??
                                                                     '',
                                                             height: 90.h,
+                                                            placeholder: AssetsUtils
+                                                                .restaurantGrocery,
                                                           ),
                                                         )
                                                       : const SizedBox.shrink(),
@@ -580,25 +607,19 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                         width: screenSize.width,
                         isLoadingWidget: state is DeliverableLoaderState,
                         onTap: () async {
-                          restaurantBloc.add(
-                            CheckDeliverableGroceryEvent(
-                              cartList: productsList,
-                              address: widget.arguments?.getUserAddress,
-                              askReceiveOrder:
-                                  widget.arguments?.askReceiveOrder,
-                              callback: (cart) {
-                                log("Cart List :$cart");
-                                if (cart.isNotEmpty) {
-                                  widget.arguments!.groceryBloc!.add(
-                                    GrocerySelectedStoreEvent(
-                                      productsList: cart,
-                                    ),
-                                  );
-                                  Navigator.pop(context);
-                                }
-                              },
-                            ),
-                          );
+                          if (productsList.firstWhereOrNull((element) =>
+                                  element.store?.isSelected ?? false) !=
+                              null) {
+                            widget.arguments?.groceryBloc?.add(
+                              GrocerySelectedStoreEvent(
+                                productsList: productsList
+                                    .where((element) =>
+                                        element.store?.isSelected ?? false)
+                                    .toList(),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
                         },
                         isDarkColor: true,
                         isFillColor: true,

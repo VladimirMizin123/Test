@@ -56,7 +56,7 @@ class GetUserJournalBloc
       // response.fold((left) {}, (right) {
       data.fold(
           (left) => {
-                // emit(JournalLoadDashboardDataState(model: right, data: [])),
+                emit(JournalLoadDashboardDataState(data: [])),
               }, (r) {
         emit(JournalLoadDashboardDataState(data: r.data));
       });
@@ -94,8 +94,7 @@ class GetUserJournalBloc
       }, (right) {
         dataList.clear();
         right.data!.map((e) {
-          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
-              dateTimeNow()) {
+          if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) == event.date) {
             dataList.addAll(e.meals!);
           }
         }).toList();
@@ -147,7 +146,7 @@ class GetUserJournalBloc
       await _exerciseDetailsRepository.getAllExerciseDetails().fold((left) {
         emit(ErrorExerciseState());
       }, (right) {
-        emit(AllExerciseSuccessState(data: right.data ?? []));
+        emit(AllExerciseSuccessState(data: right.data));
       });
     } catch (e) {
       emit(ErrorExerciseState());
@@ -177,17 +176,19 @@ class GetUserJournalBloc
       emit(AddItemLoadingState(title: event.title, itemId: event.mealId));
       await _eatenMealRepository
           .addEatenMeal(
-              userId: userId,
-              mealId: event.mealId ?? '',
-              recipeId: event.recipeId ?? '',
-              noOfServing: event.noOfServing ?? 0,
-              mealName: event.mealName ?? '',
-              mealType: event.mealType ?? '',
-              calorie: event.calorie ?? 0,
-              protein: event.protein ?? 0,
-              fat: event.fat ?? 0,
-              carbs: event.carbs ?? 0,
-              value: event.value ?? 0)
+        userId: userId,
+        mealId: event.mealId ?? '',
+        recipeId: event.recipeId ?? '',
+        noOfServing: event.noOfServing ?? 0,
+        mealName: event.mealName ?? '',
+        mealType: event.mealType ?? '',
+        calorie: event.calorie ?? 0,
+        protein: event.protein ?? 0,
+        fat: event.fat ?? 0,
+        carbs: event.carbs ?? 0,
+        value: event.value ?? 0,
+        date: event.date,
+      )
           .fold((left) {
         emit(AddItemErrorState(title: event.title, mealID: event.mealId));
         showToast(isSuccess: false, message: left.errorMessage!);

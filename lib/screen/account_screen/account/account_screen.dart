@@ -149,8 +149,9 @@ class _AccountScreenState extends State<AccountScreen> {
                                     onTap: () {
                                       if (data["title"] == 'Support') {
                                         Livechat.beginChat(
-                                          '16538658',
-                                          '0',
+                                          '17386518',
+                                          PreferenceUtils.getString(
+                                              prefUserEmail),
                                           fullName,
                                           PreferenceUtils.getString(
                                               prefUserEmail),
@@ -197,7 +198,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       fontSize: 18,
                       color: Colors.black),
                 ),
-              ),
+              ).paddingOnly(bottom: 20.h),
             ],
           ),
         ),

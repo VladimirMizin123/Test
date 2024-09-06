@@ -21,6 +21,8 @@ class UpdateAddNewGroceryItem extends AddNewGroceryItemEvent {
   final int quantity;
   final String measurementType;
   final String measurementValue;
+  final bool isChecked;
+  final bool showToast;
 
   UpdateAddNewGroceryItem({
     required this.userId,
@@ -29,6 +31,8 @@ class UpdateAddNewGroceryItem extends AddNewGroceryItemEvent {
     required this.quantity,
     required this.measurementType,
     required this.measurementValue,
+    required this.isChecked,
+    this.showToast = true,
   });
 }
 
@@ -77,4 +81,8 @@ class AddGroceryToShoppingListFromSuggesticEvent
       {required this.latitude, required this.longitude});
 }
 
-class ClearUserGroceryEvent extends AddNewGroceryItemEvent {}
+class ClearUserGroceryEvent extends AddNewGroceryItemEvent {
+  final bool showToast;
+
+  ClearUserGroceryEvent({this.showToast = true});
+}

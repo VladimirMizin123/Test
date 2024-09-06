@@ -12,8 +12,11 @@ import 'api_urls.dart';
 class ApiServices {
   String token = PreferenceUtils.getString(prefToken);
 
-  Future<dynamic> get(String url, {Map<String, dynamic>? body}) async {
+  Future<dynamic> get(String url,
+      {Map<String, dynamic>? body, Map<String, dynamic>? queryParams}) async {
     token = PreferenceUtils.getString(prefToken);
+
+    log("token:$token");
     try {
       Map<String, String>? headers;
       if (token.isEmpty) {
@@ -57,8 +60,8 @@ class ApiServices {
         );
       }
 
-      final response = await http.get(Uri.parse(url), headers: headers);
-
+      Uri uri = Uri.parse(url + _getParamsFromBody(queryParams ?? {}));
+      final response = await http.get(uri, headers: headers);
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet connection');
@@ -69,6 +72,17 @@ class ApiServices {
     } catch (e) {
       throw FetchDataException(e.toString());
     }
+  }
+
+  String _getParamsFromBody(Map<String, dynamic> body) {
+    String params = body.isNotEmpty ? '?' : '';
+    for (var i = 0; i < body.keys.length; i++) {
+      params += '${List.from(body.keys)[i]}=${List.from(body.values)[i]}';
+      if (i != body.keys.length - 1) {
+        params += '&';
+      }
+    }
+    return params;
   }
 
   Future<http.Response> post(String url, dynamic body) async {
@@ -88,6 +102,8 @@ class ApiServices {
           'Api_Key': ApiUrls.apiKey,
         };
       }
+
+      log("token:$token");
 
       final jsonBody = jsonEncode(body);
       final response = await http.post(
@@ -340,8 +356,8 @@ class ApiServices {
     try {
       Map<String, String>? headers;
       headers = {
-        'x-app-id': '57030705',
-        'x-app-key': 'f3afdce84f567f132cb7da4fabfbe6f8',
+        'x-app-id': '51a8f429',
+        'x-app-key': '1bdfc5b3d78b1efd1afb642db79892cd',
       };
       log(url, name: 'GET API URL');
 

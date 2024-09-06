@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
+import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/all_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/history_exercise_screen.dart';
 
@@ -21,13 +23,14 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
   final routeName = '/AddExerciseScreen';
   final searchExerciseController = TextEditingController();
   late TabController tabController;
-  List<String> allExerciseList = [
-    StringUtils.running,
-    StringUtils.runningFast,
-    StringUtils.workout,
-    StringUtils.runningSlow,
-  ];
-  List<String> filteredExerciseList = [];
+  // List<String> allExerciseList = [
+  //   StringUtils.running,
+  //   StringUtils.runningFast,
+  //   StringUtils.workout,
+  //   StringUtils.runningSlow,
+  // ];
+  List<GetAllExerciseData> filteredExerciseList = [];
+  List<ExerciseLogList> filteredExerciseLogList = [];
   AddExerciseArguments addExerciseArguments = Get.arguments;
   GetUserJournalBloc getUserJournalBloc = GetUserJournalBloc();
 
@@ -80,10 +83,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
                   hintText: StringUtils.searchExercise,
                   textInputType: TextInputType.text,
                   context: context,
-                  onChange: filterExercises,
+                  onChange: (value) {
+                    filterSearchExercises(value);
+                  },
                   onClear: () {
                     searchExerciseController.clear();
-                    filterExercises('');
+                    filterSearchExercises('');
+                    filteredExerciseLogList.clear();
                   },
                 ).paddingSymmetric(horizontal: 20.w, vertical: 15.h),
                 SizedBox(
@@ -107,9 +113,15 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
                       controller: tabController,
                       children: [
                         HistoryExerciseScreen(
-                            dateTime: addExerciseArguments.dateTime),
+                          filterExerciseLogList: filteredExerciseLogList,
+                          dateTime: addExerciseArguments.dateTime,
+                          searchController: searchExerciseController,
+                        ),
                         AllExerciseScreen(
-                            dateTime: addExerciseArguments.dateTime),
+                          dateTime: addExerciseArguments.dateTime,
+                          filteredExerciseList: filteredExerciseList,
+                          searchController: searchExerciseController,
+                        ),
                       ],
                     ),
                   ).paddingOnly(left: 20.w, right: 10.w),
@@ -120,20 +132,35 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
         ));
   }
 
-  void filterExercises(String query) {
-    setState(() {
+  void filterSearchExercises(String query) {
+    if (tabController.index == 0) {
       if (query.isEmpty) {
-        setState(() {
-          filteredExerciseList = allExerciseList;
-        });
+        filteredExerciseLogList.clear();
+      } else {
+        filteredExerciseLogList = exerciseLogList
+            .where((exercise) => exercise.exerciseName!
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+        filteredExerciseLogList.sort(
+          (a, b) => a.exerciseName!.compareTo(b.exerciseName!),
+        );
+      }
+    } else {
+      if (query.isEmpty) {
+        filteredExerciseList = allExerciseList;
       } else {
         filteredExerciseList = allExerciseList
-            .where((exercise) =>
-                exercise.toLowerCase().contains(query.toLowerCase()))
+            .where((exercise) => exercise.exerciseName
+                .toLowerCase()
+                .contains(query.toLowerCase()))
             .toList();
-        setState(() {});
+        filteredExerciseList.sort(
+          (a, b) => a.exerciseName.compareTo(b.exerciseName),
+        );
       }
-    });
+    }
+    setState(() {});
   }
 }
 

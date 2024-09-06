@@ -269,6 +269,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                 phoneNumber: model.phoneNumber,
                                 gender: genderName,
                                 age: ageController.text,
+                                userId: model.userId,
                                 height:
                                     heightController.text.replaceAll("'", "."),
                                 weight: weightController.text,

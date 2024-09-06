@@ -20,7 +20,6 @@ class GroceryAddButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onTap,
       child: Padding(

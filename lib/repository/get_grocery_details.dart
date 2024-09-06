@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
@@ -41,11 +39,8 @@ class AddNewGroceryItemRepository {
 
   Future<Either<ErrorModel, GetUserGroceryListModel>>
       getGroceryListData() async {
-    log("GetUserGroceryListModel");
-    final response = await apiServices.get(
-      '${ApiUrls.getGroceryItemList}?userId=$userID',
-    );
-
+    final response =
+        await apiServices.get('${ApiUrls.getGroceryItemList}?userId=$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetUserGroceryListModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
@@ -80,6 +75,7 @@ class AddNewGroceryItemRepository {
     required String measurementType,
     required String measurementValue,
     required String userId,
+    required bool isChecked,
   }) async {
     Map<String, dynamic> data = {
       "id": id,
@@ -88,6 +84,7 @@ class AddNewGroceryItemRepository {
       "measurementType": measurementType,
       "measurementValue": measurementValue,
       "userId": userId,
+      "isChecked": isChecked,
     };
 
     final response = await apiServices.put(

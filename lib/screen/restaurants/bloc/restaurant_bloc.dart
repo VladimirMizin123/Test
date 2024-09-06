@@ -1,19 +1,24 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:developer';
 import 'package:either_dart/either.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
-import 'package:gymeats_mobile/service/apis.dart';
-import 'package:gymeats_mobile/service/hive_singleton.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
 
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   RestaurantBloc() : super(InitialState()) {
@@ -22,19 +27,17 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
     on<AddRestaurantCartEvent>(_onAddToShoppingList);
-    on<GetShoppingListEvent>(_onFetchShoppingList);
-    on<UpdateRestaurantCartEvent>(_onUpdateShoppingList);
-    on<RemoveShoppingListItemEvent>(_onRemoveShoppingList);
     on<CreateOrderEvent>(_onCreateOrder);
     on<CreateProductEvent>(_onCreateProduct);
     on<CreateCheckoutEvent>(_onCreateCheckout);
     on<GetOrderDetailsEvent>(_onGetOrderDetails);
     on<GetDeliveryStatusEvent>(_onGetDeliveryStatus);
     on<UpdateDeliveryStatusEvent>(_onUpdateDeliveryStatus);
-    on<ClearShoppingListItemEvent>(_onClearShoppingList);
     on<MealPlanMatchEvent>(_onMatchMealPlan);
-    on<CheckDeliverableGroceryEvent>(_onCheckDeliverableGroceryStore);
     on<FetchCustomizationEvent>(_onfetchCustomization);
+    on<ProductCustomizationEvent>(_onProductCustomization);
+    on<RestaurantVerifyEvent>(_onStoreVerify);
+    on<RestaurantByNameEvent>(_onGetStoreByName);
   }
 
   final RestaurantRepository _repository = RestaurantRepository();
@@ -59,40 +62,120 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
+  List<dynamic> lastCategoryData = [];
+
   // Get Restaurant List Bloc =================================================================
   _onGetRestaurantList(
       GetRestaurantListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantListLoadingState());
 
     try {
-      await _repository
-          .getRestaurantListData(
-        latitude: event.latitude,
-        longitude: event.longitude,
-        maximumMiles: event.maximumMiles,
-        pickup: event.pickup,
-        userCity: event.userCity,
-        userCountry: event.userCountry,
-        userState: event.userState,
-        userStreetName: event.userStreetName,
-        userStreetNum: event.userStreetNum,
-        userZipcode: event.userZipcode,
-        categoriesData: event.categotyData,
-      )
-          .fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(GetRestaurantListErrorState());
-      }, (right) {
-        emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
-        for (int i = 0; i < (right.data?.length ?? 0); i++) {
-          if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
-            PreferenceUtils.setString("${right.data?[i].id}_img",
-                right.data?[i].logoPhotos?[0] ?? "");
-          }
-        }
-      });
+      lastCategoryData = event.categotyData;
+      await resFuture(event, emit);
     } catch (e) {
       // showToast(isSuccess: false, message: e.toString());
+      emit(GetRestaurantListErrorState());
+    }
+  }
+
+  _onStoreVerify(
+      RestaurantVerifyEvent event, Emitter<RestaurantState> emit) async {
+    try {
+      emit(VerifyRestaurantLoader(id: event.id));
+
+      (double?, double?) pos = await Constant.i.position;
+      Either<ErrorModel, GetRestaurantMenuListModel>? menuRes;
+      _repository
+          .getRestaurantMenuList(
+            restaurantId: event.id,
+            pickup: event.pickup,
+            latitude: event.latitude,
+            longitude: event.longitude,
+            mealType: "restaurant",
+            position: pos,
+          )
+          .then((value) => menuRes = value);
+      List<Either<ErrorModel, Object>> value = await Future.wait(
+        [
+          _repository.checkAvailableStore(
+            storeType: 'restaurant',
+            latitude: latitude,
+            longitude: longitude,
+            pickup: event.pickup,
+            storeId: event.id ?? "",
+            position: pos,
+          ),
+        ],
+      );
+
+      Either<ErrorModel, CheckStoreModel> storeRes =
+          value[0] as Either<ErrorModel, CheckStoreModel>;
+
+      emit(VerifyRestaurantLoader(id: null));
+
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (storeRes.isLeft) {
+        if (storeRes.left.errorMessage != null) {
+          showToast(
+              isSuccess: false, message: storeRes.right.errorMessage ?? "");
+        } else {
+          showToast(
+              isSuccess: false, message: StringUtils.restaurantNotAvailable);
+        }
+        event.notVerify?.call();
+      } else {
+        if ((storeRes.right.success ?? false) &&
+            (storeRes.right.data?.quote?.asapAvailable ?? false)) {
+          event.onVerify?.call(
+              (menuRes?.isRight ?? false) ? (menuRes?.right.data) : null);
+        } else {
+          if (storeRes.right.errorMessage != null) {
+            showToast(
+                isSuccess: false, message: storeRes.right.errorMessage ?? "");
+          } else {
+            showToast(
+                isSuccess: false, message: StringUtils.restaurantNotAvailable);
+          }
+          event.notVerify?.call();
+        }
+      }
+    } catch (e) {
+      emit(VerifyRestaurantLoader(id: null));
+      showToast(isSuccess: false, message: StringUtils.restaurantNotAvailable);
+    }
+  }
+
+  Future<dynamic> resFuture(
+      GetRestaurantListEvent event, Emitter<RestaurantState> emit) async {
+    String pref;
+
+    if (event.pickup) {
+      pref = restaurantsPickup;
+    } else {
+      pref = restaurantsBring;
+    }
+    Either<ErrorModel, GetRestaurantListModel> data =
+        await _repository.getRestaurantListData(
+      latitude: event.latitude,
+      longitude: event.longitude,
+      maximumMiles: PreferenceUtils.getRestaurantsRadius().round(),
+      pickup: event.pickup,
+      categoriesData: event.categotyData,
+    );
+    if (data.isRight) {
+      GetRestaurantListModel right = data.right;
+      log("Set Cache : $pref");
+      PreferenceUtils.setString(pref, jsonEncode(right.data ?? []));
+      for (int i = 0; i < (right.data?.length ?? 0); i++) {
+        if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
+          PreferenceUtils.setString(
+              "${right.data?[i].id}_img", right.data?[i].logoPhotos?[0] ?? "");
+        }
+      }
+      emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
+      emit(RestaurantVerificationLoader(isLoading: false));
+    } else {
+      onFailError(emit: emit, text: data.left.errorMessage!);
       emit(GetRestaurantListErrorState());
     }
   }
@@ -105,14 +188,17 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository
           .getRestaurantMenuList(
-              restaurantId: event.restaurantId,
-              pickup: event.pickUp,
-              mealType: event.mealType,
-              getUserAddress: event.getUserAddress)
+        restaurantId: event.restaurantId,
+        pickup: event.pickUp,
+        mealType: event.mealType,
+        latitude: event.getUserAddress?.latitude,
+        longitude: event.getUserAddress?.longitude,
+      )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(GetRestaurantMenuListErrorState());
       }, (right) async {
+        event.onDataGet?.call(right.data);
         emit(
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
       });
@@ -124,84 +210,36 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
   _onMatchMealPlan(
       MealPlanMatchEvent event, Emitter<RestaurantState> emit) async {
-    if (state is GetRestaurantMenuListSuccessState) {
-      GetRestaurantMenuListSuccessState successState =
-          state as GetRestaurantMenuListSuccessState;
-      RestaurantMenu menu = successState.restaurantMenuList;
+    try {
+      emit(MatchMealLoadingState(isLoading: true));
+      RestaurantMenu menu = event.menu;
       List<Category> categories = menu.categories ?? [];
-      emit(GetRestaurantMenuListLoadingState());
-      try {
-        final HiveSingleton hive = HiveSingleton();
-        List<Future<dynamic>> futureList = [];
-
-        List<MenuItemList> menuItem = categories
-                .firstWhereOrNull(
-                    (element) => element.subcategoryId == event.subcategoryId)
-                ?.menuItemList ??
-            [];
-        HiveSingleton hiveSingleton = HiveSingleton();
-        for (int j = 0; j < menuItem.length; j++) {
-          MenuItemList menu = menuItem[j];
-          dynamic response = await hive.getValueByKey(menu.name ?? "");
-
-          if (response != null && (response is Map)) {
-            menu.mealInfoData =
-                NutritionixGetNxMealInfoByNameModelData.fromJson(response);
-          } else {
-            String apiURL =
-                '${ApiUrls.getNxMealInfoByName}?name=${menu.name?.replaceAll("&", "%26")}';
-            futureList.add(
-              _repository.apiServices.get(apiURL).then(
-                (value) async {
-                  if (value.statusCode == 200 || value.statusCode == 201) {
-                    Map<String, dynamic> json = jsonDecode(value.body);
-                    if (menu.name != null) {
-                      await hiveSingleton.addValueToBox(
-                          menu.name!, json["data"]);
-                    }
-                    menu.mealInfoData =
-                        NutritionixGetNxMealInfoByNameModelData.fromJson(
-                            json["data"] ?? {});
-                  } else {
-                    Map<String, dynamic> json = jsonDecode(value.body);
-                    if (json["data"] == null) {
-                      String apiNutritionixURL =
-                          '${ApiUrls.getNxSearchData}?branded=true&common=false&query=${menu.name?.replaceAll("&", "%26")}';
-                      final responseNutritionix = await _repository.apiServices
-                          .getNutritionix(apiNutritionixURL);
-
-                      Map<String, dynamic> jsonNutritionix =
-                          jsonDecode(responseNutritionix.body);
-                      if (jsonNutritionix["branded"] is List) {
-                        List brandedList = jsonNutritionix["branded"] as List;
-                        if (brandedList.isNotEmpty) {
-                          Map menuMap = brandedList.first as Map;
-                          menuMap = menuMap.map((key, value) =>
-                              MapEntry("$key".camelCase, value));
-                          menuMap["foodName"] = menu.name;
-                          if (menu.name != null) {
-                            await hiveSingleton.addValueToBox(
-                                menu.name!, menuMap);
-                          }
-                          menu.mealInfoData =
-                              NutritionixGetNxMealInfoByNameModelData.fromJson(
-                                  menuMap);
-                          await _repository.apiServices
-                              .post(ApiUrls.addNutritionDataToDb, menuMap);
-                        }
-                      }
-                    }
-                  }
-                },
-              ),
-            );
-          }
-        }
-        await Future.wait(futureList);
-      } catch (e) {
-        log(e.toString());
+      Category? category = categories.firstWhereOrNull(
+          (element) => element.subcategoryId == event.subcategoryId);
+      Map<String, dynamic> req = {
+        "restrictions": PreferenceUtils.getStringList(getUserRestriction),
+        "allergies": PreferenceUtils.getStringList(getUserAllergies),
+        "calories": event.calories ?? 0.0,
+        "Categorie": category?.name,
+        "restaurantMenu":
+            category?.menuItemList?.map((e) => e.toJson()).toList() ?? [],
+      };
+      log(ApiUrls.filterMenuFromAI);
+      log(jsonEncode(req));
+      var res =
+          await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
+      if (res.statusCode == 200) {
+        var resData = jsonDecode(res.body);
+        List<MenuItemList> updatedList = List<MenuItemList>.from(
+            resData["data"]?.map((x) => MenuItemList.fromJson(x)) ?? []);
+        log("Pass Record : ${category?.menuItemList?.length} Found Match Record : ${updatedList.length}");
+        emit(MatchMealState(
+            subCategoryId: event.subcategoryId, updatedList: updatedList));
       }
-      emit(GetRestaurantMenuListSuccessState(restaurantMenuList: menu));
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(MatchMealLoadingState(isLoading: false));
     }
   }
 
@@ -239,8 +277,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESTAURANT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
   // Add Restaurant Item to cart Bloc ==============================================================================
 
   _onAddToShoppingList(
@@ -269,104 +305,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  // Get Shopping List Bloc =========================================================================================
-
-  _onFetchShoppingList(
-      GetShoppingListEvent event, Emitter<RestaurantState> emit) async {
-    emit(GetShoppingListLoadingState());
-
-    try {
-      await _repository.getShoppingList().fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(GetShoppingListErrorState());
-      }, (right) {
-        emit(
-          GetShoppingListSuccessState(
-              shoppingListData:
-                  right.data == [] || right.data == null ? [] : right.data!),
-        );
-      });
-    } catch (e) {
-      // showToast(isSuccess: false, message: e.toString());
-      emit(GetShoppingListErrorState());
-    }
-  }
-
-  // Update Restaurant Item to cart Bloc ============================================================================
-
-  _onUpdateShoppingList(
-      UpdateRestaurantCartEvent event, Emitter<RestaurantState> emit) async {
-    emit(UpdateToRestaurantCartLoadingState(
-        productId: event.updateItemList.oldProductId!));
-
-    try {
-      await _repository
-          .updateMenuToCartRestaurant(
-              updateItemsToShoppingList: event.updateItemList)
-          .fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(UpdateToRestaurantCartErrorState(
-            productId: event.updateItemList.oldProductId!));
-      }, (right) {
-        log('----DATA------PRICE--->>>>>>>>${right.data['price']}');
-        log('----DATA------QUANTITY--->>>>>>>>${right.data['quantity']}');
-        showToast(isSuccess: true, message: right.message!);
-        emit(UpdateToRestaurantCartSuccessState(
-            isAdded: right.success ?? true, data: right.data));
-      });
-    } catch (e) {
-      log('e---------->>>>>> $e');
-
-      showToast(isSuccess: false, message: e.toString());
-      emit(UpdateToRestaurantCartErrorState(
-          productId: event.updateItemList.oldProductId!));
-    }
-  }
-
-  // Remove Shopping List Item Bloc =========================================================================================
-
-  _onRemoveShoppingList(
-      RemoveShoppingListItemEvent event, Emitter<RestaurantState> emit) async {
-    emit(RemoveShoppingListItemLoadingState(productId: event.productID));
-
-    try {
-      await _repository.removeShoppingListItem(productID: event.productID).fold(
-          (left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(RemoveShoppingListItemErrorState(productId: event.productID));
-      }, (right) {
-        emit(
-          RemoveShoppingListItemSuccessState(productId: event.productID),
-        );
-      });
-    } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
-      emit(RemoveShoppingListItemErrorState(productId: event.productID));
-    }
-  }
-
-  // Clear Shopping List Item Bloc =========================================================================================
-
-  _onClearShoppingList(
-      ClearShoppingListItemEvent event, Emitter<RestaurantState> emit) async {
-    emit(ClearShoppingListItemLoadingState());
-
-    try {
-      await _repository.clearShoppingListItem().fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        event.onCallback?.call();
-        emit(ClearShoppingListItemErrorState());
-      }, (right) {
-        event.onCallback?.call();
-        emit(ClearShoppingListItemSuccessState());
-      });
-    } catch (e) {
-      emit(ClearShoppingListItemErrorState());
-    }
-  }
-
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SHOPPING LIST PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   // Create Order Bloc ==============================================================================
@@ -377,11 +315,33 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     try {
       await _repository
           .createOrder(createOrderModel: event.createOrderModel)
-          .fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(CreateOrderErrorState());
-        showToast(isSuccess: false, message: left.errorMessage ?? "");
-
+          .fold((left) async {
+        onFailError(emit: emit, text: left.errorMessage ?? "");
+        if (left.statusCode == 500) {
+          dynamic result = await showModalBottomSheet(
+            context: event.context,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            isScrollControlled: true,
+            builder: (context) => const ExtendedAddress(),
+          );
+          if (result != null) {
+            Map req = result as Map;
+            add(
+              CreateOrderEvent(
+                createOrderModel: event.createOrderModel
+                  ..extendedAddress = req["extendedAddress"],
+                context: event.context,
+              ),
+            );
+          }
+        } else {
+          showToast(isSuccess: false, message: left.errorMessage ?? "");
+        }
         emit(CreateOrderErrorState());
       }, (right) {
         emit(CreateOrderSuccessState(orderData: right.data));
@@ -509,61 +469,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
-  _onCheckDeliverableGroceryStore(
-      CheckDeliverableGroceryEvent event, Emitter<RestaurantState> emit) async {
-    try {
-      emit(DeliverableLoaderState());
-      List<Cart> cartList = [];
-      List<Future> futureList = [];
-      for (int i = 0; i < event.cartList.length; i++) {
-        Store? store = event.cartList[i].store;
-        if (store?.isSelected ?? false) {
-          Map<String, dynamic> requestData = {
-            "latitude": event.address?.latitude,
-            "longitude": event.address?.longitude,
-            "storeId": store?.id,
-            "user_street_num": "${event.address?.streetNum}",
-            "user_street_name": "${event.address?.streetName}",
-            "user_city": "${event.address?.city}",
-            "user_state": "${event.address?.state}",
-            "user_country": "${event.address?.country}",
-            "user_zipcode": "${event.address?.zipcode}",
-            "pickup": event.askReceiveOrder?.index == 1,
-          };
-          log("Url : ${ApiUrls.checkDeliverableGroceryStore}");
-          log("Request Data : $requestData");
-
-          futureList.add(
-            ApiServices()
-                .post(ApiUrls.checkDeliverableGroceryStore, requestData)
-                .then(
-              (response) {
-                dynamic data = jsonDecode(response.body);
-                log(response.body.toString());
-                if (data is Map && data["success"] == true) {
-                  cartList.add(event.cartList[i]);
-                } else {
-                  if (data is Map && data["errorMessage"] != null) {
-                    showToast(
-                      message: data["errorMessage"].toString(),
-                      isSuccess: false,
-                    );
-                  }
-                }
-              },
-            ),
-          );
-        }
-      }
-      await Future.wait(futureList);
-      event.callback(cartList);
-    } catch (e) {
-      event.callback([]);
-    } finally {
-      emit(DeliverableSuccessState());
-    }
-  }
-
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT PART END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   onFailError({required String text, required Emitter<RestaurantState> emit}) {
@@ -587,6 +492,64 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       log(e.toString());
     } finally {
       emit(FetchCustomizationSuccessState());
+    }
+  }
+
+  _onProductCustomization(
+      ProductCustomizationEvent event, Emitter<RestaurantState> emit) async {
+    try {
+      emit(FetchCustomizationLoaderState());
+      await _repository.getProductCustomization(event.productId).fold(
+        (left) {
+          showToast(isSuccess: false, message: left.errorMessage ?? "");
+        },
+        (right) {
+          event.callback(right);
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(FetchCustomizationSuccessState());
+    }
+  }
+
+  String? prevName;
+
+  _onGetStoreByName(
+      RestaurantByNameEvent event, Emitter<RestaurantState> emit) async {
+    emit(GetRestaurantListLoadingState());
+    try {
+      prevName = event.name;
+      if (prevName?.trim().isNotEmpty ?? false) {
+        await _repository
+            .getStoreByName(
+          latitude: event.latitude.toString(),
+          longitude: event.longitude.toString(),
+          pickup: event.pickup,
+          name: event.name,
+          cuisine: event.cuisine,
+        )
+            .fold((left) {
+          emit(GetRestaurantListErrorState());
+          onFailError(emit: emit, text: left.errorMessage!);
+        }, (right) async {
+          if (event.name == prevName) {
+            List<RestaurantList> resList = right.data
+                    ?.map((e) => RestaurantList.fromJson(e.toJson()))
+                    .toList() ??
+                [];
+            emit(GetRestaurantListSuccessState(restaurantList: resList));
+            emit(RestaurantVerificationLoader(isLoading: false));
+          }
+        });
+      } else {
+        emit(RestaurantVerificationLoader(isLoading: false));
+        emit(GetRestaurantListErrorState());
+      }
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(GetRestaurantListErrorState());
     }
   }
 }

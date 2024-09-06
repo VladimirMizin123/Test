@@ -173,6 +173,7 @@ class _AllProgramScreenState extends State<AllProgramScreen> {
 }
 */
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -313,14 +314,25 @@ class _AllProgramScreenState extends State<AllProgramScreen> {
                                 ],
                               ),
                               child: ListTile(
-                                leading: Container(
-                                  height: 55.w,
-                                  width: 55.w,
-                                  decoration: const BoxDecoration(
-                                    // color: AppColors.middleGray,
-                                    shape: BoxShape.circle,
+                                leading: CircleAvatar(
+                                  radius: 30.w,
+                                  child: CachedNetworkImage(
+                                    imageUrl: data?.programIcons ?? "",
+                                    fit: BoxFit.fill,
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.w),
+                                      child: const Icon(
+                                        Icons.error,
+                                        color: AppColors.whiteColor,
+                                      ),
+                                    ),
                                   ),
-                                  child: Image.asset(AssetsUtils.user),
                                 ),
                                 title: Text(
                                   data?.name ?? '',

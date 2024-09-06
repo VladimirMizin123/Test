@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
@@ -19,13 +20,15 @@ import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info
 import 'package:gymeats_mobile/screen/grocery/modal/remove_grocery_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/categorie_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
 
 import '../../restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
-    as userAddress;
+    as user_address;
 
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
@@ -108,11 +111,11 @@ class GroceryRepository {
       {required String latitude,
       required String longitude,
       required List<GrocerySearchModel> grocerySearchModal,
-      required userAddress.UserAddress? getUserAddress,
+      required user_address.UserAddress? getUserAddress,
       AskReceiveOrder? askReceiveOrder}) async {
     String apiURL = ApiUrls.productGroceryMultipleSearch;
 
-    userAddress.UserAddress? address = getUserAddress;
+    user_address.UserAddress? address = getUserAddress;
 
     if (address == null) {
       log("Address null waiting for api call........");
@@ -177,6 +180,109 @@ class GroceryRepository {
     }
   }
 
+  Future<Either<ErrorModel, NearByStoreModel>> nearByStoreSearch(
+      {required user_address.UserAddress? getUserAddress,
+      AskReceiveOrder? askReceiveOrder}) async {
+    String apiURL = ApiUrls.getStoreNearBy;
+    user_address.UserAddress? address = getUserAddress;
+    (double?, double?) pos = await Constant.i.position;
+
+    if (address == null && pos.$1 == null && pos.$2 == null) {
+      Either<ErrorModel, GetUserAddressModel> res =
+          await GetAddressRepository().getUserAddressData();
+      if (res.isRight) {
+        res.right.data?.forEach((element) async {
+          if (element.isPrimary == true) {
+            address = element;
+          }
+        });
+        if ((res.right.data?.isNotEmpty ?? false) &&
+            !res.right.data!.any((element) => (element.isPrimary ?? false))) {
+          address = res.right.data?.first;
+        }
+      }
+    }
+
+    Map<String, dynamic> data = {
+      "latitude": pos.$1?.toString() ?? address?.latitude?.toStringAsFixed(6),
+      "longitude": pos.$2?.toString() ?? address?.longitude?.toStringAsFixed(6),
+      "pickup": askReceiveOrder?.index == 1,
+      "max_Miles": PreferenceUtils.getGroceryRadius(),
+    };
+
+    final response = await apiServices.post(apiURL, data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      NearByStoreModel searchModel =
+          NearByStoreModel.fromJson(jsonDecode(response.body));
+      for (int i = 0; i < (searchModel.data?.length ?? 0); i++) {
+        if (searchModel.data?[i].logoPhotos?.isNotEmpty ?? false) {
+          PreferenceUtils.setString("${searchModel.data?[i].id}_img",
+              searchModel.data?[i].logoPhotos?[0] ?? "");
+        }
+      }
+
+      return Right(searchModel);
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, NearByStoreModel>> getStoreByName({
+    required String latitude,
+    required String longitude,
+    required user_address.UserAddress? getUserAddress,
+    AskReceiveOrder? askReceiveOrder,
+    String? name,
+  }) async {
+    String apiURL = "${ApiUrls.getStoreByName}/$name";
+    user_address.UserAddress? address = getUserAddress;
+
+    if (address == null) {
+      await GetAddressRepository().getUserAddressData().fold((left) => null,
+          (right) {
+        right.data?.forEach((element) async {
+          if (element.isPrimary == true) {
+            address = element;
+          }
+        });
+        if ((right.data?.isNotEmpty ?? false) &&
+            !right.data!.any((element) => (element.isPrimary ?? false))) {
+          address = right.data?.first;
+        }
+      });
+    }
+
+    (double?, double?) pos = await Constant.i.position;
+
+    Map<String, dynamic> data = {
+      "latitude": pos.$1?.toString() ?? address?.latitude?.toStringAsFixed(6),
+      "longitude": pos.$2?.toString() ?? address?.longitude?.toStringAsFixed(6),
+      "pickup": askReceiveOrder?.index == 1,
+      "StoreType": 'grocery',
+      "maximum_miles": PreferenceUtils.getGroceryRadius(),
+    };
+
+    final response = await apiServices.get(apiURL, queryParams: data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      NearByStoreModel searchModel = NearByStoreModel.fromJson(
+          jsonDecode(response.body)['data'] == null
+              ? {}
+              : jsonDecode(response.body));
+      for (int i = 0; i < (searchModel.data?.length ?? 0); i++) {
+        if (searchModel.data?[i].logoPhotos?.isNotEmpty ?? false) {
+          PreferenceUtils.setString("${searchModel.data?[i].id}_img",
+              searchModel.data?[i].logoPhotos?[0] ?? "");
+        }
+      }
+
+      return Right(searchModel);
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   Future<Either<ErrorModel, NutritionixGetNxMealInfoByNameModel>>
       groceryDetailsMealInfo({
     required String productName,
@@ -219,10 +325,14 @@ class GroceryRepository {
     }
     /*--------------Hive box Nx Data--------------------*/
 
-    String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
+    String apiURL =
+        '${ApiUrls.getNxMealInfoByName}?foodName=${Uri.encodeComponent(productName)}';
+
+    log("Api : $apiURL");
 
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);
+    log("Response : ${response.body}");
     // log(response.body, name: 'API RESPONSE :');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -235,6 +345,8 @@ class GroceryRepository {
       if (json["success"] == false) {
         String apiNutritionixURL =
             '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$productName';
+
+        log("Second Api Call :$apiNutritionixURL");
         final responseNutritionix =
             await apiServices.getNutritionix(apiNutritionixURL);
         Map<String, dynamic> jsonNutritionix =
@@ -558,6 +670,58 @@ class GroceryRepository {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 400) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, CategorieModel>> getMenuList(
+      user_address.UserAddress? address,
+      int? askReceiveOrder,
+      String? storeId,
+      String? subCategorieId) async {
+    (double?, double?) pos = await Constant.i.position;
+
+    Map<String, dynamic> reqData = {
+      "latitude": pos.$1 ?? address?.latitude,
+      "longitude": pos.$2 ?? address?.longitude,
+      "pickup": askReceiveOrder != 0,
+      "storeId": storeId,
+      "sub_categorieId": subCategorieId,
+    };
+
+    final response = await apiServices.post(ApiUrls.getMenuList, reqData);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, CategorieModel>> getStoreCategorieList(
+    user_address.UserAddress? address,
+    int? askReceiveOrder,
+    String? storeId, {
+    (double?, double?)? position,
+  }) async {
+    (double?, double?) pos = position ?? await Constant.i.position;
+    Map<String, dynamic> reqData = {
+      "storeId": storeId,
+      "latitude": pos.$1 ?? address?.latitude,
+      "longitude": pos.$2 ?? address?.longitude,
+      "pickup": askReceiveOrder != 0,
+    };
+
+    final response =
+        await apiServices.post(ApiUrls.getStoreCategorieList, reqData);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

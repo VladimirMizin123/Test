@@ -1,9 +1,9 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/sign_up/sign_up_event.dart';
 import 'package:gymeats_mobile/bloc/sign_up/sign_up_state.dart';
-import 'package:gymeats_mobile/constant/string_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
@@ -19,12 +19,16 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
     emit(LoggingState());
 
     try {
-      await _repository.checkIsEmailExist(event.email).fold((left) {
+      Map<String, String> req = {
+        "email": event.email,
+        "password": event.password,
+        "confirmPassword": event.confirmPassword,
+      };
+      await _repository.registerUser(req).fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) async {
-        if (right.data?.isEmailExist == true) {
-          showToast(
-              isSuccess: false, message: StringUtils.alreadyRegisterEmail);
+        if (right.data == null) {
+          showToast(isSuccess: false, message: right.message);
           emit(IsEmailErrorState());
         } else {
           UserSignUpDataModel userData = UserSignUpDataModel(
@@ -32,10 +36,12 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
             lastName: event.lName,
             email: event.email,
             password: event.password,
-            userName: event.email,
+            userName: event.userName,
             confirmPassword: event.confirmPassword,
             phoneNumber: event.phoneNumber,
+            userId: right.data?.userId,
           );
+          await PreferenceUtils.setString(prefUserEmail, event.email.trim());
           emit(InitialState());
           await Get.toNamed('/GoogleMapScreen',
               arguments: {"string": 'isFromRegister', "userData": userData});

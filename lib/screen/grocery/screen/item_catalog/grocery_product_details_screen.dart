@@ -23,7 +23,9 @@ class GroceryProductDetails extends StatefulWidget {
 
 class _GroceryProductDetailsState extends State<GroceryProductDetails> {
   final GroceryRepository _repository = GroceryRepository();
-  late NutritionixGetNxMealInfoByNameModelData nutritionixGetNxMealInfoByNameModelData = NutritionixGetNxMealInfoByNameModelData();
+  late NutritionixGetNxMealInfoByNameModelData
+      nutritionixGetNxMealInfoByNameModelData =
+      NutritionixGetNxMealInfoByNameModelData();
   bool isLoading = false;
 
   @override
@@ -37,7 +39,9 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
       isLoading = true;
     });
     try {
-      await _repository.groceryDetailsMealInfo(productName: widget.product.itemName ?? '').fold((left) {
+      await _repository
+          .groceryDetailsMealInfo(productName: widget.product.itemName ?? '')
+          .fold((left) {
         setState(() {
           isLoading = false;
         });
@@ -83,8 +87,15 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const BackButtonWidget(),
-                        Text('Item Details', style: FontUtils.h20(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold)),
-                        Opacity(opacity: 0, child: Text('Edit', style: FontUtils.h16(fontColor: AppColors.oxFF010101))),
+                        Text('Item Details',
+                            style: FontUtils.h20(
+                                fontColor: AppColors.oxFF010101,
+                                fontWeight: FWT.semiBold)),
+                        Opacity(
+                            opacity: 0,
+                            child: Text('Edit',
+                                style: FontUtils.h16(
+                                    fontColor: AppColors.oxFF010101))),
                       ],
                     ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Expanded(
@@ -104,9 +115,13 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                             const SizedBox(height: 20),
                             Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text('General Information', style: FontUtils.h22(fontColor: AppColors.oxFF010101, fontWeight: FWT.semiBold))),
+                                child: Text('General Information',
+                                    style: FontUtils.h22(
+                                        fontColor: AppColors.oxFF010101,
+                                        fontWeight: FWT.semiBold))),
                             const SizedBox(height: 10),
-                            myGeneralInformationWidget(widget.product.itemName ?? '', ""),
+                            myGeneralInformationWidget(
+                                widget.product.itemName ?? '', ""),
                             /* myGeneralInformationWidget(
                           'Manufacturer', 'Almond Breeze'),
                       myGeneralInformationWidget('Country', 'N/A'),
@@ -130,68 +145,110 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Saturated Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Saturated Fat',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Cholesterol', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Cholesterol',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Sodium', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Sodium',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Dietary Fiber', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Dietary Fiber',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Sugar', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Sugar',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Potassium', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                Text('${(nutritionixGetNxMealInfoByNameModelData?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
-                                    style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+                                Text('Potassium',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
+                                Text(
+                                    '${(nutritionixGetNxMealInfoByNameModelData.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.medium)),
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Divider(color: AppColors.disabledColor, height: 2.h),
+                            Divider(
+                                color: AppColors.disabledColor, height: 2.h),
 
                             // Row(
                             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -317,14 +374,22 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                               ? GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      widget.product.isAddedToShoppingList = true;
+                                      widget.product.isAddedToShoppingList =
+                                          true;
                                     });
                                   },
                                   child: Container(
                                     height: screenSize.height * 0.065,
                                     width: screenSize.height * 0.065,
-                                    decoration: BoxDecoration(border: Border.all(color: AppColors.green), borderRadius: BorderRadius.circular(10)),
-                                    child: Center(child: SvgPicture.asset(AssetsUtils.icShoppingIcon, color: AppColors.green)),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: AppColors.green),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Center(
+                                        child: SvgPicture.asset(
+                                            AssetsUtils.icShoppingIcon,
+                                            color: AppColors.green)),
                                   ),
                                 )
                               : Row(
@@ -342,23 +407,40 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                                               height: screenSize.height * 0.065,
                                               width: screenSize.height * 0.065,
                                               decoration: BoxDecoration(
-                                                  border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
-                                              child: Center(child: SvgPicture.asset(AssetsUtils.icDelete, color: AppColors.green)),
+                                                  border: Border.all(
+                                                      color: AppColors.mint,
+                                                      width: 2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Center(
+                                                  child: SvgPicture.asset(
+                                                      AssetsUtils.icDelete,
+                                                      color: AppColors.green)),
                                             ),
                                           )
                                         : GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                widget.product.cartItemCount = widget.product.cartItemCount - 1;
+                                                widget.product.cartItemCount =
+                                                    widget.product
+                                                            .cartItemCount -
+                                                        1;
                                               });
                                             },
                                             child: Container(
                                               height: screenSize.height * 0.065,
                                               width: screenSize.height * 0.065,
                                               decoration: BoxDecoration(
-                                                  border: Border.all(color: AppColors.mint, width: 2), borderRadius: BorderRadius.circular(10)),
+                                                  border: Border.all(
+                                                      color: AppColors.mint,
+                                                      width: 2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
                                               child: const Center(
-                                                child: Icon(Icons.remove, size: 27),
+                                                child: Icon(Icons.remove,
+                                                    size: 27),
                                               ),
                                             ),
                                           ),
@@ -366,29 +448,39 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
                                     Container(
                                       height: screenSize.height * 0.065,
                                       width: screenSize.height * 0.065,
-                                      decoration:
-                                          BoxDecoration(border: Border.all(color: AppColors.disable), borderRadius: BorderRadius.circular(10)),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: AppColors.disable),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
                                       child: Center(
                                           child: Text(
                                         widget.product.cartItemCount.toString(),
-                                        style: FontUtils.h18(fontWeight: FWT.semiBold, fontColor: AppColors.darkGray),
+                                        style: FontUtils.h18(
+                                            fontWeight: FWT.semiBold,
+                                            fontColor: AppColors.darkGray),
                                       )),
                                     ),
                                     SizedBox(width: 8.w),
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          widget.product.cartItemCount = widget.product.cartItemCount + 1;
+                                          widget.product.cartItemCount =
+                                              widget.product.cartItemCount + 1;
                                         });
                                       },
                                       child: Container(
                                         height: screenSize.height * 0.065,
                                         width: screenSize.height * 0.065,
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                           color: AppColors.mint,
                                         ),
-                                        child: const Center(child: Icon(Icons.add, color: AppColors.green, size: 27)),
+                                        child: const Center(
+                                            child: Icon(Icons.add,
+                                                color: AppColors.green,
+                                                size: 27)),
                                       ),
                                     ),
                                   ],
@@ -410,11 +502,14 @@ class _GroceryProductDetailsState extends State<GroceryProductDetails> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
+            Text(title,
+                style: FontUtils.h16(
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
             Expanded(
               child: Text(
                 value,
-                style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium),
+                style: FontUtils.h16(
+                    fontColor: AppColors.darkGray, fontWeight: FWT.medium),
                 textAlign: TextAlign.end,
               ),
             ),

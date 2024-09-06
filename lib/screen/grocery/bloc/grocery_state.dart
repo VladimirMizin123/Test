@@ -7,8 +7,11 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart'
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/categorie_model.dart';
 
 import '../../restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as st;
 
 abstract class GroceryState {}
 
@@ -98,10 +101,38 @@ class GrocerySearchLoadingState extends GroceryState {
   GrocerySearchLoadingState();
 }
 
+class VerifyLoader extends GroceryState {
+  final String? id;
+  VerifyLoader({required this.id});
+}
+
 class GrocerySearchSuccessState extends GroceryState {
   final List<Cart>? groceryMultiSearchProductList;
 
   GrocerySearchSuccessState({required this.groceryMultiSearchProductList});
+}
+
+class NearByStoreSuccessState extends GroceryState {
+  final List<st.Store>? storeList;
+
+  NearByStoreSuccessState({required this.storeList});
+}
+
+class NearByStoreLoaderState extends GroceryState {
+  final bool isLoading;
+
+  NearByStoreLoaderState({required this.isLoading});
+}
+
+class NearByStoreErrorState extends GroceryState {
+  final String message;
+  NearByStoreErrorState({required this.message});
+}
+
+class GroceryPageLoaderState extends GroceryState {
+  final bool isLoading;
+
+  GroceryPageLoaderState({required this.isLoading});
 }
 
 class GrocerySearchErrorState extends GroceryState {
@@ -220,7 +251,11 @@ class GetUserAddressErrorState extends GroceryState {}
 
 /// Create Order State
 
-class CreateOrderLoadingState extends GroceryState {}
+class CreateOrderLoadingState extends GroceryState {
+  final bool isLoading;
+
+  CreateOrderLoadingState({this.isLoading = true});
+}
 
 /// Multiple Order Create State
 class CreateMultiOrderSuccessState extends GroceryState {}
@@ -268,3 +303,27 @@ class GetDeliveryStatusSuccessState extends GroceryState {
 }
 
 class GetDeliveryStatusErrorState extends GroceryState {}
+
+class CategorieLoaderState extends GroceryState {
+  final bool loader;
+
+  CategorieLoaderState({required this.loader});
+}
+
+class SubCategorieLoaderState extends GroceryState {
+  final bool loader;
+
+  SubCategorieLoaderState({required this.loader});
+}
+
+class CategorieSuccessState extends GroceryState {
+  final CategorieModel categoriesList;
+  CategorieSuccessState({required this.categoriesList});
+}
+
+class SubCategorySuccessState extends GroceryState {
+  final List<Category> subcategoryList;
+  final String? subcategoryId;
+  SubCategorySuccessState(
+      {required this.subcategoryList, required this.subcategoryId});
+}

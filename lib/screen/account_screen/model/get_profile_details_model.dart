@@ -69,7 +69,11 @@ class ProfileDetails {
         firstName: json["firstName"] ?? "",
         lastName: json["lastName"] ?? "",
         phoneNumber: json["phoneNumber"] ?? "",
-        goal: json["goal"],
+        goal: json["goal"] is List
+            ? (json["goal"] as List).isNotEmpty
+                ? getData((json["goal"] as List).first)
+                : 0
+            : json["goal"],
         id: json["id"] ?? '',
         userId: json["userId"] ?? '',
         weightInLb: json["weightInLb"].round(),
@@ -92,4 +96,22 @@ class ProfileDetails {
         "birthDate": birthDate,
         "gender": gender,
       };
+
+  static int? getData(String data) {
+    if (int.tryParse(data) != null) {
+      return int.parse(data);
+    }
+    switch (data) {
+      case "LoseWeight":
+        return 0;
+      case "GainLeanMuscle":
+        return 1;
+      case "ToneUp":
+        return 2;
+      case "MaintainHealthyDiet":
+        return 3;
+      default:
+        return null;
+    }
+  }
 }

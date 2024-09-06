@@ -90,16 +90,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                             });
                                           },
                                           child: isOb
-                                              ? const Icon(Icons.visibility_off)
+                                              ? const Icon(
+                                                  Icons.visibility_off,
+                                                  size: 25,
+                                                  color: Color(0xFF004C63),
+                                                )
                                               : const Icon(
-                                                  Icons.remove_red_eye)),
+                                                  size: 25,
+                                                  Icons.remove_red_eye,
+                                                  color: Color(0xFF004C63),
+                                                )),
                                       width: double.infinity,
                                       hintText: "Old Password",
                                       obscureText: isOb,
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),
-                                      style: const TextStyle(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(
+                                              color: const Color(0xFF5F5F5F),
+                                              fontSize: 16.sp),
                                       vertical: 15.h,
                                       horizontal: 20.w),
                                   SizedBox(
@@ -133,9 +145,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                             });
                                           },
                                           child: newPassword
-                                              ? const Icon(Icons.visibility_off)
-                                              : const Icon(
-                                                  Icons.remove_red_eye)),
+                                              ? const Icon(Icons.visibility_off,
+                                                  size: 25,
+                                                  color: Color(0xFF004C63))
+                                              : const Icon(Icons.remove_red_eye,
+                                                  size: 25,
+                                                  color: Color(0xFF004C63))),
                                       obscureText: newPassword,
                                       textEditingController:
                                           newPasswordController,
@@ -145,9 +160,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),
-                                      style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w300),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(
+                                              color: const Color(0xFF5F5F5F),
+                                              fontSize: 16.sp),
                                       vertical: 15.h,
                                       horizontal: 18.w),
                                   SizedBox(
@@ -190,16 +208,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                             });
                                           },
                                           child: conPassword
-                                              ? const Icon(Icons.visibility_off)
-                                              : const Icon(
-                                                  Icons.remove_red_eye)),
+                                              ? const Icon(Icons.visibility_off,
+                                                  size: 25,
+                                                  color: Color(0xFF004C63))
+                                              : const Icon(Icons.remove_red_eye,
+                                                  size: 25,
+                                                  color: Color(0xFF004C63))),
                                       hintStyle: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w300),
                                       vertical: 15.h,
-                                      style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w300),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(
+                                              color: const Color(0xFF5F5F5F),
+                                              fontSize: 16.sp),
                                       horizontal: 18.w),
                                 ],
                               ).paddingOnly(left: 12.w, right: 12.w, top: 20.h),

@@ -57,7 +57,7 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   _onFetchMealPlan(
       JournalPlanFetchEvent event, Emitter<JournalMealPlanState> emit) async {
-    emit(JournalFetchMealPlanLoadingState());
+    emit(JournalFetchMealPlanLoadingState(value: true));
 
     try {
       await _repository.fetchMealPlan().fold((left) {
@@ -70,6 +70,8 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(JournalFetchMealPlanErrorState());
+    } finally {
+      emit(JournalFetchMealPlanLoadingState(value: false));
     }
   }
 
@@ -135,14 +137,15 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
     try {
       await _repository
-          .fetchSwapMealItem(recipeID: event.recipeID!, serving: event.serving!)
+          .fetchSwapMealItem(
+              recipeID: event.recipeID!, noOfServing: event.noOfServing!)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
         emit(JournalFetchSwapMealSuccessState(
-            similarMealData: right.data!.recipeSwapOptions!.similar));
+            similarMealData: right.data.similarCaloriesRecipes));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

@@ -1,10 +1,14 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_event.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_state.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/repository/add_address.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -40,32 +44,27 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         },
         (right) {
           // showToast(isSuccess: true, message: right.message!);
+          cartBloc.add(RemoveCart());
+          Constant.i.removeStore();
           emit(AddAddressSuccessfulState());
-
           if (event.isFrom == 'isFromRestaurant' ||
-              event.isFrom == 'isFromCheckout') {
-            Get.offAll(
-              () => const AppManagerScreen(
-                selectIndex: 3,
-              ),
-            );
+              event.isFrom == 'isFromCheckout' ||
+              event.isFrom == 'isFromGrocery') {
+            PreferenceUtils.setManualLoation(true);
+            if (event.isFrom == "isFromGrocery") {
+              Get.offAll(() => const AppManagerScreen(selectIndex: 1));
+            } else {
+              Get.offAll(() => const AppManagerScreen(selectIndex: 3));
+            }
           }
           if (event.isFrom == 'isFromDashboard') {
-            Get.offAll(
-              () => const AppManagerScreen(
-                selectIndex: 2,
-              ),
-            );
+            Get.offAll(() => const AppManagerScreen(selectIndex: 2));
           }
           if (event.isFrom == 'isFromProfile') {
             Get.back(result: true);
           }
           if (event.isFrom == 'isFromGroceryCheckout') {
-            Get.offAll(
-              () => const AppManagerScreen(
-                selectIndex: 1,
-              ),
-            );
+            Get.offAll(() => const AppManagerScreen(selectIndex: 1));
           }
         },
       );
@@ -91,7 +90,6 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         zipcode: event.zipcode,
         isPrimary: event.isPrimary,
         addressId: event.addressId,
-        floor: event.floor,
       )
           .fold(
         (left) {

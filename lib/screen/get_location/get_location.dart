@@ -10,22 +10,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/find_address_model.dart';
 import 'package:gymeats_mobile/models/find_latlng_model.dart';
 import 'package:gymeats_mobile/models/search_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/address_confirmation.dart';
 import 'package:gymeats_mobile/screen/get_location/search_location.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../restaurants/model/get_user_address_model.dart';
 
 class GetUserAddress extends StatefulWidget {
@@ -35,10 +40,11 @@ class GetUserAddress extends StatefulWidget {
   State<GetUserAddress> createState() => _GetUserAddressState();
 }
 
-class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObserver {
+class _GetUserAddressState extends State<GetUserAddress>
+    with WidgetsBindingObserver {
   final routeName = '/GoogleMapScreen';
 
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   AddAddressBloc bloc = AddAddressBloc();
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -51,44 +57,56 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
   );
   String? selectedLocationValue;
   List<Marker> markers = [];
+  int cartCount = 0;
 
   Future getCurrentLocation() async {
-    bool serviceEnabled = await _handleLocationPermission();
-    if (!serviceEnabled) return;
+    try {
+      bool serviceEnabled = await _handleLocationPermission();
+      if (!serviceEnabled) return;
 
-    BitmapDescriptor? customIcon;
+      BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    customIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
-    Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+      customIcon = BitmapDescriptor.fromBytes(
+          await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
+      Position position =
+          await GeolocatorPlatform.instance.getCurrentPosition();
 
-    selectedLatLng = LatLng(position.latitude, position.longitude);
+      selectedLatLng = LatLng(position.latitude, position.longitude);
 
-    currentPosition = CameraPosition(
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 14.4746,
-    );
+      currentPosition = CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 14.4746,
+      );
 
-    markers = [
-      Marker(
-        markerId: const MarkerId('0'),
-        position: LatLng(position.latitude, position.longitude),
-        icon: customIcon,
-      )
-    ];
+      markers = [
+        Marker(
+          markerId: const MarkerId('0'),
+          position: LatLng(position.latitude, position.longitude),
+          icon: customIcon,
+        )
+      ];
 
-    setState(() {
-      mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    });
-    return true;
+      setState(() {
+        mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      });
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
   /// Marker Icon for location ---------------------------------------------------------
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await s.rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   /// Permission Handler for location ---------------------------------------------------------
@@ -103,18 +121,22 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.denied) {
-            Navigator.pop(context);
-            showToast(message: 'Location permissions are denied', isSuccess: false);
-            return false;
+          if (permission == LocationPermission.denied ||
+              permission == LocationPermission.deniedForever) {
+            showToast(
+                message: 'Location permissions are denied', isSuccess: false);
+            return await appSettingDialogBox();
           }
         }
         if (permission == LocationPermission.deniedForever) {
           permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.deniedForever) {
-            Get.back();
-            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
-            return false;
+          if (permission == LocationPermission.deniedForever ||
+              permission == LocationPermission.denied) {
+            showToast(
+                message:
+                    'Location permissions are permanently denied, we cannot request permissions.',
+                isSuccess: false);
+            return await appSettingDialogBox();
           }
         }
       });
@@ -123,10 +145,14 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          Navigator.pop(context);
-          showToast(message: 'Location permissions are denied', isSuccess: false);
-          return false;
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
+          showToast(
+              message: permission == LocationPermission.deniedForever
+                  ? 'Location permissions are permanently denied, we cannot request permissions.'
+                  : 'Location permissions are denied',
+              isSuccess: false);
+          return await appSettingDialogBox();
         }
       }
       if (permission == LocationPermission.deniedForever) {
@@ -134,25 +160,15 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.deniedForever) {
-          if (Get.arguments['string'] == 'isFromDashboard') {
-            Get.back();
-            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
-          } else {
-            Get.offNamed('/PremiumScreen');
-            showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
-          }
-          showToast(message: 'Location permissions are permanently denied, we cannot request permissions.', isSuccess: false);
+          showToast(
+              message:
+                  'Location permissions are permanently denied, we cannot request permissions.',
+              isSuccess: false);
           return false;
         }
         if (permission == LocationPermission.denied) {
-          if (Get.arguments['string'] == 'isFromDashboard') {
-            Get.back();
-            showToast(message: 'Location permissions are denied', isSuccess: false);
-          } else {
-            Get.offNamed('/PremiumScreen');
-            showToast(message: 'Location permissions are denied', isSuccess: false);
-          }
-          showToast(message: 'Location permissions are denied', isSuccess: false);
+          showToast(
+              message: 'Location permissions are denied', isSuccess: false);
           return false;
         }
       }
@@ -161,82 +177,192 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
     return true;
   }
 
-  appSettingDialogBox() async {
-    bool value = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return SimpleDialog(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Text(
-                'Location permissions are permanently denied, Please Enable Location Permission.',
-                style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.w500),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
-              child: Row(
+  Future<bool> isPermissionGranted() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever ||
+        permission == LocationPermission.denied) {
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> appSettingDialogBox() async {
+    bool fromRegister = argumentsValue['string'] == 'isFromRegister';
+    bool value = fromRegister
+        // ignore: use_build_context_synchronously
+        ? await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return SimpleDialog(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        Get.back(result: false);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        margin: EdgeInsets.only(right: 10.w),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.8),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(5),
-                          ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Close',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Text(
+                      'The application needs your location to show nearby stores and restaurants. Please enable location services on your device or enter your address manually',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        var permissionValue = await Geolocator.openAppSettings().then((value) async {});
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        margin: EdgeInsets.only(right: 10.w),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primaryBlue,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              LocationPermission permission =
+                                  await Geolocator.checkPermission();
+                              if (permission == LocationPermission.whileInUse ||
+                                  permission == LocationPermission.always) {
+                                Get.back(result: true);
+                              } else {
+                                Get.back(result: false);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              margin: EdgeInsets.only(right: 10.w),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.8),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Manually',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                        child: const Center(
-                          child: Text(
-                            'Setting',
-                            style: TextStyle(color: Colors.white),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              LocationPermission permission =
+                                  await Geolocator.checkPermission();
+                              if (permission == LocationPermission.whileInUse ||
+                                  permission == LocationPermission.always) {
+                                Get.back(result: true);
+                              } else {
+                                await Geolocator.openAppSettings();
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              margin: EdgeInsets.only(right: 10.w),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryBlue,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Allow',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
+                  )
                 ],
-              ),
-            )
-          ],
-        );
-      },
-    );
+              );
+            },
+          )
+        // ignore: use_build_context_synchronously
+        : await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return SimpleDialog(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Text(
+                      'Location permissions are permanently denied, Please Enable Location Permission.',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.back(result: false);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              margin: EdgeInsets.only(right: 10.w),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.8),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Close',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              if (!(await isPermissionGranted())) {
+                                await openAppSettings();
+                              } else {
+                                Get.back(result: true);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              margin: EdgeInsets.only(right: 10.w),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryBlue,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Setting',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              );
+            },
+          );
 
     return value;
   }
 
-  final GoogleMapSearchRepository _googleMapSearchRepository = GoogleMapSearchRepository();
+  final GoogleMapSearchRepository _googleMapSearchRepository =
+      GoogleMapSearchRepository();
   List<Prediction> searchList = [];
   String streetNum = '';
   String streetName = '';
@@ -253,17 +379,24 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
     country = '';
     zipcode = '';
 
-    await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold((left) {
-      showToast(isSuccess: false, message: left.errorMessage!);
+    await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold(
+        (left) {
+      showToast(isSuccess: false, message: left.errorMessage ?? "");
     }, (right) {
       // showToast(isSuccess: true, message: right.message!);
-      FindAddressResponseModel(plusCode: right.plusCode, status: right.status, results: right.results);
+      FindAddressResponseModel(
+          plusCode: right.plusCode,
+          status: right.status,
+          results: right.results);
 
       if (right.results?.isNotEmpty ?? false) {
-        right.results!.first.addressComponents?.forEach((element) {
+        right.results?.first.addressComponents?.forEach((element) {
           ///streetNum
 
-          List<String> streetNumList = element.types?.where((element1) => element1 == 'premise').toList() ?? [];
+          List<String> streetNumList = element.types
+                  ?.where((element1) => element1 == 'premise')
+                  .toList() ??
+              [];
 
           if (streetNumList.isNotEmpty) {
             streetNum = element.longName ?? "";
@@ -271,7 +404,10 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
           ///streetName
 
-          List<String> streetNameList = element.types?.where((element1) => element1 == 'sublocality_level_2').toList() ?? [];
+          List<String> streetNameList = element.types
+                  ?.where((element1) => element1 == 'sublocality_level_2')
+                  .toList() ??
+              [];
 
           if (streetNameList.isNotEmpty) {
             streetName = element.longName ?? "";
@@ -279,7 +415,10 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
           ///city
 
-          List<String> cityList = element.types?.where((element1) => element1 == 'locality').toList() ?? [];
+          List<String> cityList = element.types
+                  ?.where((element1) => element1 == 'locality')
+                  .toList() ??
+              [];
 
           if (cityList.isNotEmpty) {
             city = element.longName ?? "";
@@ -287,7 +426,11 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
           ///State
 
-          List<String> stateList = element.types?.where((element1) => element1 == 'administrative_area_level_1').toList() ?? [];
+          List<String> stateList = element.types
+                  ?.where(
+                      (element1) => element1 == 'administrative_area_level_1')
+                  .toList() ??
+              [];
 
           if (stateList.isNotEmpty) {
             stateName = element.longName ?? "";
@@ -295,14 +438,20 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
           ///country
 
-          List<String> countryList = element.types?.where((element1) => element1 == 'country').toList() ?? [];
+          List<String> countryList = element.types
+                  ?.where((element1) => element1 == 'country')
+                  .toList() ??
+              [];
 
           if (countryList.isNotEmpty) {
             country = element.longName ?? "";
           }
 
           ///ZIP CODE
-          List<String> pinCodeList = element.types?.where((element1) => element1 == 'postal_code').toList() ?? [];
+          List<String> pinCodeList = element.types
+                  ?.where((element1) => element1 == 'postal_code')
+                  .toList() ??
+              [];
 
           if (pinCodeList.isNotEmpty) {
             zipcode = element.longName ?? "";
@@ -310,7 +459,9 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
         });
       }
 
-      searchTextController.text = right.results?.first.formattedAddress ?? right.plusCode?.compoundCode ?? "";
+      searchTextController.text = right.results?.first.formattedAddress ??
+          right.plusCode?.compoundCode ??
+          "";
       setState(() {});
     });
   }
@@ -320,9 +471,13 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
       showToast(isSuccess: false, message: left.errorMessage!);
     }, (right) async {
       // showToast(isSuccess: true, message: right.message!);
-      FindLatLngResponseModel(result: right.result, status: right.status, htmlAttributions: right.htmlAttributions);
+      FindLatLngResponseModel(
+          result: right.result,
+          status: right.status,
+          htmlAttributions: right.htmlAttributions);
 
-      selectedLatLng = LatLng(right.result!.geometry!.location!.lat!, right.result!.geometry!.location!.lng!);
+      selectedLatLng = LatLng(right.result!.geometry!.location!.lat!,
+          right.result!.geometry!.location!.lng!);
 
       BitmapDescriptor? customIcon;
 
@@ -345,10 +500,15 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
         markers.removeLast();
       }
       markers.add(
-        Marker(markerId: const MarkerId('1'), position: LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude), icon: customIcon!),
+        Marker(
+            markerId: const MarkerId('1'),
+            position:
+                LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude),
+            icon: customIcon!),
       );
 
-      mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      mapController
+          ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
       searchList.clear();
       setState(() {});
     });
@@ -366,6 +526,12 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (argumentsValue['string'] != 'isFromRegister') {
         addressBloc.add(GetUserAddressEvent());
+        cartBloc.add(GetCartEvent());
+      }
+    });
+    cartBloc.stream.listen((state) {
+      if (state is RestaurantCartState) {
+        cartCount = state.shoppingList.length;
       }
     });
   }
@@ -389,7 +555,9 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
               children: [
                 GoogleMap(
                   markers: Set<Marker>.of(markers),
-                  onMapCreated: _onMapCreated,
+                  onMapCreated: (controller) {
+                    _onMapCreated(controller);
+                  },
                   initialCameraPosition: currentPosition,
                   myLocationButtonEnabled: true,
                   zoomControlsEnabled: false,
@@ -412,12 +580,14 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                       ),
                     );
 
-                    selectedLatLng = LatLng(argument.latitude, argument.longitude);
+                    selectedLatLng =
+                        LatLng(argument.latitude, argument.longitude);
                     currentPosition = CameraPosition(
                       target: LatLng(argument.latitude, argument.longitude),
                       zoom: 14.4746,
                     );
-                    mapController.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+                    mapController?.animateCamera(
+                        CameraUpdate.newCameraPosition(currentPosition));
 
                     findAddressURL(
                       lat: argument.latitude.toString(),
@@ -427,7 +597,8 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                     setState(() {});
                   },
                 ),
-                Positioned(top: 40.h, left: 10.w, child: const BackButtonWidget())
+                Positioned(
+                    top: 40.h, left: 10.w, child: const BackButtonWidget())
               ],
             ),
           ),
@@ -471,7 +642,11 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
-                          BoxShadow(color: const Color(0xff004C63).withOpacity(0.08), offset: const Offset(0, 0), spreadRadius: 0, blurRadius: 16)
+                          BoxShadow(
+                              color: const Color(0xff004C63).withOpacity(0.08),
+                              offset: const Offset(0, 0),
+                              spreadRadius: 0,
+                              blurRadius: 16)
                         ],
                       ),
                       child: Row(
@@ -537,6 +712,10 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                     child: BlocConsumer(
                       bloc: addressBloc,
                       builder: (context, state) {
+                        bool showManual =
+                            argumentsValue['string'] == 'isFromRestaurant' ||
+                                argumentsValue['string'] == 'isFromCheckout' ||
+                                argumentsValue['string'] == 'isFromGrocery';
                         return state is GetUserAddressLoadingState
                             ? const SizedBox()
                             : ListView.separated(
@@ -547,25 +726,62 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                                       ? Center(
                                           child: Transform.scale(
                                             scale: 0.5,
-                                            child: const CircularProgressIndicator(),
+                                            child:
+                                                const CircularProgressIndicator(),
                                           ),
                                         )
                                       : GestureDetector(
-                                          onTap: () {
-                                            if (userAddress![index].isPrimary == false) {
+                                          onTap: () async {
+                                            if (cartCount != 0) {
+                                              dynamic result = await Constant.i
+                                                  .showAlertDialog(
+                                                context: context,
+                                                title: StringUtils
+                                                    .changingAddressWillClear,
+                                                desc: StringUtils
+                                                    .youAlreadyHaveAnotherAddressInYourCart,
+                                                cancelTask:
+                                                    StringUtils.dontChange,
+                                                confirmTask: StringUtils.change,
+                                              );
+                                              if (result != true) {
+                                                return;
+                                              }
+                                              cartBloc.add(RemoveCart());
+                                            }
+                                            if (userAddress![index].isPrimary ==
+                                                    false ||
+                                                !PreferenceUtils
+                                                    .isManualLocation) {
                                               addressBloc.add(
-                                                SetPrimaryAddressEvent(addressId: userAddress![index].id),
+                                                SetPrimaryAddressEvent(
+                                                  lat: userAddress![index]
+                                                      .latitude,
+                                                  lng: userAddress![index]
+                                                      .longitude,
+                                                  addressId:
+                                                      userAddress![index].id,
+                                                ),
                                               );
                                             }
                                           },
                                           child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
                                               Image.asset(
                                                 AssetsUtils.markerFlag,
                                                 height: 15.h,
                                                 width: 22.w,
-                                                color: userAddress![index].isPrimary == true ? AppColors.terracotta : AppColors.darkGray,
+                                                color: userAddress![index]
+                                                            .isPrimary ==
+                                                        true
+                                                    ? (showManual &&
+                                                            !PreferenceUtils
+                                                                .isManualLocation)
+                                                        ? AppColors.darkGray
+                                                        : AppColors.terracotta
+                                                    : AppColors.darkGray,
                                               ),
                                               SizedBox(
                                                 width: 16.w,
@@ -576,32 +792,49 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: userAddress![index].isPrimary == true ? AppColors.terracotta : AppColors.darkGray,
+                                                    color: userAddress![index]
+                                                                .isPrimary ==
+                                                            true
+                                                        ? (showManual &&
+                                                                !PreferenceUtils
+                                                                    .isManualLocation)
+                                                            ? AppColors.darkGray
+                                                            : AppColors
+                                                                .terracotta
+                                                        : AppColors.darkGray,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         );
                                 },
-                                separatorBuilder: (context, index) => const Divider(),
+                                separatorBuilder: (context, index) =>
+                                    const Divider(),
                               );
                       },
-                      listener: (context, state) {
+                      listener: (context, state) async {
                         if (state is SetAddressPrimarySuccessState) {
-                          if (argumentsValue['string'] == 'isFromRestaurant' || argumentsValue['string'] == 'isFromCheckout') {
+                          Constant.i.removeStore();
+                          if (argumentsValue['string'] == 'isFromRestaurant' ||
+                              argumentsValue['string'] == 'isFromCheckout' ||
+                              argumentsValue['string'] == 'isFromGrocery') {
+                            await PreferenceUtils.setManualLoation(true);
+                            if (argumentsValue['string'] == 'isFromGrocery') {
+                              Get.offAll(
+                                  () => const AppManagerScreen(selectIndex: 1));
+                            } else {
+                              Get.offAll(
+                                () => const AppManagerScreen(selectIndex: 3),
+                              );
+                            }
+                          } else if (argumentsValue['string'] ==
+                              'isFromGroceryCheckout') {
                             Get.offAll(
-                              () => const AppManagerScreen(
-                                selectIndex: 3,
-                              ),
-                            );
-                          } else if (argumentsValue['string'] == 'isFromGroceryCheckout') {
-                            Get.offAll(
-                              () => const AppManagerScreen(
-                                selectIndex: 1,
-                              ),
+                              () => const AppManagerScreen(selectIndex: 1),
                             );
                           } else {
                             Get.back();
@@ -645,6 +878,39 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
                   GestureDetector(
                     onTap: () async {
+                      bool isFromRegister =
+                          argumentsValue['string'] == 'isFromRegister';
+                      if (!isFromRegister) {
+                        LocationPermission permission =
+                            await Geolocator.checkPermission();
+                        if (permission == LocationPermission.denied ||
+                            permission == LocationPermission.deniedForever) {
+                          await appSettingDialogBox();
+                          if (!(await isPermissionGranted())) {
+                            return;
+                          } else {
+                            showToast(
+                                message: "Wait Fetching Address",
+                                isSuccess: false);
+                            Position position = await GeolocatorPlatform
+                                .instance
+                                .getCurrentPosition();
+                            selectedLatLng =
+                                LatLng(position.latitude, position.longitude);
+                          }
+                        }
+                      }
+
+                      if ((await isPermissionGranted()) &&
+                          selectedLatLng == null) {
+                        showToast(
+                            message: "Wait Fetching Address", isSuccess: false);
+                        Position position = await GeolocatorPlatform.instance
+                            .getCurrentPosition();
+                        selectedLatLng =
+                            LatLng(position.latitude, position.longitude);
+                      }
+
                       await findAddressURL(
                         lat: selectedLatLng?.latitude.toString(),
                         lng: selectedLatLng?.longitude.toString(),
@@ -652,7 +918,8 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
 
                       Map<String, dynamic> addressData = {
                         'latitude': selectedLatLng?.latitude.toStringAsFixed(6),
-                        'longitude': selectedLatLng?.longitude.toStringAsFixed(6),
+                        'longitude':
+                            selectedLatLng?.longitude.toStringAsFixed(6),
                         'street_Num': streetNum,
                         'street_Name': streetName,
                         'city': city,
@@ -663,14 +930,22 @@ class _GetUserAddressState extends State<GetUserAddress> with WidgetsBindingObse
                         'isPrimary': true,
                       };
 
-                      selectedLatLng != null || zipcode != "" || city != "" || stateName != "" || country != ""
-                          ? Get.to(
-                              () => AddressConfirmation(
-                                locationData: addressData,
-                                arguments: argumentsValue,
-                              ),
-                            )
-                          : showToast(message: "Wait Fetching Address", isSuccess: false);
+                      if (selectedLatLng != null ||
+                          zipcode != "" ||
+                          city != "" ||
+                          stateName != "" ||
+                          country != "" ||
+                          argumentsValue['string'] == 'isFromRegister') {
+                        Get.to(
+                          () => AddressConfirmation(
+                            locationData: addressData,
+                            arguments: argumentsValue,
+                          ),
+                        );
+                      } else {
+                        showToast(
+                            message: "Wait Fetching Address", isSuccess: false);
+                      }
                     },
                     child: Container(
                       height: 48.h,

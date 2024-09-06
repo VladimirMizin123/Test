@@ -148,6 +148,7 @@ class AppColors {
   static const disable = Color(0xFFC7C8CA);
   static const middleGray = Color(0xFF5F5F5F);
   static const darkGray = Color(0xFF373737);
+  static const brown = Color(0xFF484848);
   static const oxFF010101 = Color(0xFF010101);
   static const newDarkBlue = Color(0xFF6A909D);
   static const inactive = Color(0xFFD9D9D9);
@@ -155,4 +156,5 @@ class AppColors {
 
   static const skyColor = Color(0xffD9DCEE);
   static const darkGreyColor = Color(0xff373737);
+  static const borderColor = Color(0xffABD4B8);
 }

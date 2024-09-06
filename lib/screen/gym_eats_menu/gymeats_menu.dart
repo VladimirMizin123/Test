@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
@@ -20,14 +21,14 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
         height: double.infinity.h,
         width: double.infinity.w,
         padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 45.h),
         decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage(AssetsUtils.gymMenuBg), fit: BoxFit.cover),
+          image: DecorationImage(
+              image: AssetImage(AssetsUtils.gymMenuBg), fit: BoxFit.cover),
         ),
         child: Column(
           children: [
@@ -35,14 +36,18 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
               controller = homeController;
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                children: List.generate(homeController.chooseEatsList.length, (index) {
-                  final text = homeController.chooseEatsList[index];
+                children: List.generate(dialGoalList.length, (index) {
+                  final text = dialGoalList[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: buildButton(
                       context: context,
-                      bgColor: homeController.selectedItems[index] ? AppColors.appColor : Colors.white.withOpacity(0.8),
-                      textColor: homeController.selectedItems[index] ? const Color(0xFFC1EACE) : AppColors.appColor,
+                      bgColor: homeController.selectedItems[index]
+                          ? AppColors.appColor
+                          : Colors.white.withOpacity(0.8),
+                      textColor: homeController.selectedItems[index]
+                          ? const Color(0xFFC1EACE)
+                          : AppColors.appColor,
                       onPressed: () {
                         homeController.selectEats(index);
                         Get.toNamed('/LoginScreen');
@@ -68,7 +73,8 @@ class _GymEatsMenuScreenState extends State<GymEatsMenuScreen> {
                   Text(
                     "Choose the option that best reflects your current\ngoals",
                     textAlign: TextAlign.center,
-                    style: AppTextStyle.gymEatsStyle.copyWith(color: const Color(0xFF336633)),
+                    style: AppTextStyle.gymEatsStyle
+                        .copyWith(color: const Color(0xFF336633)),
                   ),
                   SizedBox(height: 16.h),
                   Image.asset(

@@ -6,3 +6,17 @@ extension Unique<E, Id> on List<E> {
     return list;
   }
 }
+
+extension ListExtension<T, Id> on List<T> {
+  List<T> addBetweenItems(T item) {
+    final items = <T>[];
+    asMap().forEach((index, value) {
+      if (index == length - 1) {
+        items.add(value);
+      } else {
+        items.addAll([value, item]);
+      }
+    });
+    return items;
+  }
+}

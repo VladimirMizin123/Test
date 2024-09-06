@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -7,20 +6,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
+import 'package:gymeats_mobile/screen/get_location/get_location.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
-import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'model/get_user_address_model.dart' as address;
 import 'model/create_order_response_model.dart' as order;
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart'
+    as u_add;
 
 class RestaurantCart extends StatefulWidget {
   const RestaurantCart({super.key, required this.pickUp});
@@ -34,23 +39,25 @@ class RestaurantCart extends StatefulWidget {
 class _RestaurantCartState extends State<RestaurantCart> {
   List<ShoppingListData> cartData = [];
   RestaurantBloc restaurantBloc = RestaurantBloc();
-  bool loading = false;
-  bool isAddUpdate = false;
-  bool isApiCall = false;
   dynamic price = 0;
-  bool getAddressLoadingState = false;
   bool loadCreateOrder = false;
-
-  // bool createOrder = false;
   address.UserAddress? getUserAddress;
+
   order.CreateOrderData? orderData;
+  final formKey = GlobalKey<FormState>();
+
+  TextEditingController addressNameController = TextEditingController();
+  TextEditingController streetDetailsController = TextEditingController();
+  TextEditingController apartmentNumberController = TextEditingController();
+  TextEditingController floorNumberController = TextEditingController();
+  TextEditingController city = TextEditingController();
+  TextEditingController zipCodeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
+    cartBloc.add(GetCartEvent());
     restaurantBloc.add(GetUserAddressEvent());
-    restaurantBloc.add(GetShoppingListEvent());
   }
 
   @override
@@ -59,226 +66,114 @@ class _RestaurantCartState extends State<RestaurantCart> {
       onWillPop: () => Future(() => false),
       child: Scaffold(
         body: SafeArea(
-          child: bloc.BlocConsumer(
-            bloc: restaurantBloc,
+          child: bloc.BlocConsumer<CartBloc, CartState>(
+            bloc: cartBloc,
             listener: (context, state) {
-              /// Create Order State ---------------------------------------------------
-
-              if (state is CreateOrderLoadingState) {
-                loadCreateOrder = true;
-              }
-              if (state is CreateOrderErrorState) {
-                loadCreateOrder = false;
-              }
-              if (state is CreateOrderSuccessState) {
-                orderData = state.orderData;
-                if (orderData != null) {
-                  Get.to(
-                    () => CheckOutScreen(
-                      isFromGrocery: false,
-                      cartData: cartData,
-                      orderData: orderData,
-                      getUserAddress: getUserAddress,
-                    ),
-                    transition: Transition.fadeIn,
-                  );
-                }
-
-                loadCreateOrder = false;
-              }
-
-              /// Address
-              if (state is GetUserAddressSuccessState) {
-                if (state.userAddress.isEmpty) {
-                } else {
-                  /// address is primary then primary will be taken
-                  for (var i = 0; i < state.userAddress.length; i++) {
-                    if (state.userAddress[i].isPrimary == true) {
-                      getUserAddress = state.userAddress[i];
-                      break;
-                    }
-                  }
-
-                  /// address is not primary then first will be taken
-                  getUserAddress ??= state.userAddress[0];
-                  log("getUserAddress:-> ${jsonEncode(getUserAddress)}");
-                }
-
-                getAddressLoadingState = false;
-              }
-              if (state is GetUserAddressLoadingState) {
-                getAddressLoadingState = true;
-              }
-              if (state is GetUserAddressErrorState) {
-                getAddressLoadingState = false;
-              }
-
-              ///
-
-              if (state is GetShoppingListLoadingState) {
-                loading = true;
-              }
-              if (state is GetShoppingListSuccessState) {
-                cartData = state.shoppingListData!;
-
+              if (state is RestaurantCartState) {
+                cartData = state.shoppingList;
+                price = 0;
                 for (var element in cartData) {
                   price = price + element.price;
                 }
-
-                loading = false;
-              }
-              if (state is GetShoppingListErrorState) {
-                loading = false;
-              }
-
-              ///UpdateToRestaurantCart State ====================================================================
-
-              if (state is UpdateToRestaurantCartSuccessState) {
-                price = 0;
-                for (var element in cartData) {
-                  if (state.data['productId'] == element.productId) {
-                    element.quantity = state.data['quantity'];
-                    element.price = state.data['price'];
-
-                    if (isAddUpdate == true) {
-                      element.isAddUpdated = false;
-                    } else {
-                      element.isRemoveUpdated = false;
-                    }
-
-                    isAddUpdate = false;
-                  }
-
-                  price = price + element.price;
-                }
-              }
-
-              if (state is UpdateToRestaurantCartLoadingState) {
-                for (var element in cartData) {
-                  if (state.productId == element.productId) {
-                    if (isAddUpdate == true) {
-                      element.isAddUpdated = true;
-                    } else {
-                      element.isRemoveUpdated = true;
-                    }
-                  }
-                }
-              }
-
-              if (state is UpdateToRestaurantCartErrorState) {
-                for (var element in cartData) {
-                  if (state.productId == element.productId) {
-                    if (isAddUpdate == true) {
-                      element.isAddUpdated = false;
-                    } else {
-                      element.isRemoveUpdated = false;
-                    }
-
-                    isAddUpdate = false;
-                  }
-                }
-              }
-
-              ///Remove To RestaurantCart State ====================================================================
-
-              if (state is RemoveShoppingListItemSuccessState) {
-                price = 0;
-                for (var element1 in cartData) {
-                  if (state.productId == element1.productId) {
-                    element1.quantity = 0;
-                    element1.price = 0;
-
-                    if (isAddUpdate == true) {
-                      element1.isAddUpdated = false;
-                    } else {
-                      element1.isRemoveUpdated = false;
-                    }
-                    isAddUpdate = false;
-                  }
-
-                  price = price + element1.price;
-                }
-
-                cartData.removeWhere(
-                    (element) => element.productId == state.productId);
-              }
-
-              if (state is RemoveShoppingListItemLoadingState) {
-                for (var element1 in cartData) {
-                  if (state.productId == element1.productId) {
-                    if (isAddUpdate == true) {
-                      element1.isAddUpdated = true;
-                    } else {
-                      element1.isRemoveUpdated = true;
-                    }
-                  }
-                }
-              }
-
-              if (state is RemoveShoppingListItemErrorState) {
-                for (var element1 in cartData) {
-                  if (state.productId == element1.productId) {
-                    if (isAddUpdate == true) {
-                      element1.isAddUpdated = true;
-                    } else {
-                      element1.isRemoveUpdated = true;
-                    }
-                    isAddUpdate = false;
-                  }
-                }
+                setState(() {});
               }
             },
             builder: (context, state) {
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Center(
-                    child: Image.asset(
-                      AssetsUtils.gymEatsSpoon,
-                      height: 22.h,
-                      width: 56.w,
-                      color: AppColors.terracotta,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 3,
-                      bottom: 20.h,
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Get.back(result: isApiCall);
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                          ),
+              return bloc.BlocConsumer(
+                bloc: restaurantBloc,
+                listener: (context, state) async {
+                  if (state is CreateOrderLoadingState) {
+                    loadCreateOrder = true;
+                  }
+                  if (state is CreateOrderErrorState) {
+                    loadCreateOrder = false;
+                  }
+                  if (state is CreateOrderSuccessState) {
+                    orderData = state.orderData;
+                    if (orderData != null) {
+                      Get.to(
+                        () => CheckOutScreen(
+                          isFromGrocery: false,
+                          cartData: cartData,
+                          orderData: orderData,
+                          getUserAddress: getUserAddress,
+                          currentAddress: streetDetailsController.text,
                         ),
-                        const Text(
-                          'Restaurant / Cart',
-                          style: TextStyle(
-                            color: Color(0xFF010101),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 24,
-                          ),
-                          textAlign: TextAlign.center,
+                        transition: Transition.fadeIn,
+                      );
+                    }
+
+                    loadCreateOrder = false;
+                  }
+
+                  if (state is GetUserAddressSuccessState) {
+                    if (state.userAddress.isEmpty) return;
+
+                    for (var i = 0; i < state.userAddress.length; i++) {
+                      if (state.userAddress[i].isPrimary == true) {
+                        getUserAddress = state.userAddress[i];
+                        break;
+                      }
+                    }
+
+                    getUserAddress ??= state.userAddress[0];
+
+                    if (getUserAddress!.streetName.toString().isEmpty ||
+                        getUserAddress!.streetName == null) {
+                      Get.to(() => const GetUserAddress(),
+                          transition: Transition.fadeIn,
+                          arguments: {
+                            "string": 'isFromRestaurant',
+                            "userData": ''
+                          });
+                    }
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      5.height,
+                      Center(
+                        child: Image.asset(
+                          AssetsUtils.gymEatsSpoon,
+                          height: 22.h,
+                          width: 56.w,
+                          color: AppColors.terracotta,
                         ),
-                        const SizedBox(
-                          width: 30,
-                        )
-                      ],
-                    ),
-                  ),
-                  loading == true
-                      ? const Expanded(child: AppCenterLoader())
-                      : cartData.isEmpty
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: 3,
+                          bottom: 20.h,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Get.back(result: true);
+                              },
+                              child: const Icon(
+                                Icons.arrow_back_ios,
+                              ),
+                            ),
+                            const Text(
+                              'Restaurant / Cart',
+                              style: TextStyle(
+                                color: Color(0xFF010101),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 24,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            30.width,
+                          ],
+                        ),
+                      ),
+                      cartData.isEmpty
                           ? Expanded(
                               child: Center(
                                 child: Text(
@@ -312,9 +207,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                             children: [
                                               IntrinsicHeight(
                                                 child: Container(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
+                                                  width: context.width,
                                                   margin: EdgeInsets.symmetric(
                                                       horizontal: 20.w),
                                                   child: Column(
@@ -368,66 +261,14 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                         children: [
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                isApiCall =
-                                                                    true;
-                                                              });
-
-                                                              for (var element
-                                                                  in cartData) {
-                                                                if (element
-                                                                        .productId ==
-                                                                    cartData[
-                                                                            index]
-                                                                        .productId) {
-                                                                  // isRemoveUpdate = true;
-
-                                                                  if (cartData[
-                                                                              index]
-                                                                          .quantity ==
-                                                                      1) {
-                                                                    restaurantBloc.add(RemoveShoppingListItemEvent(
-                                                                        productID:
-                                                                            cartData[index].productId!));
-                                                                  } else {
-                                                                    restaurantBloc
-                                                                        .add(
-                                                                      UpdateRestaurantCartEvent(
-                                                                        updateItemList:
-                                                                            UpdateRestaurantItemsToShoppingListModel(
-                                                                          productName:
-                                                                              element.productName ?? '',
-                                                                          oldProductId:
-                                                                              element.productId ?? '',
-                                                                          newProductId:
-                                                                              '',
-                                                                          quantity:
-                                                                              cartData[index].quantity! - 1,
-                                                                          price:
-                                                                              (cartData[index].price! / cartData[index].quantity!) * (cartData[index].quantity! - 1),
-                                                                          itemOptions: [],
-                                                                          productType:
-                                                                              element.productType ?? 'Restaurant',
-                                                                          mealmeStoreId:
-                                                                              element.mealmeStoreId,
-                                                                          unitOfMeasurement:
-                                                                              element.unitOfMeasurement ?? '',
-                                                                          recipeId:
-                                                                              element.recipeId ?? '',
-                                                                          userId:
-                                                                              element.userId ?? userId,
-                                                                          brandName:
-                                                                              element.brandName ?? '',
-                                                                          isChecked:
-                                                                              element.isChecked ?? false,
-                                                                          unitSize:
-                                                                              element.unitSize ?? 0,
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                  }
-                                                                }
-                                                              }
+                                                              cartBloc.add(
+                                                                  ChangeQty(
+                                                                productID: cartData[
+                                                                        index]
+                                                                    .productId,
+                                                                type: ModifyType
+                                                                    .decrement,
+                                                              ));
                                                             },
                                                             child: cartData[index]
                                                                         .isRemoveUpdated ==
@@ -463,67 +304,12 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                           ),
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                isApiCall =
-                                                                    true;
-                                                              });
-                                                              for (var element
-                                                                  in cartData) {
-                                                                if (element
-                                                                        .productId ==
-                                                                    cartData[
-                                                                            index]
-                                                                        .productId) {
-                                                                  isAddUpdate =
-                                                                      true;
-
-                                                                  restaurantBloc
-                                                                      .add(
-                                                                    UpdateRestaurantCartEvent(
-                                                                      updateItemList:
-                                                                          UpdateRestaurantItemsToShoppingListModel(
-                                                                        productName:
-                                                                            element.productName ??
-                                                                                '',
-                                                                        oldProductId:
-                                                                            element.productId ??
-                                                                                '',
-                                                                        newProductId:
-                                                                            '',
-                                                                        quantity:
-                                                                            cartData[index].quantity! +
-                                                                                1,
-                                                                        price: (cartData[index].price! / cartData[index].quantity!) *
-                                                                            (cartData[index].quantity! +
-                                                                                1),
-                                                                        itemOptions: [],
-                                                                        productType:
-                                                                            element.productType ??
-                                                                                'Restaurant',
-                                                                        mealmeStoreId:
-                                                                            element.mealmeStoreId,
-                                                                        unitOfMeasurement:
-                                                                            element.unitOfMeasurement ??
-                                                                                '',
-                                                                        recipeId:
-                                                                            element.recipeId ??
-                                                                                '',
-                                                                        userId: element.userId ??
-                                                                            userId,
-                                                                        brandName:
-                                                                            element.brandName ??
-                                                                                '',
-                                                                        isChecked:
-                                                                            element.isChecked ??
-                                                                                false,
-                                                                        unitSize:
-                                                                            element.unitSize ??
-                                                                                0,
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                }
-                                                              }
+                                                              cartBloc.add(ChangeQty(
+                                                                  productID: cartData[
+                                                                          index]
+                                                                      .productId,
+                                                                  type: ModifyType
+                                                                      .increment));
                                                             },
                                                             child: cartData[index]
                                                                         .isAddUpdated ==
@@ -619,6 +405,16 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                     buttonLable: 'Checkout ',
                                                     lableColor: Colors.white,
                                                     onTap: () async {
+                                                      if (getUserAddress ==
+                                                          null) {
+                                                        showToast(
+                                                            message:
+                                                                "Waiting while fetching address",
+                                                            isSuccess: false,
+                                                            color: AppColors
+                                                                .black);
+                                                        return;
+                                                      }
                                                       List<CreateOrderMealmeItems>
                                                           data = [];
 
@@ -657,42 +453,31 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                         );
                                                       }
 
+                                                      (double?, double?) pos =
+                                                          await Constant
+                                                              .i.position;
+
                                                       restaurantBloc.add(
                                                         CreateOrderEvent(
+                                                          context: context,
                                                           createOrderModel:
                                                               CreateOrderModel(
                                                             userId: userId,
                                                             pickup:
                                                                 widget.pickUp,
                                                             mealmeItems: data,
-                                                            userAddress:
-                                                                UserAddress(
-                                                              latitude:
-                                                                  (getUserAddress
-                                                                          ?.latitude ??
-                                                                      0.0),
-                                                              longitude:
-                                                                  (getUserAddress
-                                                                          ?.longitude ??
-                                                                      0.0),
-                                                              streetName:
+                                                            userAddress: u_add
+                                                                .UserAddress(
+                                                              latitude: pos
+                                                                      .$1 ??
                                                                   getUserAddress
-                                                                      ?.streetName,
-                                                              streetNum:
+                                                                      ?.latitude ??
+                                                                  0,
+                                                              longitude: pos
+                                                                      .$2 ??
                                                                   getUserAddress
-                                                                      ?.streetNum,
-                                                              city:
-                                                                  getUserAddress
-                                                                      ?.city,
-                                                              country:
-                                                                  getUserAddress
-                                                                      ?.country,
-                                                              state:
-                                                                  getUserAddress
-                                                                      ?.state,
-                                                              zipcode:
-                                                                  getUserAddress
-                                                                      ?.zipcode,
+                                                                      ?.longitude ??
+                                                                  0,
                                                             ),
                                                             userPhone:
                                                                 int.parse(
@@ -723,7 +508,9 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                 ],
                               ),
                             )
-                ],
+                    ],
+                  );
+                },
               );
             },
           ),

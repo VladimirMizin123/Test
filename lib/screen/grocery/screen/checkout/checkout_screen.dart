@@ -13,7 +13,6 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
-import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
@@ -465,7 +464,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         child: Text(
                                       selectedIndex == 0
                                           ? 'Bring me the order'
-                                          : 'I will pick it myself',
+                                          : 'I will pick it up myself',
                                       style: FontUtils.h18(
                                           fontColor: AppColors.black,
                                           fontWeight: FWT.medium),

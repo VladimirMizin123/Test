@@ -8,10 +8,16 @@ class CustomRadioButtonWidget extends StatefulWidget {
   final String groupValue;
   final OnChanged onChanged;
 
-  const CustomRadioButtonWidget({super.key, required this.value, required this.groupValue, this.onChanged});
+  const CustomRadioButtonWidget({
+    super.key,
+    required this.value,
+    required this.groupValue,
+    this.onChanged,
+  });
 
   @override
-  State<CustomRadioButtonWidget> createState() => _CustomRadioButtonWidgetState();
+  State<CustomRadioButtonWidget> createState() =>
+      _CustomRadioButtonWidgetState();
 }
 
 class _CustomRadioButtonWidgetState extends State<CustomRadioButtonWidget> {
@@ -20,6 +26,8 @@ class _CustomRadioButtonWidgetState extends State<CustomRadioButtonWidget> {
     return Transform.scale(
       scale: 1.2,
       child: Radio(
+        visualDensity: const VisualDensity(horizontal: -4.0, vertical: -4.0),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         value: widget.value,
         groupValue: widget.groupValue,
         activeColor: AppColors.green,

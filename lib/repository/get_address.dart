@@ -18,9 +18,7 @@ class GetAddressRepository {
   /// GetUserAddressList ====================================================================
 
   Future<Either<ErrorModel, GetUserAddressModel>> getUserAddressData() async {
-    final response = await apiServices.get(
-      '${ApiUrls.getUserAddress}/$userID',
-    );
+    final response = await apiServices.get('${ApiUrls.getUserAddress}/$userID');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetUserAddressModel.fromJson(jsonDecode(response.body)));

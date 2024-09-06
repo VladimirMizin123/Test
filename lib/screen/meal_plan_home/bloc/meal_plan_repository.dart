@@ -33,16 +33,9 @@ class MealPlanRepository {
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState =
-        PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
-    if (mealPlanScreenCountState == 0) {
-      apiURL = '${ApiUrls.genMealPlan}/$userID';
-      print('genMealPlan apiURL : $apiURL');
-    } else {
-      apiURL = '${ApiUrls.getMealPlan}/$userID';
-      print('getMealPlan apiURL : $apiURL');
-    }
+    apiURL = '${ApiUrls.genMealPlan}/$userID';
+    print('genMealPlan apiURL : $apiURL');
     final response = await apiServices.get(apiURL);
     // print('Meal response.body : ${response.body}');
     // print('Meal response.statusCode : ${response.statusCode}');
@@ -63,9 +56,22 @@ class MealPlanRepository {
   Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
       String date) async {
     String apiURL = '${ApiUrls.getMealLogByDate}/$userId?date=$date';
+    log("Api :${apiURL}");
     final response = await apiServices.get(apiURL);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, ErrorModel>> removeMealLog(String mealId) async {
+    String apiURL = '${ApiUrls.removeMealLog}/$mealId?userId=$userId';
+    final response = await apiServices.delete(apiURL);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(ErrorModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -132,9 +138,10 @@ class MealPlanRepository {
   }
 
   Future<Either<ErrorModel, SwapMealModel>> fetchSwapMealItem(
-      {required String recipeID, required int serving}) async {
+      {required String recipeID, required int noOfServing}) async {
     final response = await apiServices.get(
-        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&serving=$serving');
+        '${ApiUrls.getSwapMeal}/$userID?recipeId=$recipeID&noOfServing=$noOfServing');
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SwapMealModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -152,6 +159,8 @@ class MealPlanRepository {
     num? protein,
     num? fat,
     num? carbs,
+    int? value,
+    String? date,
   }) async {
     Map<String, dynamic> data = {
       "mealName": mealName ?? '',
@@ -163,9 +172,10 @@ class MealPlanRepository {
       "protein": protein ?? 0,
       "fat": fat ?? 0,
       "carbs": carbs ?? 0,
-      "value": 2,
+      "value": value ?? 2,
       "userId": userID,
     };
+    data.addIf(date != null, "date", date);
     final response = await apiServices.post(ApiUrls.addMealLog, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
@@ -180,6 +190,7 @@ class MealPlanRepository {
   }) async {
     final response = await apiServices.get(
         '${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId');
+    log("add swap meal:${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -280,11 +291,13 @@ class MealPlanRepository {
       }
       /*--------------Hive box Nx Data--------------------*/
 
-      String apiNxInfoURL = '${ApiUrls.getNxMealInfoByName}?name=$recipeName';
+      String apiNxInfoURL =
+          '${ApiUrls.getNxMealInfoByName}?foodName=${Uri.encodeComponent(recipeName)}';
       log(apiNxInfoURL, name: 'API URL :');
       final responseNxInfo = await apiServices.get(apiNxInfoURL);
       log(responseNxInfo.body, name: 'API RESPONSE :');
       Map<String, dynamic> jsonNxInfo = jsonDecode(responseNxInfo.body);
+      log("Json Response :${jsonEncode(jsonNxInfo)}");
       if (jsonNxInfo["success"] == false) {
         String apiNutritionixURL =
             '${ApiUrls.getNxSearchData}?branded=true&common=false&query=$recipeName';
@@ -484,7 +497,8 @@ class MealPlanRepository {
     }
     /*--------------Hive box Nx Data--------------------*/
 
-    String apiURL = '${ApiUrls.getNxMealInfoByName}?name=$productName';
+    String apiURL =
+        '${ApiUrls.getNxMealInfoByName}?foodName=${Uri.encodeComponent(productName)}';
 
     // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,9 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/login/login_event.dart';
 import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/models/get_user_details_byId.dart';
+import 'package:gymeats_mobile/models/login_model.dart';
 
 import '../../app/functions.dart';
 import '../../repository/get_user_details.dart';
@@ -35,53 +39,62 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final response = await _repository.login(
             email: event.email.trim(), password: event.password);
 
-        response.fold((left) {
-          onFailError(emit: emit, text: left.errorMessage!);
-        }, (right) async {
-          if (right.data != null) {
-            await PreferenceUtils.setString(
-                prefToken, right.data!.token!.accessToken!);
+        if (response.isRight) {
+          LoginModel right = response.right;
+          await PreferenceUtils.setString(
+              prefToken, right.data!.token!.accessToken!);
+          if (right.data?.profileCompleted ?? false) {
+            if (right.data != null) {
+              log('right.data!.token!.accessToken!---------->>>>>> ${right.data!.token!.accessToken!}');
 
-            log('right.data!.token!.accessToken!---------->>>>>> ${right.data!.token!.accessToken!}');
-
-            userId = right.data!.userId!;
-            await PreferenceUtils.setString(prefUserData, right.data!.userId!);
-            await PreferenceUtils.setString(prefUserEmail, event.email.trim());
-            await PreferenceUtils.setBool(prefIsLogin, true);
-            await PreferenceUtils.setBool(prefIsConfirmEmail, true);
+              userId = right.data!.userId!;
+              await PreferenceUtils.setString(
+                  prefUserData, right.data!.userId!);
+              await PreferenceUtils.setString(
+                  prefUserEmail, event.email.trim());
+              await PreferenceUtils.setBool(prefIsLogin, true);
+              await PreferenceUtils.setBool(prefIsConfirmEmail, true);
+            }
+            final getUserDetailsResponse = await _dataRepository
+                .getUserDetailsData(right.data?.userId ?? userId);
+            getUserDetailsResponse.fold((left) {
+              onFailError(emit: emit, text: left.errorMessage!);
+            }, (r) async {
+              // if (right.data?.subscriptionStatus == "Active") {
+              PreferenceUtils.setBool(subscriptionStatus, true);
+              final getGender = r.data!.gender;
+              await PreferenceUtils.setString(
+                  prefUserMobile, r.data?.phoneNumber ?? '');
+              Get.toNamed('/RandomLoginScreen',
+                  arguments: getGender.toString().capitalizeFirst);
+              // } else {
+              //   PreferenceUtils.setBool(subscriptionStatus, false);
+              //   Get.offAllNamed("/PremiumScreen", parameters: {
+              //     "fromDashboard": 'true',
+              //   });
+              // }
+            });
+          } else {
+            Either<ErrorModel, GetUserDetailsById> rt = await _dataRepository
+                .getUserDetailsData(right.data?.userId ?? userId);
+            emit(LoginSuccessfulState());
+            if (rt.isRight) {
+              Get.toNamed(
+                "/SignUpScreen",
+                arguments: {
+                  "fromLogin": true,
+                  "profileCompleted": false,
+                  "hasPurchase": right.data?.subscriptionStatus == "Active",
+                  "email": event.email,
+                  "password": event.password,
+                  "userId": right.data?.userId,
+                },
+              );
+            }
           }
-          final getUserDetailsResponse = await _dataRepository
-              .getUserDetailsData(right.data?.userId ?? userId);
-          getUserDetailsResponse.fold((left) {
-            onFailError(emit: emit, text: left.errorMessage!);
-          }, (r) async {
-            final getGender = r.data!.gender;
-
-            await PreferenceUtils.setString(
-                prefUserMobile, r.data?.phoneNumber ?? '');
-            // emit(LoginSuccessfulState());
-            Get.toNamed('/RandomLoginScreen',
-                arguments: getGender.toString().capitalizeFirst);
-            // Get.toNamed('/AppManagerScreen', preventDuplicates: false);
-          });
-        });
-        // await _repository
-        //     .login(email: event.email.trim(), password: event.password)
-        //     .fold((left) {
-        //   onFailError(emit: emit, text: left.errorMessage!);
-        // }, (right) {
-        //   if (right.data != null) {
-        //     PreferenceUtils.setString(
-        //         prefToken, right.data!.token!.accessToken!);
-        //     userId = right.data!.userId!;
-        //     PreferenceUtils.setString(prefUserData, right.data!.userId!);
-        //     PreferenceUtils.setBool(prefIsLogin, true);
-        //     PreferenceUtils.setBool(prefIsConfirmEmail, true);
-        //   }
-        //   emit(LoginSuccessfulState());
-        //   // Get.toNamed('/FirstPersonalizedWelcomeScreen',arguments: );
-        //   Get.toNamed('/AppManagerScreen', preventDuplicates: false);
-        // });
+        } else {
+          onFailError(emit: emit, text: response.left.errorMessage ?? "");
+        }
       } catch (e) {
         showToast(isSuccess: false, message: e.toString());
         emit(LoginErrorState());

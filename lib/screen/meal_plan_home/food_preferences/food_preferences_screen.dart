@@ -45,6 +45,8 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
           listener: (context, state) {
             if (state is GetAllRestrictionSuccessState) {
               edgesRestrictionList = state.edgesRestrictionList ?? [];
+              edgesRestrictionList
+                  .sort((a, b) => a.node.name.compareTo(b.node.name));
               mealPlanBloc.add(GetUserRestrictionEvent());
             }
 
@@ -153,9 +155,8 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
                                                       .node
                                                       .name,
                                                   edgesRestrictionList[index]
-                                                          .node
-                                                          .isRestricted ??
-                                                      false,
+                                                      .node
+                                                      .isRestricted,
                                                   (bool vale) {
                                                     setState(() {
                                                       if (edgesRestrictionList[

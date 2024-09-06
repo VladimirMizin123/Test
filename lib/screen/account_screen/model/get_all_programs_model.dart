@@ -83,15 +83,16 @@ class Node {
   String? author;
   bool? isActive;
   bool? isPremium;
+  String? programIcons;
 
-  Node({
-    this.id,
-    this.databaseId,
-    this.name,
-    this.author,
-    this.isActive,
-    this.isPremium,
-  });
+  Node(
+      {this.id,
+      this.databaseId,
+      this.name,
+      this.author,
+      this.isActive,
+      this.isPremium,
+      this.programIcons});
 
   factory Node.fromJson(Map<String, dynamic> json) => Node(
         id: json["id"],
@@ -100,6 +101,7 @@ class Node {
         author: json["author"],
         isActive: json["isActive"],
         isPremium: json["isPremium"],
+        programIcons: json["programIcons"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -109,5 +111,6 @@ class Node {
         "author": author,
         "isActive": isActive,
         "isPremium": isPremium,
+        "programIcons": programIcons,
       };
 }

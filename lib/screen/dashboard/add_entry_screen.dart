@@ -15,7 +15,6 @@ import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/all_exercise_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-
 import '../../app/sharedPrefrence.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_bloc.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_event.dart';

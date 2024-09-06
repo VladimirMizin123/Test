@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart'
     as grocery;
@@ -120,7 +122,7 @@ class _ReceiveOrderAskBottomSheetState
                             }),
                         const SizedBox(height: 10),
                         myWidget(
-                            title: 'I will pick it myself',
+                            title: 'I will pick it up myself',
                             isSelected: selectedIndex == 1 ? true : false,
                             onTap: () {
                               setState(() {
@@ -143,7 +145,8 @@ class _ReceiveOrderAskBottomSheetState
                                 if (widget.isFrom == 'isFromCheckout') {
                                   Get.back();
                                 } else {
-                                  print("selectedEdgesList: : ${widget.selectedEdgesList!}");
+                                  print(
+                                      "selectedEdgesList: : ${widget.selectedEdgesList!}");
 
                                   Get.toNamed('/GroceryCartScreen',
                                           arguments: GroceryCartScreenArguments(
@@ -168,8 +171,7 @@ class _ReceiveOrderAskBottomSheetState
                                   ),
                                 );
 
-                                restaurantBloc
-                                    .add(ClearShoppingListItemEvent());
+                                cartBloc.add(RemoveCart());
 
                                 if (widget.isFrom == 'isFromCheckout') {
                                   Get.offAll(
@@ -178,7 +180,8 @@ class _ReceiveOrderAskBottomSheetState
                                     ),
                                   );
                                 } else {
-                                  print("selectedEdgesList: : ${widget.selectedEdgesList!}");
+                                  print(
+                                      "selectedEdgesList: : ${widget.selectedEdgesList!}");
                                   Get.toNamed('/GroceryCartScreen',
                                           arguments: GroceryCartScreenArguments(
                                               getUserAddress:

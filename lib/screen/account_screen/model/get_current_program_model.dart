@@ -64,18 +64,20 @@ class MyProgram {
   String? programName;
   String? language;
   Program? program;
+  String? programIcon;
 
-  MyProgram({
-    this.id,
-    this.programName,
-    this.language,
-    this.program,
-  });
+  MyProgram(
+      {this.id,
+      this.programName,
+      this.language,
+      this.program,
+      this.programIcon});
 
   factory MyProgram.fromJson(Map<String, dynamic> json) => MyProgram(
         id: json["id"],
         programName: json["programName"],
         language: json["language"],
+        programIcon: json["programIcon"],
         program:
             json["program"] == null ? null : Program.fromJson(json["program"]),
       );
@@ -84,6 +86,7 @@ class MyProgram {
         "id": id,
         "programName": programName,
         "language": language,
+        "programIcon": programIcon,
         "program": program?.toJson(),
       };
 }

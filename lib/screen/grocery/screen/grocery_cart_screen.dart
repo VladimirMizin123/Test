@@ -1065,7 +1065,8 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
     );
   }
 
-  Widget myItemChooseWidget(Size screenSize, String title, VoidCallback onTap) {
+  Widget myItemChooseWidget(Size screenSize, String title, VoidCallback onTap,
+      List<Product> productList) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -1090,7 +1091,9 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Choose',
+                    productList.isEmpty && selectedStoreProductList.isNotEmpty
+                        ? StringUtils.thisItemIsUnAvailalbe
+                        : StringUtils.choose,
                     style: FontUtils.h16(fontColor: AppColors.black),
                   ),
                   const Icon(Icons.chevron_right_rounded,
@@ -1372,72 +1375,111 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                   ],
                 )
               : myItemChooseWidget(
-                  screenSize, displayData[index].itemName ?? '', () {
-                  // Get.toNamed('/ItemCatalogScreen');
-                  if (selectedStoreProductList.isNotEmpty) {
-                    filterList() {
-                      List<Product> productList = [];
-                      if (selectedIndex != 0) {
-                        if (selectedIndex == 1) {
-                          for (var element in allData[0]) {
-                            if ((element.itemName ?? '')
-                                .toLowerCase()
-                                .contains(displayData[index].itemName ?? '')) {
-                              productList.add(element);
+                  screenSize,
+                  displayData[index].itemName ?? '',
+                  () {
+                    if (selectedStoreProductList.isNotEmpty) {
+                      filterList() {
+                        List<Product> productList = [];
+                        if (selectedIndex != 0) {
+                          if (selectedIndex == 1) {
+                            for (var element in allData[0]) {
+                              if ((element.itemName ?? '')
+                                  .toLowerCase()
+                                  .contains(
+                                      displayData[index].itemName ?? '')) {
+                                productList.add(element);
+                              }
+                            }
+                          } else if (selectedIndex == 2) {
+                            for (var element in allData[1]) {
+                              if ((element.itemName ?? '')
+                                  .toLowerCase()
+                                  .contains(
+                                      displayData[index].itemName ?? '')) {
+                                productList.add(element);
+                              }
+                            }
+                          } else {
+                            for (var element in allData[2]) {
+                              if ((element.itemName ?? '')
+                                  .toLowerCase()
+                                  .contains(
+                                      displayData[index].itemName ?? '')) {
+                                productList.add(element);
+                              }
                             }
                           }
-                        } else if (selectedIndex == 2) {
-                          for (var element in allData[1]) {
-                            if ((element.itemName ?? '')
-                                .toLowerCase()
-                                .contains(displayData[index].itemName ?? '')) {
-                              productList.add(element);
-                            }
-                          }
+                          log(productList.toString());
+                          return productList;
                         } else {
-                          for (var element in allData[2]) {
-                            if ((element.itemName ?? '')
-                                .toLowerCase()
-                                .contains(displayData[index].itemName ?? '')) {
-                              productList.add(element);
-                            }
-                          }
+                          return null;
                         }
-                        log(productList.toString());
-                        return productList;
-                      } else {
-                        return null;
                       }
-                    }
 
-                    for (int i = 0; i < selectedStoreProductList.length; i++) {
-                      log("----------------- Product : ${selectedStoreProductList[i].toJson()} -----------------");
-                    }
-                    Get.to(() => ItemCatalogScreen(
-                          selectedStoreProductList: selectedStoreProductList,
-                          productList: selectedIndex !=
-                                  0 /*&& selectedIndex != 3*/
-                              ? /*selectedIndex == 1
-                                  ? */
-                              filterList()
-                              /* : selectedIndex == 2
-                                      ? (allData[selectedIndex - 2] +
-                                          allData[selectedIndex - 1])
-                                      : null*/
-                              : null,
-                          groceryBloc: groceryBloc,
-                          productId: displayData[index].id,
-                          typeOfProduct: displayData[index].itemName ?? '',
-                        ));
-                    /*Navigator.push(context,
+                      if (getList(displayData, index).isNotEmpty) {
+                        Get.to(() => ItemCatalogScreen(
+                              selectedStoreProductList:
+                                  selectedStoreProductList,
+                              productList: selectedIndex !=
+                                      0 /*&& selectedIndex != 3*/
+                                  ? /*selectedIndex == 1
+                                    ? */
+                                  filterList()
+                                  /* : selectedIndex == 2
+                                        ? (allData[selectedIndex - 2] +
+                                            allData[selectedIndex - 1])
+                                        : null*/
+                                  : null,
+                              groceryBloc: groceryBloc,
+                              productId: displayData[index].id,
+                              typeOfProduct: displayData[index].itemName ?? '',
+                            ));
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: StringUtils.thisItemIsUnAvailalbe);
+                      }
+                      /*Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return ;
                     }));*/
-                  } else {
-                    Fluttertoast.showToast(msg: 'Please, Select Store!');
-                  }
-                });
+                    } else {
+                      Fluttertoast.showToast(msg: 'Please, Select Store!');
+                    }
+                  },
+                  getList(displayData, index),
+                );
         });
+  }
+
+  List<Product> getList(List<GroceryDetails> displayData, int index) {
+    List<Product> groceryResult = [];
+
+    for (var i = 0; i < selectedStoreProductList.length; i++) {
+      for (var j = 0;
+          j < selectedStoreProductList[i].groceryResult!.length;
+          j++) {
+        if (selectedStoreProductList[i].groceryResult != null) {
+          if (selectedStoreProductList[i].groceryResult![j].products != [] &&
+              selectedStoreProductList[i].groceryResult![j].searchedItemName ==
+                  displayData[index].itemName) {
+            selectedStoreProductList[i]
+                .groceryResult![j]
+                .products
+                ?.forEach((element) {
+              if (!element.isAddedToShoppingList) {
+                element.storeName =
+                    selectedStoreProductList[i].store!.name ?? '';
+
+                groceryResult.add(element);
+              }
+            });
+          }
+        }
+      }
+    }
+
+    return groceryResult;
   }
 }
 

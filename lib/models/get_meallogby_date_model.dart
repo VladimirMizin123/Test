@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class GetMealLogByDate {
   bool? success;
   dynamic message;
@@ -29,6 +31,9 @@ class GetMealLogByDate {
     return data;
   }
 }
+
+List<MealDataByDate> mealDateByDate(String str) => List<MealDataByDate>.from(
+    json.decode(str).map((x) => MealDataByDate.fromJson(x)));
 
 class MealDataByDate {
   String? mealName;

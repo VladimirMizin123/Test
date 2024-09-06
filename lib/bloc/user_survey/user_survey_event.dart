@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
+
 abstract class UserSurveyEvent {}
 
 class GetSurveyData extends UserSurveyEvent {}
@@ -14,7 +16,14 @@ class CheckSurveyData extends UserSurveyEvent {
 class NextPrevSurveyClick extends UserSurveyEvent {
   int index;
   bool isNext;
-  NextPrevSurveyClick({required this.index, required this.isNext});
+  List<Edge>? searchEdgesRestrictionList;
+  int pageIndex;
+  NextPrevSurveyClick({
+    required this.index,
+    required this.isNext,
+    this.searchEdgesRestrictionList,
+    required this.pageIndex,
+  });
 }
 
 class SearchData extends UserSurveyEvent {

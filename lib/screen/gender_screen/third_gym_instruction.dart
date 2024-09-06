@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/widget/network_image_widget.dart';
 
 import '../../widget/app_widget.dart';
 
@@ -23,11 +24,11 @@ class ThirdGymInstructionScreen extends StatelessWidget {
               ? commonInstructionView(
                   context: context,
                   textTheme: textTheme,
+                  imgList: AssetsUtils.iResturantBlue,
                   header1: AppColors.bluePressed,
                   header2: AppColors.primaryBlue,
                   borderColor: AppColors.primaryBlue,
-                  Bgcolor: AppColors.primaryBlue,
-                  image: AssetsUtils.male_instrucion3,
+                  bgColor: AppColors.primaryBlue,
                   textColor1: AppColors.primaryBlue,
                   textColor2: AppColors.skyBlue,
                 )
@@ -35,22 +36,22 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                   ? commonInstructionView(
                       context: context,
                       textTheme: textTheme,
+                      imgList: AssetsUtils.iResturantCoral,
                       header1: AppColors.terracottaPressed,
                       header2: AppColors.terracotta,
                       borderColor: AppColors.terracotta,
-                      Bgcolor: AppColors.terracotta,
-                      image: AssetsUtils.female_instrucion3,
+                      bgColor: AppColors.terracotta,
                       textColor1: AppColors.terracotta,
                       textColor2: AppColors.coral,
                     )
                   : commonInstructionView(
                       context: context,
                       textTheme: textTheme,
+                      imgList: AssetsUtils.iResturantGreen,
                       header1: AppColors.greenPressed,
                       header2: AppColors.green,
                       borderColor: AppColors.green,
-                      Bgcolor: AppColors.green,
-                      image: AssetsUtils.non_instrucion3,
+                      bgColor: AppColors.green,
                       textColor1: AppColors.green,
                       textColor2: AppColors.mint,
                     )),
@@ -60,11 +61,11 @@ class ThirdGymInstructionScreen extends StatelessWidget {
   Widget commonInstructionView(
       {TextTheme? textTheme,
       BuildContext? context,
-      String? image,
+      List<String>? imgList,
       Color? header1,
       Color? header2,
       Color? borderColor,
-      Color? Bgcolor,
+      Color? bgColor,
       Color? textColor1,
       Color? textColor2}) {
     return Column(
@@ -84,19 +85,62 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                 style: textTheme?.bodyLarge
                     ?.copyWith(color: header2, fontWeight: FontWeight.w400))
             .paddingOnly(left: 10.w, right: 10.w, bottom: 12.h),
-        Center(
-          child: Image.asset(
-            image!,
-            height: 350.h,
-            width: 328.w,
+        Align(
+          child: SizedBox(
+            height: 80,
+            child: NetworkImageWidget(
+              url: imgList!.first,
+              height: 80,
+              width: context!.width * 0.8,
+              fit: BoxFit.cover,
+            ),
           ),
-        ).paddingOnly(bottom: 27.h),
+        ),
+        const SizedBox(height: 10),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              height: 275,
+              width: 207,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: NetworkImageWidget(url: imgList[1], fit: BoxFit.cover),
+              ),
+            ),
+            Positioned(
+              top: 60,
+              right: -120,
+              child: SizedBox(
+                height: 100,
+                width: 171,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: NetworkImageWidget(url: imgList[2], fit: BoxFit.cover),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 180,
+              right: -120,
+              child: SizedBox(
+                height: 100,
+                width: 171,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: NetworkImageWidget(url: imgList[3], fit: BoxFit.cover),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 46),
         Row(
           children: [
             SizedBox(
               width: 163.w,
               child: buildBorderButton(
-                context: context!,
+                context: context,
                 borderColor: borderColor!,
                 bgColor: Colors.white,
                 onPressed: () {
@@ -116,7 +160,7 @@ class ThirdGymInstructionScreen extends StatelessWidget {
                 onPressed: () {
                   Get.toNamed('/FourthGymInstructionScreen', arguments: gender);
                 },
-                bgColor: Bgcolor,
+                bgColor: bgColor,
               ),
             )
           ],

@@ -53,6 +53,7 @@ Widget commonTextFormField({
       keyboardType: textInputType,
       onTap: onTap,
       inputFormatters: inputFormatters,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         hintStyle: hintStyle,

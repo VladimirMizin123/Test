@@ -13,6 +13,7 @@ class SaveClickEvent extends AddressEvent {
   final bool isPrimary;
   final String userId;
   final String isFrom;
+  final String? floor;
 
   SaveClickEvent({
     required this.latitude,
@@ -27,6 +28,7 @@ class SaveClickEvent extends AddressEvent {
     required this.isPrimary,
     required this.userId,
     required this.isFrom,
+    this.floor,
   });
 }
 
@@ -44,7 +46,7 @@ class UpdateClickEvent extends AddressEvent {
   final String userId;
   final String isFrom;
   final String addressId;
-  final int floor;
+  final String? floor;
 
   UpdateClickEvent({
     required this.latitude,
@@ -60,7 +62,7 @@ class UpdateClickEvent extends AddressEvent {
     required this.userId,
     required this.isFrom,
     required this.addressId,
-    required this.floor,
+    this.floor,
   });
 }
 

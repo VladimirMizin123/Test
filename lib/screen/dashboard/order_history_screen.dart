@@ -8,7 +8,6 @@ import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_state.
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/extention/ext_on_string.dart';
 import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
 
@@ -292,6 +291,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder:
                                           (BuildContext context, int index) {
+                                        OrderedItem item = invoiceData[index];
+
                                         return Container(
                                           width: double.infinity.w,
                                           // padding: const EdgeInsets.all(12),
@@ -323,9 +324,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                         horizontal: 0,
                                                         vertical: 0),
                                                 minVerticalPadding: 0,
-                                                leading:
-                                                    "${invoiceData[index].items?[0].stores?.storeId}"
-                                                        .storeImg(40),
+                                                // leading:
+                                                //     "${invoiceData[index].items?[0].stores?.storeId}"
+                                                //         .storeImg(40),
                                                 title: SizedBox(
                                                   child: Text(
                                                     invoiceData[index]
@@ -369,12 +370,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                     bottom: 15.0),
                                                 child: Row(
                                                   children: [
-                                                    const Expanded(
+                                                    Expanded(
                                                       child: Column(
                                                         children: [
                                                           Row(
                                                             children: [
-                                                              Text(
+                                                              const Text(
                                                                 StringUtils
                                                                     .orderType,
                                                                 style:
@@ -388,9 +389,15 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                                 ),
                                                               ),
                                                               Text(
-                                                                'Delivery',
+                                                                (item.items?.isNotEmpty ??
+                                                                        false)
+                                                                    ? (item.items?.first.isPickUp ??
+                                                                            false)
+                                                                        ? "Pick up"
+                                                                        : 'Delivery'
+                                                                    : 'Delivery',
                                                                 style:
-                                                                    TextStyle(
+                                                                    const TextStyle(
                                                                   color: AppColors
                                                                       .oxFF010101,
                                                                   fontWeight:
@@ -401,7 +408,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                               ),
                                                             ],
                                                           ),
-                                                          Row(
+                                                          const Row(
                                                             children: [
                                                               Text(
                                                                 StringUtils

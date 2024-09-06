@@ -68,6 +68,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.matchMealStatus);
     return WillPopScope(
       onWillPop: () => Future(() => false),
       child: Scaffold(
@@ -117,9 +118,13 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Matches with your Meal Plan',
-                          style: TextStyle(
+                        Text(
+                          switch (widget.matchMealStatus) {
+                            0 => "Matches with your Meal Plan",
+                            1 => "Partly matches with your Meal Plan",
+                            _ => "Doesn’t match with your Meal Plan",
+                          },
+                          style:const TextStyle(
                             color: Color(0xff5F5F5F),
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -517,6 +522,10 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
   ) {
     final screenSize = MediaQuery.of(context).size;
 
+    num per = (value / totalValue).isNaN || (value / totalValue).isInfinite
+        ? 0
+        : value / totalValue;
+
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -538,10 +547,11 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 commonProgressBar(
-                    progressColor: progressBarColor,
-                    width: screenSize.width * 0.27,
-                    percentage: value / totalValue,
-                    lineHeight: 12),
+                  progressColor: progressBarColor,
+                  width: screenSize.width * 0.27,
+                  percentage: per.toDouble(),
+                  lineHeight: 12,
+                ),
               ],
             ),
             Text(

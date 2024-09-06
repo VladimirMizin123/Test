@@ -15,7 +15,6 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../../../constant/asset_utils.dart';
 import '../../../../constant/color_utils.dart';
 import '../../../../widget/back_button_widget.dart';
-import '../../../../widget/svg_image.dart';
 
 class ProgramDetailScreen extends StatefulWidget {
   final String programId;
@@ -99,16 +98,20 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                   children: [
                     Stack(
                       children: [
-                        Container(
-                          height: 230,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(data?.backgroundImage ?? ""),
-                              // image: AssetImage(AssetsUtils.vegetable),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
+                        (data?.backgroundImage != null ||
+                                data?.backgroundImage != "")
+                            ? Container(
+                                height: 230,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        data?.backgroundImage ?? ""),
+                                    // image: AssetImage(AssetsUtils.vegetable),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
                         Positioned(
                           child: Column(
                             children: [
@@ -152,10 +155,26 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 30.w,
-                                      backgroundColor:
-                                          AppColors.primaryBlueColor,
-                                      child: const SvgImage(
-                                        image: AssetsUtils.appleLogo,
+                                      child: CachedNetworkImage(
+                                        width: 180.w,
+                                        height: 90.h,
+                                        imageUrl: data?.programIcon ?? '',
+                                        fit: BoxFit.fill,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.primaryBlue,
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10.w),
+                                          child: const Icon(
+                                            Icons.error,
+                                            color: AppColors.black,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     SizedBox(
@@ -163,6 +182,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                     ),
                                     Text(data?.name ?? '',
                                         style: TextStyle(
+                                            color: Colors.black,
                                             fontSize: 18.sp,
                                             fontWeight: FontWeight.w500)),
                                     Text('by ${data?.author ?? ''}',

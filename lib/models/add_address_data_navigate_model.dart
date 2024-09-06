@@ -1,5 +1,3 @@
-
-
 class AddAddressModel {
   double? latitude;
   double? longitude;
@@ -12,6 +10,7 @@ class AddAddressModel {
   String? zipcode;
   bool? isPrimary;
   String? userId;
+  String? floor;
 
   AddAddressModel({
     this.latitude,

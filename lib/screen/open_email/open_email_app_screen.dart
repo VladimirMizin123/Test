@@ -115,7 +115,9 @@ class OpenEmailAppScreen extends StatelessWidget {
         debugPrint(e.toString());
       });
     } else if (Platform.isIOS) {
-      launch("message://").catchError((e) {});
+      launch("message://").catchError((e) {
+        return e;
+      });
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:either_dart/either.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/daily_recap_modal.dart';
 
@@ -27,6 +27,7 @@ class AddEatenMealRepository {
     num? fat,
     num? carbs,
     num? value,
+    String? date,
   }) async {
     /*
     {
@@ -50,13 +51,14 @@ class AddEatenMealRepository {
       "calorie": calorie ?? 0,
       "mealType": mealType ?? '',
       "noOfServing": noOfServing ?? 0,
-      // "recipeId": recipeId,
+      "recipeId": recipeId,
       "protein": protein ?? 0,
       "fat": fat ?? 0,
       "carbs": carbs ?? 0,
       "value": value ?? 0,
       "userId": userId,
     };
+    data.addIf(date != null, "date", date);
     final response = await apiServices.post(ApiUrls.addMealLog, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));

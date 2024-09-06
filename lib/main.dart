@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
 import 'package:app_links/app_links.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -71,57 +74,59 @@ import 'package:gymeats_mobile/screen/user_type/user_type_screen.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
+import 'package:gymeats_mobile/service/in_app_purchase_service.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
 import 'bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
-import 'bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'constant/string_utils.dart';
 import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
 import 'screen/reset_password/reset_password_screen.dart';
 import 'package:http/http.dart' as http;
 
+final configuration = ValueNotifier<VideoControllerConfiguration>(
+  const VideoControllerConfiguration(enableHardwareAcceleration: true),
+);
+
 late HiveSingleton hiveSingleton;
-// LATTEST CODE. . .
+
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      MediaKit.ensureInitialized();
 
-  // await Hive.initFlutter();
-  hiveSingleton = HiveSingleton();
-  await hiveSingleton.initHive();
+      hiveSingleton = HiveSingleton();
+      await hiveSingleton.initHive();
 
-  // cameras = await availableCameras();
-  await PreferenceUtils.init();
-  await Firebase.initializeApp(
-      /* name: 'GymEats',
-    options: FirebaseOptions(
-      apiKey: apiKey,
-      appId: appId,
-      messagingSenderId: messagingSenderId,
-      projectId: projectId,
-    ),*/
-      );
-  await initDynamicLinks();
+      await PreferenceUtils.init();
 
-// Subscribe to all events when app is started.
-// (Use allStringLinkStream to get it as [String])
+      await Firebase.initializeApp();
+      await initDynamicLinks();
+      IapService.i.initialize();
 
-  String? forgetPasswordToken;
-  bool? isFromConfirm;
-
-  if (PreferenceUtils.getBool(prefIsLogin)) {
-    if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
-      userId = PreferenceUtils.getString(prefUserData);
-    }
-  }
-  runApp(MyApp(
-    forgotPasswordToken: forgetPasswordToken,
-    isFromConfirm: isFromConfirm,
-  ));
+      String? forgetPasswordToken;
+      bool? isFromConfirm;
+      if (PreferenceUtils.getBool(prefIsLogin)) {
+        if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
+          userId = PreferenceUtils.getString(prefUserData);
+        }
+      }
+      runApp(MyApp(
+        forgotPasswordToken: forgetPasswordToken,
+        isFromConfirm: isFromConfirm,
+      ));
+    },
+    (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    },
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -159,7 +164,7 @@ class _MyAppState extends State<MyApp> {
         }
       });
     });
-    bloc.add(LatLogEvent());
+    // bloc.add(LatLogEvent());
     _dbTest();
     super.initState();
   }
@@ -241,6 +246,9 @@ class _MyAppState extends State<MyApp> {
                   ? "/LoginScreen"
                   : '/',
           // initialRoute: 'SignUpScreen',
+          navigatorObservers: [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ],
           getPages: [
             GetPage(
               name: '/LoginScreen',

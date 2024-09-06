@@ -49,3 +49,7 @@ class GetOrderInvoiceSuccessState extends GetDashboardState {
 }
 
 class GetOrderInvoiceErrorState extends GetDashboardState {}
+
+class AddIngredientErrorState extends GetDashboardState {}
+
+class AddIngredientSuccessState extends GetDashboardState {}

@@ -19,7 +19,10 @@ class JournalFetchMealPlanSuccessState extends JournalMealPlanState {
   JournalFetchMealPlanSuccessState({required this.mealPlanList});
 }
 
-class JournalFetchMealPlanLoadingState extends JournalMealPlanState {}
+class JournalFetchMealPlanLoadingState extends JournalMealPlanState {
+  final bool value;
+  JournalFetchMealPlanLoadingState({required this.value});
+}
 
 class JournalFetchMealPlanErrorState extends JournalMealPlanState {}
 
@@ -28,7 +31,8 @@ class JournalSkipMealPlanSuccessState extends JournalMealPlanState {
   final SkipMealPlanData skipMealPlanData;
   final String mealID;
 
-  JournalSkipMealPlanSuccessState({required this.skipMealPlanData, required this.mealID});
+  JournalSkipMealPlanSuccessState(
+      {required this.skipMealPlanData, required this.mealID});
 }
 
 class JournalSkipMealPlanLoadingState extends JournalMealPlanState {}
@@ -131,7 +135,11 @@ class JournalAddToShoppingSuccessState extends JournalMealPlanState {
   final bool? isAdd;
   final bool? isRemove;
 
-  JournalAddToShoppingSuccessState({required this.recipesAddToGroceryData, required this.isAdd, required this.isAdded, required this.isRemove});
+  JournalAddToShoppingSuccessState(
+      {required this.recipesAddToGroceryData,
+      required this.isAdd,
+      required this.isAdded,
+      required this.isRemove});
 }
 
 class JournalAddToShoppingErrorState extends JournalMealPlanState {}
@@ -153,8 +161,8 @@ class JournalAddEatenErrorState extends JournalMealPlanState {
   JournalAddEatenErrorState();
 }
 
-
 class OnGetMealLogByDateLoadingState extends JournalMealPlanState {}
+
 class OnGetMealLogByDateErrorState extends JournalMealPlanState {}
 
 class OnGetMealLogByDateSuccessState extends JournalMealPlanState {

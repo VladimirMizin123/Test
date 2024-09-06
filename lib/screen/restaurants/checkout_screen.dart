@@ -11,16 +11,20 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/models/payment_status_model.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
@@ -34,6 +38,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart'
     as product;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -53,6 +58,7 @@ class CheckOutScreen extends StatefulWidget {
     this.hasMultipleStore = false,
     required this.getUserAddress,
     this.createMultipleOrder = false,
+    this.currentAddress,
     // required this.subtotal,
     // required this.pickup,
   });
@@ -61,6 +67,7 @@ class CheckOutScreen extends StatefulWidget {
   final bool isFromGrocery;
   final bool hasMultipleStore;
   final bool createMultipleOrder;
+  final String? currentAddress;
   final List<GroceryDetails>? groceryList;
 
   final dynamic /*List<ShoppingListData>*/ cartData;
@@ -74,47 +81,55 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
+    (double?, double?) i = await Constant.i.position;
+    getCurrentLocation(
+      latitude: i.$1 ?? (widget.getUserAddress?.latitude ?? 0),
+      longitude: i.$2 ?? widget.getUserAddress?.longitude ?? 0,
+    );
   }
 
   CameraPosition currentPosition = const CameraPosition(
     target: LatLng(21.2147, 72.8887),
     zoom: 1.20,
   );
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   LatLng? selectedLatLng;
   String? selectedLocationValue;
-  List<Marker> markers = [];
+  List<Marker>? markers = [];
   bool paymentStatusLoader = false;
 
   /// Get Current location ---------------------------------------------------------
   Future getCurrentLocation({dynamic latitude, dynamic longitude}) async {
-    BitmapDescriptor? customIcon;
+    try {
+      BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    customIcon = BitmapDescriptor.fromBytes(
-        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
-    selectedLatLng = LatLng(latitude, longitude);
+      customIcon = BitmapDescriptor.fromBytes(
+          await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
+      selectedLatLng = LatLng(latitude, longitude);
+      currentPosition = CameraPosition(
+        target: LatLng(latitude, longitude),
+        zoom: 14.4746,
+      );
 
-    currentPosition = CameraPosition(
-      target: LatLng(latitude, longitude),
-      zoom: 14.4746,
-    );
-
-    setState(() {
       markers = [
         Marker(
           markerId: const MarkerId('0'),
           position: LatLng(latitude, longitude),
-          icon: customIcon!,
+          icon: customIcon,
         )
       ];
-    });
-    mapController
-        .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    setState(() {});
-    return true;
+
+      mapController
+          ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      setState(() {});
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
   /// Marker Icon for location ---------------------------------------------------------
@@ -152,20 +167,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   void initState() {
-    super.initState();
     restaurantBloc.add(GetUserAddressEvent());
     restaurantBloc.add(GetDeliveryStatusEvent());
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getCurrentLocation(
-        latitude: widget.getUserAddress?.latitude ?? 0,
-        longitude: widget.getUserAddress?.longitude ?? 0,
-      );
-      // widget.lateLong;
-    });
+
     String card = PreferenceUtils.getString(paymentCard);
     if (card.trim().isNotEmpty) {
       cardData = jsonDecode(card);
     }
+    super.initState();
   }
 
   @override
@@ -345,12 +354,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   });
                                 }
                               } else {
-                                restaurantBloc.add(
-                                  ClearShoppingListItemEvent(onCallback: () {
-                                    PreferenceUtils.removePref(paymentCard);
-                                    Get.to(() => const PaymentSuccessScreen());
-                                  }),
-                                );
+                                cartBloc.add(RemoveCart());
+                                PreferenceUtils.removePref(paymentCard);
+                                Get.to(() => const PaymentSuccessScreen());
                               }
                             } else {
                               showToast(
@@ -608,255 +614,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xff004C63)
-                                          .withOpacity(0.08),
-                                      offset: const Offset(0, 0),
-                                      blurRadius: 16,
-                                    )
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    SvgPicture.asset(AssetsUtils.deliveryInfo),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    Text(
-                                      selectedIndex == 0
-                                          ? 'Bring me the order'
-                                          : 'I will pick it myself',
-                                      style: const TextStyle(
-                                        color: Color(0xff010101),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (context) {
-                                            return DeliverOrderBottomSheet(
-                                              isFrom: 'isFromCheckout',
-                                              selectedIndex: selectedIndex,
-                                            );
-                                          },
-                                          isDismissible: false,
-                                          enableDrag: false,
-                                          showDragHandle: false,
-                                          isScrollControlled: true,
-                                          shape: OutlineInputBorder(
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(16.r),
-                                              topRight: Radius.circular(16.r),
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: Colors.transparent,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Edit',
-                                            style: FontUtils.h14(
-                                              fontColor: AppColors.terracotta,
-                                              fontWeight: FWT.lightMedium,
-                                            ),
-                                          ),
-                                          const Icon(
-                                            Icons.keyboard_arrow_right_sharp,
-                                            color: AppColors.terracotta,
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              /// Google Map ------------------------------------------------------------------------
-
-                              Container(
-                                height: 200.h,
-                                margin: EdgeInsets.symmetric(vertical: 16.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xff004C63)
-                                          .withOpacity(0.08),
-                                      offset: const Offset(0, 0),
-                                      blurRadius: 16,
-                                    )
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: GoogleMap(
-                                        markers: Set<Marker>.of(markers),
-                                        onMapCreated: _onMapCreated,
-                                        initialCameraPosition: currentPosition,
-                                        myLocationButtonEnabled: true,
-                                        zoomControlsEnabled: false,
-                                        compassEnabled: true,
-                                        onTap: (argument) async {},
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 16),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(() => const GetUserAddress(),
-                                              transition: Transition.fadeIn,
-                                              arguments: {
-                                                "string": 'isFromCheckout',
-                                                "userData": ''
-                                              });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SvgPicture.asset(
-                                                AssetsUtils.icHome),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            SizedBox(
-                                              width: 200.w,
-                                              child: Text(
-                                                widget.getUserAddress
-                                                        ?.streetName ??
-                                                    'Where?',
-                                                style: const TextStyle(
-                                                  color: AppColors.darkGray,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            const Icon(
-                                              Icons.keyboard_arrow_right_sharp,
-                                              color: AppColors.darkGray,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              /// Order List ------------------------------------------------------------------------
-
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                clipBehavior: Clip.none,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xff004C63)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 16,
-                                      )
-                                    ],
-                                  ),
-                                  child: Theme(
-                                    data: ThemeData(
-                                        dividerColor: Colors.transparent),
-                                    child: ExpansionTile(
-                                      shape:
-                                          Border.all(color: Colors.transparent),
-                                      collapsedShape:
-                                          Border.all(color: Colors.transparent),
-                                      title: Row(
-                                        children: [
-                                          Image.asset(
-                                            AssetsUtils.menuIcon,
-                                            height: 16,
-                                            width: 18,
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 15.w, right: 8.w),
-                                            child: const Text(
-                                              'Your Order',
-                                              style: TextStyle(
-                                                color: Color(0xff010101),
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 9, vertical: 1),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.terracotta,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                '${widget.cartData.length}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: const Color(0xff004C63)
-                                                    .withOpacity(0.08),
-                                                offset: const Offset(0, 0),
-                                                blurRadius: 16,
-                                              )
-                                            ],
-                                          ),
-                                          child: Column(
-                                            children: _yourOrder(),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
 
                               /// Order Notes--------------------------------------------------------------------
                               Padding(
-                                padding:
-                                    EdgeInsets.only(top: 20.h, bottom: 16.h),
+                                padding: EdgeInsets.only(bottom: 16.h),
                                 child: Text(
                                   ' Order Notes',
                                   style: FontUtils.h18(
@@ -903,9 +664,285 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 ),
                               ),
 
-                              SizedBox(
-                                height: 16.h,
-                              )
+                              SizedBox(height: 16.h),
+
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xff004C63)
+                                          .withOpacity(0.08),
+                                      offset: const Offset(0, 0),
+                                      blurRadius: 16,
+                                    )
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(AssetsUtils.deliveryInfo),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    Text(
+                                      selectedIndex == 0
+                                          ? 'Bring me the order'
+                                          : 'I will pick it up myself',
+                                      style: const TextStyle(
+                                        color: Color(0xff010101),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) {
+                                            return DeliverOrderBottomSheet(
+                                              isFrom: 'isFromCheckout',
+                                              selectedIndex: selectedIndex,
+                                            );
+                                          },
+                                          isDismissible: true,
+                                          enableDrag: true,
+                                          showDragHandle: false,
+                                          isScrollControlled: true,
+                                          shape: OutlineInputBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(16.r),
+                                              topRight: Radius.circular(16.r),
+                                            ),
+                                            borderSide: const BorderSide(
+                                              color: Colors.transparent,
+                                            ),
+                                          ),
+                                        ).then((value) {
+                                          setState(() {
+                                            List<String> options = [
+                                              'Bring me the order',
+                                              'I will pick it up myself'
+                                            ];
+                                            result =
+                                                value ?? options[selectedIndex];
+                                            int sIndex =
+                                                result == 'Bring me the order'
+                                                    ? 0
+                                                    : 1;
+                                            if (!widget.isFromGrocery) {
+                                              selectedIndex = sIndex;
+                                            } else {
+                                              if (selectedIndex != sIndex) {
+                                                Get.offAll(
+                                                    const AppManagerScreen(
+                                                        selectIndex: 1));
+                                              }
+                                            }
+                                          });
+                                        });
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Edit',
+                                            style: FontUtils.h14(
+                                              fontColor: AppColors.terracotta,
+                                              fontWeight: FWT.lightMedium,
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.keyboard_arrow_right_sharp,
+                                            color: AppColors.terracotta,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              /// Google Map ------------------------------------------------------------------------
+
+                              Container(
+                                height: 200.h,
+                                margin: EdgeInsets.symmetric(vertical: 16.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xff004C63)
+                                          .withOpacity(0.08),
+                                      offset: const Offset(0, 0),
+                                      blurRadius: 16,
+                                    )
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: GoogleMap(
+                                        markers: Set<Marker>.of(markers ?? []),
+                                        onMapCreated: (controller) {
+                                          _onMapCreated(controller);
+                                        },
+                                        initialCameraPosition: currentPosition,
+                                        myLocationButtonEnabled: true,
+                                        zoomControlsEnabled: false,
+                                        compassEnabled: true,
+                                        onTap: (argument) async {},
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 16),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => const GetUserAddress(),
+                                              transition: Transition.fadeIn,
+                                              arguments: {
+                                                "string": 'isFromCheckout',
+                                                "userData": ''
+                                              });
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                                AssetsUtils.icHome),
+                                            const SizedBox(
+                                              width: 15,
+                                            ),
+                                            SizedBox(
+                                              width: 200.w,
+                                              child: Text(
+                                                PreferenceUtils.isManualLocation
+                                                    ? (widget.getUserAddress
+                                                            ?.streetName ??
+                                                        'Where?')
+                                                    : widget.currentAddress ??
+                                                        "Current Location",
+                                                style: const TextStyle(
+                                                  color: AppColors.darkGray,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            const Icon(
+                                              Icons.keyboard_arrow_right_sharp,
+                                              color: AppColors.darkGray,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              /// Order List ------------------------------------------------------------------------
+
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                clipBehavior: Clip.none,
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 16.h),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff004C63)
+                                              .withOpacity(0.08),
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 16,
+                                        )
+                                      ],
+                                    ),
+                                    child: Theme(
+                                      data: ThemeData(
+                                          dividerColor: Colors.transparent),
+                                      child: ExpansionTile(
+                                        shape: Border.all(
+                                            color: Colors.transparent),
+                                        collapsedShape: Border.all(
+                                            color: Colors.transparent),
+                                        title: Row(
+                                          children: [
+                                            Image.asset(
+                                              AssetsUtils.menuIcon,
+                                              height: 16,
+                                              width: 18,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 15.w, right: 8.w),
+                                              child: const Text(
+                                                'Your Order',
+                                                style: TextStyle(
+                                                  color: Color(0xff010101),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 9,
+                                                      vertical: 1),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.terracotta,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${widget.cartData.length}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff004C63)
+                                                      .withOpacity(0.08),
+                                                  offset: const Offset(0, 0),
+                                                  blurRadius: 16,
+                                                )
+                                              ],
+                                            ),
+                                            child: Column(
+                                              children: _yourOrder(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16.h)
                             ],
                           ),
                         ),
@@ -1187,6 +1224,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   List<Widget> _yourOrder() {
+    if (widget.cartData is List<MenuItemList>) {
+      List<MenuItemList> cartList = widget.cartData as List<MenuItemList>;
+      return List.generate(
+        cartList.length,
+        (index) {
+          MenuItemList cart = cartList[index];
+          return _orderCardWidget(
+              cart.cartQuantity ?? 0, cart.name ?? "", cart.price);
+        },
+      );
+    }
     if (widget.cartData is List<ShoppingListData>) {
       List<ShoppingListData> cartList =
           widget.cartData as List<ShoppingListData>;

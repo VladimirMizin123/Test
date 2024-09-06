@@ -82,6 +82,7 @@ class NutritionixGetNxMealInfoByNameModelData {
   final dynamic tagId;
   final DateTime? updatedAt;
   final String? nfIngredientStatement;
+  final bool? eatableType;
 
   NutritionixGetNxMealInfoByNameModelData({
     this.foodName,
@@ -121,6 +122,7 @@ class NutritionixGetNxMealInfoByNameModelData {
     this.tagId,
     this.updatedAt,
     this.nfIngredientStatement,
+    this.eatableType,
   });
 
   factory NutritionixGetNxMealInfoByNameModelData.fromJson(
@@ -170,6 +172,7 @@ class NutritionixGetNxMealInfoByNameModelData {
             ? null
             : DateTime.parse(json["updated_At"]),
         nfIngredientStatement: json["nf_Ingredient_Statement"],
+        eatableType: json["eatableType"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -212,6 +215,7 @@ class NutritionixGetNxMealInfoByNameModelData {
         "tag_id": tagId,
         "updated_at": updatedAt?.toIso8601String(),
         "nf_ingredient_statement": nfIngredientStatement,
+        "eatableType": eatableType,
       };
 }
 

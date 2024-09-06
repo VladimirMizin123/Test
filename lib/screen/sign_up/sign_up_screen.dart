@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
@@ -25,6 +26,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isConFirmPassword = false;
 
   SignUpBloc bloc = SignUpBloc();
+
+  @override
+  void initState() {
+    if (Get.arguments != null) {
+      homeScreenController.initRegister(Get.arguments);
+    }
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    PreferenceUtils.removePref(prefUserEmail);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +73,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     //     .copyWith(color: const Color(0xFF004C63)),
                   ).paddingOnly(top: 10),
                   Text(
-                    'Create your GYM EATS account to continue',
+                    homeController.argumentData == null
+                        ? 'Create your GYM EATS account to continue'
+                        : 'Complete your GYM EATS account to continue',
                     style: textTheme.bodyMedium!.copyWith(
                         color: const Color(0xFF5F5F5F),
                         fontSize: 18.sp,
@@ -74,10 +92,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: StringUtils.lName)
                       .paddingOnly(top: 16),
                   commonTextField(
-                          context: context,
-                          controller: homeController.emailController,
-                          hintText: StringUtils.email)
-                      .paddingOnly(top: 16),
+                    context: context,
+                    controller: homeController.emailController,
+                    hintText: StringUtils.email,
+                    readOnly: homeController.argumentData != null,
+                  ).paddingOnly(top: 16),
                   commonTextField(
                     context: context,
                     controller: homeController.phoneNumberController,
@@ -85,28 +104,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textInputType: TextInputType.number,
                     maxLength: 10,
                   ).paddingOnly(top: 16),
-                  commonTextField(
-                          context: context,
-                          controller: homeController.passwordController,
-                          eyeShow: true,
-                          isPassword: isPassword,
-                          onTap: () {
-                            isPassword = !isPassword;
-                            setState(() {});
-                          },
-                          hintText: StringUtils.password)
-                      .paddingOnly(top: 16),
-                  commonTextField(
-                          context: context,
-                          eyeShow: true,
-                          isPassword: isConFirmPassword,
-                          onTap: () {
-                            isConFirmPassword = !isConFirmPassword;
-                            setState(() {});
-                          },
-                          controller: homeController.confirmPasswordController,
-                          hintText: StringUtils.confirmPassword)
-                      .paddingOnly(top: 16),
+                  if (!(homeController.argumentData?['fromLogin'] ??
+                      false)) ...[
+                    commonTextField(
+                            context: context,
+                            controller: homeController.passwordController,
+                            eyeShow: true,
+                            isPassword: isPassword,
+                            onTap: () {
+                              isPassword = !isPassword;
+                              setState(() {});
+                            },
+                            hintText: StringUtils.password)
+                        .paddingOnly(top: 16),
+                    commonTextField(
+                            context: context,
+                            eyeShow: true,
+                            isPassword: isConFirmPassword,
+                            onTap: () {
+                              isConFirmPassword = !isConFirmPassword;
+                              setState(() {});
+                            },
+                            controller:
+                                homeController.confirmPasswordController,
+                            hintText: StringUtils.confirmPassword)
+                        .paddingOnly(top: 16),
+                  ],
                   BlocConsumer<SignUpBloc, SignUpState>(
                       bloc: bloc,
                       listener: (context, state) {
@@ -123,36 +146,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ).paddingOnly(top: 10);
                         }
                         return buildButton(
-                                context: context,
-                                onPressed: () async {
-                                  final data =
-                                      await homeController.joinGymEatButton();
-                                  if (data == null) {
-                                    return;
-                                  }
-                                  bloc.add(
-                                    CheckEmailEvent(
-                                      email:
-                                          homeController.emailController.text,
-                                      confirmPassword: homeController
-                                          .confirmPasswordController.text,
-                                      fName:
-                                          homeController.fNameController.text,
-                                      lName: homeController
-                                          .lastNameController.text,
-                                      password: homeController
-                                          .passwordController.text,
-                                      userName:
-                                          homeController.emailController.text,
-                                      phoneNumber: homeController
-                                          .phoneNumberController.text,
-                                    ),
-                                  );
-                                },
-                                textColor: const Color(0xFFD9E9EE),
-                                bgColor: const Color(0xFF004C63),
-                                title: StringUtils.joinGymEats)
-                            .paddingOnly(top: 25.h);
+                          context: context,
+                          onPressed: () async {
+                            final data = await homeController.joinGymEatButton(
+                                homeController.argumentData != null);
+                            if (data == null) {
+                              return;
+                            }
+                            if (homeController.argumentData == null) {
+                              bloc.add(
+                                CheckEmailEvent(
+                                  email: homeController.emailController.text,
+                                  confirmPassword: homeController
+                                      .confirmPasswordController.text,
+                                  fName: homeController.fNameController.text,
+                                  lName: homeController.lastNameController.text,
+                                  password:
+                                      homeController.passwordController.text,
+                                  userName:
+                                      "${homeController.fNameController.text}${homeController.lastNameController.text}",
+                                  phoneNumber:
+                                      homeController.phoneNumberController.text,
+                                ),
+                              );
+                            } else {
+                              await homeScreenController.continueRegister();
+                            }
+                          },
+                          textColor: const Color(0xFFD9E9EE),
+                          bgColor: const Color(0xFF004C63),
+                          title: Get.arguments == null
+                              ? StringUtils.joinGymEats
+                              : StringUtils.continueTxt,
+                        ).paddingOnly(top: 25.h);
                       }),
                   /*Text(
                     StringUtils.or,
@@ -200,7 +226,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               // Single tapped.
-                              Get.toNamed('/LoginScreen');
+                              Get.back();
                             },
                         ),
                       ],

@@ -25,6 +25,7 @@ class AddressConfirmation extends StatefulWidget {
 class _AddressConfirmationState extends State<AddressConfirmation> {
   TextEditingController streetName = TextEditingController();
   TextEditingController apartmentName = TextEditingController();
+  TextEditingController floor = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController zipName = TextEditingController();
   TextEditingController addressType = TextEditingController();
@@ -52,9 +53,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
           listener: (context, state) {},
           builder: (context, state) => Column(
             children: [
-              SizedBox(
-                height: 8.h,
-              ),
+              SizedBox(height: 8.h),
               Center(
                 child: Image.asset(
                   AssetsUtils.gymEatsSpoon,
@@ -82,120 +81,93 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
-                        child: Text('Address Type',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
-                      ),
-                      commonTextField(
-                          controller: addressType,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please Enter Address Type';
-                            } else {
-                              return null;
-                            }
-                          }),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('Street',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
-                      ),
-                      commonTextField(
-                          controller: streetName,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please Enter Street Name';
-                            } else {
-                              return null;
-                            }
-                          }),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('Apartment number',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
-                      ),
-                      commonTextField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please Enter Apartment number';
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: apartmentName,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text('City',
-                            style: TextStyle(
-                                color: const Color(0xff373737),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w300)),
-                      ),
-                      commonTextField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please Enter City Name';
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: city,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                        child: Text(
-                          'Zip',
-                          style: TextStyle(
-                              color: const Color(0xff373737),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Form(
+                    key: formKey,
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 20.h),
+                          child: Text('Address Type',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
                         ),
-                      ),
-                      commonTextField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please Enter Zip Code';
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: zipName,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
+                        commonTextField(controller: addressType),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('Street',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(
+                            controller: streetName,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please Enter Street Name';
+                              } else {
+                                return null;
+                              }
+                            }),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('Street Number',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(controller: apartmentName),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('Extended Address',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(controller: floor),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('City',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(controller: city),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text(
+                            'Zip',
+                            style: TextStyle(
+                                color: const Color(0xff373737),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w300),
+                          ),
+                        ),
+                        commonTextField(controller: zipName),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   String userID = PreferenceUtils.getString(prefUserData);
                   if (formKey.currentState!.validate()) {
                     if (widget.arguments['string'] == 'isFromRegister') {
                       AddAddressModel addAddressModel = AddAddressModel();
-                      addAddressModel.latitude = double.parse(
+                      addAddressModel.latitude = double.tryParse(
                           widget.locationData['latitude'].toString());
-                      addAddressModel.longitude = double.parse(
+                      addAddressModel.longitude = double.tryParse(
                           widget.locationData['longitude'].toString());
                       addAddressModel.streetNum = apartmentName.text;
                       addAddressModel.streetName = streetName.text;
@@ -206,20 +178,27 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                       addAddressModel.addressType = addressType.text;
                       addAddressModel.zipcode = zipName.text;
                       addAddressModel.isPrimary = true;
+                      addAddressModel.floor = floor.text;
 
                       UserSignUpDataModel userData = UserSignUpDataModel(
                         firstName: widget.arguments['userData'].firstName,
                         lastName: widget.arguments['userData'].lastName,
                         email: widget.arguments['userData'].email,
                         password: widget.arguments['userData'].password,
-                        userName: widget.arguments['userData'].email,
+                        userName: widget.arguments['userData'].userName,
                         confirmPassword:
                             widget.arguments['userData'].confirmPassword,
                         phoneNumber: widget.arguments['userData'].phoneNumber,
+                        userId: widget.arguments['userData'].userId,
                         addAddressModel: addAddressModel,
                       );
 
-                      Get.toNamed('/PremiumScreen', arguments: userData);
+                      if (widget.arguments?["alreadyPurchase"] ?? false) {
+                        Get.toNamed('/BuildMyProfileScreen',
+                            arguments: userData);
+                      } else {
+                        Get.toNamed('/PremiumScreen', arguments: userData);
+                      }
                     } else {
                       bloc.add(
                         SaveClickEvent(
@@ -240,6 +219,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                           isPrimary: true,
                           userId: userID,
                           isFrom: widget.arguments['string'],
+                          floor: floor.text,
                         ),
                       );
                     }
@@ -255,7 +235,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                     : Container(
                         height: 48.h,
                         margin: EdgeInsets.only(
-                            top: 0.h, bottom: 40.h, right: 20.w, left: 20.w),
+                            top: 0.h, bottom: 20.h, right: 20.w, left: 20.w),
                         width: Get.width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),

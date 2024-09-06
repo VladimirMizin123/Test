@@ -1,14 +1,26 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/extention/ext_on_list.dart';
+import 'package:gymeats_mobile/models/available_store_model.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/checkout_screen.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/categorie_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
@@ -18,6 +30,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<GroceryAddToShoppingListEvent>(_onAddToShoppingList);
     on<RemoveGroceryEvent>(_onRemoveShoppingItem);
     on<GrocerySearchEvent>(_onSearchItem);
+    on<StoreNearByEvent>(_onNearByStore);
+    on<StoreByNameEvent>(_onGetStoreByName);
     on<GroceryDetailsMealInfoEvent>(_onGroceryDetailsMealInfo);
     on<GrocerySelectedStoreEvent>(_onGrocerySelectedStoreEvent);
     on<GroceryProductListEvent>(_onGroceryProductList);
@@ -30,9 +44,13 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<CreateCheckoutEvent>(_onCreateCheckout);
     on<GetDeliveryStatusEvent>(_onGetDeliveryStatus);
     on<CreateMultipleOrderEvent>(_onMultipleOrderCreate);
+    on<StoreCategorieEvent>(_onGetStoreCategorie);
+    on<StoreSubCategorieEvent>(_onGetStoreSubCategorie);
+    on<StoreVerifyEvent>(_onStoreVerify);
   }
 
   final GroceryRepository _repository = GroceryRepository();
+  final RestaurantRepository _resRepo = RestaurantRepository();
 
   _onGroceryProductList(
       GroceryProductListEvent event, Emitter<GroceryState> emit) async {
@@ -170,13 +188,182 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
           .fold((left) {
         emit(GrocerySearchErrorState());
         onFailError(emit: emit, text: left.errorMessage!);
-      }, (right) {
-        emit(GrocerySearchSuccessState(
-            groceryMultiSearchProductList: right.data!.carts));
+      }, (right) async {
+        emit(GroceryPageLoaderState(isLoading: true));
+        List<Cart> verifyCartList = [];
+
+        int totalPage = ((right.data?.carts?.length ?? 0) / 5).ceil();
+        for (int i = 0; i < totalPage; i++) {
+          List<int> array = [];
+          for (int j = 0; j < 5; j++) {
+            int index = (i * 5) + j;
+            if (index < (right.data?.carts?.length ?? 0)) {
+              array.add(index);
+            }
+          }
+          if (!isClosed) {
+            (double?, double?) pos = await Constant.i.position;
+
+            Map<String, dynamic> requestData = {
+              "latitude": pos.$1 ?? event.getUserAddress?.latitude,
+              "longitude": pos.$2 ?? event.getUserAddress?.longitude,
+              "pickup": event.askReceiveOrder?.index == 1,
+              "store_Id":
+                  array.map((e) => right.data?.carts?[e].store?.id).toList(),
+            };
+            final response = await ApiServices()
+                .post(ApiUrls.getAvailableGroceryStoreList, requestData);
+            AvailableStoreModel store =
+                AvailableStoreModel.fromJson(jsonDecode(response.body));
+            if (store.data?.stores?.isNotEmpty ?? false) {
+              verifyCartList.addAll(right.data?.carts
+                      ?.where((element) =>
+                          store.data?.stores
+                              ?.any((e) => e.storeId == element.store?.id) ??
+                          false)
+                      .toList() ??
+                  []);
+              emit(GrocerySearchSuccessState(
+                  groceryMultiSearchProductList: verifyCartList));
+            }
+          } else {
+            break;
+          }
+        }
+        emit(GroceryPageLoaderState(isLoading: false));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GrocerySearchErrorState());
+    }
+  }
+
+  _onStoreVerify(StoreVerifyEvent event, Emitter<GroceryState> emit) async {
+    try {
+      emit(VerifyLoader(id: event.id));
+
+      DateTime time = DateTime.now();
+
+      (double?, double?) pos = await Constant.i.position;
+
+      List<Either<ErrorModel, Object>> resList = await Future.wait(
+        [
+          _repository.getStoreCategorieList(event.getUserAddress,
+              event.askReceiveOrder?.index, event.id ?? "",
+              position: pos),
+          _resRepo.checkAvailableStore(
+            storeType: 'grocery',
+            latitude: event.getUserAddress?.latitude.toString(),
+            longitude: event.getUserAddress?.longitude.toString(),
+            pickup: event.askReceiveOrder?.index == 1,
+            storeId: event.id ?? "",
+            position: pos,
+          )
+        ],
+      );
+
+      log("Take Time : ${DateTime.now().difference(time).inSeconds}.${DateTime.now().difference(time).inMilliseconds % 1000}");
+
+      Either<ErrorModel, CategorieModel> categoriesRes =
+          resList[0] as Either<ErrorModel, CategorieModel>;
+      Either<ErrorModel, CheckStoreModel> response =
+          resList[1] as Either<ErrorModel, CheckStoreModel>;
+
+      if (response.isLeft) {
+        if (response.left.errorMessage != null) {
+          showToast(
+              isSuccess: false, message: response.right.errorMessage ?? "");
+        } else {
+          showToast(isSuccess: false, message: "Store not available");
+        }
+        event.notVerify?.call();
+      } else {
+        if ((response.right.success ?? false) &&
+            (response.right.data?.quote?.asapAvailable ?? false)) {
+          event.onVerify
+              ?.call(categoriesRes.isRight ? categoriesRes.right : null);
+        } else {
+          if (response.right.errorMessage != null) {
+            showToast(
+                isSuccess: false, message: response.right.errorMessage ?? "");
+          } else {
+            showToast(isSuccess: false, message: "Store not available");
+          }
+          event.notVerify?.call();
+        }
+      }
+
+      emit(VerifyLoader(id: null));
+    } catch (e) {
+      emit(VerifyLoader(id: null));
+      showToast(isSuccess: false, message: "Store not available");
+    }
+  }
+
+  _onNearByStore(StoreNearByEvent event, Emitter<GroceryState> emit) async {
+    emit(GrocerySearchLoadingState());
+    try {
+      String prefKey;
+      if (event.askReceiveOrder == AskReceiveOrder.bringTheOrder) {
+        prefKey = groceryBring;
+      } else {
+        prefKey = groceryPickup;
+      }
+      Either<ErrorModel, NearByStoreModel> res =
+          await _repository.nearByStoreSearch(
+        getUserAddress: event.getUserAddress,
+        askReceiveOrder: event.askReceiveOrder,
+      );
+
+      if (res.isLeft) {
+        emit(GrocerySearchErrorState());
+        onFailError(emit: emit, text: res.left.errorMessage!);
+      } else {
+        log("Set Cache : $prefKey");
+        PreferenceUtils.setString(prefKey, jsonEncode(res.right.data));
+        emit(NearByStoreSuccessState(storeList: res.right.data));
+        emit(NearByStoreLoaderState(isLoading: false));
+      }
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(NearByStoreErrorState(message: e.toString()));
+    }
+  }
+
+  String? prevName;
+
+  _onGetStoreByName(StoreByNameEvent event, Emitter<GroceryState> emit) async {
+    emit(GrocerySearchLoadingState());
+    try {
+      prevName = event.name;
+      if (prevName?.trim().isNotEmpty ?? false) {
+        await _repository
+            .getStoreByName(
+          latitude: PreferenceUtils.getString(latitude).isNotEmpty
+              ? PreferenceUtils.getString(latitude)
+              : '41.881832',
+          longitude: PreferenceUtils.getString(longitude).isNotEmpty
+              ? PreferenceUtils.getString(longitude)
+              : '-87.623177',
+          getUserAddress: event.getUserAddress,
+          askReceiveOrder: event.askReceiveOrder,
+          name: event.name,
+        )
+            .fold((left) {
+          emit(GrocerySearchErrorState());
+          onFailError(emit: emit, text: left.errorMessage!);
+        }, (right) async {
+          if (event.name == prevName) {
+            emit(NearByStoreSuccessState(storeList: right.data));
+            emit(NearByStoreLoaderState(isLoading: false));
+          }
+        });
+      } else {
+        emit(NearByStoreLoaderState(isLoading: false));
+      }
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
+      emit(NearByStoreErrorState(message: e.toString()));
     }
   }
 
@@ -269,7 +456,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   // Create Order Bloc ==============================================================================
 
   _onCreateOrder(CreateOrderEvent event, Emitter<GroceryState> emit) async {
-    emit(CreateOrderLoadingState());
+    emit(CreateOrderLoadingState(isLoading: true));
 
     try {
       await _repository
@@ -293,6 +480,8 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(CreateOrderErrorState());
+    } finally {
+      emit(CreateOrderLoadingState(isLoading: false));
     }
   }
 
@@ -441,6 +630,51 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetDeliveryStatusErrorState());
+    }
+  }
+
+  _onGetStoreCategorie(
+      StoreCategorieEvent event, Emitter<GroceryState> emit) async {
+    try {
+      emit(CategorieLoaderState(loader: true));
+      await _repository
+          .getStoreCategorieList(
+              event.address, event.askReceiveOrder, event.storeId)
+          .fold(
+        (left) => {},
+        (right) {
+          emit(CategorieSuccessState(categoriesList: right));
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(CategorieLoaderState(loader: false));
+    }
+  }
+
+  _onGetStoreSubCategorie(
+      StoreSubCategorieEvent event, Emitter<GroceryState> emit) async {
+    try {
+      emit(SubCategorieLoaderState(loader: true));
+      await _repository
+          .getMenuList(event.address, event.askReceiveOrder, event.storeId,
+              event.subcategoryId)
+          .fold(
+        (left) => {},
+        (right) {
+          emit(
+            SubCategorySuccessState(
+              subcategoryList: right.data?.categories ?? [],
+              subcategoryId: event.subcategoryId,
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(SubCategorieLoaderState(loader: false));
     }
   }
 }

@@ -54,15 +54,18 @@ class GroceryDetails {
   dynamic measurementValue;
   String? userId;
   Product? product;
+  bool? isChecked;
 
-  GroceryDetails(
-      {this.id,
-      this.itemName,
-      this.quantity,
-      this.measurementType,
-      this.measurementValue,
-      this.userId,
-      this.product});
+  GroceryDetails({
+    this.id,
+    this.itemName,
+    this.quantity,
+    this.measurementType,
+    this.measurementValue,
+    this.userId,
+    this.product,
+    this.isChecked,
+  });
 
   factory GroceryDetails.fromJson(Map<String, dynamic> json) => GroceryDetails(
         id: json["id"],
@@ -71,6 +74,7 @@ class GroceryDetails {
         measurementType: json["measurementType"],
         measurementValue: json["measurementValue"],
         userId: json["userId"],
+        isChecked: json["isChecked"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -80,5 +84,6 @@ class GroceryDetails {
         "measurementType": measurementType,
         "measurementValue": measurementValue,
         "userId": userId,
+        "isChecked": isChecked,
       };
 }

@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 class UserSignUpDataModel {
   String? confirmPassword;
   String? email;
+  String? userId;
   String? firstName;
   String? lastName;
   String? password;
@@ -23,11 +24,13 @@ class UserSignUpDataModel {
   List<CustomOptions>? options;
   List<String> restrictionID;
   AddAddressModel? addAddressModel;
+  Map<String, dynamic>? surveyReq;
 
   UserSignUpDataModel({
     this.gender = "",
     this.height = "",
     this.email = "",
+    this.userId,
     this.confirmPassword = "",
     this.password = "",
     this.phoneNumber = "",
@@ -44,5 +47,30 @@ class UserSignUpDataModel {
     this.restrictionID = const [],
     this.options,
     this.addAddressModel,
+    this.surveyReq,
+  });
+}
+
+class PurchaseDetails {
+  bool pendingCompletePurchase;
+  String productID;
+  String purchaseID;
+  String status;
+  String email;
+  String transactionDate;
+  String localVerificationData;
+  String serverVerificationData;
+  String source;
+
+  PurchaseDetails({
+    required this.pendingCompletePurchase,
+    required this.productID,
+    required this.purchaseID,
+    required this.status,
+    required this.email,
+    required this.transactionDate,
+    required this.localVerificationData,
+    required this.serverVerificationData,
+    required this.source,
   });
 }

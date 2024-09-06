@@ -58,8 +58,6 @@ class _BestMatchRestaurantsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
     return /*BlocConsumer<MealPlanBloc, FetchMealPlanState>(
         bloc: mealPlanBloc,
         listener: (context, state) {
@@ -103,14 +101,7 @@ class _BestMatchRestaurantsScreenState
                       GetRestaurantListEvent(
                           getUserAddress?.latitude ?? 0,
                           getUserAddress?.longitude ?? 0,
-                          getUserAddress?.streetNum ?? '',
-                          getUserAddress?.streetName ?? '',
-                          getUserAddress?.city ?? '',
-                          getUserAddress?.state ?? '',
-                          getUserAddress?.country ?? '',
-                          getUserAddress?.zipcode ?? '',
                           false,
-                          5,
                           categoryDataList.map((e) => e["title"]).toList()),
                     );
                   }
@@ -161,31 +152,6 @@ class _BestMatchRestaurantsScreenState
               if (state is GetRestaurantListErrorState) {
                 getRestaurantMenuLoadingState = false;
               }
-/*
-              /// Cousines State ----------------------------------------------------------
-              if (state is GetCousinesListLoadingState) {
-                getCousinesLoadingState = true;
-              }
-              if (state is GetCousinesListSuccessState) {
-                cousinesList = state.cousinesList;
-                cousinesList!.cousines!.isEmpty
-                    ? hasData = false
-                    : hasData = true;
-                getCousinesLoadingState = false;
-              }
-              if (state is GetCousinesListErrorState) {
-                getCousinesLoadingState = false;
-              }
-
-              /// Shopping list state -----------------------------------------------------
-              if (state is GetShoppingListSuccessState) {
-                cartCount = 0;
-                state.shoppingListData?.forEach((element) {
-                  if (element.productType == 'Restaurant') {
-                    cartCount++;
-                  }
-                });
-              }*/
             },
             builder: (context, state) {
               return Scaffold(
@@ -486,15 +452,9 @@ class _BestMatchRestaurantsScreenState
                                                                 .id!,
                                                         pickup: false,
                                                         mealType: mealType,
+                                                        bloc: restaurantBloc,
                                                       ),
-/*
-                                                      transition: Transition.fadeIn,
-*/
-                                                    )!
-                                                        .then((value) {
-                                                      restaurantBloc.add(
-                                                          GetShoppingListEvent());
-                                                    });
+                                                    );
                                                   },
                                                   child: Container(
                                                     width:
@@ -726,7 +686,7 @@ class _BestMatchRestaurantsScreenState
                                                             ],
                                                           ),
                                                         ),
-                                                        /*  result == 'I will pick it myself'
+                                                        /*  result == 'I will pick it up myself'
                                                 ? const SizedBox()
                                                 : Row(
                                                     children: [

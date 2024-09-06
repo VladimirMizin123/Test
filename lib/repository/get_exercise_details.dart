@@ -12,7 +12,8 @@ import '../service/apis.dart';
 class GetExerciseDetailsRepository {
   final ApiServices apiServices = ApiServices();
 
-  Future<Either<ErrorModel, ExerciseLogDetailsModel>> getExerciseDetails({required String date}) async {
+  Future<Either<ErrorModel, ExerciseLogDetailsModel>> getExerciseDetails(
+      {required String date}) async {
     final response = await apiServices.get(
       '${ApiUrls.getExerciseLogDetails}/$userId?date=$date',
     );
@@ -23,9 +24,8 @@ class GetExerciseDetailsRepository {
     }
   }
 
-  
-
-  Future<Either<ErrorModel, GetAllExerciseModal>> getAllExerciseDetails() async {
+  Future<Either<ErrorModel, GetAllExerciseModal>>
+      getAllExerciseDetails() async {
     final response = await apiServices.get(
       ApiUrls.getExerciseList,
     );

@@ -239,6 +239,9 @@ class Product {
   String toString() => toJson().toString();
 }
 
+List<Store> storeListFromJson(String str) => List<Store>.from(
+    json.decode(str)?.map((x) => Store.fromJson(x ?? {})) ?? []);
+
 class Store {
   final String? id;
   final String? name;

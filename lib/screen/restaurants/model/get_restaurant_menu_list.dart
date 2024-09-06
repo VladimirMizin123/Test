@@ -1,9 +1,5 @@
-// To parse this JSON data, do
-//
-//     final getRestaurantMenuListModel = getRestaurantMenuListModelFromJson(jsonString);
-
 import 'dart:convert';
-
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
 
 GetRestaurantMenuListModel getRestaurantMenuListModelFromJson(String str) =>
@@ -61,10 +57,15 @@ class RestaurantMenu {
 
   factory RestaurantMenu.fromJson(Map<String, dynamic> json) => RestaurantMenu(
         menuId: json["menu_id"],
-        breakfastCalorie: json["breakfastCalorie"],
-        lunchCalorie: json["lunchCalorie"],
-        snackCalorie: json["snackCalorie"],
-        dinnerCalorie: json["dinnerCalorie"],
+        breakfastCalorie:
+            num.tryParse(json["breakfastCalorie"]?.toString() ?? "")
+                ?.toDouble(),
+        lunchCalorie:
+            num.tryParse(json["lunchCalorie"]?.toString() ?? "")?.toDouble(),
+        snackCalorie:
+            num.tryParse(json["snackCalorie"]?.toString() ?? "")?.toDouble(),
+        dinnerCalorie:
+            num.tryParse(json["dinnerCalorie"]?.toString() ?? "")?.toDouble(),
         categories: json["categories"] == null
             ? []
             : List<Category>.from(
@@ -137,6 +138,8 @@ class MenuItemList {
   bool isAddUpdated;
   bool isRemoveUpdated;
   NutritionixGetNxMealInfoByNameModelData? mealInfoData;
+  List<SelectedOptions>? selectedOptions;
+  bool? eatableType;
 
   MenuItemList({
     this.name,
@@ -163,6 +166,8 @@ class MenuItemList {
     this.isAddUpdated = false,
     this.isRemoveUpdated = false,
     this.mealInfoData,
+    this.selectedOptions,
+    this.eatableType,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(
@@ -189,33 +194,45 @@ class MenuItemList {
         shouldFetchCustomizations: json["should_fetch_customizations"],
         supportsImageScaling: json["supports_image_scaling"],
         highLightedColor: json["highLightedColor"],
+        cartQuantity: json['cartQuantity'],
+        selectedOptions: json["selectedOptions"] != null
+            ? List<SelectedOptions>.from(json["selectedOptions"]
+                    ?.map((x) => SelectedOptions.fromJson(x ?? {})) ??
+                [])
+            : [],
+        eatableType: json["eatableType"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "price": price,
-        "qty_available": qtyAvailable,
-        "unit_size": unitSize,
-        "unit_of_measurement": unitOfMeasurement,
-        "description": description,
-        "is_available": isAvailable,
-        "min_price": minPrice,
-        "image": image,
-        "customizations": customizations == null
-            ? []
-            : List<dynamic>.from(customizations!.map((x) => x.toJson())),
-        "original_price": originalPrice,
-        "formatted_price": formattedPrice,
-        "attributes": attributes == null
-            ? []
-            : List<dynamic>.from(attributes!.map((x) => x)),
-        "product_id": productId,
-        "thumbnail_image": thumbnailImage,
-        "should_fetch_customizations": shouldFetchCustomizations,
-        "supports_image_scaling": supportsImageScaling,
-        "highLightedColor": highLightedColor,
-        "mealInfoData": mealInfoData?.toJson(),
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "price": price ?? 0,
+      "qty_available": qtyAvailable ?? 0,
+      "unit_size": unitSize ?? 0,
+      "unit_of_measurement": unitOfMeasurement,
+      "description": description,
+      "is_available": isAvailable,
+      "min_price": minPrice,
+      "image": image,
+      "customizations": customizations == null
+          ? []
+          : List<dynamic>.from(customizations!.map((x) => x.toJson())),
+      "original_price": originalPrice,
+      "formatted_price": formattedPrice,
+      "attributes": attributes == null
+          ? []
+          : List<dynamic>.from(attributes!.map((x) => x)),
+      "product_id": productId,
+      "thumbnail_image": thumbnailImage,
+      "should_fetch_customizations": shouldFetchCustomizations,
+      "supports_image_scaling": supportsImageScaling,
+      "highLightedColor": highLightedColor,
+      "mealInfoData": mealInfoData?.toJson(),
+      "cartQuantity": cartQuantity,
+      "selectedOptions": selectedOptions?.map((e) => e.toJson()).toList(),
+      "eatableType": eatableType,
+    };
+  }
 }
 
 class Customization {
@@ -263,6 +280,7 @@ class Option {
   String? formattedPrice;
   int? defaultQty;
   String? optionId;
+  List<Customization>? customizations;
 
   Option({
     this.name,
@@ -272,17 +290,21 @@ class Option {
     this.formattedPrice,
     this.defaultQty,
     this.optionId,
+    this.customizations,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(
-        name: json["name"],
-        price: json["price"],
-        minQty: json["min_qty"],
-        maxQty: json["max_qty"],
-        formattedPrice: json["formatted_price"],
-        defaultQty: json["default_qty"],
-        optionId: json["option_id"],
-      );
+      name: json["name"],
+      price: json["price"],
+      minQty: json["min_qty"],
+      maxQty: json["max_qty"],
+      formattedPrice: json["formatted_price"],
+      defaultQty: json["default_qty"],
+      optionId: json["option_id"],
+      customizations: json["customizations"] != null
+          ? List<Customization>.from(
+              json["customizations"]!.map((x) => Customization.fromJson(x)))
+          : null);
 
   Map<String, dynamic> toJson() => {
         "name": name,
@@ -292,5 +314,6 @@ class Option {
         "formatted_price": formattedPrice,
         "default_qty": defaultQty,
         "option_id": optionId,
+        "customization": customizations?.map((e) => e.toJson()).toList(),
       };
 }

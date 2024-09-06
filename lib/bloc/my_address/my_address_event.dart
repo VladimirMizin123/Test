@@ -9,5 +9,7 @@ class GetUserAddressEvent extends MyAddressEvent {}
 
 class SetPrimaryAddressEvent extends MyAddressEvent {
   final String? addressId;
-  SetPrimaryAddressEvent({this.addressId});
+  final double? lat;
+  final double? lng;
+  SetPrimaryAddressEvent({this.lat, this.lng, this.addressId});
 }

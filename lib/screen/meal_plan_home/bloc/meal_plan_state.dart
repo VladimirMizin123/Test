@@ -30,7 +30,10 @@ class FetchMealPlanErrorState extends FetchMealPlanState {
   FetchMealPlanErrorState({this.hasGrocery = false});
 }
 
-class OnGetMealLogByDateLoadingState extends FetchMealPlanState {}
+class OnGetMealLogByDateLoadingState extends FetchMealPlanState {
+  final bool value;
+  OnGetMealLogByDateLoadingState({required this.value});
+}
 
 class OnGetMealLogByDateSuccessState extends FetchMealPlanState {
   final List<MealDataByDate>? modelData;
@@ -39,6 +42,10 @@ class OnGetMealLogByDateSuccessState extends FetchMealPlanState {
   OnGetMealLogByDateSuccessState(
       {required this.modelData, this.hasGrocery = false});
 }
+
+class OnRemoveMealLogSuccessState extends FetchMealPlanState {}
+
+class OnRemoveMealLogErrorState extends FetchMealPlanState {}
 
 // SKIP MEAL PLAN
 class SkipMealPlanSuccessState extends FetchMealPlanState {
@@ -49,7 +56,10 @@ class SkipMealPlanSuccessState extends FetchMealPlanState {
       {required this.skipMealPlanData, required this.mealID});
 }
 
-class SkipMealPlanLoadingState extends FetchMealPlanState {}
+class SkipMealPlanLoadingState extends FetchMealPlanState {
+  final bool value;
+  SkipMealPlanLoadingState({required this.value});
+}
 
 class SkipMealPlanErrorState extends FetchMealPlanState {}
 
@@ -80,6 +90,12 @@ class AddToGrocerySuccessState extends FetchMealPlanState {
 
   AddToGrocerySuccessState({required this.isAdded});
 }
+//RemoveMealPlan
+
+class RemoveMealPlanLoadingState extends FetchMealPlanState {
+  final bool value;
+  RemoveMealPlanLoadingState({required this.value});
+}
 
 class AddToGroceryLoadingState extends FetchMealPlanState {}
 
@@ -101,7 +117,10 @@ class MealDetailsSuccessState extends FetchMealPlanState {
   MealDetailsSuccessState({this.fetchModelData});
 }
 
-class MealDetailsLoadingState extends FetchMealPlanState {}
+class MealDetailsLoadingState extends FetchMealPlanState {
+  final bool isLoading;
+  MealDetailsLoadingState({required this.isLoading});
+}
 
 class MealDetailsErrorState extends FetchMealPlanState {}
 

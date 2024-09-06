@@ -44,6 +44,10 @@ class GetRestaurantListModel {
       };
 }
 
+List<RestaurantList> restaurantListFromJson(String str) =>
+    List<RestaurantList>.from(
+        json.decode(str)?.map((x) => RestaurantList.fromJson(x ?? {})) ?? []);
+
 class RestaurantList {
   String? id;
   String? name;

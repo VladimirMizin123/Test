@@ -1,15 +1,3 @@
-// To parse this JSON data, do
-//
-//     final getUserAddressModel = getUserAddressModelFromJson(jsonString);
-
-import 'dart:convert';
-
-GetUserAddressModel getUserAddressModelFromJson(String str) =>
-    GetUserAddressModel.fromJson(json.decode(str));
-
-String getUserAddressModelToJson(GetUserAddressModel data) =>
-    json.encode(data.toJson());
-
 class GetUserAddressModel {
   bool? success;
   dynamic message;
@@ -59,6 +47,7 @@ class UserAddress {
   bool? isPrimary;
   bool? isDeleted;
   String? userId;
+  String? extendedAddress;
   bool isSelected;
 
   UserAddress({
@@ -76,6 +65,7 @@ class UserAddress {
     this.isPrimary,
     this.isDeleted,
     this.userId,
+    this.extendedAddress,
     this.isSelected = false,
   });
 
@@ -94,6 +84,7 @@ class UserAddress {
         isPrimary: json["isPrimary"],
         isDeleted: json["isDeleted"],
         userId: json["userId"],
+        extendedAddress: json["extendedAddress"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -111,5 +102,6 @@ class UserAddress {
         "isPrimary": isPrimary,
         "isDeleted": isDeleted,
         "userId": userId,
+        "extendedAddress": extendedAddress,
       };
 }

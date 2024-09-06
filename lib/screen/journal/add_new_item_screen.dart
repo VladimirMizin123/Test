@@ -11,11 +11,6 @@ import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.da
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart'
-    as account;
-import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/journal/bottomsheet/image_picker_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -61,10 +56,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
   String pickedImageFilePath = '';
   bool isButtonEnable = false;
 
-  AccountBloc accountBloc = AccountBloc();
-
   bool isLoader = false;
-  final _debouncer = Debouncer();
   // int? weightValue;
 
   @override
@@ -110,9 +102,6 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
     } else {
       isButtonEnable = true;
     }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      accountBloc.add(GetUnitInfoEvent());
-    });
     super.initState();
   }
 
@@ -139,7 +128,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
           bloc: getAddNewMealBloc,
           listener: (context, state) {
             if (state is SelectedImagePathState) {
-              pickedImageFilePath = state.imgPath!.path ?? '';
+              pickedImageFilePath = state.imgPath!.path;
               setState(() {
                 /*if (pickedImageFilePath.isEmpty) {
                   isButtonEnable = false;
@@ -358,185 +347,161 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             },
                           ),
 
-                          BlocConsumer(
-                            bloc: accountBloc,
-                            builder: (context, state) {
-                              if (state is account.GetUnitInfoSuccessState) {
-                                isLoader = false;
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                  // "${StringUtils.weight} / ${Get.arguments?["weightValue"] == 1 ? "Pound" : "Kg"}",
+                                  "${StringUtils.weight} ",
+                                  style: textTheme.bodyLarge
+                                      ?.copyWith(color: Colors.black)),
+                              SizedBox(
+                                width: 80.w,
+                                child: TextFormField(
+                                  controller: weightController,
+                                  cursorColor: AppColors.darkGray,
+                                  keyboardType: TextInputType.number,
+                                  style: const TextStyle(
+                                      fontSize: 16, color: AppColors.darkGray),
+                                  decoration: InputDecoration(
+                                    hintText: '00',
+                                    hintStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.grayColor),
+                                    isDense: true,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    disabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.primaryBlue)),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(
+                                      () {
+                                        //*
+                                        // if (Get.arguments["weightValue"] ==
+                                        //     1) {
+                                        //   num? valueA = num.tryParse(value);
+                                        //   if (weightController
+                                        //       .text.isNotEmpty) {
+                                        //     if (valueA != null &&
+                                        //         valueA != 0) {
+                                        //       _debouncer.run(() {
+                                        //         weightController
+                                        //             .text = weightKGToPound(
+                                        //                 textValue:
+                                        //                     int.tryParse(
+                                        //                         value),
+                                        //                 weightValue: Get
+                                        //                         .arguments[
+                                        //                     "weightValue"])
+                                        //             .toString();
+                                        //         setState(() {});
+                                        //       });
+                                        //     }
+                                        //   }
+                                        // }
+                                        //*
 
-                                // weightValue =
-                                //     state.unitData?.weightType == 'Pound'
-                                //         ? 1
-                                //         : 2;
-
-                                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                //   accountBloc.add(GetUnitInfoEvent());
-                                // });
-                              }
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                      // "${StringUtils.weight} / ${Get.arguments?["weightValue"] == 1 ? "Pound" : "Kg"}",
-                                      "${StringUtils.weight} ",
-                                      style: textTheme.bodyLarge
-                                          ?.copyWith(color: Colors.black)),
-                                  SizedBox(
-                                    width: 80.w,
-                                    child: TextFormField(
-                                      controller: weightController,
-                                      cursorColor: AppColors.darkGray,
-                                      keyboardType: TextInputType.number,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          color: AppColors.darkGray),
-                                      decoration: InputDecoration(
-                                        hintText: '00',
-                                        hintStyle: const TextStyle(
-                                            fontSize: 14,
-                                            color: AppColors.grayColor),
-                                        isDense: true,
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                                color: AppColors.primaryBlue)),
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                                color: AppColors.primaryBlue)),
-                                        disabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                                color: AppColors.primaryBlue)),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                                color: AppColors.primaryBlue)),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(
-                                          () {
-                                            //*
-                                            // if (Get.arguments["weightValue"] ==
-                                            //     1) {
-                                            //   num? valueA = num.tryParse(value);
-                                            //   if (weightController
-                                            //       .text.isNotEmpty) {
-                                            //     if (valueA != null &&
-                                            //         valueA != 0) {
-                                            //       _debouncer.run(() {
-                                            //         weightController
-                                            //             .text = weightKGToPound(
-                                            //                 textValue:
-                                            //                     int.tryParse(
-                                            //                         value),
-                                            //                 weightValue: Get
-                                            //                         .arguments[
-                                            //                     "weightValue"])
-                                            //             .toString();
-                                            //         setState(() {});
-                                            //       });
-                                            //     }
-                                            //   }
-                                            // }
-                                            //*
-
-                                            if (nameController.text.isEmpty) {
-                                              isButtonEnable = false;
-                                            } else if (weightController
-                                                .text.isEmpty) {
-                                              isButtonEnable = false;
-                                            } else if (calController.text
-                                                    .isEmpty /*||
+                                        if (nameController.text.isEmpty) {
+                                          isButtonEnable = false;
+                                        } else if (weightController
+                                            .text.isEmpty) {
+                                          isButtonEnable = false;
+                                        } else if (calController.text
+                                                .isEmpty /*||
                                               (double.parse(calController.text) >
                                                   double.parse(
                                                       PreferenceUtils.getString(
                                                           totalCalorie)))*/
-                                                ) {
-                                              isButtonEnable = false;
-                                            } else if (fatController.text
-                                                    .isEmpty /*||
+                                            ) {
+                                          isButtonEnable = false;
+                                        } else if (fatController.text
+                                                .isEmpty /*||
                                               (double.parse(fatController.text) >
                                                   double.parse(
                                                       PreferenceUtils.getString(
                                                           totalFat)))*/
-                                                ) {
-                                              isButtonEnable = false;
-                                            } else if (carbsController.text
-                                                    .isEmpty /*||
+                                            ) {
+                                          isButtonEnable = false;
+                                        } else if (carbsController.text
+                                                .isEmpty /*||
                                               (double.parse(carbsController.text) >
                                                   double.parse(
                                                       PreferenceUtils.getString(
                                                           totalCarbs)))*/
-                                                ) {
-                                              isButtonEnable = false;
-                                            } else if (proteinController.text
-                                                    .isEmpty /*||
+                                            ) {
+                                          isButtonEnable = false;
+                                        } else if (proteinController.text
+                                                .isEmpty /*||
                                               (double.parse(proteinController.text) >
                                                   double.parse(
                                                       PreferenceUtils.getString(
                                                           totalProtein)))*/
-                                                ) {
-                                              isButtonEnable = false;
-                                            } else {
-                                              isButtonEnable = true;
-                                            }
-                                          },
-                                        );
-                                        setState(() {});
+                                            ) {
+                                          isButtonEnable = false;
+                                        } else {
+                                          isButtonEnable = true;
+                                        }
                                       },
-                                    ),
-                                  ),
-                                  // Container(
-                                  //   height: 45.h,
-                                  //   width: 86.w,
-                                  //   decoration: BoxDecoration(
-                                  //     border: Border.all(
-                                  //         color: Colors.grey.shade300, // Set border color
-                                  //         width: 1.0), // Set border width
-                                  //     borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                                  //   ),
-                                  //   child: TextFormField(
-                                  //     controller: weightController,
-                                  //     keyboardType: TextInputType.number,
-                                  //     cursorColor: AppColors.middleGray,
-                                  //     style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.darkGray),
-                                  //     onChanged: (value) {},
-                                  //     decoration: InputDecoration(
-                                  //       filled: false,
-                                  //       hintText: '00',
-                                  //       hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: AppColors.darkGray),
-                                  //       enabledBorder: OutlineInputBorder(
-                                  //         borderRadius: BorderRadius.circular(8),
-                                  //         borderSide: const BorderSide(color: Colors.transparent),
-                                  //       ),
-                                  //       border: OutlineInputBorder(
-                                  //         borderRadius: BorderRadius.circular(8),
-                                  //         borderSide: const BorderSide(color: Colors.transparent),
-                                  //       ),
-                                  //       disabledBorder: OutlineInputBorder(
-                                  //         borderRadius: BorderRadius.circular(8),
-                                  //         borderSide: const BorderSide(color: Colors.transparent),
-                                  //       ),
-                                  //       focusedBorder: OutlineInputBorder(
-                                  //         borderRadius: BorderRadius.circular(8),
-                                  //         borderSide: const BorderSide(color: Colors.transparent),
-                                  //       ),
-                                  //       suffix: const Text(StringUtils.oz),
-                                  //       suffixStyle: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500, color: Colors.grey),
-                                  //     ),
-                                  //   ),
-                                  // )
-                                ],
-                              ).paddingSymmetric(vertical: 10.h);
-                            },
-                            listener: (BuildContext context, Object? state) {},
-                          ),
+                                    );
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                              // Container(
+                              //   height: 45.h,
+                              //   width: 86.w,
+                              //   decoration: BoxDecoration(
+                              //     border: Border.all(
+                              //         color: Colors.grey.shade300, // Set border color
+                              //         width: 1.0), // Set border width
+                              //     borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                              //   ),
+                              //   child: TextFormField(
+                              //     controller: weightController,
+                              //     keyboardType: TextInputType.number,
+                              //     cursorColor: AppColors.middleGray,
+                              //     style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.darkGray),
+                              //     onChanged: (value) {},
+                              //     decoration: InputDecoration(
+                              //       filled: false,
+                              //       hintText: '00',
+                              //       hintStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: AppColors.darkGray),
+                              //       enabledBorder: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: const BorderSide(color: Colors.transparent),
+                              //       ),
+                              //       border: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: const BorderSide(color: Colors.transparent),
+                              //       ),
+                              //       disabledBorder: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: const BorderSide(color: Colors.transparent),
+                              //       ),
+                              //       focusedBorder: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: const BorderSide(color: Colors.transparent),
+                              //       ),
+                              //       suffix: const Text(StringUtils.oz),
+                              //       suffixStyle: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500, color: Colors.grey),
+                              //     ),
+                              //   ),
+                              // )
+                            ],
+                          ).paddingSymmetric(vertical: 10.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -945,7 +910,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
               // }
               //*
 
-              if (value != null && value != '') {
+              if (value != '') {
                 setState(() {
                   /* if (pickedImageFilePath.isEmpty) {
                     isButtonEnable = false;

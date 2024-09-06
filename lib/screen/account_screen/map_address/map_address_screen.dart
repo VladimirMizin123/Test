@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -35,7 +34,7 @@ class MapAddressScreen extends StatefulWidget {
 }
 
 class _MapAddressScreenState extends State<MapAddressScreen> {
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   final formKey = GlobalKey<FormState>();
 
   AddAddressBloc bloc = AddAddressBloc();
@@ -65,43 +64,49 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   TextEditingController floorNumberController = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
 
-  void _onMapCreated(GoogleMapController controller) {
+  _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   Future getCurrentLocation() async {
-    bool serviceEnabled = await _handleLocationPermission();
-    if (!serviceEnabled) return;
+    try {
+      bool serviceEnabled = await _handleLocationPermission();
+      if (!serviceEnabled) return;
 
-    BitmapDescriptor? customIcon;
+      BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    customIcon = BitmapDescriptor.fromBytes(
-        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
-    Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+      customIcon = BitmapDescriptor.fromBytes(
+          await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
+      Position position =
+          await GeolocatorPlatform.instance.getCurrentPosition();
 
-    selectedLatLng = LatLng(position.latitude, position.longitude);
-    findAddressURL(
-      lat: selectedLatLng?.latitude.toStringAsFixed(6).toString(),
-      lng: selectedLatLng?.longitude.toStringAsFixed(6).toString(),
-    );
+      selectedLatLng = LatLng(position.latitude, position.longitude);
+      findAddressURL(
+        lat: selectedLatLng?.latitude.toStringAsFixed(6).toString(),
+        lng: selectedLatLng?.longitude.toStringAsFixed(6).toString(),
+      );
 
-    currentPosition = CameraPosition(
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 14.4746,
-    );
+      currentPosition = CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 14.4746,
+      );
 
-    marker = Marker(
-      markerId: const MarkerId('0'),
-      position: LatLng(position.latitude, position.longitude),
-      icon: customIcon,
-    );
+      marker = Marker(
+        markerId: const MarkerId('0'),
+        position: LatLng(position.latitude, position.longitude),
+        icon: customIcon,
+      );
 
-    setState(() {
-      mapController
-          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    });
-    return true;
+      setState(() {
+        mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      });
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
   /// Marker Icon for location ---------------------------------------------------------
@@ -165,7 +170,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                         // setState(() {
                         //   lifeCycleCall = true;
                         // });
-                        var permissionValue = await Geolocator.openAppSettings()
+                        await Geolocator.openAppSettings()
                             .then((value) async {});
                         // setState(() {
                         //   lifeCycleCall = false;
@@ -385,55 +390,58 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       apartmentNumberController.text = streetNum;
       floorNumberController.text = '';
       zipCodeController.text = zipcode;
-
-      setState(() {});
     });
   }
 
   getDataFromPrevious() async {
-    widget.userAddress;
+    try {
+      widget.userAddress;
 
-    streetNum = '';
-    streetName = '';
-    city = '';
-    stateData = '';
-    country = '';
-    zipcode = '';
+      streetNum = '';
+      streetName = '';
+      city = '';
+      stateData = '';
+      country = '';
+      zipcode = '';
 
-    selectedLatLng =
-        LatLng(widget.userAddress!.latitude!, widget.userAddress!.longitude!);
+      selectedLatLng =
+          LatLng(widget.userAddress!.latitude!, widget.userAddress!.longitude!);
 
-    addressNameController.text = widget.userAddress?.addressType ?? "";
-    streetName = widget.userAddress?.streetName ?? '';
-    streetDetailsController.text = streetName.isNotEmpty ? streetName : '';
-    // streetDetailsController.text =
-    //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
-    // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
-    apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
-    floorNumberController.text = widget.userAddress?.floor?.toString() ?? "";
-    zipCodeController.text = widget.userAddress?.zipcode ?? "";
+      addressNameController.text = widget.userAddress?.addressType ?? "";
+      streetName = widget.userAddress?.streetName ?? '';
+      streetDetailsController.text = streetName.isNotEmpty ? streetName : '';
+      // streetDetailsController.text =
+      //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
+      // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
+      apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
+      floorNumberController.text =
+          widget.userAddress?.extendedAddress?.toString() ?? "";
+      zipCodeController.text = widget.userAddress?.zipcode ?? "";
 
-    currentPosition = CameraPosition(
-      target:
-          LatLng(widget.userAddress!.latitude!, widget.userAddress!.longitude!),
-      zoom: 14.4746,
-    );
+      currentPosition = CameraPosition(
+        target: LatLng(
+            widget.userAddress!.latitude!, widget.userAddress!.longitude!),
+        zoom: 14.4746,
+      );
 
-    BitmapDescriptor customIcon = BitmapDescriptor.fromBytes(
-      await getBytesFromAsset(AssetsUtils.locationMarker, 150),
-    );
+      BitmapDescriptor customIcon = BitmapDescriptor.fromBytes(
+        await getBytesFromAsset(AssetsUtils.locationMarker, 150),
+      );
 
-    marker = Marker(
-      markerId: const MarkerId('0'),
-      position:
-          LatLng(widget.userAddress!.latitude!, widget.userAddress!.longitude!),
-      icon: customIcon,
-    );
+      marker = Marker(
+        markerId: const MarkerId('0'),
+        position: LatLng(
+            widget.userAddress!.latitude!, widget.userAddress!.longitude!),
+        icon: customIcon,
+      );
 
-    setState(() {
-      mapController
-          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    });
+      setState(() {
+        mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -448,8 +456,15 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   }
 
   @override
+  void dispose() {
+    print("dispose call");
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
         child: BlocBuilder(
@@ -466,10 +481,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                           SizedBox(
                             height: 330,
                             child: GoogleMap(
+                              myLocationEnabled: false,
                               myLocationButtonEnabled: true,
                               zoomControlsEnabled: false,
                               compassEnabled: true,
-                              onMapCreated: _onMapCreated,
+                              onMapCreated: (controller) async {
+                                _onMapCreated(controller);
+                              },
                               initialCameraPosition: currentPosition,
                               markers: {
                                 marker ??
@@ -499,7 +517,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                       argument.latitude, argument.longitude),
                                   zoom: 14.4746,
                                 );
-                                mapController.animateCamera(
+                                mapController?.animateCamera(
                                     CameraUpdate.newCameraPosition(
                                         currentPosition));
 
@@ -528,7 +546,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                             children: [
                               mapDetailWidget(
                                 title: "Name",
-                                //initialValue: addressNameController.text,
                                 textEditingController: addressNameController,
                                 readOnly: false,
                                 suffixIcon: const Padding(
@@ -537,7 +554,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                               ),
                               mapDetailWidget(
                                 title: "Street",
-                                // initialValue: streetDetailsController.text,
                                 textEditingController: streetDetailsController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -548,45 +564,17 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 },
                               ),
                               mapDetailWidget(
-                                title: "Apartment number ",
-                                // initialValue: apartmentNumberController.text,
+                                title: "Street Number",
                                 textEditingController:
                                     apartmentNumberController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please Enter Apartment number';
-                                  } else {
-                                    return null;
-                                  }
-                                },
                               ),
                               mapDetailWidget(
-                                title: "Floor",
-                                //initialValue: floorNumberController.text,
+                                title: "Extended Address",
                                 textEditingController: floorNumberController,
-                                type: TextInputType.number,
-                                inputFormatters: [
-                                  s.FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please Enter Floor number';
-                                  } else {
-                                    return null;
-                                  }
-                                },
                               ),
                               mapDetailWidget(
                                 title: "Zip",
-                                // initialValue: zipCodeController.text,
                                 textEditingController: zipCodeController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please Enter Zip Code';
-                                  } else {
-                                    return null;
-                                  }
-                                },
                               ),
                             ],
                           ).paddingOnly(left: 22.w, right: 22.w, top: 8.h),
@@ -623,9 +611,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                         PreferenceUtils.getString(prefUserData),
                                     isFrom: 'isFromProfile',
                                     addressId: widget.userAddress?.id ?? '',
-                                    floor: int.tryParse(
-                                            floorNumberController.text) ??
-                                        0,
+                                    floor: floorNumberController.text,
                                   ),
                                 );
                               } else {
@@ -645,6 +631,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     userId:
                                         PreferenceUtils.getString(prefUserData),
                                     isFrom: 'isFromProfile',
+                                    floor: floorNumberController.text,
                                   ),
                                 );
 

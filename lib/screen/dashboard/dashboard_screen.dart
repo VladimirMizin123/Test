@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,11 +7,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
-import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
-import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
@@ -18,7 +19,6 @@ import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
-import 'package:gymeats_mobile/screen/account_screen/setting/unit/unit_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/add_water_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_history_hint_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart';
@@ -26,17 +26,17 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/convert_units_widget/water_convert.dart';
-import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import '../../bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
-import '../../bloc/dashboard/get_dashboard/get_dashboard_event.dart';
-import '../../bloc/dashboard/get_dashboard/get_dashboard_state.dart';
-import '../../constant/string_utils.dart';
-import '../../models/fetch_meal_plan_model.dart';
-import '../../models/get_dashboard_model.dart';
-import '../../widget/app_center_loader.dart';
-import '../grocery/screen/payment/payment_success_screen.dart';
+import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
+import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_event.dart';
+import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_state.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/models/get_dashboard_model.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
+
+final CartBloc cartBloc = CartBloc();
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key, this.isOrderComplete = false});
@@ -56,41 +56,55 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   AccountBloc accountBloc = AccountBloc();
 
   bool isLoader = false;
+
   int? weightValue;
   int? heightValue;
   int? energyValue;
   int? waterValue;
   String? unitId;
 
-  // String? weightQuantity;
-
-  // String? weightKGToPound({num? textValue}) {
-  //   num? value =
-  //       weightValue == 1 ? ((textValue ?? 0) * 2.20462) : (textValue ?? 0);
-  //   weightQuantity = value.toStringAsFixed(2).toString();
-  //   return weightQuantity;
-  // }
-
   GetDashboardBloc bloc = GetDashboardBloc();
   GetDashboardModel model = GetDashboardModel();
   num outOfTotalCalories = 0.0;
   List<MealData> trackerDataList = [];
 
-  num waterML = PreferenceUtils.getInt(prefWaterML);
-  num exerciseCal = PreferenceUtils.getInt(prefExerciseCAl);
+  num waterML = PreferenceUtils.getNum(prefWaterML);
+  num exerciseCal = PreferenceUtils.getNum(prefExerciseCAl);
 
   List<Widget> carouselList = [];
   bool isDoneLoader = false;
   String mealId = '';
   List<MealDataByDate> logData = [];
+  bool hasPremium = false;
   MealPlanBloc mealPlanBloc = MealPlanBloc();
+  bool cacheLoader = false;
+
   @override
   void initState() {
-    super.initState();
+    String trackerList = PreferenceUtils.getString(trackerListStore);
+    String dashboardList = PreferenceUtils.getString(dashboardModelPref);
+    String mealList = PreferenceUtils.getString(mealDataByDatePref);
+
+    if (![trackerList, dashboardList, mealList]
+        .any((element) => element.isEmpty)) {
+      try {
+        cacheLoader = true;
+        trackerDataList = mealDataModelFromJson(trackerList);
+        model = GetDashboardModel.fromJson(jsonDecode(dashboardList));
+        logData = mealDateByDate(mealList);
+        loadDashboard(model, logData);
+      } catch (e) {
+        cacheLoader = false;
+        log(e.toString());
+      }
+    }
     bloc.add(GenMealTrackerData());
+    bloc.add(GetAllergiesAndRestriction());
     mealPlanBloc.add(MealPlanFetchEvent());
+    bloc.add(GetDashboardData());
 
     /* dateBloc.add(GetMealLogByDateData(
+
         date: DateFormat('yyyy-MM-dd').format(DateTime.now())));*/
     PreferenceUtils.setInt(userMealPlanCountState, 0);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -107,6 +121,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         PreferenceUtils.setBool(showOrderHint, true);
       });
     }
+    super.initState();
   }
 
   @override
@@ -122,6 +137,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             isLoader = false;
 
             weightValue = state.unitData?.weightType == 'Pound' ? 1 : 2;
+            waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
           }
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -164,31 +180,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   primary: true,
-      //   backgroundColor: Colors.white,
-      //   elevation: 0,
-      //   leadingWidth: 35.w,
-      //   automaticallyImplyLeading: false,
-      //   leading: Image.asset(
-      //     AppStrings.user,
-      //     color: AppColors.darkGray,
-      //   ),
-      //   centerTitle: true,
-      //   title: Text(
-      //     AppStrings.dashBoard,
-      //     style:
-      //         textTheme.displayMedium?.copyWith(color: const Color(0xFF010101)),
-      //   ),
-      //   actions: [
-      //     Image.asset(
-      //       AppStrings.notification,
-      //       height: 25.h,
-      //       width: 25.w,
-      //       color: AppColors.darkGray,
-      //     )
-      //   ],
-      // ),
       body: SafeArea(
         child: SizedBox(
           height: size.height.h,
@@ -200,16 +191,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      //Get.toNamed('ProfileScreen');
-                      // Get.toNamed('/GoogleMapScreen', arguments: {
-                      //   "string": 'isFromDashboard',
-                      //   "userData": ''
-                      // });
-                      Navigator.push(
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const AccountScreen(),
                           ));
+                      accountBloc.add(GetUnitInfoEvent());
                     },
                     child: Image.asset(
                       AssetsUtils.user,
@@ -242,16 +229,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 child: BlocConsumer(
                   bloc: bloc,
                   builder: (context, state) {
-                    if (state is LoadDashboardData) {
+                    if (state is LoadDashboardData || cacheLoader) {
                       return initView();
                     }
-                    if (state is LoadMealData) {
+                    if (state is LoadMealData && !cacheLoader) {
                       return const AppCenterLoader();
                     }
-                    if (state is LoadingDoneState) {
+                    if (state is LoadingDoneState || cacheLoader) {
                       return initView();
                     }
-                    if (state is LoadingData) {
+                    if (state is LoadingData && !cacheLoader) {
                       return const AppCenterLoader();
                     }
                     if (state is ErrorStateData) {
@@ -270,40 +257,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   },
                   listener: (context, state) async {
                     if (state is LoadDashboardData) {
-                      model = state.model;
-                      outOfTotalCalories = model.data!.totalCalorie! -
-                          model.data!.totalIntakeFood!;
-                      logData = state.data ?? [];
-
-                      await PreferenceUtils.setString(
-                          totalCalorie, model.data!.totalCalorie.toString());
-                      await PreferenceUtils.setString(
-                          totalProtein, model.data!.totalProtein.toString());
-                      await PreferenceUtils.setString(
-                          totalFat, model.data!.totalFat.toString());
-                      await PreferenceUtils.setString(
-                          totalCarbs, model.data!.totalCarbs.toString());
-
-                      // print('logData : $logData');
-
-                      // for (var element in logData) {
-                      //   print('element : ${element.id}');
-                      //   print('element : ${element.recipeId}');
-                      // }
+                      loadDashboard(state.model, state.data);
                     }
                     if (state is LoadMealData) {
                       isDoneLoader = false;
                       trackerDataList = state.trackerDataList;
-
-                      bloc.add(GetDashboardData());
+                      bloc.add(AddIngredientGroceryList());
                     }
                     if (state is LoadingDoneState) {
                       isDoneLoader = true;
                       mealId = state.mealID;
-                    }
-
-                    if (state is ErrorStateData) {
-                      //showToast(isSuccess: false, message: state.errMessage);
                     }
                   },
                 ),
@@ -316,6 +279,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Widget initView() {
+    double per = (model.data?.totalIntakeFood?.toDouble().ceil() ?? 0) /
+        (model.data?.totalCalorie?.toDouble().ceil() ?? 0);
     return SingleChildScrollView(
       child: ListView(
         shrinkWrap: true,
@@ -337,23 +302,15 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         animation: true,
                         animationDuration: 1200,
                         lineWidth: 8.0,
-                        percent: model.data!.totalIntakeFood!
-                                        .toDouble()
-                                        .ceil() /
-                                    model.data!.totalCalorie!
-                                        .toDouble()
-                                        .ceil() >
-                                1
-                            ? 1.0
-                            : model.data!.totalIntakeFood!.toDouble().ceil() /
-                                model.data!.totalCalorie!.toDouble().ceil(),
+                        percent:
+                            per > 1 || per.isInfinite || per.isNaN ? 1.0 : per,
                         center: RichText(
                           textAlign: TextAlign.center,
                           text: TextSpan(
                             children: [
                               TextSpan(
                                 text:
-                                    '${int.parse(outOfTotalCalories.toString().split('.')[1]) >= 50 ? outOfTotalCalories.toDouble().ceil().toString() : outOfTotalCalories.toDouble().floor().toString()}cal left\n',
+                                    '${outOfTotalCalories.toDouble().round().toString()}cal left\n',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineSmall!
@@ -365,7 +322,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ),
                               TextSpan(
                                 text:
-                                    'out of ${int.parse(model.data!.totalCalorie!.toString().split('.')[1]) >= 50 ? model.data!.totalCalorie!.toDouble().ceil().toString() : model.data!.totalCalorie!.toDouble().floor().toString()}cal',
+                                    'out of ${model.data?.totalCalorie?.toDouble().round().toString()}cal',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
@@ -393,39 +350,20 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           calDataView(
                             imgIcon: AssetsUtils.breakFastIcon,
                             title: 'Eaten',
-                            calCount: /*int.parse(model.data!.totalIntakeFood!
-                                          .toString()
-                                          .split('.')[1]) >=
-                                      50
-                                  ? model.data!.totalIntakeFood!
-                                      .toDouble()
-                                      .ceil()
-                                      .toString()
-                                  :*/
-                                model.data!.totalIntakeFood!
-                                    .toDouble()
-                                    .floor()
-                                    .toString(),
+                            calCount: model.data?.totalIntakeFood
+                                ?.toDouble()
+                                .floor()
+                                .toString(),
                             textTheme: Theme.of(context).textTheme,
                           ),
                           SizedBox(height: 15.h),
                           calDataView(
                             imgIcon: AssetsUtils.dumBBell,
                             title: 'Burned',
-                            calCount: /*int.parse(model
-                                          .data!.totalBurnedByExercise!
-                                          .toString()
-                                          .split('.')[1]) >=
-                                      50
-                                  ? model.data!.totalBurnedByExercise!
-                                      .toDouble()
-                                      .ceil()
-                                      .toString()
-                                  :*/
-                                model.data!.totalBurnedByExercise!
-                                    .toDouble()
-                                    .floor()
-                                    .toString(),
+                            calCount: model.data?.totalBurnedByExercise
+                                ?.toDouble()
+                                .floor()
+                                .toString(),
                             textTheme: Theme.of(context).textTheme,
                           ),
                         ],
@@ -441,6 +379,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
                       weightValue =
                           state.unitData?.weightType == 'Pound' ? 1 : 2;
+                      waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
                     }
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -448,31 +387,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         calciumDataView(
                           title: 'Carbs',
                           textTheme: Theme.of(context).textTheme,
-                          gramCount: /*int.parse(model.data!.totalIntakeCarbs!
-                                      .toString()
-                                      .split('.')[1]) >=
-                                  50
-                              ? model.data!.totalIntakeCarbs!
-                                  .toDouble()
-                                  .ceil()
-                                  .toString()
-                              :*/
-                              model.data!.totalIntakeCarbs!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
-                          totalGram: int.parse(model.data!.totalCarbs!
-                                      .toString()
-                                      .split('.')[1]) >=
-                                  50
-                              ? model.data!.totalCarbs!
-                                  .toDouble()
-                                  .ceil()
-                                  .toString()
-                              : model.data!.totalCarbs!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
+                          gramCount: model.data?.totalIntakeCarbs
+                              ?.toDouble()
+                              .floor()
+                              .toString(),
+                          totalGram: model.data?.totalCarbs
+                              ?.toDouble()
+                              .round()
+                              .toString(),
                           progressColor: AppColors.mint,
                           percentage:
                               model.data!.totalIntakeCarbs!.toDouble().ceil() /
@@ -485,32 +407,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 model.data!.totalProtein!.toDouble().ceil(),
                             title: 'Protein',
                             textTheme: Theme.of(context).textTheme,
-                            gramCount: /*int.parse(model.data!.totalIntakeProtein!
-                                        .toString()
-                                        .split('.')[1]) >=
-                                    50
-                                ? model.data!.totalIntakeProtein!
-                                    .toDouble()
-                                    .ceil()
-                                    .toString()
-                                :*/
-                                model.data!.totalIntakeProtein!
-                                    .toDouble()
-                                    .floor()
-                                    .toString(),
-                            totalGram: /*int.parse(model.data!.totalProtein!
-                                        .toString()
-                                        .split('.')[1]) >=
-                                    50
-                                ? model.data!.totalProtein!
-                                    .toDouble()
-                                    .ceil()
-                                    .toString()
-                                :*/
-                                model.data!.totalProtein!
-                                    .toDouble()
-                                    .floor()
-                                    .toString(),
+                            gramCount: model.data?.totalIntakeProtein
+                                ?.toDouble()
+                                .floor()
+                                .toString(),
+                            totalGram: model.data!.totalProtein
+                                ?.toDouble()
+                                .floor()
+                                .toString(),
                             progressColor: AppColors.skyBlue),
                         calciumDataView(
                           percentage:
@@ -518,29 +422,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   model.data!.totalFat!.toDouble().ceil(),
                           title: 'Fat',
                           textTheme: Theme.of(context).textTheme,
-                          gramCount: /*int.parse(model.data!.totalIntakeFat!
-                                      .toString()
-                                      .split('.')[1]) >=
-                                  50
-                              ? model.data!.totalIntakeFat!
-                                  .toDouble()
-                                  .ceil()
-                                  .toString()
-                              :*/
-                              model.data!.totalIntakeFat!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
-                          totalGram: /*int.parse(model.data!.totalFat!
-                                      .toString()
-                                      .split('.')[1]) >=
-                                  50
-                              ? model.data!.totalFat!.toDouble().ceil().toString()
-                              :*/
-                              model.data!.totalFat!
-                                  .toDouble()
-                                  .floor()
-                                  .toString(),
+                          gramCount: model.data!.totalIntakeFat
+                              ?.toDouble()
+                              .floor()
+                              .toString(),
+                          totalGram: model.data!.totalFat!
+                              .toDouble()
+                              .floor()
+                              .toString(),
                           progressColor: AppColors.coral,
                         ),
                       ],
@@ -572,26 +461,21 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   }
                   return Expanded(
                     child: Builder(builder: (context) {
-                      String? mytdailyWaterGoals;
+                      String? mydailyWaterGoals;
                       if (waterValue == 1) {
                         var value = (model.data!.dailyWaterGoals! * 0.033814);
 
-                        mytdailyWaterGoals =
-                            value.toStringAsFixed(2).toString();
+                        mydailyWaterGoals = value.toStringAsFixed(2).toString();
                       } else {
-                        mytdailyWaterGoals =
+                        mydailyWaterGoals =
                             model.data!.dailyWaterGoals.toString();
                       }
                       return InkWell(
                         onTap: () async {
                           Get.toNamed('/AddWaterScreen',
                                   arguments: AddWaterArguments(
-                                      dailyGoal: mytdailyWaterGoals.toString(),
-                                      isWatervalue: waterValue
-
-                                      // model.data!.dailyWaterGoals
-                                      //     .toString(),
-                                      ))!
+                                      dailyGoal: mydailyWaterGoals.toString(),
+                                      isWatervalue: waterValue))!
                               .then((value) {
                             bloc.add(GetDashboardData());
                           });
@@ -609,7 +493,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               image: AssetsUtils.water,
                               type: StringUtils.rate,
                               // countValue: model.data!.dailyWaterGoals!.toString(),
-                              countValue: mytdailyWaterGoals.toString(),
+                              countValue: mydailyWaterGoals.toString(),
                               mlCalCount: convertMilliToOz(
                                   textValue: model.data!.totalIntakeWater!,
                                   isWatervalue: waterValue),
@@ -634,20 +518,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         .then((value) {
                       bloc.add(GetDashboardData());
                     });
-                    /*Get.toNamed('/SecondDashBoardView',
-                              arguments: AddEntryArguments(
-                                  exerciseLogList: ExerciseLogList(
-                                      caloriesBurned: model
-                                          .data!.dailyExerciseGoals!
-                                          .toInt())))
-                          ?.then((value) {
-                        setState(() {
-                          if (value == null) {
-                            return;
-                          }
-                          exerciseCal = exerciseCal + int.parse(value);
-                        });
-                      });*/
                   },
                   child: dashBoardCardView(
                     margin:
@@ -675,12 +545,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               itemCount: trackerDataList.length,
               itemBuilder: (BuildContext context, int index) {
                 bool isEaten = false;
-
+                bool isSkipped = false;
                 logData.map((e) {
                   if (e.mealId == trackerDataList[index].id) {
-                    if (e.value.toString() == 'ATE') {
-                      isEaten = true;
-                    }
+                    isEaten = e.value.toString() == 'ATE';
+                    isSkipped = e.value.toString() == 'SKIPPED';
                   }
                 }).toList();
 
@@ -689,78 +558,77 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   eatTitle: trackerDataList[index].meal,
                   eatSubTitle: trackerDataList[index].recipe!.name ?? '',
                   textTheme: Theme.of(context).textTheme,
-                  trailing: InkWell(
-                    onTap: isEaten
-                        ? null
-                        : () {
-                            if (!trackerDataList[index].isDone) {
-                              bloc.add(AddEatenMealData(
-                                  value: 1,
-                                  mealName: trackerDataList[index].recipe!.name,
-                                  mealType: trackerDataList[index].meal,
-                                  noOfServing:
-                                      trackerDataList[index].numOfServings,
-                                  recipeId: trackerDataList[index].recipe!.id,
-                                  userId:
-                                      PreferenceUtils.getString(prefUserData),
-                                  calorie: trackerDataList[index]
-                                      .recipe!
-                                      .nutrientsPerServing!
-                                      .calories,
-                                  carbs: trackerDataList[index]
-                                      .recipe!
-                                      .nutrientsPerServing!
-                                      .carbs,
-                                  fat: trackerDataList[index]
-                                      .recipe!
-                                      .nutrientsPerServing!
-                                      .fat,
-                                  protein: trackerDataList[index]
-                                      .recipe!
-                                      .nutrientsPerServing!
-                                      .protein,
-                                  mealId:
-                                      trackerDataList[index].id.toString()));
-                            }
-                          },
-                    child: isDoneLoader && trackerDataList[index].id == mealId
-                        ? SizedBox(
-                            height: 25.h,
-                            width: 25.w,
-                            child: const AppCenterLoader())
-                        : Container(
-                            width: 25.w,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isEaten
-                                  ? AppColors.primaryBlue
-                                  : AppColors.skyBlue,
-                            ),
-                            child: Center(
-                              child: Icon(
-                                isEaten ? Icons.check : Icons.add,
-                                color: isEaten
-                                    ? Colors.white
-                                    : AppColors.primaryBlue,
-                              ),
-                            ),
-                          ),
-                  ),
-                  calText: int.parse(trackerDataList[index]
-                              .calories
-                              .toString()
-                              .split('.')[1]) >=
-                          50
-                      ? trackerDataList[index]
-                          .calories!
-                          .toDouble()
-                          .ceil()
-                          .toString()
-                      : trackerDataList[index]
-                          .calories!
-                          .toDouble()
-                          .floor()
-                          .toString(),
+                  trailing: isSkipped
+                      ? SvgPicture.asset(
+                          AssetsUtils.icSkippedIcon,
+                          width: 25.w,
+                        )
+                      : InkWell(
+                          onTap: isEaten
+                              ? null
+                              : () {
+                                  if (!trackerDataList[index].isDone) {
+                                    bloc.add(AddEatenMealData(
+                                        value: 1,
+                                        mealName:
+                                            trackerDataList[index].recipe!.name,
+                                        mealType: trackerDataList[index].meal,
+                                        noOfServing: trackerDataList[index]
+                                            .numOfServings,
+                                        recipeId:
+                                            trackerDataList[index].recipe!.id,
+                                        userId: PreferenceUtils.getString(
+                                            prefUserData),
+                                        calorie: trackerDataList[index]
+                                            .recipe!
+                                            .nutrientsPerServing!
+                                            .calories,
+                                        carbs: trackerDataList[index]
+                                            .recipe!
+                                            .nutrientsPerServing!
+                                            .carbs,
+                                        fat: trackerDataList[index]
+                                            .recipe!
+                                            .nutrientsPerServing!
+                                            .fat,
+                                        protein: trackerDataList[index]
+                                            .recipe!
+                                            .nutrientsPerServing!
+                                            .protein,
+                                        mealId: trackerDataList[index]
+                                            .id
+                                            .toString()));
+                                  }
+                                },
+                          child: isDoneLoader &&
+                                  trackerDataList[index].id == mealId
+                              ? SizedBox(
+                                  height: 25.h,
+                                  width: 25.w,
+                                  child: const AppCenterLoader())
+                              : Container(
+                                  width: 25.w,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isEaten
+                                        ? AppColors.primaryBlue
+                                        : AppColors.skyBlue,
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      isEaten ? Icons.check : Icons.add,
+                                      color: isEaten
+                                          ? Colors.white
+                                          : AppColors.primaryBlue,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                  calText: trackerDataList[index]
+                      .calories!
+                      .toDouble()
+                      .round()
+                      .toString(),
                 );
               }),
           SizedBox(
@@ -913,7 +781,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       padding: EdgeInsets.zero,
       lineHeight: lineHeight!,
       animationDuration: 2000,
-      percent: percentage > 1 ? 1 : percentage,
+      percent: percentage.isNaN || percentage.isInfinite
+          ? 0
+          : percentage > 1
+              ? 1
+              : percentage,
       center: const Text(""),
       progressColor: progressColor,
     );
@@ -1048,5 +920,22 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         ),
       ),
     );
+  }
+
+  void loadDashboard(
+      GetDashboardModel model, List<MealDataByDate>? data) async {
+    this.model = model;
+    outOfTotalCalories =
+        (model.data?.totalCalorie ?? 0) - (model.data?.totalIntakeFood ?? 0);
+    logData = data ?? [];
+    await PreferenceUtils.setString(
+        totalCalorie, (model.data?.totalCalorie ?? 0).toString());
+    await PreferenceUtils.setString(
+        totalProtein, (model.data?.totalProtein ?? 0).toString());
+    await PreferenceUtils.setString(
+        totalFat, (model.data?.totalFat ?? 0).toString());
+    await PreferenceUtils.setString(
+        totalCarbs, (model.data?.totalCarbs ?? 0).toString());
+    setState(() {});
   }
 }

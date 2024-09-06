@@ -128,7 +128,7 @@ class Recipe {
   String? mainImage;
   int? ingredientsCount;
   int? weightInGrams;
-  int? servingWeight;
+  num? servingWeight;
   dynamic instructions;
   dynamic nutritionalInfo;
 

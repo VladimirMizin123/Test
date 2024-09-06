@@ -709,7 +709,7 @@ class _JournalSearchScreenState extends State<JournalSearchScreen> {
                                                                                         fat: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].fat ?? '0',
                                                                                         carbs: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].carbs ?? '0',
                                                                                         calorie: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].calorie?.toString() ?? '0',
-                                                                                        type: widget.journalMealScreenArguments!.mealType.toString().removeAllWhitespace ?? '',
+                                                                                        type: widget.journalMealScreenArguments!.mealType.toString().removeAllWhitespace,
                                                                                         userId: userId.toString(),
                                                                                         quantity: '1',
                                                                                         id: groceryMultiSearchModelDataList[i].groceryResult![ind].products![index].productId,

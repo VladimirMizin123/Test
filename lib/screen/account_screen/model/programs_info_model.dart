@@ -69,20 +69,21 @@ class ProgramInfo {
   List<SampleMeal>? sampleMeal;
   bool? isPremium;
   CpcsIngredientGroups? cpcsIngredientGroups;
+  String? programIcon;
 
-  ProgramInfo({
-    this.id,
-    this.databaseId,
-    this.name,
-    this.author,
-    this.comment,
-    this.descriptionShort,
-    this.descriptionLong,
-    this.backgroundImage,
-    this.sampleMeal,
-    this.isPremium,
-    this.cpcsIngredientGroups,
-  });
+  ProgramInfo(
+      {this.id,
+      this.databaseId,
+      this.name,
+      this.author,
+      this.comment,
+      this.descriptionShort,
+      this.descriptionLong,
+      this.backgroundImage,
+      this.sampleMeal,
+      this.isPremium,
+      this.cpcsIngredientGroups,
+      this.programIcon});
 
   factory ProgramInfo.fromJson(Map<String, dynamic> json) => ProgramInfo(
         id: json["id"],
@@ -98,6 +99,7 @@ class ProgramInfo {
             : List<SampleMeal>.from(
                 json["sampleMeal"]!.map((x) => SampleMeal.fromJson(x))),
         isPremium: json["isPremium"],
+        programIcon: json["programIcon"],
         cpcsIngredientGroups: json["cpcsIngredientGroups"] == null
             ? null
             : CpcsIngredientGroups.fromJson(json["cpcsIngredientGroups"]),
@@ -112,6 +114,7 @@ class ProgramInfo {
         "descriptionShort": descriptionShort,
         "descriptionLong": descriptionLong,
         "backgroundImage": backgroundImage,
+        "programIcon": programIcon,
         "sampleMeal": sampleMeal == null
             ? []
             : List<dynamic>.from(sampleMeal!.map((x) => x.toJson())),

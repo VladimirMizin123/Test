@@ -5,7 +5,10 @@ class GetUserJournalData extends GetUserJournalEvent {
   GetUserJournalData({required this.date});
 }
 
-class GenMealData extends GetUserJournalEvent {}
+class GenMealData extends GetUserJournalEvent {
+  String date;
+  GenMealData({required this.date});
+}
 
 class MealTrackerData extends GetUserJournalEvent {
   String date;
@@ -44,8 +47,22 @@ class AddEatenMealData extends GetUserJournalEvent {
   num? carbs;
   num? value;
   String? title;
+  String? date;
 
-  AddEatenMealData({this.mealId, this.userId, this.mealName, this.mealType, this.calorie, this.noOfServing, this.recipeId, this.protein, this.fat, this.carbs, this.value, this.title});
+  AddEatenMealData(
+      {this.mealId,
+      this.userId,
+      this.mealName,
+      this.mealType,
+      this.calorie,
+      this.noOfServing,
+      this.recipeId,
+      this.protein,
+      this.fat,
+      this.carbs,
+      this.value,
+      this.title,
+      this.date});
 }
 
 class AddNewItemEvent extends GetUserJournalEvent {

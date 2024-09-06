@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gymeats_mobile/constant/asset_utils.dart';
-import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/models/get_survey_model.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_diet_model.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_restriction_modal.dart';
-import 'package:gymeats_mobile/widget/svg_image.dart';
-
-import '../constant/app_TextStyle.dart';
+import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 
 class UserSurveyItems extends StatelessWidget {
   final DataOption data;
@@ -17,150 +14,44 @@ class UserSurveyItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        onClick();
-      },
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            decoration:
-                BoxDecoration(color: data.color, shape: BoxShape.circle),
-            padding: const EdgeInsets.all(10),
-            child: Text(
-              data.label!,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Transform.scale(
+          scale: 1.5,
+          child: Theme(
+            data: ThemeData(
+              unselectedWidgetColor: Theme.of(context).primaryColor,
             ),
-          ),
-          Visibility(
-            visible: data.isSelect,
-            child: Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(width: 2, color: Colors.white),
+            child: GestureDetector(
+              onTap: () => onClick.call(),
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Radio(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4.0, vertical: -4.0),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  groupValue: data.isSelect,
+                  value: true,
+                  activeColor: Theme.of(context).primaryColor,
+                  onChanged: (_) {},
                 ),
               ),
             ),
           ),
-          Visibility(
-            visible: data.isSelect,
-            child: Container(
-              padding:
-                  const EdgeInsets.only(right: 5, top: 8, left: 5, bottom: 8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(2.0),
-                ),
-              ),
-              child: SvgImage(
-                image: AssetsUtils.icCheck,
-                color: data.color ?? AppColors.primaryBlue,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class UserSurveySearchItems extends StatefulWidget {
-  final DietDetails data;
-  final VoidCallback onTap;
-  final int index;
-
-  const UserSurveySearchItems(
-      {super.key,
-      required this.data,
-      required this.onTap,
-      required this.index});
-
-  @override
-  State<UserSurveySearchItems> createState() => _UserSurveySearchItemsState();
-}
-
-class _UserSurveySearchItemsState extends State<UserSurveySearchItems> {
-  List<Color> colorList = [
-    Colors.indigoAccent.withOpacity(0.8),
-    Colors.redAccent.withOpacity(0.8),
-    Colors.purpleAccent.withOpacity(0.8),
-    Colors.deepPurpleAccent.withOpacity(0.8),
-    Colors.tealAccent.withOpacity(0.8),
-    Colors.pinkAccent.withOpacity(0.8),
-    Colors.blueAccent.withOpacity(0.8),
-    Colors.lightBlueAccent.withOpacity(0.8),
-    Colors.cyanAccent.withOpacity(0.8),
-    Colors.lightGreenAccent.withOpacity(0.8),
-    Colors.greenAccent.withOpacity(0.8),
-    Colors.yellowAccent.withOpacity(0.8),
-    Colors.deepOrangeAccent.withOpacity(0.8),
-    Colors.amberAccent.withOpacity(0.8),
-    Colors.orangeAccent.withOpacity(0.8),
-    Colors.limeAccent.withOpacity(0.8),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: widget.onTap,
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: colorList[widget.index % colorList.length],
-                shape: BoxShape.circle),
-            padding: const EdgeInsets.all(10),
+        ).paddingOnly(left: 10),
+        Expanded(
             child: Text(
-              widget.data.dietName.toString(),
-              textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+          data.label!,
+          style: AppTextStyle.gymEatsStyle.copyWith(
+            color:
+                data.isSelect ? Theme.of(context).primaryColor : Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
           ),
-          Visibility(
-            visible: widget.data.select,
-            child: Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Colors.white)),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.data.select,
-            child: Container(
-              padding:
-                  const EdgeInsets.only(right: 5, top: 8, left: 5, bottom: 8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(2.0)),
-              ),
-              child: SvgImage(
-                image: AssetsUtils.icCheck,
-                color: colorList[widget.index % colorList.length],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        )),
+      ].addBetweenItems(const SizedBox(width: 15)),
+    ).paddingOnly(top: 10, bottom: 10);
   }
 }
 
@@ -182,76 +73,46 @@ class UserSurveyPreferenceSearchItems extends StatefulWidget {
 
 class _UserSurveyPreferenceSearchItemsState
     extends State<UserSurveyPreferenceSearchItems> {
-  List<Color> colorList = [
-    Colors.indigoAccent.withOpacity(0.8),
-    Colors.redAccent.withOpacity(0.8),
-    Colors.purpleAccent.withOpacity(0.8),
-    Colors.deepPurpleAccent.withOpacity(0.8),
-    Colors.tealAccent.withOpacity(0.8),
-    Colors.pinkAccent.withOpacity(0.8),
-    Colors.blueAccent.withOpacity(0.8),
-    Colors.lightBlueAccent.withOpacity(0.8),
-    Colors.cyanAccent.withOpacity(0.8),
-    Colors.lightGreenAccent.withOpacity(0.8),
-    Colors.greenAccent.withOpacity(0.8),
-    Colors.yellowAccent.withOpacity(0.8),
-    Colors.deepOrangeAccent.withOpacity(0.8),
-    Colors.amberAccent.withOpacity(0.8),
-    Colors.orangeAccent.withOpacity(0.8),
-    Colors.limeAccent.withOpacity(0.8),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: widget.onTap,
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: colorList[widget.index % colorList.length],
-                shape: BoxShape.circle),
-            padding: const EdgeInsets.all(10),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Transform.scale(
+          scale: 1.5,
+          child: Theme(
+            data: ThemeData(
+              unselectedWidgetColor: Theme.of(context).primaryColor,
+            ),
+            child: GestureDetector(
+              onTap: () => widget.onTap.call(),
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Radio(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4.0, vertical: -4.0),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  groupValue: widget.data.node.isRestricted,
+                  value: true,
+                  activeColor: Theme.of(context).primaryColor,
+                  onChanged: (_) => {},
+                ),
+              ),
+            ),
+          ),
+        ).paddingOnly(left: 10),
+        Expanded(
             child: Text(
-              widget.data.node.name,
-              textAlign: TextAlign.center,
-              style: AppTextStyle.gymEatsStyle.copyWith(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+          widget.data.node.name,
+          style: AppTextStyle.gymEatsStyle.copyWith(
+            color: widget.data.node.isRestricted
+                ? Theme.of(context).primaryColor
+                : Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
           ),
-          Visibility(
-            visible: widget.data.node.isRestricted,
-            child: Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Colors.white)),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.data.node.isRestricted,
-            child: Container(
-              padding:
-                  const EdgeInsets.only(right: 5, top: 8, left: 5, bottom: 8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(2.0)),
-              ),
-              child: SvgImage(
-                image: AssetsUtils.icCheck,
-                color: colorList[widget.index % colorList.length],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        )),
+      ].addBetweenItems(const SizedBox(width: 15)),
+    ).paddingOnly(top: 10, bottom: 10);
   }
 }

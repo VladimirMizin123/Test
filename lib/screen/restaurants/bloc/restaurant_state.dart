@@ -45,9 +45,20 @@ class GetRestaurantListSuccessState extends RestaurantState {
   GetRestaurantListSuccessState({required this.restaurantList});
 }
 
+class RestaurantVerificationLoader extends RestaurantState {
+  final bool isLoading;
+
+  RestaurantVerificationLoader({required this.isLoading});
+}
+
 class GetRestaurantListLoadingState extends RestaurantState {}
 
 class GetRestaurantListErrorState extends RestaurantState {}
+
+class VerifyRestaurantLoader extends RestaurantState {
+  final String? id;
+  VerifyRestaurantLoader({required this.id});
+}
 
 ///================================================================================================================
 
@@ -60,6 +71,20 @@ class GetRestaurantMenuListSuccessState extends RestaurantState {
 }
 
 class GetRestaurantMenuListLoadingState extends RestaurantState {}
+
+class MatchMealLoadingState extends RestaurantState {
+  final bool isLoading;
+  MatchMealLoadingState({required this.isLoading});
+}
+
+class MatchMealState extends RestaurantState {
+  final String subCategoryId;
+  final List<MenuItemList> updatedList;
+  MatchMealState({
+    required this.subCategoryId,
+    required this.updatedList,
+  });
+}
 
 class GetRestaurantMenuListErrorState extends RestaurantState {}
 

@@ -43,6 +43,7 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
   TextEditingController controller = TextEditingController();
   List<MealDataByDate> mealDataByDate = [];
   bool isReadyToShowWidget = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -61,7 +62,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
         bloc: journalPlanBloc,
         listener: (BuildContext context, JournalMealPlanState state) {
           if (state is JournalFetchMealPlanSuccessState) {
-            for (var i = 0; i < state.mealPlanList.length; i++) {
+            mealList.clear();
+            for (var i = 0; i < state.mealPlanList.length;) {
               journalPlanBloc.add(GetMealLogByDateEvent(
                   date:
                       "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
@@ -151,6 +153,10 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                 break;
               }
             }
+          }
+          if (state is JournalFetchMealPlanLoadingState) {
+            isLoading = state.value;
+            isReadyToShowWidget = false;
           }
         },
         builder: (BuildContext context, JournalMealPlanState state) {
@@ -358,66 +364,70 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                       //                         );
                       //                       },
                       //                     ),),
-                      mealList.isEmpty
-                          ? state is JournalFetchMealPlanLoadingState
-                              ? const AppCenterLoader()
-                              : const SizedBox()
-                          : !isReadyToShowWidget
-                              ? const AppCenterLoader()
-                              : SingleChildScrollView(
-                                  child: ListView.builder(
-                                    itemCount: mealList.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return mealPlanCard(
-                                        onTap: () {
-                                          // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
-                                          log("REDIRECT");
-                                          Get.toNamed(
-                                            '/MealDetailsScreen',
-                                            arguments: MealPlanArguments(
-                                              mealData: mealList[index],
-                                              isFromScanner: false,
-                                              currentSelectedData: (widget
-                                                          .arguments ??
-                                                      journalMealScreenArguments)!
-                                                  .dateTime,
-                                            ),
-                                          );
-                                        },
-                                        mealData: mealList[index],
-                                        context: context,
-                                        onSkipMealTap: () {
-                                          showModalBottomSheet(
+                      isLoading
+                          ? const AppCenterLoader()
+                          : mealList.isNotEmpty
+                              ? !isReadyToShowWidget
+                                  ? const AppCenterLoader()
+                                  : SingleChildScrollView(
+                                      child: ListView.builder(
+                                        itemCount: mealList.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return mealPlanCard(
+                                            onTap: () async {
+                                              // Get.toNamed('/MealDetailsScreen', arguments: MealPlanArguments(mealData: e.meals![index]));
+                                              log("REDIRECT");
+                                              await Get.toNamed(
+                                                '/MealDetailsScreen',
+                                                arguments: MealPlanArguments(
+                                                  isJournalMeal: true,
+                                                  mealData: mealList[index],
+                                                  isFromScanner: false,
+                                                  currentSelectedData: (widget
+                                                              .arguments ??
+                                                          journalMealScreenArguments)!
+                                                      .dateTime,
+                                                ),
+                                              );
+                                              journalPlanBloc
+                                                  .add(JournalPlanFetchEvent());
+                                            },
+                                            mealData: mealList[index],
                                             context: context,
-                                            builder: (context) {
-                                              return JournalSkipMealBottomSheet(
-                                                bloc: journalPlanBloc,
-                                                mealData: mealList[index],
+                                            onSkipMealTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  return JournalSkipMealBottomSheet(
+                                                    bloc: journalPlanBloc,
+                                                    mealData: mealList[index],
+                                                  );
+                                                },
+                                                isDismissible: false,
                                               );
                                             },
-                                            isDismissible: false,
-                                          );
-                                        },
-                                        onSwapMealTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return JournalSwapMealBottomSheet(
-                                                  journalPlanBloc:
-                                                      journalPlanBloc,
-                                                  mealData: mealList[index]);
+                                            onSwapMealTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  return JournalSwapMealBottomSheet(
+                                                      journalPlanBloc:
+                                                          journalPlanBloc,
+                                                      mealData:
+                                                          mealList[index]);
+                                                },
+                                              );
                                             },
                                           );
                                         },
-                                      );
-                                    },
-                                  ),
-                                ),
+                                      ),
+                                    )
+                              : const SizedBox(),
                 ),
                 !((journalMealScreenArguments ?? widget.arguments)
                             ?.dateTime!

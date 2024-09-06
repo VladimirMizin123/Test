@@ -4,7 +4,10 @@ class ApiUrls {
       'https://trackapi.nutritionix.com/v2/search/';
   static const String apiKey = 'peONDsofens8dfs6sfYi4RvtTwlEXpQBwo==';
   static const String login = '${baseUrl}api/Auth/login';
-  static const String register = '${baseUrl}api/Auth/signup-form';
+  static const String registerUser = '${baseUrl}api/Auth/RegisterUser';
+  static const String signupForm = '${baseUrl}api/Auth/signup-form';
+  static const String authUpdateProfileDetails =
+      '${baseUrl}api/Auth/UpdateProfileDetails';
   static const String confirmEmail = '${baseUrl}api/Auth/confirmEmail';
   static const String checkEmail = '${baseUrl}api/Auth/CheckEmailExist';
   // static const String register = '${baseUrl}api/Auth/register';
@@ -15,8 +18,8 @@ class ApiUrls {
   static const String skipMeal = '${baseUrl}api/Suggestic/SkipMeal';
   static const String addToShoppingList =
       '${baseUrl}api/Suggestic/AddToShoppingList';
-  static const String byBarcodeScan =
-      '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByBarcodeScan';
+  static const String byBarcodeScan = '${baseUrl}api/AI/GetDataFromBarcodescan';
+  static const String filterMenuFromAI = '${baseUrl}api/AI/FilterMenuFromAI';
   static const String addNewCustomMeal =
       '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
@@ -40,6 +43,11 @@ class ApiUrls {
   static const String addRestrictionAndGetMealPlan =
       '${baseUrl}api/Suggestic/AddRestrictionAndGetMealPlan';
 
+  static const String getSubscriptionStatus =
+      '${baseUrl}api/SubscriptionDetails/GetUserSubscriptionStatus';
+  static const String addReceiptDetails =
+      '${baseUrl}api/SubscriptionDetails/AddReceiptDetails';
+
   //Grocery Flow
   static const String addGroceryToShoppingListFromSuggestic =
       '${baseUrl}api/MealMe/AddGroceryToShoppingListFromSuggestic';
@@ -54,15 +62,26 @@ class ApiUrls {
   static const String removeProduct =
       '${baseUrl}api/ShoppingList/RemoveProduct';
 
+  // * Grocery
+  static const String grocerySearchItemByName =
+      '${baseUrl}api/Grocery/SearchItemByName';
+  static const String getStoreNearBy = '${baseUrl}api/Grocery/GetStoreNearBy';
+  static const String getStoreCategorieList =
+      '${baseUrl}api/Grocery/GetStoreCategorieList';
+  static const String getMenuList = '${baseUrl}api/Grocery/GetMenuList';
+  static const String getStoreByName = '${baseUrl}api/Grocery/GetStoreByName';
+
   static const String productGroceryMultipleSearch =
       '${baseUrl}api/MealMe/product-groceryMultipleSearch';
+  static const String getProductCustomization =
+      '${baseUrl}api/Grocery/GetProductCustomization';
 
   //Nutritionix
-  // static const String getNxMealInfoByName = '${baseUrl}api/Nutritionix/Get-NxMealInfo-ByName';
-
   static const String getNXJsonFile = '${baseUrl}api/Nutritionix/GetNXJsonFile';
-  static const String getNxMealInfoByName =
-      '${baseUrl}api/Nutritionix/GetNutritionInfoByNameFromDb';
+  static const String getNxMealInfoByName = '${baseUrl}api/AI/GetNxDataFromAI';
+  static const String getUserRestriction =
+      '${baseUrl}api/AI/GetUserRestriction';
+  static const String getUserAllergies = '${baseUrl}api/AI/GetUserAllergies';
   static const String addNutritionDataToDb =
       '${baseUrl}api/Nutritionix/AddNutritionDataToDb';
   static const String getNxSearchData = '${nutritionixBaseUrl}instant';
@@ -107,6 +126,8 @@ class ApiUrls {
   //MealLog
   static const String getMealLogByDate =
       '${baseUrl}api/MealLog/GetMealLogByDate';
+
+  static const String removeMealLog = '${baseUrl}api/MealLog/RemoveMealLog';
 
   static const String addMealLog = '${baseUrl}api/MealLog/AddMealLog';
   static const String addSwapMeal = '${baseUrl}api/Suggestic/AddSwapMeal';
@@ -184,10 +205,19 @@ class ApiUrls {
 
   static const String getRestaurantList =
       '${baseUrl}api/MealMe/GetRestaurantsNearBy';
+  static const String getAvailableStoreList =
+      '${baseUrl}api/MealMe/GetAvailableStoreList';
+  static const String getAvailableGroceryStoreList =
+      '${baseUrl}api/MealMe/GetAvailableGroceryStoreList';
+  static const String checkAvailableStore =
+      '${baseUrl}api/MealMe/CheckAvailableStore';
   // static const String getRestaurantMenuList =
   //     '${baseUrl}api/MealMe/GetRestaurantMenuList';
+
   static const String getRestaurantMenuList =
       '${baseUrl}api/MealMe/GetHighlightedFoodMenuList';
+  static const String addIngredientToUserGroceryList =
+      "${baseUrl}api/Suggestic/AddIngredientToUserGroceryList";
 
   static const String getCousinesList = '${baseUrl}api/MealMe/GetCousineList';
   static const String checkDeliverableGroceryStore =

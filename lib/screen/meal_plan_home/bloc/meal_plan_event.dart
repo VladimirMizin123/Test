@@ -15,6 +15,11 @@ class GetMealLogByDateEvent extends MealPlanEvent {
   GetMealLogByDateEvent({this.date});
 }
 
+class RemoveMealLogEvent extends MealPlanEvent {
+  final String? mealId;
+  RemoveMealLogEvent({this.mealId});
+}
+
 class SkipMealPlanEvent extends MealPlanEvent {
   final String mealID;
   final String? mealName;
@@ -25,6 +30,8 @@ class SkipMealPlanEvent extends MealPlanEvent {
   final num? protein;
   final num? fat;
   final num? carbs;
+  final int? value;
+  final String? date;
 
   SkipMealPlanEvent(
       {required this.mealID,
@@ -35,7 +42,9 @@ class SkipMealPlanEvent extends MealPlanEvent {
       this.recipeId,
       this.protein,
       this.fat,
-      this.carbs});
+      this.carbs,
+      this.value,
+      this.date});
 }
 
 class AddToGroceryListEvent extends MealPlanEvent {
@@ -73,9 +82,9 @@ class GroceryAddToShoppingListEvent extends MealPlanEvent {
 
 class FetchSwapMealItemEvent extends MealPlanEvent {
   final String? recipeID;
-  final int? serving;
+  final int? noOfServing;
 
-  FetchSwapMealItemEvent({this.recipeID, this.serving});
+  FetchSwapMealItemEvent({this.recipeID, this.noOfServing});
 }
 
 class FetchMealDetailsEvent extends MealPlanEvent {
@@ -99,7 +108,7 @@ class GrocerySearchEvent extends MealPlanEvent {
 }
 
 class SwapMealDetailsEvent extends MealPlanEvent {
-  final SimilarMealData? similarMealData;
+  final List<SimilarMealData>? similarMealData;
   final int? day;
   final DateTime? dateTime;
   final String? mealId;

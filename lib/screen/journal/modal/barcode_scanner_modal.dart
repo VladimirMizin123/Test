@@ -28,7 +28,7 @@ class BarcodeScannerModal {
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: BarcodeScannerData.fromJson(json["data"]),
+        data: BarcodeScannerData.fromJson(json["data"] ?? {}),
       );
 
   Map<String, dynamic> toJson() => {
@@ -40,10 +40,10 @@ class BarcodeScannerModal {
 }
 
 class BarcodeScannerData {
-  final String foodName;
-  final String brandName;
-  final double servingQty;
-  final String servingUnit;
+  final String? foodName;
+  final String? brandName;
+  final double? servingQty;
+  final String? servingUnit;
   final dynamic servingWeightGrams;
   final dynamic nfMetricQty;
   final dynamic nfMetricUom;
@@ -58,64 +58,64 @@ class BarcodeScannerData {
   final dynamic nfProtein;
   final dynamic nfPotassium;
   final dynamic nfP;
-  final List<FullNutrient> fullNutrients;
-  final String nixBrandName;
-  final String nixBrandId;
-  final String nixItemName;
-  final String nixItemId;
-  final Metadata metadata;
+  final List<FullNutrient>? fullNutrients;
+  final String? nixBrandName;
+  final String? nixBrandId;
+  final String? nixItemName;
+  final String? nixItemId;
+  final Metadata? metadata;
   final dynamic source;
   final dynamic ndbNo;
   final dynamic tags;
   final dynamic altMeasures;
   final dynamic lat;
   final dynamic lng;
-  final Photo photo;
+  final Photo? photo;
   final dynamic note;
   final dynamic classCode;
   final dynamic brickCode;
   final dynamic tagId;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
   final dynamic nfIngredientStatement;
 
   BarcodeScannerData({
-    required this.foodName,
-    required this.brandName,
-    required this.servingQty,
-    required this.servingUnit,
-    required this.servingWeightGrams,
-    required this.nfMetricQty,
-    required this.nfMetricUom,
-    required this.nfCalories,
-    required this.nfTotalFat,
-    required this.nfSaturatedFat,
-    required this.nfCholesterol,
-    required this.nfSodium,
-    required this.nfTotalCarbohydrate,
-    required this.nfDietaryFiber,
-    required this.nfSugars,
-    required this.nfProtein,
-    required this.nfPotassium,
-    required this.nfP,
-    required this.fullNutrients,
-    required this.nixBrandName,
-    required this.nixBrandId,
-    required this.nixItemName,
-    required this.nixItemId,
-    required this.metadata,
-    required this.source,
-    required this.ndbNo,
-    required this.tags,
-    required this.altMeasures,
-    required this.lat,
-    required this.lng,
-    required this.photo,
-    required this.note,
-    required this.classCode,
-    required this.brickCode,
-    required this.tagId,
-    required this.updatedAt,
-    required this.nfIngredientStatement,
+    this.foodName,
+    this.brandName,
+    this.servingQty,
+    this.servingUnit,
+    this.servingWeightGrams,
+    this.nfMetricQty,
+    this.nfMetricUom,
+    this.nfCalories,
+    this.nfTotalFat,
+    this.nfSaturatedFat,
+    this.nfCholesterol,
+    this.nfSodium,
+    this.nfTotalCarbohydrate,
+    this.nfDietaryFiber,
+    this.nfSugars,
+    this.nfProtein,
+    this.nfPotassium,
+    this.nfP,
+    this.fullNutrients,
+    this.nixBrandName,
+    this.nixBrandId,
+    this.nixItemName,
+    this.nixItemId,
+    this.metadata,
+    this.source,
+    this.ndbNo,
+    this.tags,
+    this.altMeasures,
+    this.lat,
+    this.lng,
+    this.photo,
+    this.note,
+    this.classCode,
+    this.brickCode,
+    this.tagId,
+    this.updatedAt,
+    this.nfIngredientStatement,
   });
 
   factory BarcodeScannerData.fromJson(Map<String, dynamic> json) =>
@@ -138,25 +138,26 @@ class BarcodeScannerData {
         nfProtein: json["nf_protein"],
         nfPotassium: json["nf_potassium"],
         nfP: json["nf_p"],
-        fullNutrients: List<FullNutrient>.from(
-            json["full_nutrients"].map((x) => FullNutrient.fromJson(x))),
+        fullNutrients: List<FullNutrient>.from(json["full_nutrients"]
+                ?.map((x) => FullNutrient.fromJson(x ?? {})) ??
+            []),
         nixBrandName: json["nix_brand_name"],
         nixBrandId: json["nix_brand_id"],
         nixItemName: json["nix_item_name"],
         nixItemId: json["nix_item_id"],
-        metadata: Metadata.fromJson(json["metadata"]),
+        metadata: Metadata.fromJson(json["metadata"] ?? {}),
         source: json["source"],
         ndbNo: json["ndb_no"],
         tags: json["tags"],
         altMeasures: json["alt_measures"],
         lat: json["lat"],
         lng: json["lng"],
-        photo: Photo.fromJson(json["photo"]),
+        photo: Photo.fromJson(json["photo"] ?? ""),
         note: json["note"],
         classCode: json["class_code"],
         brickCode: json["brick_code"],
         tagId: json["tag_id"],
-        updatedAt: DateTime.parse(json["updated_at"]),
+        updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
         nfIngredientStatement: json["nf_ingredient_statement"],
       );
 
@@ -180,35 +181,35 @@ class BarcodeScannerData {
         "nf_potassium": nfPotassium,
         "nf_p": nfP,
         "full_nutrients":
-            List<dynamic>.from(fullNutrients.map((x) => x.toJson())),
+            List<dynamic>.from(fullNutrients?.map((x) => x.toJson()) ?? []),
         "nix_brand_name": nixBrandName,
         "nix_brand_id": nixBrandId,
         "nix_item_name": nixItemName,
         "nix_item_id": nixItemId,
-        "metadata": metadata.toJson(),
+        "metadata": metadata?.toJson(),
         "source": source,
         "ndb_no": ndbNo,
         "tags": tags,
         "alt_measures": altMeasures,
         "lat": lat,
         "lng": lng,
-        "photo": photo.toJson(),
+        "photo": photo?.toJson(),
         "note": note,
         "class_code": classCode,
         "brick_code": brickCode,
         "tag_id": tagId,
-        "updated_at": updatedAt.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
         "nf_ingredient_statement": nfIngredientStatement,
       };
 }
 
 class FullNutrient {
   final dynamic attrId;
-  final double value;
+  final double? value;
 
   FullNutrient({
     required this.attrId,
-    required this.value,
+    this.value,
   });
 
   factory FullNutrient.fromJson(Map<String, dynamic> json) => FullNutrient(
@@ -231,14 +232,14 @@ class Metadata {
 }
 
 class Photo {
-  final String thumb;
+  final String? thumb;
   final dynamic highres;
-  final bool isUserUploaded;
+  final bool? isUserUploaded;
 
   Photo({
-    required this.thumb,
-    required this.highres,
-    required this.isUserUploaded,
+    this.thumb,
+    this.highres,
+    this.isUserUploaded,
   });
 
   factory Photo.fromJson(Map<String, dynamic> json) => Photo(

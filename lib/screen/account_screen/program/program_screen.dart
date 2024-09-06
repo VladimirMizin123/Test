@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,6 +49,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
   }
 
   String currentProgram = '';
+  String programIcon = "";
   bool isLoader = false;
 
   @override
@@ -100,8 +102,23 @@ class _ProgramScreenState extends State<ProgramScreen> {
                                           fontSize: 24.sp,
                                           color: AppColors.darkGreyColor),
                                     ),
-                              leading: const SvgImage(
-                                  image: AssetsUtils.gymEatsImage),
+                              leading: CircleAvatar(
+                                radius: 30.w,
+                                child: CachedNetworkImage(
+                                  imageUrl: programIcon,
+                                  fit: BoxFit.fill,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10.w),
+                                          child: const SizedBox()),
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -115,6 +132,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
 
                           if (state is GetCurrentProgramSuccessState) {
                             currentProgram = state.myProgram.programName ?? "";
+                            programIcon = state.myProgram.programIcon ?? "";
                             isLoader = false;
                             setState(() {});
                           }
@@ -125,39 +143,41 @@ class _ProgramScreenState extends State<ProgramScreen> {
                           }
                         },
                       ),
-                      SizedBox(
-                        height: 15.h,
-                      ),
+                      SizedBox(height: 15.h),
                       accountScreenListWidget(
-                          children: List.generate(programList.length, (index) {
-                        var data = programList[index];
-                        return accountScreenDataWidget(
-                          onTap: () async {
-                            if (data["screen"].toString().isEmpty) {
-                              return;
-                            }
-                            if (data["title"] == "Retake Assessment") {
-                              UserSignUpDataModel userSignUpDataModel =
-                                  UserSignUpDataModel();
-                              await Get.to(data["screen"],
-                                  arguments: userSignUpDataModel);
-                              accountBloc.add(GetCurrentProgramEvent());
-                            } else {
-                              await Get.to(data["screen"]);
-                            }
-                            accountBloc.add(GetCurrentProgramEvent());
+                        children: List.generate(
+                          programList.length,
+                          (index) {
+                            var data = programList[index];
+                            return accountScreenDataWidget(
+                              onTap: () async {
+                                if (data["screen"].toString().isEmpty) {
+                                  return;
+                                }
+                                if (data["title"] == "Retake Assessment") {
+                                  UserSignUpDataModel userSignUpDataModel =
+                                      UserSignUpDataModel();
+                                  await Get.to(data["screen"],
+                                      arguments: userSignUpDataModel);
+                                  accountBloc.add(GetCurrentProgramEvent());
+                                } else {
+                                  await Get.to(data["screen"]);
+                                }
+                                accountBloc.add(GetCurrentProgramEvent());
+                              },
+                              color: data["color"],
+                              leading: SvgImage(image: data["image"]),
+                              title: Text(
+                                data["title"],
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              trailing: const SvgImage(
+                                image: AssetsUtils.forwardArrow,
+                              ),
+                            );
                           },
-                          color: data["color"],
-                          leading: SvgImage(image: data["image"]),
-                          title: Text(
-                            data["title"],
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                          trailing: const SvgImage(
-                            image: AssetsUtils.forwardArrow,
-                          ),
-                        );
-                      })),
+                        ),
+                      ),
                     ],
                   ),
                 ).paddingOnly(top: 5.h),

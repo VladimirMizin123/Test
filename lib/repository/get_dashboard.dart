@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -39,6 +40,7 @@ class GetDashboardDataRepository {
 
   Future<Either<ErrorModel, GetOrderInvoiceListModel>>
       getInvoiceOrderList() async {
+    log('Api ${ApiUrls.getOrderInvoiceList}/$userId');
     final response =
         await apiServices.get('${ApiUrls.getOrderInvoiceList}/$userId');
 
@@ -50,6 +52,18 @@ class GetDashboardDataRepository {
           GetOrderInvoiceListModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<bool> addIngredientToUserGroceryList() async {
+    final response = await apiServices
+        .get('${ApiUrls.addIngredientToUserGroceryList}/$userId');
+    log("Response : ${response.body.toString()}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      return true;
     }
   }
 }

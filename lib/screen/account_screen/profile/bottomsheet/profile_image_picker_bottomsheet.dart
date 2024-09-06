@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../bloc/account_event.dart';
@@ -28,6 +29,56 @@ class _ProfileImagePickerBottomSheetState
   int selectedIndex = 0;
   final ImagePicker _picker = ImagePicker();
   String imagePath = '';
+
+  Future<void> picImage(ImageSource source) async {
+    try {
+      XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          imagePath = pickedFile.path;
+        });
+
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: pickedFile.path,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+          uiSettings: [
+            AndroidUiSettings(
+                toolbarTitle: 'Cropper',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            IOSUiSettings(
+              title: 'Cropper',
+            ),
+            WebUiSettings(
+              // ignore: use_build_context_synchronously
+              context: context,
+            ),
+          ],
+        );
+
+        File image = File(croppedFile!.path);
+
+        try {
+          widget.accountBloc!.add(GetSelectedImagePathEvent(imagePath: image));
+        } catch (e) {
+          print('=eee====>$e');
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,24 +125,7 @@ class _ProfileImagePickerBottomSheetState
                         Expanded(
                             child: GestureDetector(
                           onTap: () async {
-                            XFile? pickedFile = await _picker.pickImage(
-                              source: ImageSource.camera,
-                              imageQuality: 100,
-                            );
-                            if (pickedFile != null) {
-                              setState(() {
-                                imagePath = pickedFile.path;
-                              });
-                              File image = File(pickedFile.path);
-
-                              try {
-                                widget.accountBloc!.add(
-                                    GetSelectedImagePathEvent(
-                                        imagePath: image));
-                              } catch (e) {
-                                print('=eee====>$e');
-                              }
-                            }
+                            await picImage(ImageSource.camera);
                           },
                           child: Container(
                             height: screenSize.height * 0.20,
@@ -109,24 +143,7 @@ class _ProfileImagePickerBottomSheetState
                         Expanded(
                             child: GestureDetector(
                           onTap: () async {
-                            XFile? pickedFile = await _picker.pickImage(
-                              source: ImageSource.gallery,
-                              imageQuality: 100,
-                            );
-                            if (pickedFile != null) {
-                              setState(() {
-                                imagePath = pickedFile.path;
-                              });
-
-                              File image = File(pickedFile.path);
-                              try {
-                                widget.accountBloc!.add(
-                                    GetSelectedImagePathEvent(
-                                        imagePath: image));
-                              } catch (e) {
-                                print('=eee====>$e');
-                              }
-                            }
+                            await picImage(ImageSource.gallery);
                           },
                           child: Container(
                             height: screenSize.height * 0.20,

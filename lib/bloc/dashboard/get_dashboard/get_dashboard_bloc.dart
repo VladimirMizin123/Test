@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:intl/intl.dart';
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
@@ -17,6 +20,8 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     on<GenMealTrackerData>(_onGenMealTrackerData);
     on<AddEatenMealData>(_onAddEatenMeal);
     on<GetOrderInvoiceList>(_onGetOrderInvoiceList);
+    on<AddIngredientGroceryList>(_onAddIngredientGroceryList);
+    on<GetAllergiesAndRestriction>(_onGetAllergiesAndRestriction);
   }
 
   final GetDashboardDataRepository _dashboardRepository =
@@ -30,16 +35,49 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       final response = await _dashboardRepository.getDashboardData();
       final data = await _dashboardRepository
           .getMealLogByDate(DateFormat('yyyy-MM-dd').format(DateTime.now()));
-
-      response.fold((left) {}, (right) {
-        data.fold((left) => {emit(LoadDashboardData(model: right, data: []))},
-            (r) {
-          emit(LoadDashboardData(model: right, data: r.data));
-        });
-        // emit(LoadDashboardData(model: right));
-      });
+      if (response.isRight && data.isRight) {
+        await PreferenceUtils.setString(
+            dashboardModelPref, jsonEncode(response.right));
+        await PreferenceUtils.setString(
+            mealDataByDatePref, jsonEncode(data.right.data ?? []));
+        emit(LoadDashboardData(model: response.right, data: data.right.data));
+      } else if (response.isRight && data.isLeft) {
+        await PreferenceUtils.setString(
+            dashboardModelPref, jsonEncode(response.right));
+        await PreferenceUtils.setString(mealDataByDatePref, jsonEncode([]));
+        emit(LoadDashboardData(model: response.right, data: []));
+      }
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
+    }
+  }
+
+  _onGetAllergiesAndRestriction(
+      GetAllergiesAndRestriction event, Emitter<GetDashboardState> emit) async {
+    try {
+      _dashboardRepository.apiServices
+          .get(ApiUrls.getUserRestriction)
+          .then((value) async {
+        if (value != null) {
+          dynamic res = jsonDecode(value.body)["data"];
+          List dataList = res is List ? res : [];
+          await PreferenceUtils.setStringList(
+              getUserRestriction, dataList.map((e) => e.toString()).toList());
+        }
+      });
+
+      _dashboardRepository.apiServices
+          .get(ApiUrls.getUserAllergies)
+          .then((value) async {
+        if (value != null) {
+          dynamic res = jsonDecode(value.body)["data"];
+          List dataList = res is List ? res : [];
+          await PreferenceUtils.setStringList(
+              getUserAllergies, dataList.map((e) => e.toString()).toList());
+        }
+      });
+    } catch (e) {
+      log(e.toString());
     }
   }
 
@@ -53,7 +91,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
         emit(ErrorStateData(
           errMessage: left.errorMessage!,
         ));
-      }, (right) {
+      }, (right) async {
         right.data!.map((e) {
           if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
               dateTimeNow()) {
@@ -63,6 +101,8 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
             }
           }
         }).toList();
+        String data = jsonEncode(dataList);
+        await PreferenceUtils.setString(trackerListStore, data);
         emit(LoadMealData(trackerDataList: dataList));
       });
     } catch (e) {
@@ -113,11 +153,21 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       await _dashboardRepository.getInvoiceOrderList().fold((left) {
         emit(GetOrderInvoiceErrorState());
       }, (right) {
-        emit(GetOrderInvoiceSuccessState(invoiceData: right.data?.orderedItems ?? []));
+        emit(GetOrderInvoiceSuccessState(
+            invoiceData: right.data?.orderedItems ?? []));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(GetOrderInvoiceErrorState());
+    }
+  }
+
+  _onAddIngredientGroceryList(
+      AddIngredientGroceryList event, Emitter<GetDashboardState> emit) async {
+    try {
+      await _dashboardRepository.addIngredientToUserGroceryList();
+    } catch (e) {
+      showToast(isSuccess: false, message: e.toString());
     }
   }
 }

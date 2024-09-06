@@ -7,8 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
-import 'package:gymeats_mobile/repository/add_address.dart';
-
 import '../../app/sharedPrefrence.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
@@ -21,22 +19,22 @@ class UserSignUpInfoBloc
   }
 
   _onLatLog(LatLogEvent event, Emitter<UserSignUpInfoState> emit) {
-    getCurrentPosition();
+    getCurrentPosition(emit);
   }
 
-  Future<void> getCurrentPosition() async {
-    final hasPermission = await _handleLocationPermission();
+  Future<void> getCurrentPosition(Emitter<UserSignUpInfoState> emit) async {
+    try {
+      final hasPermission = await _handleLocationPermission();
 
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
+      if (!hasPermission) return;
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       debugPrint('position data--> $position');
-
       emit(LatLogState(currentPosition: position));
-    }).catchError((e) async {
+    } catch (e) {
       debugPrint(e.toString());
       await Geolocator.requestPermission();
-    });
+    }
   }
 
   Future<bool> _handleLocationPermission() async {
@@ -71,13 +69,16 @@ class UserSignUpInfoBloc
   }
 
   final SignUpRepository _repository = SignUpRepository();
-  final AddAddressRepository _addressRepository = AddAddressRepository();
   String userID = '';
   _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
     try {
       emit(SignUpLoadingState());
       await _repository.signUp(model: event.model).fold((left) {
-        showToast(isSuccess: false, message: left.message!);
+        showToast(
+            isSuccess: false,
+            message: (left.message?.isNotEmpty ?? false)
+                ? left.message!
+                : (left.title ?? ""));
         emit(SignUpErrorState());
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);

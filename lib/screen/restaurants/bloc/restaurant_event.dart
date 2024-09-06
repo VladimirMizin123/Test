@@ -1,5 +1,4 @@
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
-import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:flutter/material.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
@@ -7,9 +6,6 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
-    as user_add;
 
 abstract class RestaurantEvent {}
 
@@ -18,36 +14,63 @@ class GetUserAddressEvent extends RestaurantEvent {}
 
 class MealPlanMatchEvent extends RestaurantEvent {
   final String subcategoryId;
+  final RestaurantMenu menu;
+  final double? calories;
 
-  MealPlanMatchEvent({required this.subcategoryId});
+  MealPlanMatchEvent({
+    required this.menu,
+    required this.subcategoryId,
+    this.calories,
+  });
+}
+
+class RestaurantVerifyEvent extends RestaurantEvent {
+  final dynamic latitude;
+  final dynamic longitude;
+  final bool pickup;
+  final String? id;
+  final String? mealType;
+  final Function(RestaurantMenu?)? onVerify;
+  final Function()? notVerify;
+
+  RestaurantVerifyEvent({
+    required this.latitude,
+    required this.longitude,
+    required this.pickup,
+    required this.id,
+    this.mealType,
+    required this.onVerify,
+    this.notVerify,
+  });
 }
 
 /// Get Restaurant List Event ===============================================================
 class GetRestaurantListEvent extends RestaurantEvent {
-  final dynamic latitude;
-  final dynamic longitude;
-  final String userStreetNum;
-  final String userStreetName;
-  final String userCity;
-  final String userState;
-  final String userCountry;
-  final String userZipcode;
+  final double? latitude;
+  final double? longitude;
   final bool pickup;
-  final int maximumMiles;
   final List categotyData;
+  final bool storeLocal;
 
   GetRestaurantListEvent(
-      this.latitude,
-      this.longitude,
-      this.userStreetNum,
-      this.userStreetName,
-      this.userCity,
-      this.userState,
-      this.userCountry,
-      this.userZipcode,
-      this.pickup,
-      this.maximumMiles,
-      this.categotyData);
+      this.latitude, this.longitude, this.pickup, this.categotyData,
+      {this.storeLocal = true});
+}
+
+class RestaurantByNameEvent extends RestaurantEvent {
+  final double? latitude;
+  final double? longitude;
+  final bool pickup;
+  final String name;
+  final List<String> cuisine;
+
+  RestaurantByNameEvent(
+    this.latitude,
+    this.longitude,
+    this.pickup,
+    this.name,
+    this.cuisine,
+  );
 }
 
 /// Get Restaurant List Event ===============================================================
@@ -55,11 +78,16 @@ class GetRestaurantMenuListEvent extends RestaurantEvent {
   final String? restaurantId;
   final bool? pickUp;
   final String? mealType;
-
   final user.UserAddress? getUserAddress;
+  final Function(RestaurantMenu? menu)? onDataGet;
 
   GetRestaurantMenuListEvent(
-      this.restaurantId, this.pickUp, this.mealType, this.getUserAddress);
+    this.restaurantId,
+    this.pickUp,
+    this.mealType,
+    this.getUserAddress, {
+    this.onDataGet,
+  });
 }
 
 /// Get Cousines List Event ===============================================================
@@ -98,37 +126,22 @@ class AddRestaurantCartEvent extends RestaurantEvent {
 
 /// Update Cart Event ===============================================================
 
-class UpdateRestaurantCartEvent extends RestaurantEvent {
-  final UpdateRestaurantItemsToShoppingListModel updateItemList;
-  UpdateRestaurantCartEvent({required this.updateItemList});
-}
-
 /// Get Cart Event ===============================================================
-
-class GetShoppingListEvent extends RestaurantEvent {}
 
 /// Remove Shopping List Item Event ===============================================================
 
-class RemoveShoppingListItemEvent extends RestaurantEvent {
-  final String productID;
-
-  RemoveShoppingListItemEvent({required this.productID});
-}
-
 /// Clear Shopping List Item Event ===============================================================
-
-class ClearShoppingListItemEvent extends RestaurantEvent {
-  final Function? onCallback;
-
-  ClearShoppingListItemEvent({this.onCallback});
-}
 
 /// Create Order ==============================================================================
 
 class CreateOrderEvent extends RestaurantEvent {
   final CreateOrderModel createOrderModel;
+  final BuildContext context;
 
-  CreateOrderEvent({required this.createOrderModel});
+  CreateOrderEvent({
+    required this.createOrderModel,
+    required this.context,
+  });
 }
 
 /// Create Product ==============================================================================
@@ -167,23 +180,16 @@ class UpdateDeliveryStatusEvent extends RestaurantEvent {
   UpdateDeliveryStatusEvent({required this.pickUp});
 }
 
-class CheckDeliverableGroceryEvent extends RestaurantEvent {
-  final List<Cart> cartList;
-  final user_add.UserAddress? address;
-  final Function(List<Cart>) callback;
-  final AskReceiveOrder? askReceiveOrder;
-
-  CheckDeliverableGroceryEvent({
-    required this.cartList,
-    required this.callback,
-    required this.address,
-    this.askReceiveOrder,
-  });
-}
-
 class FetchCustomizationEvent extends RestaurantEvent {
   final String productId;
   final Function(MenuItemList) callback;
 
   FetchCustomizationEvent({required this.productId, required this.callback});
+}
+
+class ProductCustomizationEvent extends RestaurantEvent {
+  final String productId;
+  final Function(MenuItemList) callback;
+
+  ProductCustomizationEvent({required this.productId, required this.callback});
 }

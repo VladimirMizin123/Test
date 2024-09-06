@@ -114,13 +114,17 @@ class AddNewGroceryItemBloc
         measurementType: event.measurementType,
         quantity: event.quantity,
         measurementValue: event.measurementValue,
+        isChecked: event.isChecked,
       )
           .fold(
         (left) {
           onFailError(emit: emit, text: left.errorMessage!);
         },
         (right) {
-          showToast(isSuccess: true, message: right.message!);
+          if (event.showToast) {
+            showToast(isSuccess: true, message: right.message!);
+          }
+
           emit(UpdateAddGroceryListSuccessState(userGroceryListId: event.id));
         },
       );
@@ -153,6 +157,7 @@ class AddNewGroceryItemBloc
         measurementType: event.measurementType,
         quantity: event.quantity,
         measurementValue: event.measurementValue,
+        isChecked: false,
       )
           .fold(
         (left) {
@@ -205,7 +210,9 @@ class AddNewGroceryItemBloc
         emit(ClearGroceryErrorState());
       }, (right) {
         emit(ClearGrocerySuccessState(isClear: right.success ?? true));
-        showToast(isSuccess: true, message: right.message ?? 'Added!');
+        if (event.showToast) {
+          showToast(isSuccess: true, message: right.message ?? 'Added!');
+        }
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

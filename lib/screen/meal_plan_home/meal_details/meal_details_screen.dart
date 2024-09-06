@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/functions.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
@@ -14,13 +15,11 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
-import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart'
-    as account;
+import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/arguments/meal_plan_arguments_screen.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/best_match_restaurants/best_match_restaurants_screen.dart';
@@ -29,7 +28,6 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
-import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class MealDetailsScreen extends StatefulWidget {
@@ -49,6 +47,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   FetchModelData? fetchModelData;
 
   List<GrocerySearchModel> grocerySearchList = [];
+  JournalPlanBloc journalPlanBloc = JournalPlanBloc();
   List<Cart> searchCartList = [];
   bool isCircularLoading = false;
   bool addData = false;
@@ -56,9 +55,20 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
   NutritionixGetNxMealInfoByNameModelData?
       nutritionixGetNxMealInfoByNameModelData;
 
+  MealDataByDate? mealDataByDate;
+  bool isLoading = false;
+  bool isMealPlanLoading = false;
+
   @override
   void initState() {
     super.initState();
+    mealPlanBloc.add(GetMealLogByDateEvent(
+        date: widget.mealDataArguments?.currentSelectedData != null
+            ? dateTimeYYYYMMDD(
+                dateTimeVal:
+                    widget.mealDataArguments!.currentSelectedData.toString())
+            : "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
+
     log(widget.mealDataArguments!.productName.toString(),
         name: "mealDataArguments");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -72,8 +82,9 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             widget.mealDataArguments?.mealData?.recipe?.name ??
                 "null".toString(),
             name: "RECIPE NAME");
+
         mealPlanBloc.add(FetchMealDetailsEvent(
-            recipeID: widget.mealDataArguments!.mealData!.recipe!.id,
+            recipeID: widget.mealDataArguments!.mealData?.recipe?.id,
             recipeName: widget.mealDataArguments?.mealData?.recipe?.name));
       }
     });
@@ -99,9 +110,9 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
       body: BlocConsumer<MealPlanBloc, FetchMealPlanState>(
           bloc: mealPlanBloc,
           listener: (context, state) {
-            // if (state is MealDetailsLoadingState) {
-            //   isCircularLoading = true;
-            // }
+            if (state is MealDetailsLoadingState) {
+              isMealPlanLoading = state.isLoading;
+            }
             if (state is MealDetailsSuccessState) {
               fetchModelData = state.fetchModelData;
             }
@@ -180,6 +191,35 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
               nutritionixGetNxMealInfoByNameModelData =
                   state.nutritionixGetNxMealInfoByNameModelData;
             }
+
+            if (state is OnGetMealLogByDateLoadingState) {
+              isLoading = state.value;
+            }
+            if (state is SkipMealPlanLoadingState) {
+              isLoading = state.value;
+            }
+
+            if (state is RemoveMealPlanLoadingState) {
+              isLoading = state.value;
+            }
+
+            if (state is OnGetMealLogByDateSuccessState) {
+              mealDataByDate = state.modelData!.firstWhereOrNull(
+                (element) =>
+                    element.mealId == widget.mealDataArguments!.mealData!.id,
+              );
+            }
+            if (state is SkipMealPlanSuccessState ||
+                state is OnRemoveMealLogSuccessState) {
+              // Get Meal Log
+              mealPlanBloc.add(GetMealLogByDateEvent(
+                  date: widget.mealDataArguments?.currentSelectedData != null
+                      ? dateTimeYYYYMMDD(
+                          dateTimeVal: widget
+                              .mealDataArguments!.currentSelectedData
+                              .toString())
+                      : "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}"));
+            }
           },
           builder: (context, state) {
             num weight = fetchModelData?.recipe?.servingWeight ?? 0;
@@ -236,9 +276,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                               : state is BarcodeScannerErrorState
                                   ? const Center(
                                       child: Text(
-                                      'No Data Found!\nPlease check barcode!',
-                                      textAlign: TextAlign.center,
-                                    ))
+                                        'No Data Found!\nPlease check barcode!',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
                                   : state
                                           is NutritionixGetNxMealInfoByNameLoadingState
                                       ? const Center(
@@ -663,7 +704,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                 ],
                                               ),
                                             )
-                          : state is MealDetailsLoadingState
+                          : isMealPlanLoading
                               ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
@@ -1176,153 +1217,272 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                   // ),
                                                 ]),
                                           const SizedBox(height: 15),
-                                          BlocConsumer(
-                                            bloc: addNewGroceryItemBloc,
-                                            listener: (context, state) {
-                                              if (state is LoadingState) {
-                                                addItem = true;
-                                              }
-                                              if (state
-                                                  is AddGroceryItemSuccessfulState) {
-                                                addItem = false;
-                                              }
-                                              if (state is ErrorState) {
-                                                addItem = false;
-                                              }
-                                            },
-                                            builder: (context, state) =>
-                                                GestureDetector(
-                                              onTap: () {
-                                                if (isAddButtonEnable) {
-                                                  // mealPlanBloc.add(
-                                                  //   GrocerySearchEvent(
-                                                  //       grocerySearchModelList:
-                                                  //           grocerySearchList),
-                                                  // );
-
-                                                  // bloc.add(GroceryAddToShoppingListEvent(
-                                                  //   productID: '',
-                                                  //   productName: widget.mealDataArguments!.mealData!.recipe!.name!,
-                                                  //   price: '',
-                                                  //   unitSize: '',
-                                                  //   unitOfMeasurement: '',
-                                                  //   quantity: '1',
-                                                  //   recipeId: '',
-                                                  //   mealmeStoreId: '',
-                                                  //   isAdd: true,
-                                                  //   isRemove: false,
-                                                  //   isChecked: false,
-                                                  // ));
-
-                                                  List<Map<String, dynamic>>
-                                                      groceryDetails = [];
-
-                                                  for (var i = 0;
-                                                      i <
-                                                          grocerySearchList
-                                                              .length;
-                                                      i++) {
-                                                    for (var j = 0;
-                                                        j <
-                                                            fetchModelData!
-                                                                .recipe!
-                                                                .parsedIngredientLines!
-                                                                .length;
-                                                        j++) {
-                                                      if (grocerySearchList[i]
-                                                          .groceryName!
-                                                          .toLowerCase()
-                                                          .contains(fetchModelData!
+                                          (widget.mealDataArguments!
+                                                      .isJournalMeal ??
+                                                  false)
+                                              ? GestureDetector(
+                                                  onTap: () {
+                                                    if (mealDataByDate !=
+                                                        null) {
+                                                      mealPlanBloc.add(
+                                                          RemoveMealLogEvent(
+                                                              mealId:
+                                                                  mealDataByDate
+                                                                          ?.id ??
+                                                                      ""));
+                                                    } else {
+                                                      mealPlanBloc.add(
+                                                        SkipMealPlanEvent(
+                                                          value: 1,
+                                                          mealID: widget
+                                                                  .mealDataArguments!
+                                                                  .mealData
+                                                                  ?.id ??
+                                                              "",
+                                                          calorie: fetchModelData!
+                                                                  .recipe!
+                                                                  .nutrientsPerServing!
+                                                                  .calories ??
+                                                              0,
+                                                          mealName: widget
+                                                              .mealDataArguments!
+                                                              .mealData!
                                                               .recipe!
-                                                              .parsedIngredientLines![
-                                                                  j]
-                                                              .ingredient!
-                                                              .toLowerCase())) {
-                                                        groceryDetails.add(
-                                                          {
-                                                            'itemName':
-                                                                grocerySearchList[
-                                                                            i]
-                                                                        .groceryName ??
-                                                                    '',
-                                                            'quantity':
-                                                                grocerySearchList[
-                                                                            i]
-                                                                        .quantity ??
-                                                                    1,
-                                                            'measurementType':
-                                                                fetchModelData!
-                                                                        .recipe!
-                                                                        .parsedIngredientLines![
-                                                                            j]
-                                                                        .unit ??
-                                                                    '',
-                                                            'measurementValue':
-                                                                fetchModelData!
+                                                              .name,
+                                                          mealType: widget
+                                                              .mealDataArguments!
+                                                              .mealData!
+                                                              .meal,
+                                                          noOfServing:
+                                                              fetchModelData!
+                                                                  .recipe!
+                                                                  .serving,
+                                                          fat: fetchModelData!
+                                                              .recipe!
+                                                              .nutrientsPerServing!
+                                                              .fat,
+                                                          protein: fetchModelData!
+                                                              .recipe!
+                                                              .nutrientsPerServing!
+                                                              .protein,
+                                                          carbs: fetchModelData!
+                                                              .recipe!
+                                                              .nutrientsPerServing!
+                                                              .carbs,
+                                                          recipeId: widget
+                                                                  .mealDataArguments!
+                                                                  .mealData!
+                                                                  .recipe!
+                                                                  .id ??
+                                                              "",
+                                                          date: widget.mealDataArguments
+                                                                      ?.currentSelectedData !=
+                                                                  null
+                                                              ? dateTimeYYYYMMDD(
+                                                                  dateTimeVal: widget
+                                                                      .mealDataArguments!
+                                                                      .currentSelectedData
+                                                                      .toString())
+                                                              : null,
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: isLoading
+                                                      ? const Center(
+                                                          child:
+                                                              CircularProgressIndicator())
+                                                      : Container(
+                                                          height: screenSize
+                                                                  .height *
+                                                              0.065,
+                                                          width:
+                                                              screenSize.width,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color: mealDataByDate !=
+                                                                        null
+                                                                    ? AppColors
+                                                                        .primaryBlue
+                                                                    : AppColors
+                                                                        .whiteColor),
+                                                            color: mealDataByDate !=
+                                                                    null
+                                                                ? AppColors
+                                                                    .whiteColor
+                                                                : AppColors
+                                                                    .primaryBlue,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          child: Center(
+                                                              child: Text(
+                                                                  mealDataByDate !=
+                                                                          null
+                                                                      ? StringUtils
+                                                                          .remove
+                                                                      : StringUtils
+                                                                          .logmeal,
+                                                                  style: FontUtils.h16(
+                                                                      fontColor: mealDataByDate !=
+                                                                              null
+                                                                          ? AppColors
+                                                                              .primaryBlue
+                                                                          : AppColors
+                                                                              .whiteColor,
+                                                                      fontWeight:
+                                                                          FWT.semiBold))),
+                                                        ),
+                                                )
+                                              : BlocConsumer(
+                                                  bloc: addNewGroceryItemBloc,
+                                                  listener: (context, state) {
+                                                    if (state is LoadingState) {
+                                                      addItem = true;
+                                                    }
+                                                    if (state
+                                                        is AddGroceryItemSuccessfulState) {
+                                                      addItem = false;
+                                                    }
+                                                    if (state is ErrorState) {
+                                                      addItem = false;
+                                                    }
+                                                  },
+                                                  builder: (context, state) =>
+                                                      GestureDetector(
+                                                    onTap: () {
+                                                      if (isAddButtonEnable) {
+                                                        // mealPlanBloc.add(
+                                                        //   GrocerySearchEvent(
+                                                        //       grocerySearchModelList:
+                                                        //           grocerySearchList),
+                                                        // );
+
+                                                        // bloc.add(GroceryAddToShoppingListEvent(
+                                                        //   productID: '',
+                                                        //   productName: widget.mealDataArguments!.mealData!.recipe!.name!,
+                                                        //   price: '',
+                                                        //   unitSize: '',
+                                                        //   unitOfMeasurement: '',
+                                                        //   quantity: '1',
+                                                        //   recipeId: '',
+                                                        //   mealmeStoreId: '',
+                                                        //   isAdd: true,
+                                                        //   isRemove: false,
+                                                        //   isChecked: false,
+                                                        // ));
+
+                                                        List<
+                                                                Map<String,
+                                                                    dynamic>>
+                                                            groceryDetails = [];
+
+                                                        for (var i = 0;
+                                                            i <
+                                                                grocerySearchList
+                                                                    .length;
+                                                            i++) {
+                                                          for (var j = 0;
+                                                              j <
+                                                                  fetchModelData!
+                                                                      .recipe!
+                                                                      .parsedIngredientLines!
+                                                                      .length;
+                                                              j++) {
+                                                            if (grocerySearchList[
+                                                                    i]
+                                                                .groceryName!
+                                                                .toLowerCase()
+                                                                .contains(fetchModelData!
                                                                     .recipe!
                                                                     .parsedIngredientLines![
                                                                         j]
-                                                                    .quantity
-                                                                    .toString()
-                                                          },
-                                                        );
-                                                      }
-                                                    }
-                                                  }
+                                                                    .ingredient!
+                                                                    .toLowerCase())) {
+                                                              groceryDetails
+                                                                  .add(
+                                                                {
+                                                                  'itemName':
+                                                                      grocerySearchList[i]
+                                                                              .groceryName ??
+                                                                          '',
+                                                                  'quantity':
+                                                                      grocerySearchList[i]
+                                                                              .quantity ??
+                                                                          1,
+                                                                  'measurementType': fetchModelData!
+                                                                          .recipe!
+                                                                          .parsedIngredientLines![
+                                                                              j]
+                                                                          .unit ??
+                                                                      '',
+                                                                  'measurementValue': fetchModelData!
+                                                                      .recipe!
+                                                                      .parsedIngredientLines![
+                                                                          j]
+                                                                      .quantity
+                                                                      .toString()
+                                                                },
+                                                              );
+                                                            }
+                                                          }
+                                                        }
 
-                                                  addNewGroceryItemBloc.add(
-                                                    AddNewGroceryItem(
-                                                      userId: userId,
-                                                      groceryItems:
-                                                          groceryDetails,
+                                                        addNewGroceryItemBloc
+                                                            .add(
+                                                          AddNewGroceryItem(
+                                                            userId: userId,
+                                                            groceryItems:
+                                                                groceryDetails,
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        Fluttertoast.showToast(
+                                                            msg:
+                                                                'Select atleast 1 Ingredients');
+                                                      }
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 4.h),
+                                                      child: addItem == true
+                                                          ? const CircularProgressIndicator()
+                                                          : Container(
+                                                              height: screenSize
+                                                                      .height *
+                                                                  0.065,
+                                                              width: screenSize
+                                                                  .width,
+                                                              decoration:
+                                                                  isAddButtonEnable
+                                                                      ? BoxDecoration(
+                                                                          color: AppColors
+                                                                              .primaryBlue,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8))
+                                                                      : BoxDecoration(
+                                                                          color:
+                                                                              AppColors.gray,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                        ),
+                                                              child: Center(
+                                                                  child: Text(
+                                                                      StringUtils
+                                                                          .addToGroceryList,
+                                                                      style: FontUtils.h16(
+                                                                          fontColor: AppColors
+                                                                              .whiteColor,
+                                                                          fontWeight:
+                                                                              FWT.semiBold))),
+                                                            ),
                                                     ),
-                                                  );
-                                                } else {
-                                                  Fluttertoast.showToast(
-                                                      msg:
-                                                          'Select atleast 1 Ingredients');
-                                                }
-                                              },
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 4.h),
-                                                child: addItem == true
-                                                    ? const CircularProgressIndicator()
-                                                    : Container(
-                                                        height:
-                                                            screenSize.height *
-                                                                0.065,
-                                                        width: screenSize.width,
-                                                        decoration:
-                                                            isAddButtonEnable
-                                                                ? BoxDecoration(
-                                                                    color: AppColors
-                                                                        .primaryBlue,
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(8))
-                                                                : BoxDecoration(
-                                                                    color:
-                                                                        AppColors
-                                                                            .gray,
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(8),
-                                                                  ),
-                                                        child: Center(
-                                                            child: Text(
-                                                                StringUtils
-                                                                    .addToGroceryList,
-                                                                style: FontUtils.h16(
-                                                                    fontColor:
-                                                                        AppColors
-                                                                            .whiteColor,
-                                                                    fontWeight:
-                                                                        FWT.semiBold))),
-                                                      ),
-                                              ),
-                                            ),
-                                          ),
+                                                  ),
+                                                ),
                                           // simpleTextBorderButton(
                                           //   context: context,
                                           //   buttonLable: StringUtils.addToGroceryList,

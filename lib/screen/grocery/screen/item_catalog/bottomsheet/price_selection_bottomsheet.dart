@@ -29,7 +29,9 @@ class _PriceSelectionBottomSheetState extends State<PriceSelectionBottomSheet> {
     return Material(
       color: AppColors.whiteColor,
       borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(
@@ -63,8 +65,8 @@ class _PriceSelectionBottomSheetState extends State<PriceSelectionBottomSheet> {
                 min: 0,
                 divisions: 50,
                 labels: RangeLabels(
-                  '\$' + _currentRangeValues.start.round().toString(),
-                  '\$' + _currentRangeValues.end.round().toString(),
+                  '\$${_currentRangeValues.start.round()}',
+                  '\$${_currentRangeValues.end.round()}',
                 ),
                 activeColor: AppColors.green,
                 inactiveColor: AppColors.green.withOpacity(0.4),

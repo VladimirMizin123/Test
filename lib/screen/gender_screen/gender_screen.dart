@@ -15,6 +15,7 @@ class GenderScreen extends StatefulWidget {
 
 class _GenderScreenState extends State<GenderScreen> {
   final routeName = '/GenderScreen';
+  dynamic argument = Get.arguments;
   String gender = Get.arguments.gender.toString();
 
   @override
@@ -39,7 +40,7 @@ class _GenderScreenState extends State<GenderScreen> {
             ? Column(
                 children: [
                   Text(
-                    '${Get.arguments == null ? '' : Get.arguments.firstName}, you did it!',
+                    '${argument == null ? '' : argument.firstName}, you did it!',
                     textAlign: TextAlign.center,
                     style: textTheme.displayLarge!.copyWith(
                         color: const Color(0xFF004C63),
@@ -73,7 +74,7 @@ class _GenderScreenState extends State<GenderScreen> {
                     //shrinkWrap: true,
                     children: [
                       Text(
-                        '${Get.arguments.firstName}, you did it!',
+                        '${argument.firstName}, you did it!',
                         textAlign: TextAlign.center,
                         style: textTheme.displayLarge!.copyWith(
                             color: const Color(0xFFCE6B53),
@@ -106,7 +107,7 @@ class _GenderScreenState extends State<GenderScreen> {
                 : Column(
                     children: [
                       Text(
-                        '${Get.arguments.firstName}, you did it!',
+                        '${argument.firstName}, you did it!',
                         textAlign: TextAlign.center,
                         style: textTheme.displayLarge!.copyWith(
                             color: const Color(0xFF336633),

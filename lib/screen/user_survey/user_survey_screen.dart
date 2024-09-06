@@ -9,6 +9,7 @@ import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/repository/get_account_details.dart';
 import 'package:gymeats_mobile/repository/sign_up.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_diet_model.dart';
@@ -59,6 +60,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
   String restrictionName = "";
   bool noneSelected = false;
 
+  List<DataOption> sOptions = [];
+
   List<Color> colorList = [
     Colors.indigoAccent.withOpacity(0.8),
     Colors.redAccent.withOpacity(0.8),
@@ -89,10 +92,13 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    searchEdgesRestrictionList.sort((a, b) =>
+        a.node.name.toLowerCase().compareTo(b.node.name.toLowerCase()));
+
     return WillPopScope(
       onWillPop: () {
         if (widget.isProfile == true) {
-          Navigator.of(context)..pop();
+          Navigator.of(context).pop();
 
           // Get.off(() => const ProgramScreen());
         }
@@ -132,6 +138,24 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
             listener: (context, state) {
               if (state is LoadSurveyData) {
                 getSurveyData = state.surveyData;
+
+                bool isSelected = getSurveyData?.options
+                        ?.any((element) => element.isSelect) ??
+                    false;
+                if (!isSelected) {
+                  int index = getSurveyData?.options
+                          ?.indexWhere((element) => element.label == "None") ??
+                      -1;
+                  if (!index.isNegative) {
+                    getSurveyData?.options?[index].isSelect = true;
+                    noneSelected = true;
+                  }
+                }
+                noneSelected = getSurveyData?.options?.any((element) =>
+                        element.isSelect && element.label == "None") ??
+                    false;
+
+                setState(() {});
                 if (isListen == true) {
                   listOptions.add(
                     CustomOptions(
@@ -169,16 +193,19 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   options: listOptions,
                   restrictionID: restrictionIDList,
                   addAddressModel: model.addAddressModel,
+                  userId: model.userId,
+                  surveyReq: getSurveyReq(),
                 );
 
                 if (widget.isProfile == true) {
-                  AccountRepository().updateDietProgramInfo(dietId: dietId);
+                  AccountRepository().updateDietProgram(
+                      req: userSignUpDataModel.surveyReq ?? {});
                   SignUpRepository().addUserRestriction(
                     userid: PreferenceUtils.getString(prefUserData),
                     restrictionList: restrictionIDList,
                   );
                   Future.delayed(const Duration(seconds: 2), () {
-                    Navigator.of(context)..pop();
+                    Get.back();
                   });
                   // Get.off(() => const ProgramScreen());
                 } else {
@@ -191,7 +218,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
               if (state is PreviousScreenState) {
                 if (widget.isProfile == true) {
-                  Navigator.of(context)..pop();
+                  Navigator.of(context).pop();
                   // Get.off(() => const ProgramScreen());
                 } else {
                   Get.toNamed('/UserTypeScreen', arguments: model);
@@ -200,6 +227,20 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
               if (state is GetAllRestrictionSuccessState) {
                 edgesRestrictionList = state.edgesRestrictionList ?? [];
+
+                searchEdgesRestrictionList = edgesRestrictionList
+                    .where((item) => item.node.name
+                        .toLowerCase()
+                        .contains(searchController.text.toLowerCase()))
+                    .toList();
+
+                for (var ele in searchEdgesRestrictionList) {
+                  if (restrictionIDList.contains(ele.node.id)) {
+                    ele.node.isRestricted = true;
+                  } else {
+                    ele.node.isRestricted = false;
+                  }
+                }
               }
               if (state is GetDietPlanSuccessState) {
                 dietList = state.edgesRestrictionList ?? [];
@@ -223,7 +264,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   child: InkWell(
                     onTap: () {
                       if (widget.isProfile == true) {
-                        Navigator.of(context)..pop();
+                        Navigator.of(context).pop();
                         // Get.off(() => const ProgramScreen());
                       } else {
                         Get.back();
@@ -258,6 +299,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                           options: listOptions,
                           restrictionID: restrictionIDList,
                           addAddressModel: model.addAddressModel,
+                          userId: model.userId,
+                          surveyReq: getSurveyReq(),
                         );
 
                         Get.toNamed('/UserPhotoSelectionScreen',
@@ -307,667 +350,651 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               height: 20.h,
             ),
             commonSearchTextField(
-              fontColor: Colors.white,
+              fontColor: Colors.grey,
               controller: searchController,
               fontSize: 13,
-              hintText: StringUtils.required,
+              hintText: switch (pageIndex) {
+                0 => "Diet",
+                1 => "Allergies",
+                2 => "Health conditions",
+                _ => "Medications",
+              },
               textInputType: TextInputType.text,
               context: context,
+              isDense: true,
               onChange: (String? value) {
-                // bloc.add(SearchData(
-                //   text: value,
-                // ));
-                setState(() {
-                  // if (value != null || value != '') {
-                  if (value!.isNotEmpty) {
-                    isSearchOn = true;
-                    if (isPreference == true) {
-                      log("MULTIPLE SEARCH");
+                setState(() {});
 
-                      searchEdgesRestrictionList = edgesRestrictionList
-                          .where((item) => item.node.name
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                          .toList();
-                      searchEdgesRestrictionList.forEach((ele) {
-                        getSurveyData?.options?.forEach((element) {
-                          if (element.isSelect == true) {
-                            ele.node.isRestricted = true;
-                          }
-                        });
-                      });
-                    } else {
-                      log("SINGLE SEARCH");
-                      dietList.forEach((element) {
-                        log(element.dietName ?? '', name: "DIET NAME");
-                      });
-                      searchDietList = dietList
-                          .where((item) => item.dietName
-                              .toString()
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                          .toList();
+                // ! Search Code
+
+                if (value!.isNotEmpty) {
+                  isSearchOn = true;
+                  if (isPreference == true) {
+                    searchEdgesRestrictionList = edgesRestrictionList
+                        .where((item) => item.node.name
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()))
+                        .toList();
+
+                    for (var ele in searchEdgesRestrictionList) {
+                      if (restrictionIDList.contains(ele.node.id)) {
+                        ele.node.isRestricted = true;
+                      } else {
+                        ele.node.isRestricted = false;
+                      }
                     }
                   } else {
-                    isSearchOn = false;
+                    log("SINGLE SEARCH");
+                    for (var element in dietList) {
+                      log(element.dietName ?? '', name: "DIET NAME");
+                    }
+                    searchDietList = dietList
+                        .where((item) => item.dietName
+                            .toString()
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
                   }
-                });
+                } else {
+                  isSearchOn = false;
+                  searchEdgesRestrictionList = edgesRestrictionList
+                      .where((item) => item.node.name
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()))
+                      .toList();
+
+                  for (var ele in searchEdgesRestrictionList) {
+                    if (restrictionIDList.contains(ele.node.id)) {
+                      ele.node.isRestricted = true;
+                    } else {
+                      ele.node.isRestricted = false;
+                    }
+                  }
+                }
               },
               onClear: () {
                 for (var data in searchDietList) {
                   data.select = false;
                 }
-                for (var data in searchEdgesRestrictionList) {
-                  data.node.isRestricted = false;
-                }
+                // for (var data in searchEdgesRestrictionList) {
+                //   data.node.isRestricted = false;
+                // }
 
                 setState(() {
                   searchController.clear();
                   isSearchOn = false;
                   FocusScope.of(context).unfocus();
+                  searchEdgesRestrictionList = edgesRestrictionList
+                      .where((item) => item.node.name
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()))
+                      .toList();
+
+                  for (var ele in searchEdgesRestrictionList) {
+                    if (restrictionIDList.contains(ele.node.id)) {
+                      ele.node.isRestricted = true;
+                    } else {
+                      ele.node.isRestricted = false;
+                    }
+                  }
                 });
-                // bloc.add(SearchData(
-                //   text: searchController.text,
-                // ));
               },
             ),
-            SizedBox(height: 30.h),
             Expanded(
-              child: isSearchOn
-                  ? isPreference == true
-                      ? searchEdgesRestrictionList.isEmpty
-                          ? const Text(
-                              'No Search Found!',
-                              style: TextStyle(color: Colors.black),
-                            )
-                          : SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: GridView.count(
+              child: Builder(
+                builder: (_) {
+                  sOptions = getSurveyData?.options
+                          ?.where((element) =>
+                              element.label?.toLowerCase().contains(
+                                    searchController.text.toLowerCase(),
+                                  ) ??
+                              false)
+                          .toList() ??
+                      [];
+                  sOptions.sort((a, b) {
+                    if (a.label == "None") return -1;
+                    if (b.label == "None") return 1;
+                    return (a.label?.toLowerCase() ?? "")
+                        .compareTo((b.label?.toLowerCase() ?? ""));
+                  });
+
+                  for (var element in sOptions) {
+                    if (element.label == "None") {
+                      element.isSelect = noneSelected;
+                    } else {
+                      element.isSelect = listOptions.firstWhereOrNull(
+                              (e) => e.optionName == element.label) !=
+                          null;
+                    }
+                  }
+
+                  return sOptions.isEmpty && searchEdgesRestrictionList.isEmpty
+                      ? const Text(
+                          'No Data Found!',
+                          style: TextStyle(color: Colors.black),
+                        ).paddingOnly(top: 30.h)
+                      : SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              ListView(
+                                padding: const EdgeInsets.only(top: 20),
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 6.0,
-                                mainAxisSpacing: 8.0,
-                                children: List.generate(
-                                  searchEdgesRestrictionList.length,
+                                children: List<Widget>.generate(
+                                  sOptions.length,
                                   (index) {
-                                    return UserSurveyPreferenceSearchItems(
-                                      data: searchEdgesRestrictionList[index],
-                                      index: index,
-                                      onTap: () {
-                                        if (isPreference == false) {
-                                          for (var element in searchDietList) {
-                                            element.select = false;
+                                    return Builder(builder: (context) {
+                                      if (sOptions[index].optionType ==
+                                          "preferences") {
+                                        sOptions[index].isSelect = false;
+
+                                        for (var element in listOptions) {
+                                          if (sOptions[index].label != "None") {
+                                            if (element.optionName
+                                                    .replaceAll("Diet", "")
+                                                    .trim()
+                                                    .toLowerCase() ==
+                                                sOptions[index]
+                                                    .label
+                                                    ?.replaceAll("Diet", "")
+                                                    .trim()
+                                                    .toLowerCase()) {
+                                              sOptions[index].isSelect = true;
+                                            } else {
+                                              sOptions[index].isSelect = false;
+                                            }
+                                          } else {}
+                                        }
+
+                                        if (dietId != '' &&
+                                            dietId ==
+                                                sOptions[index]
+                                                    .restrictionId!) {
+                                          sOptions[index].isSelect = true;
+                                        }
+                                      }
+                                      return UserSurveyItems(
+                                        data: sOptions[index],
+                                        onClick: () {
+                                          if (noneSelected == true &&
+                                              (sOptions[index].label ?? '') !=
+                                                  "None") {
+                                            // int i = sOptions.indexWhere(
+                                            //     (element) =>
+                                            //         element.label == "None");
+                                            int i = getSurveyData?.options
+                                                    ?.indexWhere((element) =>
+                                                        element.label ==
+                                                        "None") ??
+                                                -1;
+                                            if (i.isNegative) {
+                                              return null;
+                                            }
+                                            getSurveyData
+                                                ?.options?[i].isSelect = false;
+                                            noneSelected = false;
                                           }
 
-                                          searchDietList[index].select =
-                                              !searchDietList[index].select;
+                                          if ((sOptions[index].label ?? '') ==
+                                              "None") {
+                                            sOptions[index].isSelect =
+                                                !sOptions[index].isSelect;
 
-                                          bloc.add(
-                                              CheckSurveyData(index: index));
+                                            for (var element
+                                                in searchEdgesRestrictionList) {
+                                              element.node.isRestricted = false;
+                                              restrictionIDList.removeWhere(
+                                                  (el) =>
+                                                      element.node.id == el);
+                                            }
 
-                                          searchDietId =
-                                              searchDietList[index].id!;
-                                          setState(() {});
-                                        } else {
-                                          setState(() {
-                                            searchEdgesRestrictionList[index]
-                                                    .node
-                                                    .isRestricted =
-                                                !searchEdgesRestrictionList[
-                                                        index]
-                                                    .node
-                                                    .isRestricted;
+                                            noneSelected =
+                                                sOptions[index].isSelect;
 
-                                            if (restrictionIDList.contains(
+                                            for (int i = 0;
+                                                i < sOptions.length;
+                                                i++) {
+                                              if (i != 0) {
+                                                sOptions[i].isSelect = false;
+                                              }
+                                            }
+
+                                            for (int surveyIndex = 0;
+                                                surveyIndex <
+                                                    (getSurveyData
+                                                            ?.options?.length ??
+                                                        0);
+                                                surveyIndex++) {
+                                              for (int indexL = 0;
+                                                  indexL < listOptions.length;
+                                                  indexL++) {
+                                                if (listOptions[indexL]
+                                                        .optionName ==
+                                                    getSurveyData
+                                                        ?.options?[surveyIndex]
+                                                        .label) {
+                                                  listOptions.removeAt(indexL);
+                                                }
+                                              }
+                                            }
+
+                                            for (int i = 0;
+                                                i < sOptions.length;
+                                                i++) {
+                                              for (int ind = 0;
+                                                  ind <
+                                                      restrictionIDList.length;
+                                                  ind++) {
+                                                if (sOptions[i].restrictionId ==
+                                                    restrictionIDList[ind]) {
+                                                  restrictionIDList
+                                                      .removeAt(ind);
+                                                }
+                                              }
+                                            }
+
+                                            setState(() {});
+                                          } else {
+                                            noneSelected = false;
+                                            restrictionName = '';
+
+                                            optionIndex = index;
+                                            if (sOptions[index].optionType ==
+                                                "preferences") {
+                                              if (listOptions.isEmpty) {
+                                                sOptions[index].isSelect = true;
+                                                listOptions.add(CustomOptions(
+                                                    optionColor: sOptions[index]
+                                                            .color ??
+                                                        AppColors.primaryBlue,
+                                                    optionName:
+                                                        sOptions[index].label ??
+                                                            ''));
+                                                bloc.add(CheckSurveyData(
+                                                    index: index));
+                                              } else {
+                                                if (sOptions[index].isSelect) {
+                                                  dietId = "";
+                                                  sOptions[index].isSelect =
+                                                      false;
+                                                  setState(() {});
+                                                  listOptions.removeWhere(
+                                                      (element) =>
+                                                          sOptions[index]
+                                                              .label ==
+                                                          element.optionName);
+                                                } else {
+                                                  dietId = sOptions[index]
+                                                      .restrictionId!;
+
+                                                  getSurveyData!.options![index]
+                                                      .isSelect = true;
+
+                                                  for (var element
+                                                      in getSurveyData
+                                                              ?.options ??
+                                                          []) {
+                                                    for (int loIndex = 0;
+                                                        loIndex <
+                                                            listOptions.length;
+                                                        loIndex++) {
+                                                      if (element.label ==
+                                                          listOptions[loIndex]
+                                                              .optionName) {
+                                                        listOptions
+                                                            .removeAt(loIndex);
+                                                      }
+                                                    }
+                                                  }
+
+                                                  listOptions.add(CustomOptions(
+                                                      optionColor:
+                                                          sOptions[index]
+                                                                  .color ??
+                                                              AppColors
+                                                                  .primaryBlue,
+                                                      optionName:
+                                                          sOptions[index]
+                                                                  .label ??
+                                                              ''));
+
+                                                  bloc.add(CheckSurveyData(
+                                                      index: index));
+                                                }
+                                              }
+
+                                              setState(() {});
+                                            } else {
+                                              if (sOptions[index].isSelect) {
+                                                listOptions.removeWhere(
+                                                    (element) =>
+                                                        element.optionName ==
+                                                        sOptions[index].label);
+                                              } else {
+                                                listOptions.add(CustomOptions(
+                                                    optionColor: sOptions[index]
+                                                            .color ??
+                                                        AppColors.primaryBlue,
+                                                    optionName:
+                                                        sOptions[index].label ??
+                                                            ''));
+                                              }
+
+                                              /// ID
+                                              int sIndex = getSurveyData
+                                                      ?.options
+                                                      ?.indexWhere((element) =>
+                                                          sOptions[index].id ==
+                                                          element.id) ??
+                                                  -1;
+
+                                              bloc.add(CheckSurveyData(
+                                                  index: sIndex));
+                                              setState(() {
+                                                if (sOptions[index]
+                                                        .restrictionId !=
+                                                    null) {
+                                                  if (restrictionIDList
+                                                      .contains(sOptions[index]
+                                                          .restrictionId)) {
+                                                    restrictionIDList.remove(
+                                                        sOptions[index]
+                                                            .restrictionId);
+                                                  } else {
+                                                    restrictionIDList.add(
+                                                        sOptions[index]
+                                                            .restrictionId!);
+                                                    log("Restriction Call $restrictionIDList");
+                                                  }
+                                                }
+                                              });
+                                            }
+                                          }
+                                        },
+                                      );
+                                    });
+                                  },
+                                ).addBetweenItems(const SizedBox(height: 5.0)),
+                              ),
+                              // ! Extra Data
+                              if (pageIndex == 1) ...[
+                                const SizedBox(height: 8),
+                                Builder(builder: (_) {
+                                  searchEdgesRestrictionList.sort((a, b) => a
+                                      .node.name
+                                      .toLowerCase()
+                                      .compareTo(b.node.name.toLowerCase()));
+                                  return ListView(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    children: List.generate(
+                                      searchEdgesRestrictionList.length,
+                                      (index) {
+                                        return UserSurveyPreferenceSearchItems(
+                                          data:
+                                              searchEdgesRestrictionList[index],
+                                          index: index,
+                                          onTap: () {
+                                            if (noneSelected) {
+                                              int i = getSurveyData?.options
+                                                      ?.indexWhere((element) =>
+                                                          element.label ==
+                                                          "None") ??
+                                                  -1;
+                                              if (i.isNegative) {
+                                                return;
+                                              }
+                                              getSurveyData?.options?[i]
+                                                  .isSelect = false;
+                                              noneSelected = false;
+                                            }
+                                            if (isPreference == false) {
+                                              for (var element
+                                                  in searchDietList) {
+                                                element.select = false;
+                                              }
+
+                                              searchDietList[index].select =
+                                                  !searchDietList[index].select;
+
+                                              bloc.add(CheckSurveyData(
+                                                  index: index));
+
+                                              searchDietId =
+                                                  searchDietList[index].id!;
+                                              setState(() {});
+                                            } else {
+                                              setState(() {
                                                 searchEdgesRestrictionList[
-                                                        index]
-                                                    .node
-                                                    .id)) {
-                                              restrictionIDList.remove(
-                                                  searchEdgesRestrictionList[
-                                                          index]
-                                                      .node
-                                                      .id);
+                                                            index]
+                                                        .node
+                                                        .isRestricted =
+                                                    !searchEdgesRestrictionList[
+                                                            index]
+                                                        .node
+                                                        .isRestricted;
 
-                                              for (int i = 0;
-                                                  i < listOptions.length;
-                                                  i++) {
-                                                if (listOptions[i].optionName ==
+                                                if (restrictionIDList.contains(
                                                     searchEdgesRestrictionList[
                                                             index]
                                                         .node
-                                                        .name) {
-                                                  listOptions.removeAt(i);
-                                                }
-                                              }
-                                              setState(() {});
-                                            } else {
-                                              restrictionIDList.add(
-                                                  searchEdgesRestrictionList[
-                                                          index]
-                                                      .node
-                                                      .id);
-                                              listOptions.add(CustomOptions(
-                                                  optionColor: colorList[
-                                                      index % colorList.length],
-                                                  optionName:
+                                                        .id)) {
+                                                  restrictionIDList.remove(
                                                       searchEdgesRestrictionList[
                                                               index]
                                                           .node
-                                                          .name));
+                                                          .id);
+
+                                                  for (int i = 0;
+                                                      i < listOptions.length;
+                                                      i++) {
+                                                    if (listOptions[i]
+                                                            .optionName ==
+                                                        searchEdgesRestrictionList[
+                                                                index]
+                                                            .node
+                                                            .name) {
+                                                      listOptions.removeAt(i);
+                                                    }
+                                                  }
+                                                  setState(() {});
+                                                } else {
+                                                  restrictionIDList.add(
+                                                      searchEdgesRestrictionList[
+                                                              index]
+                                                          .node
+                                                          .id);
+                                                  listOptions.add(CustomOptions(
+                                                      optionColor: colorList[
+                                                          index %
+                                                              colorList.length],
+                                                      optionName:
+                                                          searchEdgesRestrictionList[
+                                                                  index]
+                                                              .node
+                                                              .name));
+                                                }
+                                              });
                                             }
-                                          });
-                                        }
 
-                                        int indexAt = getSurveyData!.options!
-                                            .indexWhere((element) =>
-                                                element.label?.toLowerCase() ==
-                                                searchEdgesRestrictionList[
-                                                        index]
-                                                    .node
-                                                    .name
-                                                    .toLowerCase());
-
-                                        bloc.add(
-                                            CheckSurveyData(index: indexAt));
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            )
-                      : searchDietList.isEmpty
-                          ? const Text(
-                              'No Search Found!',
-                              style: TextStyle(color: Colors.black),
-                            )
-                          : SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: GridView.count(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 6.0,
-                                mainAxisSpacing: 8.0,
-                                children: List.generate(
-                                  searchDietList.length,
-                                  (index) {
-                                    return Builder(builder: (context) {
-                                      listOptions.forEach((element) {
-                                        if (element.optionName
-                                                .replaceAll(" Diet", "")
-                                                .toLowerCase() ==
-                                            searchDietList[index]
-                                                .dietName
-                                                ?.replaceAll(" Diet", "")
-                                                .toLowerCase()) {
-                                          searchDietList[index].select = true;
-                                        } else {
-                                          searchDietList[index].select = false;
-                                        }
-                                      });
-                                      return UserSurveySearchItems(
-                                        data: searchDietList[index],
-                                        index: index,
-                                        onTap: () {
-                                          searchDietId =
-                                              searchDietList[index].id!;
-
-                                          if (searchDietList[index].select ==
-                                              true) {
-                                            searchDietList[index].select =
-                                                false;
-                                          } else {
-                                            searchDietList[index].select = true;
-                                          }
-                                          setState(() {});
-                                          log(
-                                              searchDietList[index]
-                                                  .select
-                                                  .toString(),
-                                              name: "SELECT");
-
-                                          ///new code
-                                          if (searchDietList[index].select ==
-                                              true) {
-                                            listOptions.clear();
                                             int indexAt = getSurveyData!
                                                 .options!
                                                 .indexWhere((element) =>
                                                     element.label
-                                                        ?.replaceAll(
-                                                            " Diet", "")
-                                                        .toLowerCase() ==
-                                                    searchDietList[index]
-                                                        .dietName
-                                                        ?.replaceAll(
-                                                            " Diet", "")
+                                                        ?.toLowerCase() ==
+                                                    searchEdgesRestrictionList[
+                                                            index]
+                                                        .node
+                                                        .name
                                                         .toLowerCase());
-
-                                            dietId = getSurveyData!
-                                                .options![indexAt]
-                                                .restrictionId!;
-                                            /* int  indexAt =
-                                              listOptions.indexWhere(
-                                                      (element) =>
-                                                  element.optionName
-                                                      .replaceAll(
-                                                      " Diet", "") ==
-                                                      searchDietList[index]
-                                                          .dietName
-                                                          ?.replaceAll(
-                                                          " Diet", ""));
-                                             */
 
                                             bloc.add(CheckSurveyData(
                                                 index: indexAt));
-
-                                            listOptions.add(CustomOptions(
-                                                optionColor: searchDietList[
-                                                                index]
-                                                            .colorCode !=
-                                                        null
-                                                    ? Color(int.parse(
-                                                        "0xff${searchDietList[index].colorCode.toString().replaceFirst('#', "")}"))
-                                                    : AppColors.primaryBlue,
-                                                optionName:
-                                                    searchDietList[index]
-                                                            .dietName ??
-                                                        ''));
-                                          } else {
-                                            dietId = '';
-                                            int indexAt = listOptions
-                                                .indexWhere((element) =>
-                                                    element.optionName
-                                                        .replaceAll("Diet", "")
-                                                        .trim()
-                                                        .toLowerCase() ==
-                                                    searchDietList[index]
-                                                        .dietName
-                                                        ?.replaceAll("Diet", "")
-                                                        .trim()
-                                                        .toLowerCase());
-                                            log(listOptions[indexAt].optionName,
-                                                name: "DEIT");
-                                            indexAt >= 0
-                                                ? listOptions.removeAt(indexAt)
-                                                : null;
-                                            setState(() {});
-                                            bloc.add(CheckSurveyData(
-                                                index: indexAt));
-                                          }
-                                        },
-                                        // onTap: () {
-                                        //   setState(() {
-                                        //     searchEdgesRestrictionList![index]
-                                        //             .node
-                                        //             .isRestricted =
-                                        //         !searchEdgesRestrictionList![index]
-                                        //             .node
-                                        //             .isRestricted;
-                                        //     if (restrictionIDList.contains(
-                                        //         searchEdgesRestrictionList![index]
-                                        //             .node
-                                        //             .id)) {
-                                        //       restrictionIDList.remove(
-                                        //           searchEdgesRestrictionList![index]
-                                        //               .node
-                                        //               .id);
-                                        //       listOptions.removeWhere((element) =>
-                                        //           element.optionName ==
-                                        //           searchEdgesRestrictionList![index]
-                                        //               .node
-                                        //               .name);
-                                        //     } else {
-                                        //       restrictionIDList.add(
-                                        //           searchEdgesRestrictionList![index]
-                                        //               .node
-                                        //               .id);
-                                        //       listOptions.add(CustomOptions(
-                                        //           optionColor: colorList[
-                                        //               index % colorList.length],
-                                        //           optionName:
-                                        //               searchEdgesRestrictionList![
-                                        //                       index]
-                                        //                   .node
-                                        //                   .name));
-                                        //     }
-                                        //   });
-                                        // },
-                                      );
-                                    });
-                                  },
-                                ),
-                              ),
-                            )
-                  : SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 6.0,
-                        mainAxisSpacing: 8.0,
-                        children: List.generate(
-                          getSurveyData!.options!.length,
-                          (index) {
-                            return Builder(builder: (context) {
-                              if (getSurveyData!.options![index].optionType ==
-                                  "preferences") {
-                                log("message");
-
-                                getSurveyData!.options![index].isSelect = false;
-
-                                listOptions.forEach((element) {
-                                  if (getSurveyData!.options![index].label !=
-                                      "None") {
-                                    if (element.optionName
-                                            .replaceAll("Diet", "")
-                                            .trim()
-                                            .toLowerCase() ==
-                                        getSurveyData!.options![index].label
-                                            ?.replaceAll("Diet", "")
-                                            .trim()
-                                            .toLowerCase()) {
-                                      log(
-                                          getSurveyData!
-                                              .options![index].isSelect
-                                              .toString(),
-                                          name: "isSelect");
-                                      getSurveyData!.options![index].isSelect =
-                                          true;
-                                    } else {
-                                      getSurveyData!.options![index].isSelect =
-                                          false;
-                                    }
-                                  }
-                                });
-
-                                log(dietId, name: "dietId");
-                                if (dietId != '' &&
-                                    dietId ==
-                                        getSurveyData!
-                                            .options![index].restrictionId!) {
-                                  getSurveyData!.options![index].isSelect =
-                                      true;
-                                }
-                              }
-                              return UserSurveyItems(
-                                data: getSurveyData!.options![index],
-                                onClick: noneSelected == true &&
-                                        (getSurveyData!.options![index].label ??
-                                                '') !=
-                                            "None"
-                                    ? () {
-                                        return null;
-                                      }
-                                    : () {
-                                        if ((getSurveyData!
-                                                    .options![index].label ??
-                                                '') ==
-                                            "None") {
-                                          getSurveyData!
-                                                  .options![index].isSelect =
-                                              !getSurveyData!
-                                                  .options![index].isSelect;
-
-                                          noneSelected = getSurveyData!
-                                              .options![index].isSelect;
-
-                                          for (int i = 0;
-                                              i <
-                                                  (getSurveyData!.options ?? [])
-                                                      .length;
-                                              i++) {
-                                            if (i != 0) {
-                                              getSurveyData!
-                                                  .options![i].isSelect = false;
-                                            }
-                                          }
-
-                                          for (int surveyIndex = 0;
-                                              surveyIndex <
-                                                  getSurveyData!
-                                                      .options!.length;
-                                              surveyIndex++) {
-                                            for (int indexL = 0;
-                                                indexL < listOptions.length;
-                                                indexL++) {
-                                              if (listOptions[indexL]
-                                                      .optionName ==
-                                                  getSurveyData!
-                                                      .options![surveyIndex]
-                                                      .label) {
-                                                listOptions.removeAt(indexL);
-                                              }
-                                            }
-                                          }
-
-                                          for (int i = 0;
-                                              i <
-                                                  getSurveyData!
-                                                      .options!.length;
-                                              i++) {
-                                            for (int ind = 0;
-                                                ind < restrictionIDList.length;
-                                                ind++) {
-                                              if (getSurveyData!.options![i]
-                                                      .restrictionId ==
-                                                  restrictionIDList[ind]) {
-                                                restrictionIDList.removeAt(ind);
-                                              }
-                                            }
-                                          }
-
-                                          setState(() {});
-                                        } else {
-                                          noneSelected = false;
-                                          restrictionName = '';
-
-                                          optionIndex = index;
-                                          if (getSurveyData!
-                                                  .options![index].optionType ==
-                                              "preferences") {
-                                            if (listOptions.isEmpty) {
-                                              getSurveyData!.options![index]
-                                                  .isSelect = true;
-                                              listOptions.add(CustomOptions(
-                                                  optionColor: getSurveyData!
-                                                          .options![index]
-                                                          .color ??
-                                                      AppColors.primaryBlue,
-                                                  optionName: getSurveyData!
-                                                          .options![index]
-                                                          .label ??
-                                                      ''));
-                                              bloc.add(CheckSurveyData(
-                                                  index: index));
-                                            } else {
-                                              if (getSurveyData!
-                                                  .options![index].isSelect) {
-                                                dietId = "";
-                                                getSurveyData!.options![index]
-                                                    .isSelect = false;
-                                                setState(() {});
-                                                listOptions.removeWhere(
-                                                    (element) =>
-                                                        getSurveyData!
-                                                            .options![index]
-                                                            .isSelect ==
-                                                        false);
-                                              } else {
-                                                dietId = getSurveyData!
-                                                    .options![index]
-                                                    .restrictionId!;
-
-                                                getSurveyData!.options![index]
-                                                    .isSelect = true;
-
-                                                getSurveyData!.options
-                                                    ?.forEach((element) {
-                                                  for (int loIndex = 0;
-                                                      loIndex <
-                                                          listOptions.length;
-                                                      loIndex++) {
-                                                    if (element.label ==
-                                                        listOptions[loIndex]
-                                                            .optionName) {
-                                                      listOptions
-                                                          .removeAt(loIndex);
-                                                    }
-                                                  }
-                                                });
-
-                                                listOptions.add(CustomOptions(
-                                                    optionColor: getSurveyData!
-                                                            .options![index]
-                                                            .color ??
-                                                        AppColors.primaryBlue,
-                                                    optionName: getSurveyData!
-                                                            .options![index]
-                                                            .label ??
-                                                        ''));
-
-                                                bloc.add(CheckSurveyData(
-                                                    index: index));
-                                              }
-                                            }
-
-                                            setState(() {});
-                                          } else {
-                                            if (getSurveyData!
-                                                .options![index].isSelect) {
-                                              listOptions.removeWhere(
-                                                  (element) =>
-                                                      element.optionName ==
-                                                      getSurveyData!
-                                                          .options![index]
-                                                          .label);
-                                            } else {
-                                              listOptions.add(CustomOptions(
-                                                  optionColor: getSurveyData!
-                                                          .options![index]
-                                                          .color ??
-                                                      AppColors.primaryBlue,
-                                                  optionName: getSurveyData!
-                                                          .options![index]
-                                                          .label ??
-                                                      ''));
-                                            }
-
-                                            /// ID
-                                            bloc.add(
-                                                CheckSurveyData(index: index));
-                                            setState(() {
-                                              if (getSurveyData!.options![index]
-                                                      .restrictionId !=
-                                                  null) {
-                                                if (restrictionIDList.contains(
-                                                    getSurveyData!
-                                                        .options![index]
-                                                        .restrictionId)) {
-                                                  restrictionIDList.remove(
-                                                      getSurveyData!
-                                                          .options![index]
-                                                          .restrictionId);
-                                                } else {
-                                                  restrictionIDList.add(
-                                                      getSurveyData!
-                                                          .options![index]
-                                                          .restrictionId!);
-                                                }
-                                              }
-                                            });
-
-                                            log('listOptions---------->>>>>> $listOptions');
-                                          }
-                                        }
+                                          },
+                                        );
                                       },
-                              );
-                            });
-                          },
-                        ),
-                      ),
-                    ),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ],
+                          ),
+                        );
+                },
+              ),
             ),
-            isSearchOn == true
-                ? const SizedBox()
-                : Visibility(
-                    visible: !(MediaQuery.of(context).viewInsets.bottom != 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: buildBorderButton(
-                                  context: context,
-                                  onPressed: () {
-                                    if (listIndex.isNotEmpty) {
-                                      optionIndex =
-                                          listIndex[listIndex.length - 1];
-                                      listIndex.removeLast();
-                                    }
+            Visibility(
+              visible: !(MediaQuery.of(context).viewInsets.bottom != 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: buildBorderButton(
+                            context: context,
+                            onPressed: () {
+                              // if (listIndex.isNotEmpty) {
+                              //   optionIndex = listIndex[listIndex.length - 1];
+                              //   listIndex.removeLast();
+                              // }
 
-                                    if (pageIndex >= 1) {
-                                      pageIndex = pageIndex - 1;
-                                    }
-                                    if (optionIndex == 0) {
-                                      setState(() {
-                                        isPreference = false;
-                                      });
-                                    }
+                              // if (pageIndex >= 1) {
+                              //   pageIndex = pageIndex - 1;
+                              // }
+                              // bloc.add(NextPrevSurveyClick(
+                              //     index: optionIndex, isNext: false));
+                              resetSearchField();
+                              if (listIndex.isNotEmpty) {
+                                optionIndex = listIndex[listIndex.length - 1];
+                                listIndex.removeLast();
+                              }
 
-                                    ///make isPreference == true when it comes to first index
-                                    if (pageIndex == 0) {
-                                      setState(() {
-                                        isPreference = true;
-                                      });
-                                    }
-                                    bloc.add(NextPrevSurveyClick(
-                                        index: optionIndex, isNext: false));
-                                  },
-                                  textColor:
-                                      setColor(gender: model.gender ?? ""),
-                                  borderColor:
-                                      setColor(gender: model.gender ?? ''),
-                                  bgColor: Colors.white,
-                                  title: StringUtils.previous)
-                              .paddingOnly(top: 10.h),
-                        ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                          child: buildButton(
-                                  context: context,
-                                  onPressed: () {
-                                    optionIndex = getSurveyData!.options!
-                                        .indexWhere((value) => value.isSelect);
-                                    listIndex.add(optionIndex);
+                              if (pageIndex >= 1) {
+                                pageIndex = pageIndex - 1;
+                              }
+                              if (optionIndex == 0) {
+                                setState(() {
+                                  isPreference = false;
+                                });
+                              }
 
-                                    pageIndex = pageIndex + 1;
-
-                                    bloc.add(
-                                      NextPrevSurveyClick(
-                                        index: optionIndex,
-                                        isNext: true,
-                                      ),
-                                    );
-
-                                    if (isPreference == false) {
-                                      isPreference = true;
-                                    }
-                                    noneSelected = false;
-                                    setState(() {});
-                                  },
-                                  textColor: Colors.white,
-                                  bgColor: setColor(gender: model.gender ?? ''),
-                                  title: StringUtils.next)
-                              .paddingOnly(top: 10.h),
-                        ),
-                      ],
-                    ),
+                              ///make isPreference == true when it comes to first index
+                              if (pageIndex == 0) {
+                                setState(() {
+                                  isPreference = false;
+                                });
+                              }
+                              bloc.add(NextPrevSurveyClick(
+                                  index: optionIndex,
+                                  isNext: false,
+                                  pageIndex: pageIndex - 1));
+                            },
+                            textColor: setColor(gender: model.gender ?? ""),
+                            borderColor: setColor(gender: model.gender ?? ''),
+                            bgColor: Colors.white,
+                            title: StringUtils.previous)
+                        .paddingOnly(top: 10.h),
                   ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: buildButton(
+                            context: context,
+                            onPressed: () {
+                              resetSearchField();
+                              getSurveyReq();
+                              optionIndex = getSurveyData!.options!
+                                  .indexWhere((value) => value.isSelect);
+                              listIndex.add(optionIndex);
+                              bool isSurveySelected = getSurveyData?.options
+                                      ?.any((element) => element.isSelect) ??
+                                  false;
+
+                              bool isRestricted = searchEdgesRestrictionList
+                                  .any((element) => element.node.isRestricted);
+
+                              bloc.add(
+                                NextPrevSurveyClick(
+                                  index: optionIndex,
+                                  isNext: true,
+                                  searchEdgesRestrictionList:
+                                      searchEdgesRestrictionList,
+                                  pageIndex: pageIndex,
+                                ),
+                              );
+
+                              if ((isSurveySelected ||
+                                      (isRestricted && pageIndex == 1)) &&
+                                  pageIndex < 3) {
+                                pageIndex = pageIndex + 1;
+                              }
+
+                              if (isPreference == false) {
+                                isPreference = true;
+                              }
+                              noneSelected = false;
+                              setState(() {});
+                            },
+                            textColor: Colors.white,
+                            bgColor: setColor(gender: model.gender ?? ''),
+                            title: StringUtils.next)
+                        .paddingOnly(top: 10.h),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       );
+
+  Map<String, dynamic> getSurveyReq() {
+    Map<String, dynamic> req = {
+      "userId": model.userId ?? userId,
+      "programId": "",
+      "dietId": dietId,
+      "surveyDetails": {},
+    };
+
+    for (int i = 0; i < bloc.listSurveyData.length; i++) {
+      SurveyDataQuestion selOptions = bloc.listSurveyData[i];
+      String label = selOptions.label ?? "";
+      String optType = label.contains("diet")
+          ? "diet"
+          : label.contains("allergies")
+              ? "allergy"
+              : label.contains("health")
+                  ? "health"
+                  : "medication";
+
+      req["surveyDetails"].addAll(
+        {
+          optType: {
+            "id": selOptions.id,
+            "label": label,
+            "options": [
+              ...(selOptions.options
+                      ?.where((element) => element.isSelect)
+                      .map((e) => e.label)
+                      .toList() ??
+                  []),
+              ...(optType == "allergy"
+                  ? edgesRestrictionList
+                      .where((element) => element.node.isRestricted)
+                      .map((e) => e.node.name)
+                      .toList()
+                  : [])
+            ],
+          }
+        },
+      );
+    }
+    return req;
+  }
+
+  void resetSearchField() {
+    isSearchOn = false;
+    searchController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
 }
 
 class CustomOptions {

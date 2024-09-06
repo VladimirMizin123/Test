@@ -1,0 +1,447 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
+import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
+import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
+import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/bloc/store_cart_bloc.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/details_view/store_meal_details.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/store_checkout_screen.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/widget/check_list_sheet.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/widget/custom_search_field.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/widget/product_card_widget.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/item_catalog_sort_by_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/back_button_widget.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
+    as user_address;
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+
+class StoreCartScreen extends StatefulWidget {
+  final List<MenuItemList>? menuItemList;
+  final GroceryBloc groceryBloc;
+  final StoreCartBloc cartBloc;
+  final String? categoryName;
+  final String? storeName;
+  final String? storeId;
+  final user_address.UserAddress? address;
+  final List<GroceryDetails>? groceryDetails;
+  final AskReceiveOrder? askOrder;
+
+  const StoreCartScreen({
+    super.key,
+    required this.cartBloc,
+    this.menuItemList = const [],
+    required this.groceryBloc,
+    this.categoryName,
+    this.storeName,
+    this.storeId,
+    this.address,
+    this.groceryDetails,
+    this.askOrder,
+  });
+
+  @override
+  State<StoreCartScreen> createState() => _StoreCartScreenState();
+}
+
+class _StoreCartScreenState extends State<StoreCartScreen> {
+  List<Product> groceryResult = [];
+  List<Product> filterResult = [];
+  List<MenuItemList> menuItemList = [];
+
+  List<Product> groceryTempResult = [];
+  bool isProductSelect = false;
+  bool isFilter = false;
+  String? selectedSorting;
+  TextEditingController searchController = TextEditingController();
+  String? searchText;
+  AddNewGroceryItemBloc groceryItemBloc = AddNewGroceryItemBloc();
+  late StoreCartBloc cartBloc;
+
+  @override
+  void initState() {
+    menuItemList = (jsonDecode(jsonEncode(widget.menuItemList)) as List)
+        .map((e) => MenuItemList.fromJson(e))
+        .toList();
+
+    cartBloc = widget.cartBloc;
+    Object state = cartBloc.state;
+    if (state is StoreCheckoutState) {
+      for (int i = 0; i < state.menuItemList.length; i++) {
+        int menuI = menuItemList
+            .indexWhere((e) => e.productId == state.menuItemList[i].productId);
+        if (!menuI.isNegative) {
+          menuItemList[menuI] = state.menuItemList[i];
+        }
+      }
+    }
+    groceryItemBloc.add(GetGroceryItemEvent());
+    super.initState();
+  }
+
+  void sortingData() {
+    if (selectedSorting == 'Cheapest first') {
+      menuItemList.sort((a, b) => a.originalPrice!.compareTo(b.originalPrice!));
+      setState(() {});
+    } else if (selectedSorting == 'Expensive') {
+      menuItemList.sort((a, b) => b.originalPrice!.compareTo(a.originalPrice!));
+      setState(() {});
+    }
+  }
+
+  RangeValues? priceRange;
+
+  bool isCreateOrder = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        body: WillPopScope(
+          onWillPop: () async {
+            groceryResult = groceryTempResult;
+            return true;
+          },
+          child: SafeArea(
+            child: Column(
+              children: [
+                15.height,
+                Image.asset(
+                  AssetsUtils.gymEatsLogo,
+                  height: 20.h,
+                  color: AppColors.green,
+                ),
+                10.height,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const BackButtonWidget(),
+                    Expanded(
+                      child: Text(
+                        widget.categoryName ?? 'Almond milk',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: FontUtils.h20(
+                          fontColor: AppColors.oxFF010101,
+                          fontWeight: FWT.medium,
+                        ),
+                      ),
+                    ),
+                    10.width,
+                    GestureDetector(
+                      onTap: () => showModalBottomSheet(
+                        context: context,
+                        backgroundColor: AppColors.transparentColor,
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return CheckListSheet(
+                              groceryDetails: widget.groceryDetails);
+                        },
+                        isDismissible: false,
+                      ),
+                      child: SvgPicture.asset(AssetsUtils.icList),
+                    ),
+                  ],
+                ).paddingOnly(left: 14, right: 14),
+                16.height,
+                CustomSearchField(
+                  onChange: (p0) => setState(() => searchText = p0),
+                  controller: searchController,
+                ).paddingOnly(left: 14, right: 14),
+                16.height,
+                Row(
+                  children: [
+                    myFilterView(
+                      AssetsUtils.icListIcon,
+                      'Category',
+                      () async {
+                        Get.back(result: "category");
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    myFilterView(
+                      AssetsUtils.icFilterIcon,
+                      'Sort & Filter',
+                      () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: AppColors.transparentColor,
+                          builder: (context) {
+                            return ItemCatalogSortByBottomSheet(
+                              selectedSort: selectedSorting,
+                              rangeValues: priceRange,
+                            );
+                          },
+                          isDismissible: false,
+                        ).then(
+                          (value) {
+                            if (value != null) {
+                              if (value["value"] != null) {
+                                selectedSorting = value["value"];
+                                setState(() {});
+                                sortingData();
+                              }
+
+                              priceRange = value['priceRange'];
+                              isFilter = value['isFilter'];
+
+                              filterResult.clear();
+
+                              if (isFilter) {
+                                for (var element in groceryResult) {
+                                  double value = double.parse(
+                                      (element.formattedPrice ?? '0')
+                                          .replaceAll("\$", "")
+                                          .trim());
+                                  if ((value) > priceRange!.start &&
+                                      (value) < priceRange!.end) {
+                                    filterResult.add(element);
+                                  }
+                                }
+                              }
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ).paddingOnly(left: 20, right: 20),
+                16.height,
+                const Divider(
+                    color: AppColors.lightGrey, thickness: 1, height: 0),
+                Expanded(
+                  child: Builder(
+                    builder: (_) {
+                      List<MenuItemList> filterItem =
+                          List<MenuItemList>.from(menuItemList)
+                              .where((element) =>
+                                  element.name?.toLowerCase().contains(
+                                      searchText?.toLowerCase() ?? "") ??
+                                  false)
+                              .toList();
+
+                      if (priceRange != null) {
+                        filterItem = filterItem.where((element) {
+                          double value = double.parse(
+                              (element.formattedPrice ?? '0')
+                                  .replaceAll("\$", "")
+                                  .trim());
+
+                          return (value) > priceRange!.start &&
+                              (value) < priceRange!.end;
+                        }).toList();
+                      }
+
+                      return filterItem.isEmpty
+                          ? Center(
+                              child: Text(
+                                'Grocery not found for $searchText!',
+                                textAlign: TextAlign.center,
+                                style:
+                                    FontUtils.h16(fontColor: AppColors.black),
+                              ),
+                            )
+                          : ListView.separated(
+                              itemCount: filterItem.length,
+                              padding: const EdgeInsets.fromLTRB(0, 28, 0, 28),
+                              separatorBuilder: (_, __) => Column(
+                                children: [
+                                  16.height,
+                                  const Divider(
+                                      color: AppColors.lightGrey,
+                                      thickness: 1,
+                                      height: 0),
+                                  16.height,
+                                ],
+                              ),
+                              itemBuilder: (_, index) {
+                                MenuItemList? item = filterItem[index];
+                                List<String> splitItemName = item.name
+                                        ?.toLowerCase()
+                                        .replaceAll(",", " ")
+                                        .split(" ") ??
+                                    [];
+
+                                int i = widget.groceryDetails?.indexWhere((e) =>
+                                        !(e
+                                                .itemName
+                                                ?.toLowerCase()
+                                                .split(" ")
+                                                .any((element) => !splitItemName
+                                                    .contains(element)) ??
+                                            true)) ??
+                                    -1;
+
+                                return ProductCardWidget(
+                                  categoryName: !i.isNegative
+                                      ? (widget.groceryDetails?[i].itemName ??
+                                          "")
+                                      : "",
+                                  menuItem: item,
+                                  showDiscount: false,
+                                  storeName: widget.storeName,
+                                  qty: item.cartQuantity,
+                                  isGroceryItem: !i.isNegative,
+                                  onTap: () async {
+                                    Get.to(
+                                      () => StoreMealDetails(
+                                        data: item,
+                                        storeId: widget.storeId ?? "",
+                                        shoppingListData: null,
+                                        cartCount: item.cartQuantity ?? 0,
+                                        pickUp: false,
+                                        matchMealStatus: null,
+                                        onAddToCart: (p0, qty) {
+                                          item.cartQuantity = qty;
+                                          item.selectedOptions = p0
+                                              .map(
+                                                (e) => SelectedOptions(
+                                                  markedPrice:
+                                                      e["marked_price"],
+                                                  optionId: e["option_id"],
+                                                  quantity: e["quantity"],
+                                                ),
+                                              )
+                                              .toList();
+                                          setState(() {});
+                                          widget.cartBloc.add(ModifyCart(
+                                              menuItemList: filterItem));
+                                          Get.back();
+                                        },
+                                        fromGrocery: true,
+                                        onCustomizationChange: (p0) {
+                                          item.customizations = p0;
+                                          setState(() {});
+                                        },
+                                      ),
+                                      transition: Transition.fadeIn,
+                                    );
+                                  },
+                                  onCartTap: () => {
+                                    item.cartQuantity =
+                                        (item.cartQuantity ?? 0) + 1,
+                                    widget.cartBloc.add(
+                                        ModifyCart(menuItemList: filterItem)),
+                                    setState(() {}),
+                                  },
+                                  onAdd: () {
+                                    item.cartQuantity =
+                                        (item.cartQuantity ?? 0) + 1;
+                                    widget.cartBloc.add(
+                                        ModifyCart(menuItemList: filterItem));
+                                    setState(() {});
+                                  },
+                                  onRemove: () {
+                                    item.cartQuantity =
+                                        (item.cartQuantity ?? 0) - 1;
+                                    widget.cartBloc.add(
+                                        ModifyCart(menuItemList: filterItem));
+                                    setState(() {});
+                                  },
+                                );
+                              },
+                            );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: simpleTextBorderButton(
+                    context: context,
+                    color: AppColors.green,
+                    buttonLable: 'Checkout',
+                    height: context.height * 0.065,
+                    width: context.width,
+                    isLoadingWidget: false,
+                    onTap: () async {
+                      Object state = cartBloc.state;
+                      if (state is StoreCheckoutState) {
+                        if (state.menuItemList.isNotEmpty) {
+                          await Get.to(
+                            () => StoreCheckOutScreen(
+                              storeCartBloc: widget.cartBloc,
+                              address: widget.address,
+                              storeName: widget.storeName,
+                              groceryDetails: widget.groceryDetails,
+                              askOrder: widget.askOrder,
+                            ),
+                          );
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Please, select the product!");
+                        }
+                      }
+                      setState(() {});
+                    },
+                    isDarkColor: true,
+                    isFillColor: true,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget myFilterView(String icon, String title, VoidCallback onTap,
+      [int? count]) {
+    return Expanded(
+      flex: 1,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+          decoration: BoxDecoration(
+            color: AppColors.mint,
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(icon, color: AppColors.green),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: FontUtils.h18(
+                  fontColor: AppColors.green,
+                  fontWeight: FWT.medium,
+                ),
+              ),
+              const SizedBox(width: 10),
+              if (count != null)
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: AppColors.greenPressed,
+                  child: Text(
+                    "$count",
+                    style: FontUtils.h12(
+                      fontColor: AppColors.whiteColor,
+                      fontWeight: FWT.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

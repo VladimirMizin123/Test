@@ -47,6 +47,7 @@ class _AddressScreenState extends State<AddressScreen> {
                 title: "My Address",
                 widget: Expanded(
                   child: Container(
+                    width: context.width,
                     decoration: BoxDecoration(
                       color: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(10),

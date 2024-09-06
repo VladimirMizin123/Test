@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
@@ -27,14 +28,14 @@ class DeliverOrderBottomSheet extends StatefulWidget {
 class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
   int selectedIndex = -1;
   int apiIndex = -1;
-  List option = ['Bring me the order', 'I will pick it myself'];
+  List option = ['Bring me the order', 'I will pick it up myself'];
 
   @override
   void initState() {
     super.initState();
     selectedIndex = widget.selectedIndex;
     apiIndex = widget.selectedIndex;
-    restaurantBloc.add(GetDeliveryStatusEvent());
+    // restaurantBloc.add(GetDeliveryStatusEvent());
   }
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
@@ -114,7 +115,7 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                       }),
                   const SizedBox(height: 10),
                   myWidget(
-                      title: 'I will pick it myself',
+                      title: 'I will pick it up myself',
                       isSelected: selectedIndex == 1 ? true : false,
                       onTap: () {
                         setState(() {
@@ -146,17 +147,9 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                             ),
                           );
 
-                          restaurantBloc.add(ClearShoppingListItemEvent());
+                          cartBloc.add(RemoveCart());
 
-                          if (widget.isFrom == 'isFromCheckout') {
-                            Get.offAll(
-                              () => const AppManagerScreen(
-                                selectIndex: 3,
-                              ),
-                            );
-                          } else {
-                            Get.back(result: option[selectedIndex]);
-                          }
+                          Get.back(result: option[selectedIndex]);
                         }
                       }
                     },

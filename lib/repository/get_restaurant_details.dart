@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:either_dart/either.dart';
+import 'package:get/utils.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/models/available_store_model.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/payment_status_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
@@ -17,11 +21,11 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_mode
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
-    as user;
+import 'package:http/http.dart';
 
 class RestaurantRepository {
   final ApiServices apiServices = ApiServices();
@@ -31,6 +35,8 @@ class RestaurantRepository {
   /// GetUserGroceryList ====================================================================
 
   Future<Either<ErrorModel, GetUserAddressModel>> getUserAddressData() async {
+    log('${ApiUrls.getUserAddress}/$userID');
+
     final response = await apiServices.get(
       '${ApiUrls.getUserAddress}/$userID',
     );
@@ -46,38 +52,48 @@ class RestaurantRepository {
 
   /// Get Restaurant List ====================================================================
 
-  Future<Either<ErrorModel, GetRestaurantListModel>> getRestaurantListData(
-      {required dynamic latitude,
-      required dynamic longitude,
-      required String userStreetNum,
-      required String userStreetName,
-      required String userCity,
-      required String userState,
-      required String userCountry,
-      required String userZipcode,
-      required bool pickup,
-      required int maximumMiles,
-      required List categoriesData}) async {
+  Future<Either<ErrorModel, GetRestaurantListModel>> getRestaurantListData({
+    required double? latitude,
+    required double? longitude,
+    required bool pickup,
+    required int maximumMiles,
+    required List categoriesData,
+  }) async {
+    (double?, double?) pos = await Constant.i.position;
+
+    double? lat = latitude;
+    double? lng = longitude;
+
+    if (latitude == null &&
+        longitude == null &&
+        pos.$1 == null &&
+        pos.$2 == null) {
+      Either<ErrorModel, GetUserAddressModel> res = await getUserAddressData();
+      if (res.isRight) {
+        var add = res.right.data
+            ?.firstWhereOrNull((element) => element.isPrimary ?? false);
+        if (add != null) {
+          lat = add.latitude;
+          lng = add.longitude;
+        }
+        if ((res.right.data?.isNotEmpty ?? false) && add == null) {
+          lat = res.right.data?.first.latitude;
+          lng = res.right.data?.first.longitude;
+        }
+      }
+    }
+
     Map<String, dynamic> data = {
-      "latitude": latitude.toStringAsFixed(6),
-      "longitude": longitude.toStringAsFixed(6),
-      "user_street_num": userStreetNum,
-      "user_street_name": userStreetName,
-      "user_city": userCity,
-      "user_state": userState,
-      "user_country": userCountry,
-      "user_zipcode": userZipcode,
+      "latitude": pos.$1 ?? lat,
+      "longitude": pos.$2 ?? lng,
       "pickup": pickup,
       "maximum_miles": maximumMiles,
-      "categories": categoriesData
+      "categories": categoriesData,
     };
+    log("Api Url : ${ApiUrls.getRestaurantList}");
+    log('data---------->>>>>> ${jsonEncode(data)}');
 
-    log('data---------->>>>>> $data');
-
-    final response = await apiServices.post(
-      ApiUrls.getRestaurantList,
-      data,
-    );
+    final response = await apiServices.post(ApiUrls.getRestaurantList, data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetRestaurantListModel.fromJson(jsonDecode(response.body)));
@@ -88,44 +104,158 @@ class RestaurantRepository {
     }
   }
 
+  Future<Either<ErrorModel, NearByStoreModel>> getStoreByName({
+    required String latitude,
+    required String longitude,
+    required bool pickup,
+    required List<String> cuisine,
+    String? name,
+  }) async {
+    String apiURL = "${ApiUrls.getStoreByName}/$name";
+    log(apiURL);
+
+    (double?, double?) pos = await Constant.i.position;
+
+    Map<String, dynamic> data = {
+      "latitude": pos.$1?.toString() ?? latitude,
+      "longitude": pos.$2?.toString() ?? longitude,
+      "pickup": pickup,
+      "StoreType": 'restaurant',
+      "maximum_miles": PreferenceUtils.getRestaurantsRadius(),
+      "cuisine": cuisine,
+    };
+
+    final response = await apiServices.get(apiURL, queryParams: data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      NearByStoreModel searchModel = NearByStoreModel.fromJson(
+          jsonDecode(response.body)['data'] == null
+              ? {}
+              : jsonDecode(response.body));
+      for (int i = 0; i < (searchModel.data?.length ?? 0); i++) {
+        if (searchModel.data?[i].logoPhotos?.isNotEmpty ?? false) {
+          PreferenceUtils.setString("${searchModel.data?[i].id}_img",
+              searchModel.data?[i].logoPhotos?[0] ?? "");
+        }
+      }
+
+      return Right(searchModel);
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, AvailableStoreModel>> getAvailableStoreList({
+    required dynamic latitude,
+    required dynamic longitude,
+    required String userStreetNum,
+    required String userStreetName,
+    required String userCity,
+    required String userState,
+    required String userCountry,
+    required String userZipcode,
+    required bool pickup,
+    required int maximumMiles,
+    required List categoriesData,
+    List<String>? storeId,
+  }) async {
+    (double?, double?) pos = await Constant.i.position;
+    Map<String, dynamic> data = {
+      "latitude": pos.$1 ?? latitude.toStringAsFixed(6),
+      "longitude": pos.$2 ?? longitude.toStringAsFixed(6),
+      "user_street_num": userStreetNum,
+      "user_street_name": userStreetName,
+      "user_city": userCity,
+      "user_state": userState,
+      "user_country": userCountry,
+      "user_zipcode": userZipcode,
+      "pickup": pickup,
+      "maximum_miles": maximumMiles,
+      "categories": categoriesData,
+      "store_Id": storeId ?? [],
+      "page": 1,
+    };
+    log("Api : ${ApiUrls.getAvailableStoreList}");
+    log("Data : $data");
+
+    final response =
+        await apiServices.post(ApiUrls.getAvailableStoreList, data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(AvailableStoreModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(AvailableStoreModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, CheckStoreModel>> checkAvailableStore({
+    required String storeType,
+    required dynamic latitude,
+    required dynamic longitude,
+    required bool pickup,
+    required String storeId,
+    bool addDelay = false,
+    (double?, double?)? position,
+  }) async {
+    if (addDelay) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    } else {}
+    (double?, double?) pos = position ?? await Constant.i.position;
+    Map<String, dynamic> data = {
+      "storeType": storeType,
+      "latitude": double.tryParse((pos.$1?.toString()) ?? latitude) ?? 0.0,
+      "longitude": double.tryParse((pos.$2?.toString()) ?? longitude) ?? 0.0,
+      "pickup": pickup,
+      "storeId": storeId,
+    };
+
+    final response =
+        await apiServices.get(ApiUrls.checkAvailableStore, queryParams: data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(CheckStoreModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(CheckStoreModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   /// Get Restaurant Menu List ====================================================================
 
-  Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList(
-      {String? restaurantId,
-      bool? pickup,
-      String? mealType,
-      user.UserAddress? getUserAddress}) async {
-    {
-      Map<String, dynamic> data = {
-        "userId": userId,
-        "mealType": mealType,
-        "latitude": getUserAddress?.latitude?.toStringAsFixed(6),
-        "restaurantId": restaurantId,
-        "longitude": getUserAddress?.longitude?.toStringAsFixed(6),
-        "user_street_num": getUserAddress?.streetNum,
-        "user_street_name": getUserAddress?.streetName,
-        "user_city": getUserAddress?.city,
-        "user_state": getUserAddress?.state,
-        "user_country": getUserAddress?.country,
-        "user_zipcode": getUserAddress?.zipcode,
-        "pickup": pickup
-      };
+  Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList({
+    String? restaurantId,
+    bool? pickup,
+    String? mealType,
+    required double? latitude,
+    required double? longitude,
+    (double?, double?)? position,
+  }) async {
+    (double?, double?) pos = position ?? await Constant.i.position;
+    Map<String, dynamic> data = {
+      "userId": userId,
+      "mealType": mealType,
+      "restaurantId": restaurantId,
+      "latitude": pos.$1 ?? latitude,
+      "longitude": pos.$2 ?? longitude,
+      "pickup": pickup,
+    };
+    log("Api Url : ${ApiUrls.getRestaurantMenuList}");
+    log("Request Data : $data");
 
-      final response =
-          await apiServices.post(ApiUrls.getRestaurantMenuList, data);
+    final response =
+        await apiServices.post(ApiUrls.getRestaurantMenuList, data);
 
-      log("menu body:${response.body.toString()}");
-      print("data:$data");
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Right(
-            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-      } else if (response.statusCode == 400) {
-        return Right(
-            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-      } else {
-        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-      }
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Right(
+          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }
 
@@ -155,6 +285,8 @@ class RestaurantRepository {
       "pickup": pickup,
       "maximum_miles": maximumMiles
     };
+
+    log(ApiUrls.getCousinesList);
 
     final response = await apiServices.post(
       ApiUrls.getCousinesList,
@@ -189,6 +321,7 @@ class RestaurantRepository {
   /// Get Shopping List ====================================================================
 
   Future<Either<ErrorModel, GetShoppingListData>> getShoppingList() async {
+    log('${ApiUrls.getShoppingList}/$userID');
     final response =
         await apiServices.get('${ApiUrls.getShoppingList}/$userID');
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -265,17 +398,27 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateOrderModel createOrderModel}) async {
-    log("Request Data : ${createOrderModel.toJson()}");
-    final response = await apiServices.post(
-      ApiUrls.createOrder,
-      createOrderModel,
-    );
+    Response? response;
+    try {
+      Map<String, dynamic> req = createOrderModel.toJson();
+      log(ApiUrls.createOrder);
+      log("Req : ${jsonEncode(req)}");
+      response = await apiServices.post(ApiUrls.createOrder, req);
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+      } else {
+        return Left(
+          ErrorModel.fromJson(jsonDecode(response.body))
+            ..statusCode = response.statusCode,
+        );
+      }
+    } catch (e) {
+      return Left(
+        ErrorModel(message: e.toString(), errorMessage: e.toString())
+          ..statusCode = 500,
+      );
     }
   }
 
@@ -283,11 +426,15 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, CreateProductResponseModel>> createProduct(
       {required CreateProductRequestModel createProductRequestModel}) async {
-    final response = await apiServices.post(
-      ApiUrls.createProduct,
-      createProductRequestModel,
-    );
+    // log("Api : ${ApiUrls.createProduct}");
+    // log("Request Data ; ${jsonEncode(createProductRequestModel.toJson())}")
+    Map<String, dynamic> req = createProductRequestModel.toJson();
+    log(ApiUrls.createProduct);
+    log("Req : ${jsonEncode(req)}");
+
+    final response = await apiServices.post(ApiUrls.createProduct, req);
     if (response.statusCode == 200 || response.statusCode == 201) {
+      // log("Response :${response.body}");
       return Right(
           CreateProductResponseModel.fromJson(jsonDecode(response.body)));
     } else {
@@ -332,6 +479,7 @@ class RestaurantRepository {
   /// Get Delivery Status ====================================================================
 
   Future<Either<ErrorModel, SuccessModel>> getDeliveryStatus() async {
+    log('${ApiUrls.getDeliveryStatus}/$userId');
     final response =
         await apiServices.get('${ApiUrls.getDeliveryStatus}/$userId');
 
@@ -348,8 +496,24 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, MenuItemList>> fetchCustomization(
       String productId) async {
+    log("${ApiUrls.fetchCustomization}/$productId");
     final response =
         await apiServices.get("${ApiUrls.fetchCustomization}/$productId");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(
+          MenuItemList.fromJson(jsonDecode(response.body)?["data"] ?? {}));
+    } else if (response.statusCode == 400) {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, MenuItemList>> getProductCustomization(
+      String productId) async {
+    final response = await apiServices.post(
+        "${ApiUrls.getProductCustomization}/$productId", null);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(

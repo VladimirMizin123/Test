@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
@@ -97,6 +96,20 @@ class AccountRepository {
     }
   }
 
+  Future<Either<ErrorModel, UpdateDietProgramResponseModel>> updateDietProgram(
+      {required Map<String, dynamic> req}) async {
+    final response =
+        await apiServices.put(ApiUrls.updateDietProgramByProgramId, req);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(updateDietProgramResponseModelFromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(updateDietProgramResponseModelFromJson(response.body));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   /// Get Profile Image ====================================================================
 
   Future<Either<ErrorModel, GetProfileImageResponseModel>> getProfileImage(
@@ -121,7 +134,6 @@ class AccountRepository {
         await apiServices.get('${ApiUrls.getProfileDetails}$userID');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print("userdetails:${response.body}");
       return Right(getProfileDetailsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
       return Right(getProfileDetailsResponseModelFromJson(response.body));
@@ -148,7 +160,7 @@ class AccountRepository {
       "firstName": firstName,
       "lastName": lastName,
       "phoneNumber": phoneNumber,
-      "goal": goal,
+      "goal": (goal) + 1,
       "weight": weight,
       "targetWeight": targetWeight,
       "heightInCm": heightInCm,
@@ -269,12 +281,8 @@ class AccountRepository {
       "userId": userID
     };
 
-    print("data:$data");
-
     final response = await apiServices.put(ApiUrls.updateUnitInfo, data);
-    print('hello response  :${response.body}');
 
-    print("code:${response.statusCode}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(updateUnitInfoResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {

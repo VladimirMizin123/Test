@@ -1,9 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-
+import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/controller/home_screen_controller.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
+import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import '../../app/functions.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
@@ -13,7 +17,6 @@ import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
 import '../../constant/string_utils.dart';
 import '../../models/sign_up_data_navigate_model.dart';
-import '../../widget/app_center_loader.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/svg_image.dart';
 
@@ -29,12 +32,11 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
   UserSignUpDataModel model = Get.arguments as UserSignUpDataModel;
   String userInfoImage = AssetsUtils.icMaleChart;
   UserSignUpInfoBloc bloc = UserSignUpInfoBloc();
+  HomeScreenController homeScreenController = Get.find<HomeScreenController>();
 
   PageController pageController = PageController();
   int currentPage = 0;
   int itemsPerPage = 4;
-
-  Position? _currentPosition;
 
   @override
   void initState() {
@@ -61,6 +63,29 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<String?> goalList = dialGoalList
+        .asMap()
+        .map((i, e) {
+          return MapEntry(i, homeScreenController.selectedItems[i] ? e : null);
+        })
+        .values
+        .toList();
+    List<CustomOptions> stringList = [
+      model.options?.map((e) => e).toList() ?? [],
+      goalList
+          .where((element) => element != null)
+          .toList()
+          .asMap()
+          .map(
+            (i, e) => MapEntry(
+              i,
+              CustomOptions(optionColor: color, optionName: e!),
+            ),
+          )
+          .values
+          .toList(),
+    ].expand((element) => element).toList();
+
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -73,15 +98,11 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                 children: [
                   Column(
                     children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            width: 50.w,
-                          ),
+                          SizedBox(width: 50.w),
                           Image.asset(
                             AssetsUtils.gymEatsLogo,
                             fit: BoxFit.cover,
@@ -99,15 +120,11 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                               ),
                             ),
                           } else ...{
-                            SizedBox(
-                              width: 50.w,
-                            ),
+                            SizedBox(width: 50.w),
                           }
                         ],
                       ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
+                      SizedBox(height: 10.h),
                       Text(
                         StringUtils.howDoesThisProfileLook,
                         style: AppTextStyle.gymEatsStyle.copyWith(
@@ -115,9 +132,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w500),
                       ).paddingOnly(top: 10),
-                      SizedBox(
-                        height: 10.h,
-                      ),
+                      SizedBox(height: 10.h),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -178,179 +193,191 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                 )
                               ],
                             ),
-                            const SizedBox(
-                              height: 50,
-                            ),
-                            Align(
-                              alignment: Alignment.bottomLeft,
-                              child: SizedBox(
-                                height: 100,
-                                child: PageView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  controller: pageController,
-                                  itemCount:
-                                      (model.options!.length / itemsPerPage)
-                                          .ceil(),
-                                  onPageChanged: (int page) {
-                                    setState(() {
-                                      currentPage = page;
-                                    });
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final startIndex = index * itemsPerPage;
-                                    final endIndex =
-                                        (index + 1) * itemsPerPage <
-                                                model.options!.length
-                                            ? (index + 1) * itemsPerPage
-                                            : model.options!.length;
+                            const SizedBox(height: 50),
+                            // Align(
+                            //   alignment: Alignment.bottomLeft,
+                            //   child: SizedBox(
+                            //     height: 100,
+                            //     child: PageView.builder(
+                            //       scrollDirection: Axis.horizontal,
+                            //       controller: pageController,
+                            //       itemCount:
+                            //           (stringList.length / itemsPerPage).ceil(),
+                            //       onPageChanged: (int page) {
+                            //         setState(() {
+                            //           currentPage = page;
+                            //         });
+                            //       },
+                            //       itemBuilder:
+                            //           (BuildContext context, int index) {
+                            //         final startIndex = index * itemsPerPage;
+                            //         final endIndex =
+                            //             (index + 1) * itemsPerPage <
+                            //                     stringList.length
+                            //                 ? (index + 1) * itemsPerPage
+                            //                 : stringList.length;
+                            //         final pageData = stringList.sublist(
+                            //             startIndex, endIndex);
 
-                                    final pageData = model.options!
-                                        .sublist(startIndex, endIndex);
-
-                                    return Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      mainAxisAlignment: pageData.length > 3
-                                          ? MainAxisAlignment.spaceEvenly
-                                          : MainAxisAlignment.start,
-                                      children: List.generate(pageData.length,
-                                          (index) {
-                                        return Container(
-                                          height: 70.h,
-                                          width: 70.w,
-                                          padding: const EdgeInsets.all(18),
-                                          margin: EdgeInsets.only(
-                                              right:
-                                                  index == (pageData.length - 1)
-                                                      ? 0
-                                                      : 2.5,
-                                              left: index == 0 ? 0 : 2.5),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color:
-                                                  pageData[index].optionColor),
-                                          child: Text(
-                                            pageData[index].optionName,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400),
+                            //         return Row(
+                            //           crossAxisAlignment:
+                            //               CrossAxisAlignment.stretch,
+                            //           mainAxisAlignment: pageData.length > 3
+                            //               ? MainAxisAlignment.spaceEvenly
+                            //               : MainAxisAlignment.start,
+                            //           children: List.generate(pageData.length,
+                            //               (index) {
+                            //             return Container(
+                            //               height: 70.h,
+                            //               width: 70.w,
+                            //               padding: const EdgeInsets.all(18),
+                            //               margin: EdgeInsets.only(
+                            //                   right:
+                            //                       index == (pageData.length - 1)
+                            //                           ? 0
+                            //                           : 2.5,
+                            //                   left: index == 0 ? 0 : 2.5),
+                            //               alignment: Alignment.center,
+                            //               decoration: BoxDecoration(
+                            //                   shape: BoxShape.circle,
+                            //                   color:
+                            //                       pageData[index].optionColor),
+                            //               child: Text(
+                            //                 pageData[index].optionName,
+                            //                 textAlign: TextAlign.center,
+                            //                 style: const TextStyle(
+                            //                     fontSize: 12.0,
+                            //                     color: Colors.white,
+                            //                     fontWeight: FontWeight.w400),
+                            //               ),
+                            //             );
+                            //           }),
+                            //         );
+                            //       },
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 12),
+                            // _buildPageIndicator(stringList),
+                            ListView.builder(
+                              itemCount: stringList.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Transform.scale(
+                                      scale: 1.5,
+                                      child: Theme(
+                                        data: ThemeData(
+                                          unselectedWidgetColor:
+                                              Theme.of(context).primaryColor,
+                                        ),
+                                        child: AbsorbPointer(
+                                          absorbing: true,
+                                          child: Radio(
+                                            visualDensity: const VisualDensity(
+                                                horizontal: -4.0,
+                                                vertical: -4.0),
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize
+                                                    .shrinkWrap,
+                                            groupValue: true,
+                                            value: true,
+                                            activeColor:
+                                                Theme.of(context).primaryColor,
+                                            onChanged: (_) {},
                                           ),
-                                        );
-                                      }),
-                                    );
-                                  },
-                                ),
-                              ),
+                                        ),
+                                      ),
+                                    ).paddingOnly(left: 10),
+                                    Expanded(
+                                      child: Text(
+                                        stringList[index].optionName,
+                                        style:
+                                            AppTextStyle.gymEatsStyle.copyWith(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ].addBetweenItems(const SizedBox(width: 15)),
+                                ).paddingOnly(top: 10, bottom: 10);
+                              },
                             ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            _buildPageIndicator(),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  if (_currentPosition != null) ...{
-                    if (state is SignUpLoadingState) ...{
-                      const AppCenterLoader(),
-                    } else ...{
-                      Row(
-                        children: [
-                          Expanded(
-                            child: buildBorderButton(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: buildBorderButton(
+                                context: context,
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                textColor: setColor(gender: model.gender!),
+                                borderColor: setColor(gender: model.gender!),
+                                bgColor: Colors.white,
+                                title: StringUtils.previous)
+                            .paddingOnly(top: 25.h),
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: state is SignUpLoadingState
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : buildButton(
                                     context: context,
-                                    onPressed: () {
-                                      Get.back();
+                                    onPressed: () async {
+                                      UserSignUpDataModel userSignUpDataModel =
+                                          UserSignUpDataModel(
+                                        firstName: model.firstName,
+                                        lastName: model.lastName,
+                                        email: model.email,
+                                        password: model.password,
+                                        userName: model.userName,
+                                        confirmPassword: model.confirmPassword,
+                                        phoneNumber: model.phoneNumber,
+                                        gender: model.gender,
+                                        age: model.age,
+                                        height: model.height,
+                                        weight: model.weight,
+                                        dietId: model.dietId,
+                                        surveyId: model.surveyId,
+                                        userProfileImage:
+                                            model.userProfileImage,
+                                        latitude: model
+                                            .addAddressModel?.latitude
+                                            .toString(),
+                                        longitude: model
+                                            .addAddressModel?.longitude
+                                            .toString(),
+                                        restrictionID: model.restrictionID,
+                                        addAddressModel: model.addAddressModel,
+                                        userId: model.userId,
+                                        surveyReq: model.surveyReq,
+                                      );
+                                      bloc.add(SignUpApiEvent(
+                                          model: userSignUpDataModel));
                                     },
-                                    textColor: setColor(gender: model.gender!),
-                                    borderColor:
-                                        setColor(gender: model.gender!),
-                                    bgColor: Colors.white,
-                                    title: StringUtils.previous)
+                                    textColor: Colors.white,
+                                    bgColor: setColor(gender: model.gender!),
+                                    title: StringUtils.next)
                                 .paddingOnly(top: 25.h),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: state is SignUpLoadingState
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : buildButton(
-                                        context: context,
-                                        onPressed: () {
-                                          UserSignUpDataModel
-                                              userSignUpDataModel =
-                                              UserSignUpDataModel(
-                                            firstName: model.firstName,
-                                            lastName: model.lastName,
-                                            email: model.email,
-                                            password: model.password,
-                                            userName: model.userName,
-                                            confirmPassword:
-                                                model.confirmPassword,
-                                            phoneNumber: model.phoneNumber,
-                                            gender: model.gender,
-                                            age: model.age,
-                                            height: model.height,
-                                            weight: model.weight,
-                                            dietId: model.dietId,
-                                            surveyId: model.surveyId,
-                                            userProfileImage:
-                                                model.userProfileImage,
-                                            latitude: _currentPosition!.latitude
-                                                .toString(),
-                                            longitude: _currentPosition!
-                                                .longitude
-                                                .toString(),
-                                            restrictionID: model.restrictionID,
-                                            addAddressModel:
-                                                model.addAddressModel,
-                                          );
-                                          bloc.add(SignUpApiEvent(
-                                              model: userSignUpDataModel));
-                                        },
-                                        textColor: Colors.white,
-                                        bgColor:
-                                            setColor(gender: model.gender!),
-                                        title: StringUtils.next)
-                                    .paddingOnly(top: 25.h),
-                          ),
-                        ],
-                      )
-                    },
-                  }
+                      ),
+                    ],
+                  )
                 ],
               );
             },
             bloc: bloc,
-            listener: (context, state) {
-              if (state is LatLogState) {
-                _currentPosition = state.currentPosition;
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        (model.options!.length / itemsPerPage).ceil(),
-        (index) => Container(
-          width: 8.0,
-          height: 8.0,
-          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: currentPage == index ? color : AppColors.inactive,
+            listener: (context, state) {},
           ),
         ),
       ),

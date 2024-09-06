@@ -1,3 +1,5 @@
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+
 class CreateOrderModel {
   String? userId;
   UserAddress? userAddress;
@@ -7,16 +9,19 @@ class CreateOrderModel {
   int? pickupTipCents;
   String? userDropoffNotes;
   int? userPhone;
+  Map<String, dynamic>? extendedAddress;
 
-  CreateOrderModel(
-      {this.userId,
-      this.userAddress,
-      this.pickup,
-      this.mealmeItems,
-      this.driverTipCents,
-      this.pickupTipCents,
-      this.userDropoffNotes,
-      this.userPhone});
+  CreateOrderModel({
+    this.userId,
+    this.userAddress,
+    this.pickup,
+    this.mealmeItems,
+    this.driverTipCents,
+    this.pickupTipCents,
+    this.userDropoffNotes,
+    this.userPhone,
+    this.extendedAddress,
+  });
 
   CreateOrderModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -40,7 +45,11 @@ class CreateOrderModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
     if (userAddress != null) {
-      data['userAddress'] = userAddress!.toJson();
+      // data['userAddress'] = userAddress!.toJson();
+      data['userAddress'] = {
+        "latitude": userAddress?.latitude,
+        "longitude": userAddress?.longitude,
+      };
     }
     data['pickup'] = pickup;
     if (mealmeItems != null) {
@@ -50,6 +59,9 @@ class CreateOrderModel {
     data['pickup_tip_cents'] = pickupTipCents;
     data['user_dropoff_notes'] = userDropoffNotes;
     data['user_phone'] = userPhone;
+    if (extendedAddress != null) {
+      data["extendedAddress"] = extendedAddress;
+    }
     return data;
   }
 }
@@ -140,28 +152,6 @@ class CreateOrderMealmeItems {
           selectedOptions!.map((v) => v.toJson()).toList();
     }
     data['productType'] = productType;
-    return data;
-  }
-}
-
-class SelectedOptions {
-  String? optionId;
-  int? quantity;
-  int? markedPrice;
-
-  SelectedOptions({this.optionId, this.quantity, this.markedPrice});
-
-  SelectedOptions.fromJson(Map<String, dynamic> json) {
-    optionId = json['option_id'];
-    quantity = json['quantity'];
-    markedPrice = json['marked_price'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['option_id'] = optionId;
-    data['quantity'] = quantity;
-    data['marked_price'] = markedPrice;
     return data;
   }
 }

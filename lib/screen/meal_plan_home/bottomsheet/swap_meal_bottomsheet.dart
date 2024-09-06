@@ -18,7 +18,12 @@ class SwapMealBottomSheet extends StatefulWidget {
   final MealData? mealData;
   final int? day;
   final DateTime? dateTime;
-  const SwapMealBottomSheet({super.key, required this.mealPlanBloc, this.mealData, this.day, this.dateTime});
+  const SwapMealBottomSheet(
+      {super.key,
+      required this.mealPlanBloc,
+      this.mealData,
+      this.day,
+      this.dateTime});
 
   @override
   State<SwapMealBottomSheet> createState() => _SwapMealBottomSheetState();
@@ -31,7 +36,9 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
   @override
   void initState() {
     super.initState();
-    widget.mealPlanBloc.add(FetchSwapMealItemEvent(recipeID: widget.mealData!.recipe!.id, serving: widget.mealData!.numOfServings));
+    widget.mealPlanBloc.add(FetchSwapMealItemEvent(
+        recipeID: widget.mealData!.recipe!.id,
+        noOfServing: widget.mealData!.numOfServings));
   }
 
   @override
@@ -49,7 +56,8 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
         builder: (context, state) {
           return Material(
             color: AppColors.whiteColor,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -60,12 +68,15 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                       child: Container(
                         height: 3.h,
                         width: 80.w,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppColors.disable),
                       )),
                   const SizedBox(height: 15),
                   Text(
                     StringUtils.swapMeal,
-                    style: FontUtils.h22(fontColor: AppColors.darkGray, fontWeight: FWT.bold),
+                    style: FontUtils.h22(
+                        fontColor: AppColors.darkGray, fontWeight: FWT.bold),
                   ),
                   const SizedBox(height: 15),
                   Expanded(
@@ -82,21 +93,32 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                                       itemCount: similarMealDataList.length,
                                       shrinkWrap: true,
                                       padding: EdgeInsets.zero,
-                                      physics: const NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 12),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 5.h, horizontal: 12),
                                           child: SwapMealCardWidget(
                                             context: context,
-                                            similarMealData: similarMealDataList[index],
+                                            similarMealData:
+                                                similarMealDataList[index],
                                             onTap: () {
                                               isSelectAnyOneMeal = true;
                                               setState(() {
-                                                for (var i = 0; i < similarMealDataList.length; i++) {
+                                                for (var i = 0;
+                                                    i <
+                                                        similarMealDataList
+                                                            .length;
+                                                    i++) {
                                                   if (i == index) {
-                                                    similarMealDataList[i].isSelectedForSwap = true;
+                                                    similarMealDataList[i]
+                                                            .isSelectedForSwap =
+                                                        true;
                                                   } else {
-                                                    similarMealDataList[i].isSelectedForSwap = false;
+                                                    similarMealDataList[i]
+                                                            .isSelectedForSwap =
+                                                        false;
                                                   }
                                                 }
                                               });
@@ -106,14 +128,21 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                                       }),
                                 ),
                               )
-                            : const SizedBox(),
+                            : const Center(
+                                child: Text(
+                                  "No results found",
+                                  style: TextStyle(color: AppColors.black),
+                                ),
+                              ),
                   ),
                   Align(
                       alignment: Alignment.center,
                       child: simpleTextBorderButton(
                           context: context,
                           isLoadingWidget: state is SwapMealPlanLoadingState,
-                          buttonLable: isSelectAnyOneMeal ? 'Confirm New Meal' : StringUtils.back,
+                          buttonLable: isSelectAnyOneMeal
+                              ? 'Confirm New Meal'
+                              : StringUtils.back,
                           height: screenSize.height * 0.055,
                           width: screenSize.width * 0.85,
                           isFillColor: isSelectAnyOneMeal,
@@ -121,8 +150,10 @@ class _SwapMealBottomSheetState extends State<SwapMealBottomSheet> {
                             if (!isSelectAnyOneMeal) {
                               Get.back();
                             } else {
-                              for (var i = 0; i < similarMealDataList.length; i++) {
-                                if (similarMealDataList[i].isSelectedForSwap) {
+                              for (var i = 0;
+                                  i < similarMealDataList.length;
+                                  i++) {
+                                if (similarMealDataList[i].isSelectedForSwap!) {
                                   widget.mealPlanBloc.add(AddSwapMealEvent(
                                     mealId: widget.mealData!.id,
                                     recipeId: similarMealDataList[i].id,

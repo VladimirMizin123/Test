@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,27 +11,10 @@ import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/convert_units_widget/water_convert.dart';
-import 'package:gymeats_mobile/widget/convert_units_widget/weight_convert.dart';
 
 import '../../bloc/dashboard/add_water/add_water_bloc.dart';
 import '../../bloc/dashboard/add_water/add_water_event.dart';
 import '../../bloc/dashboard/add_water/add_water_state.dart';
-
-class Debouncer {
-  int? milliseconds;
-  VoidCallback? action;
-  Timer? timer;
-
-  run(VoidCallback action) {
-    if (null != timer) {
-      timer!.cancel();
-    }
-    timer = Timer(
-      const Duration(seconds: 2),
-      action,
-    );
-  }
-}
 
 class AddWaterScreen extends StatefulWidget {
   const AddWaterScreen({super.key});
@@ -49,7 +30,6 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   AddWaterArguments addWaterArguments = Get.arguments;
   AddWaterBloc bloc = AddWaterBloc();
 
-  final _debouncer = Debouncer();
   AccountBloc accountBloc = AccountBloc();
   int? waterValue;
 

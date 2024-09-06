@@ -8,6 +8,7 @@ import '../../../constant/color_utils.dart';
 
 Widget mapDetailWidget(
     {String? title,
+    String? hintText,
     String? initialValue,
     TextEditingController? textEditingController,
     String? Function(String?)? validator,
@@ -34,7 +35,7 @@ Widget mapDetailWidget(
         style: const TextStyle(color: Colors.black),
         enableBorderColor: AppColors.disable,
         initialValue: initialValue,
-        hintText: title ?? "",
+        hintText: hintText ?? title ?? "",
         vertical: 10,
         obscureText: false,
         hintStyle: const TextStyle(),

@@ -48,6 +48,7 @@ class StringUtils {
       'We have sent a password recover instructions to your email.';
   static const allSet = 'You are all set!';
   static const forgot = 'Forgot password?';
+  static const logmeal = 'Log Meal';
   static const alreadyAccount = 'Already have an account?  ';
   static const donTAccount = 'Don’t have an account?  ';
   static const logIn = 'Log In';
@@ -140,7 +141,7 @@ class StringUtils {
   static const neverUnderestimate =
       'Never underestimate the power of a single good decision.';
   static const eachMeal =
-      'Each meal is a new opportunity to ove in the right direction.';
+      'Each meal is a new opportunity to move in the right direction.';
   static const iAmReady = 'I’m Ready';
   static const buildMyProfile = 'Build My Profile';
   static const dashBoardText =
@@ -184,7 +185,9 @@ class StringUtils {
   static const sliderText2 = 'I drank enough of\nwater';
   static const sliderText3 = 'I took a walk or\nexercise';
   static const yes = 'Yes, I did';
-  static const no = 'No, I did\'t';
+  static const yesTxt = 'Yes';
+  static const no = 'No, I didn\'t';
+  static const noTxt = 'No';
   static const addExercise = 'Add Exercise';
   static const searchExercise = 'Search for an exercise';
   static const noExercise = 'No exercise found';
@@ -231,6 +234,7 @@ class StringUtils {
   static const pleaseEnterMinutes = 'Please enter minutes';
   static const pleaseEnterCaloriesBurned = 'Please enter calories burned';
   static const addToGroceryList = 'Add to Grocery List';
+  static const remove = 'Remove';
   static const details = 'Details';
   static const deliveryTime = 'Delivery time: ';
   static const orderType = 'Order type: ';
@@ -323,4 +327,35 @@ class StringUtils {
   static String continueTxt = "Continue";
   static String checkout = "Checkout";
   static String paymentWasUnsuccessfull = "Payment was unsuccessfull";
+  static String thisItemIsUnAvailalbe = "Item is not available";
+  static String choose = "Choose";
+  static String chooseAStore = "Choose a Store";
+  static String doYouWantToRemoveGroceryItem =
+      "Do you want to remove grocery item ?";
+  static String doYouWantToClearAllGroceryItem =
+      "Do you want to clear all grocery item ?";
+  static String delete = "Delete";
+  static String clearAll = "Clear all";
+  static String groceryNotFound = "Grocery not found !";
+  static String piece = "Piece";
+  static String checklist = "Checklist";
+  static String shoppingList = "Shopping List";
+  static String inYourShoppingList = "In your shopping list";
+  static String cartWillEmptiedIfGoBack =
+      "Your cart will be emptied if you go back. Confirm?";
+  static String cart = "Cart";
+  static String addingThisItemWillClear =
+      "Adding this item will clear your cart. Add anyway?";
+  static String get changingAddressWillClear =>
+      "Changing the address will clear your cart. Do you want to continue?";
+
+  static String youAlreadyHaveItems =
+      "You already have items from another restaurant or shop in your cart";
+  static String youAlreadyHaveAnotherAddressInYourCart =
+      "You already have items from another address in your cart";
+  static String dontAdd = "Don't add";
+  static String dontChange = "Don't change";
+  static const change = 'Change';
+  static const restaurantNotAvailable =
+      'This restaurant is no longer available.';
 }

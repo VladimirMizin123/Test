@@ -83,9 +83,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: passwordController,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: const Color(0xFF5F5F5F), fontSize: 16.sp),
-                    obscureText: true,
+                    obscureText: isPassword ? false : true,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            isPassword = !isPassword;
+                            setState(() {});
+                          },
+                          icon: Icon(
+                            isPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: const Color(0xFF004C63),
+                            size: 25,
+                          )),
                       hintText: 'Password',
                       isDense: true,
                       hintStyle: TextStyle(
@@ -268,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //Apple Sign In
   Future<void> appleSignIn() async {
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(
+      await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,

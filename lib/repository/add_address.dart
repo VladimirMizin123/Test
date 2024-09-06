@@ -26,6 +26,7 @@ class AddAddressRepository {
     required String zipcode,
     required bool isPrimary,
     required String userId,
+    String? floor,
   }) async {
     Map<String, dynamic> data = {
       "latitude": latitude.toStringAsFixed(6),
@@ -39,8 +40,8 @@ class AddAddressRepository {
       "zipcode": zipcode,
       "isPrimary": isPrimary,
       "userId": userId,
+      "extendedAddress": floor,
     };
-
     log('data---------->>>>>> $data');
 
     final response = await apiServices.post(ApiUrls.addNewAddress, data);
@@ -63,7 +64,7 @@ class AddAddressRepository {
     required String zipcode,
     required bool isPrimary,
     required String addressId,
-    required int floor,
+    String? floor,
   }) async {
     Map<String, dynamic> data = {
       "latitude": latitude.toStringAsFixed(6),
@@ -73,7 +74,7 @@ class AddAddressRepository {
       "city": city,
       "state": state,
       "country": country,
-      "floor": floor,
+      "extendedAddress": floor,
       "addressType": addressType,
       "zipcode": zipcode,
       "isPrimary": isPrimary,

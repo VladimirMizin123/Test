@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/item_catalog/bottomsheet/item_catalog_filter_bottomsheet.dart';
 import 'package:gymeats_mobile/widget/custom_radio_button_widget.dart';
 
 class ItemCatalogSortByBottomSheet extends StatefulWidget {
   final String? selectedSort;
-  const ItemCatalogSortByBottomSheet({super.key, this.selectedSort});
+  final RangeValues? rangeValues;
+  const ItemCatalogSortByBottomSheet({
+    super.key,
+    this.selectedSort,
+    this.rangeValues,
+  });
 
   @override
   State<ItemCatalogSortByBottomSheet> createState() =>
@@ -30,11 +37,12 @@ class _ItemCatalogSortByBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     return Material(
       color: AppColors.whiteColor,
       borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(
@@ -57,25 +65,17 @@ class _ItemCatalogSortByBottomSheetState
                       style: FontUtils.h22(
                           fontColor: AppColors.darkGray,
                           fontWeight: FWT.semiBold))),
-              const SizedBox(height: 10),
-              myFilterWidget('Cheapest first', () {}),
-              // myFilterWidget('Popular', () {}),
-              myFilterWidget('Expensive', () {}),
-              const SizedBox(height: 15),
-              simpleTextBorderButton(
-                context: context,
-                color: AppColors.green,
-                buttonLable: 'Apply',
-                height: screenSize.height * 0.065,
-                width: screenSize.width,
-                isLoadingWidget: false,
-                onTap: () {
-                  Navigator.pop(context, selectedValue);
+              24.height,
+              myFilterWidget('Cheapest first'),
+              myFilterWidget('Expensive'),
+              16.height,
+              ItemCatalogFilterBottomSheet(
+                value: widget.rangeValues,
+                onShowItem: (value) {
+                  var hello = value..addAll({"value": selectedValue});
+                  Get.back(result: hello);
                 },
-                isDarkColor: true,
-                isFillColor: true,
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -83,7 +83,7 @@ class _ItemCatalogSortByBottomSheetState
     );
   }
 
-  Widget myFilterWidget(String title, VoidCallback? onTap) {
+  Widget myFilterWidget(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -91,21 +91,22 @@ class _ItemCatalogSortByBottomSheetState
           Row(
             children: [
               CustomRadioButtonWidget(
-                  value: title,
-                  groupValue: selectedValue,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedValue = value!;
-                    });
-                    return null;
-                  }),
-              const SizedBox(width: 10),
+                value: title,
+                groupValue: selectedValue,
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedValue = value!;
+                  });
+                  return null;
+                },
+              ),
+              10.width,
               Text(title, style: FontUtils.h16(fontColor: AppColors.black)),
             ],
           ),
-          const SizedBox(height: 5),
-          const Divider(color: AppColors.disable, thickness: 1.2),
-          const SizedBox(height: 5),
+          11.height,
+          const Divider(color: AppColors.disable, thickness: 1, height: 0),
+          11.height,
         ],
       ),
     );

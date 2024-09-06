@@ -4,6 +4,8 @@ class GetDashboardData extends GetDashboardEvent {}
 
 class GenMealTrackerData extends GetDashboardEvent {}
 
+class GetAllergiesAndRestriction extends GetDashboardEvent {}
+
 class AddEatenMealData extends GetDashboardEvent {
   String mealId;
   String? mealName;
@@ -32,3 +34,5 @@ class AddEatenMealData extends GetDashboardEvent {
 }
 
 class GetOrderInvoiceList extends GetDashboardEvent {}
+
+class AddIngredientGroceryList extends GetDashboardEvent {}

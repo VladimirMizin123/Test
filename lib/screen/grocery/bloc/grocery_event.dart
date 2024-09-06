@@ -6,8 +6,9 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bottomsheet/receive_order_ask_bottomsheet.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/categorie_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
-    as userAddress;
+    as user_address;
 
 abstract class GroceryEvent {}
 
@@ -60,13 +61,51 @@ class RemoveGroceryEvent extends GroceryEvent {
 
 class GrocerySearchEvent extends GroceryEvent {
   final List<GrocerySearchModel>? grocerySearchModelList;
-  final userAddress.UserAddress? getUserAddress;
+  final user_address.UserAddress? getUserAddress;
   final AskReceiveOrder? askReceiveOrder;
 
   GrocerySearchEvent({
     required this.grocerySearchModelList,
     required this.getUserAddress,
     this.askReceiveOrder,
+  });
+}
+
+class StoreNearByEvent extends GroceryEvent {
+  final user_address.UserAddress? getUserAddress;
+  final AskReceiveOrder? askReceiveOrder;
+
+  StoreNearByEvent({
+    required this.getUserAddress,
+    this.askReceiveOrder,
+  });
+}
+
+class StoreByNameEvent extends GroceryEvent {
+  final user_address.UserAddress? getUserAddress;
+  final AskReceiveOrder? askReceiveOrder;
+  final String? name;
+
+  StoreByNameEvent({
+    required this.getUserAddress,
+    this.askReceiveOrder,
+    this.name,
+  });
+}
+
+class StoreVerifyEvent extends GroceryEvent {
+  final String? id;
+  final user_address.UserAddress? getUserAddress;
+  final AskReceiveOrder? askReceiveOrder;
+  final Function(CategorieModel? categories)? onVerify;
+  final Function()? notVerify;
+
+  StoreVerifyEvent({
+    this.id,
+    required this.getUserAddress,
+    this.askReceiveOrder,
+    this.onVerify,
+    this.notVerify,
   });
 }
 
@@ -126,7 +165,7 @@ class CreateOrderEvent extends GroceryEvent {
 
 class CreateMultipleOrderEvent extends GroceryEvent {
   final List<CreateOrderGroceryItems> data;
-  final userAddress.UserAddress? address;
+  final user_address.UserAddress? address;
   final int? askReceiveOrder;
   final List<Cart> selectedStoreProductList;
   List<GroceryDetails>? edgesList;
@@ -159,3 +198,29 @@ class CreateCheckoutEvent extends GroceryEvent {
 /// Get Delivery Status ==============================================================================
 
 class GetDeliveryStatusEvent extends GroceryEvent {}
+
+class StoreCategorieEvent extends GroceryEvent {
+  final user_address.UserAddress? address;
+  final String? storeId;
+  final int? askReceiveOrder;
+
+  StoreCategorieEvent({
+    required this.address,
+    required this.storeId,
+    required this.askReceiveOrder,
+  });
+}
+
+class StoreSubCategorieEvent extends GroceryEvent {
+  final user_address.UserAddress? address;
+  final String? storeId;
+  final int? askReceiveOrder;
+  final String? subcategoryId;
+
+  StoreSubCategorieEvent({
+    required this.address,
+    required this.storeId,
+    required this.askReceiveOrder,
+    required this.subcategoryId,
+  });
+}

@@ -40,13 +40,20 @@ class GoogleMapSearchRepository {
 
   Future<Either<ErrorModel, FindAddressResponseModel>> findAddressURL(
       {String? lat, String? lng}) async {
-    final response =
-        await apiServices.get(ApiUrls.findAddressURL(lat: lat, lng: lng));
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          FindAddressResponseModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    try {
+      final response =
+          await apiServices.get(ApiUrls.findAddressURL(lat: lat, lng: lng));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            FindAddressResponseModel.fromJson(jsonDecode(response.body)));
+      } else {
+        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      }
+    } catch (e) {
+      return Left(ErrorModel(
+        errorMessage: "unable to find address",
+        success: false,
+      ));
     }
   }
 }

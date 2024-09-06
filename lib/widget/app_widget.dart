@@ -97,7 +97,8 @@ Widget commonTextField(
     required BuildContext context,
     TextInputType? textInputType,
     void Function(String)? onChanged,
-    bool? isWeight = false}) {
+    bool? isWeight = false,
+    bool readOnly = false}) {
   return SizedBox(
     height: 48.h,
     child: TextFormField(
@@ -112,6 +113,7 @@ Widget commonTextField(
               : true
           : false,
       keyboardType: textInputType,
+      readOnly: readOnly,
       onChanged: onChanged,
       maxLength: maxLength ?? 10000,
       decoration: InputDecoration(
@@ -142,9 +144,9 @@ Widget commonTextField(
             ? InkWell(
                 onTap: onTap,
                 child: Icon(
-                  isPassword ? Icons.visibility_off : Icons.visibility,
-                  size: 18.sp,
-                ))
+                    isPassword ? Icons.visibility : Icons.visibility_off,
+                    size: 25,
+                    color: const Color(0xFF004C63)))
             : null,
       ),
     ),
@@ -242,6 +244,7 @@ Widget commonSearchTextField({
   required Color fontColor,
   required TextInputType textInputType,
   required Function(String value) onChange,
+  bool isDense = false,
   required Function() onClear,
 }) {
   return Container(
@@ -260,6 +263,7 @@ Widget commonSearchTextField({
       ],
     ),
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SvgImage(
           image: AssetsUtils.icSearch,
@@ -277,12 +281,14 @@ Widget commonSearchTextField({
               onChange(value);
             },
             decoration: InputDecoration(
+              isDense: isDense,
               filled: false,
               hintText: hintText,
               hintStyle: TextStyle(
-                  fontSize: fontSize.sp,
-                  fontWeight: FontWeight.w400,
-                  color: fontColor),
+                fontSize: fontSize.sp,
+                fontWeight: FontWeight.w400,
+                color: fontColor,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Colors.transparent),
@@ -318,11 +324,15 @@ Widget commonSearchTextField({
   );
 }
 
-showToast(
-    {required String message,
-    required bool isSuccess,
-    Color? color,
-    int? timeInSecForIosWeb}) {
+showToast({
+  required String message,
+  required bool isSuccess,
+  Color? color,
+  int? timeInSecForIosWeb,
+}) {
+  if (message.trim().isEmpty) {
+    return;
+  }
   if (isSuccess) {
     Fluttertoast.showToast(
       msg: message,

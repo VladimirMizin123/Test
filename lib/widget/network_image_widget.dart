@@ -10,11 +10,13 @@ class NetworkImageWidget extends StatelessWidget {
   const NetworkImageWidget({
     super.key,
     required this.url,
+    this.placeholder,
     this.height,
     this.width,
     this.fit,
   });
   final String url;
+  final String? placeholder;
   final double? height;
   final double? width;
   final BoxFit? fit;
@@ -26,14 +28,27 @@ class NetworkImageWidget extends StatelessWidget {
       height: height,
       width: width,
       fit: fit ?? BoxFit.contain,
-      errorWidget: (context, url, error) => SvgPicture.asset(
-        AssetsUtils.gymEatsLogoRound,
-        color: AppColors.green,
-      ),
+      cacheKey: url,
+      errorWidget: (context, url, error) => placeholder != null
+          ? placeholder!.contains("svg")
+              ? SvgPicture.asset(
+                  placeholder!,
+                  color: AppColors.green,
+                )
+              : Image.asset(
+                  placeholder!,
+                  height: height,
+                  width: width,
+                )
+          : SvgPicture.asset(
+              AssetsUtils.gymEatsLogoRound,
+              color: AppColors.green,
+            ),
       placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(
-        color: AppColors.lightGrey,
-      )),
+        child: CircularProgressIndicator(
+          color: AppColors.lightGrey,
+        ),
+      ),
     );
   }
 }
