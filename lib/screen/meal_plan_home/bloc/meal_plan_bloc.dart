@@ -6,7 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
-
+import 'package:gymeats_mobile/service/api_urls.dart';
 import '../../../repository/get_grocery_details.dart';
 import '../../../widget/app_widget.dart';
 
@@ -228,13 +228,19 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
     try {
       final response = await _repository.addUserRestriction(
           restrictionList: event.edgeRestrictionList ?? []);
-      response.fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
+      if (response.isLeft) {
+        onFailError(emit: emit, text: response.left.errorMessage ?? "");
         emit(AddRestrictionErrorState());
-      }, (right) {
-        showToast(isSuccess: false, message: right.message);
-        emit(AddRestrictionSuccessState(data: right.data));
-      });
+      } else {
+        showToast(isSuccess: false, message: response.right.message);
+        try {
+          await _repository.apiServices
+              .get(ApiUrls.addIngredientsToUserGroceryList);
+        } catch (e) {
+          log(e.toString());
+        }
+        emit(AddRestrictionSuccessState(data: response.right.data));
+      }
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(AddRestrictionErrorState());

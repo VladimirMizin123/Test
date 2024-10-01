@@ -18,6 +18,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen
 
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
 class RestaurantMealDetails extends StatefulWidget {
   const RestaurantMealDetails({
@@ -27,6 +28,7 @@ class RestaurantMealDetails extends StatefulWidget {
     this.shoppingListData,
     required this.cartCount,
     required this.pickUp,
+    this.quote,
     this.matchMealStatus,
     this.onCustomizationChange,
   });
@@ -37,6 +39,7 @@ class RestaurantMealDetails extends StatefulWidget {
   final int cartCount;
   final int? matchMealStatus;
   final bool pickUp;
+  final qu.Quote? quote;
   final Function(List<Customization>)? onCustomizationChange;
 
   @override
@@ -124,7 +127,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                             1 => "Partly matches with your Meal Plan",
                             _ => "Doesn’t match with your Meal Plan",
                           },
-                          style:const TextStyle(
+                          style: const TextStyle(
                             color: Color(0xff5F5F5F),
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -431,6 +434,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                         widget.restaurantId,
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
+                                                    quote: widget.quote,
                                                     onCustomizationChange:
                                                         (p0) => widget
                                                             .onCustomizationChange
@@ -447,6 +451,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                         widget.shoppingListData,
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
+                                                    quote: widget.quote,
                                                     onCustomizationChange:
                                                         (p0) => widget
                                                             .onCustomizationChange

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,7 +25,9 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
 class RestaurantMenuScreen extends StatefulWidget {
   const RestaurantMenuScreen({
@@ -39,6 +42,7 @@ class RestaurantMenuScreen extends StatefulWidget {
     required this.bloc,
     this.menu,
     this.startedLoading = false,
+    this.quote,
   });
   final String? restaurantName;
   final String restaurantId;
@@ -50,6 +54,7 @@ class RestaurantMenuScreen extends StatefulWidget {
   final RestaurantMenu? menu;
   final RestaurantBloc bloc;
   final bool startedLoading;
+  final qu.Quote? quote;
 
   @override
   State<RestaurantMenuScreen> createState() => _RestaurantMenuScreenState();
@@ -65,6 +70,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   int select = 0;
   int cartCount = 0;
+  bool dialogOpen = false;
 
   // RestaurantBloc restaurantBloc = RestaurantBloc();
   bool loading = false;
@@ -82,6 +88,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   List<String> mealPlanId = [];
   List<MealData> mealInfo = [];
+  final GlobalKey _alertKey = GlobalKey();
 
   @override
   void initState() {
@@ -159,10 +166,6 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   loading = false;
                 }
 
-                if (state is MatchMealLoadingState) {
-                  loading = state.isLoading;
-                  setState(() {});
-                }
                 if (state is MatchMealState) {
                   int? index = restaurantMenu?.categories?.indexWhere(
                       (element) =>
@@ -682,6 +685,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     final size = MediaQuery.of(context).size;
     MenuItemList menuItem =
         restaurantMenu!.categories![select].menuItemList![index];
+    ShoppingListData? data = cartData
+        .firstWhereOrNull((element) => element.productId == menuItem.productId);
     return GestureDetector(
       onTap: () async {
         bool hasSameRestaurant = cartData.isEmpty ||
@@ -717,6 +722,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                       cartCount: cartCount,
                       pickUp: widget.pickup,
                       matchMealStatus: iCanEat ? status(menuItem) : null,
+                      quote: widget.quote,
                       onCustomizationChange: (p0) {
                         menuItem.customizations = p0;
                         setState(() {});
@@ -731,6 +737,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   cartCount: cartCount,
                   pickUp: widget.pickup,
                   matchMealStatus: iCanEat ? status(menuItem) : null,
+                  quote: widget.quote,
                   onCustomizationChange: (p0) {
                     menuItem.customizations = p0;
                     setState(() {});
@@ -836,6 +843,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     restaurantId: widget.restaurantId,
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
+                                    quote: widget.quote,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
                                       setState(() {});
@@ -850,6 +858,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     shoppingListData: selectedCartData,
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
+                                    quote: widget.quote,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
                                       setState(() {});
@@ -872,119 +881,125 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
           ),
           menuItem.cartQuantity == 0 || menuItem.cartQuantity == null
               ? const SizedBox()
-              : Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: size.height * 0.08,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          color: const Color(0xff004C63).withOpacity(0.08),
-                          offset: const Offset(0, 0),
-                          blurRadius: 18),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                          '\$${double.parse((menuItem.cartPrice / 100).toString()).toStringAsFixed(2)}',
-                          style: FontUtils.h18(
-                              fontColor: const Color(0xff010101),
-                              fontWeight: FWT.semiBold)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              : Builder(
+                  builder: (context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: size.height * 0.08,
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: const Color(0xff004C63).withOpacity(0.08),
+                              offset: const Offset(0, 0),
+                              blurRadius: 18),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              cartBloc.add(
-                                ChangeQty(
-                                  productID: menuItem.productId,
-                                  type: ModifyType.decrement,
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: size.height * 0.060,
-                              width: size.height * 0.060,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border:
-                                      Border.all(color: AppColors.terracotta)),
-                              child: Center(
-                                child: menuItem.isRemoveUpdated == true
-                                    ? Transform.scale(
-                                        scale: 0.5,
-                                        child: const CircularProgressIndicator(
-                                          color: AppColors.terracotta,
-                                        ),
-                                      )
-                                    : menuItem.cartQuantity == 1
-                                        ? SvgPicture.asset(
-                                            AssetsUtils.icDelete,
-                                            color: AppColors.terracotta,
+                          Text(
+                              '\$${double.parse(((data?.price ?? 0) / 100).toString()).toStringAsFixed(2)}',
+                              style: FontUtils.h18(
+                                  fontColor: const Color(0xff010101),
+                                  fontWeight: FWT.semiBold)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  cartBloc.add(
+                                    ChangeQty(
+                                      productID: menuItem.productId,
+                                      type: ModifyType.decrement,
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: size.height * 0.060,
+                                  width: size.height * 0.060,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                          color: AppColors.terracotta)),
+                                  child: Center(
+                                    child: menuItem.isRemoveUpdated == true
+                                        ? Transform.scale(
+                                            scale: 0.5,
+                                            child:
+                                                const CircularProgressIndicator(
+                                              color: AppColors.terracotta,
+                                            ),
                                           )
+                                        : menuItem.cartQuantity == 1
+                                            ? SvgPicture.asset(
+                                                AssetsUtils.icDelete,
+                                                color: AppColors.terracotta,
+                                              )
+                                            : const Icon(
+                                                Icons.remove,
+                                                color: AppColors.terracotta,
+                                              ),
+                                  ),
+                                  // child: const Center(child: Icon(Icons.remove, size: 27)),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Container(
+                                height: size.height * 0.060,
+                                width: size.height * 0.060,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: AppColors.disable),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Center(
+                                    child: Text(
+                                  '${menuItem.cartQuantity}',
+                                  style: FontUtils.h18(
+                                      fontWeight: FWT.semiBold,
+                                      fontColor: AppColors.darkGray),
+                                )),
+                              ),
+                              SizedBox(width: 8.w),
+                              GestureDetector(
+                                onTap: () {
+                                  cartBloc.add(
+                                    ChangeQty(
+                                      productID: menuItem.productId,
+                                      type: ModifyType.increment,
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: size.height * 0.060,
+                                  width: size.height * 0.060,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: AppColors.coral,
+                                  ),
+                                  child: Center(
+                                    child: menuItem.isAddUpdated == true
+                                        ? Transform.scale(
+                                            scale: 0.5,
+                                            child:
+                                                const CircularProgressIndicator(
+                                              color: AppColors.terracotta,
+                                            ))
                                         : const Icon(
-                                            Icons.remove,
+                                            Icons.add,
+                                            size: 27,
                                             color: AppColors.terracotta,
                                           ),
-                              ),
-                              // child: const Center(child: Icon(Icons.remove, size: 27)),
-                            ),
-                          ),
-                          SizedBox(width: 8.w),
-                          Container(
-                            height: size.height * 0.060,
-                            width: size.height * 0.060,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: AppColors.disable),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Center(
-                                child: Text(
-                              '${menuItem.cartQuantity}',
-                              style: FontUtils.h18(
-                                  fontWeight: FWT.semiBold,
-                                  fontColor: AppColors.darkGray),
-                            )),
-                          ),
-                          SizedBox(width: 8.w),
-                          GestureDetector(
-                            onTap: () {
-                              cartBloc.add(
-                                ChangeQty(
-                                  productID: menuItem.productId,
-                                  type: ModifyType.increment,
+                                  ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              height: size.height * 0.060,
-                              width: size.height * 0.060,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: AppColors.coral,
                               ),
-                              child: Center(
-                                child: menuItem.isAddUpdated == true
-                                    ? Transform.scale(
-                                        scale: 0.5,
-                                        child: const CircularProgressIndicator(
-                                          color: AppColors.terracotta,
-                                        ))
-                                    : const Icon(
-                                        Icons.add,
-                                        size: 27,
-                                        color: AppColors.terracotta,
-                                      ),
-                              ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
           Divider(
             endIndent: 20.w,
@@ -1010,16 +1025,121 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
 
   void _handleCanEat(String subId) {
     if (iCanEat && !mealPlanId.contains(subId) && restaurantMenu != null) {
+      iCanEat = false;
+      setState(() {});
+      openLoader();
       MealData? meal = mealInfo.firstWhereOrNull(
           (element) => element.meal == widget.mealType.toLowerCase());
-      mealPlanId.add(subId);
       widget.bloc.add(
         MealPlanMatchEvent(
           menu: restaurantMenu!,
           subcategoryId: subId,
           calories: meal?.calories,
+          onSuccess: () {
+            mealPlanId.add(subId);
+            if (_alertKey.currentContext != null) {
+              iCanEat = true;
+              setState(() {});
+              Navigator.of(context).pop();
+            }
+          },
+          onError: () {
+            if (_alertKey.currentContext != null) {
+              Navigator.of(context).pop();
+            }
+          },
         ),
       );
+    }
+  }
+
+  Future<void> openLoader() async {
+    try {
+      DateTime time = DateTime.now();
+
+      showGeneralDialog(
+        context: context,
+        pageBuilder: (_, __, ___) {
+          return Material(
+            key: _alertKey,
+            color: AppColors.transparentColor,
+            child: Align(
+              alignment: Alignment.center,
+              child: IntrinsicHeight(
+                child: Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 13),
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      height: 210,
+                      width: 250,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColors.black),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 60,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: StreamBuilder(
+                                stream: Stream.periodic(
+                                    const Duration(milliseconds: 500)),
+                                builder: (context, snapshot) {
+                                  int ml = DateTime.now()
+                                      .difference(time)
+                                      .inMilliseconds;
+                                  return Text(
+                                    ml > 4500
+                                        ? StringUtils.almostThere
+                                        : ml > 2500
+                                            ? StringUtils.checkingAllergies
+                                            : ml > 1500
+                                                ? StringUtils
+                                                    .gatheringIngredients
+                                                : StringUtils
+                                                    .calculatingMealCalories,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.black,
+                                      fontFamily: "Avenir",
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: AppCenterLoader(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 12,
+                      child: IconButton(
+                        onPressed: () => Get.back(result: false),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      log(e.toString());
     }
   }
 

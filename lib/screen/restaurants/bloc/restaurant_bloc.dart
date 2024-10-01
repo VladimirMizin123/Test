@@ -95,43 +95,36 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             position: pos,
           )
           .then((value) => menuRes = value);
-      List<Either<ErrorModel, Object>> value = await Future.wait(
-        [
-          _repository.checkAvailableStore(
-            storeType: 'restaurant',
-            latitude: latitude,
-            longitude: longitude,
-            pickup: event.pickup,
-            storeId: event.id ?? "",
-            position: pos,
-          ),
-        ],
+      Either<ErrorModel, CheckStoreModel> value =
+          await _repository.checkAvailableStore(
+        storeType: 'restaurant',
+        latitude: latitude,
+        longitude: longitude,
+        pickup: event.pickup,
+        storeId: event.id ?? "",
+        position: pos,
       );
 
-      Either<ErrorModel, CheckStoreModel> storeRes =
-          value[0] as Either<ErrorModel, CheckStoreModel>;
-
       emit(VerifyRestaurantLoader(id: null));
-
       await Future.delayed(const Duration(milliseconds: 200));
-      if (storeRes.isLeft) {
-        if (storeRes.left.errorMessage != null) {
-          showToast(
-              isSuccess: false, message: storeRes.right.errorMessage ?? "");
+      if (value.isLeft) {
+        if (value.left.errorMessage != null) {
+          showToast(isSuccess: false, message: value.right.errorMessage ?? "");
         } else {
           showToast(
               isSuccess: false, message: StringUtils.restaurantNotAvailable);
         }
         event.notVerify?.call();
       } else {
-        if ((storeRes.right.success ?? false) &&
-            (storeRes.right.data?.quote?.asapAvailable ?? false)) {
+        if ((value.right.success ?? false) &&
+            (value.right.data?.quote?.asapAvailable ?? false)) {
           event.onVerify?.call(
-              (menuRes?.isRight ?? false) ? (menuRes?.right.data) : null);
+              (menuRes?.isRight ?? false) ? (menuRes?.right.data) : null,
+              value.right.data?.quote);
         } else {
-          if (storeRes.right.errorMessage != null) {
+          if (value.right.errorMessage != null) {
             showToast(
-                isSuccess: false, message: storeRes.right.errorMessage ?? "");
+                isSuccess: false, message: value.right.errorMessage ?? "");
           } else {
             showToast(
                 isSuccess: false, message: StringUtils.restaurantNotAvailable);
@@ -140,6 +133,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         }
       }
     } catch (e) {
+      event.notVerify?.call();
       emit(VerifyRestaurantLoader(id: null));
       showToast(isSuccess: false, message: StringUtils.restaurantNotAvailable);
     }
@@ -217,8 +211,10 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       Category? category = categories.firstWhereOrNull(
           (element) => element.subcategoryId == event.subcategoryId);
       Map<String, dynamic> req = {
-        "restrictions": PreferenceUtils.getStringList(getUserRestriction),
-        "allergies": PreferenceUtils.getStringList(getUserAllergies),
+        // "restrictions": PreferenceUtils.getStringList(getUserRestriction),
+        // "allergies": PreferenceUtils.getStringList(getUserAllergies),
+        "restrictions": [],
+        "allergies": [],
         "calories": event.calories ?? 0.0,
         "Categorie": category?.name,
         "restaurantMenu":
@@ -228,13 +224,24 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       log(jsonEncode(req));
       var res =
           await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
+      log("Response : ${res.body}");
       if (res.statusCode == 200) {
         var resData = jsonDecode(res.body);
         List<MenuItemList> updatedList = List<MenuItemList>.from(
             resData["data"]?.map((x) => MenuItemList.fromJson(x)) ?? []);
         log("Pass Record : ${category?.menuItemList?.length} Found Match Record : ${updatedList.length}");
+        event.onSuccess?.call();
         emit(MatchMealState(
             subCategoryId: event.subcategoryId, updatedList: updatedList));
+      } else {
+        event.onError?.call();
+        dynamic data = jsonDecode(res.body);
+        if (data != null) {
+          String message = data?["errorMessage"].toString() ?? "";
+          if (message.trim().isNotEmpty) {
+            showToast(isSuccess: false, message: message);
+          }
+        }
       }
     } catch (e) {
       log(e.toString());
@@ -316,7 +323,20 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       await _repository
           .createOrder(createOrderModel: event.createOrderModel)
           .fold((left) async {
-        onFailError(emit: emit, text: left.errorMessage ?? "");
+        log("Error Json : ${left.toJson()} :${left.statusCode}");
+        if (left.statusCode != 500) {
+          showToast(
+              message: (left.errorMessage?.trim().isNotEmpty ?? false)
+                  ? (left.errorMessage ?? "")
+                  : (left.message ?? ""),
+              isSuccess: false);
+        }
+
+        onFailError(
+            emit: emit,
+            text: (left.errorMessage?.trim().isNotEmpty ?? false)
+                ? (left.errorMessage ?? "")
+                : (left.message ?? ""));
         if (left.statusCode == 500) {
           dynamic result = await showModalBottomSheet(
             context: event.context,

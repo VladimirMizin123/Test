@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
@@ -229,10 +230,11 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
       JournalSearchEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(JournalSearchLoadingState());
     try {
+      (double?, double?) pos = await Constant.i.position;
       await _repository
           .grocerySearch(
-              latitude: '37.7786357',
-              longitude: '-122.3918135',
+              latitude: '${pos.$1 ?? (event.getUserAddress?.latitude ?? 0)}',
+              longitude: '${pos.$2 ?? (event.getUserAddress?.longitude ?? 0)}',
               grocerySearchModal: event.journalSearchModelList!,
               getUserAddress: event.getUserAddress)
           .fold((left) {

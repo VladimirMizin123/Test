@@ -29,6 +29,7 @@ class _SettingScreenState extends State<SettingScreen> {
       "image1": AssetsUtils.forwardArrow,
       "screen": const ChangePasswordScreen(),
     },
+
     {
       "image": AssetsUtils.unit,
       "title": "Units",

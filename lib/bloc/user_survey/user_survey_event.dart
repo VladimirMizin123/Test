@@ -8,6 +8,11 @@ class GetAllRestrictionEvent extends UserSurveyEvent {}
 
 class GetDietPlanEvent extends UserSurveyEvent {}
 
+class EditDietPlanEvent extends UserSurveyEvent {
+  String dietId;
+  EditDietPlanEvent({required this.dietId});
+}
+
 class CheckSurveyData extends UserSurveyEvent {
   int index;
   CheckSurveyData({required this.index});

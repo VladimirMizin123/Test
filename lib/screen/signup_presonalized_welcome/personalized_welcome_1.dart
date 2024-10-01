@@ -8,8 +8,13 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class FirstPersonalizedWelcomeScreen extends StatelessWidget {
-  const FirstPersonalizedWelcomeScreen({super.key, this.gender = 'Male'});
+  const FirstPersonalizedWelcomeScreen({
+    super.key,
+    this.gender = 'Male',
+    this.isReady = true,
+  });
   final String gender;
+  final bool isReady;
 
   final routeName = '/FirstPersonalizedWelcome';
 
@@ -17,6 +22,7 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    String btnText = isReady ? StringUtils.iAmReady : "Loading...";
 
     return Scaffold(
       body: Container(
@@ -64,11 +70,13 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                     context: context,
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
-                      Get.toNamed('/AppManagerScreen',
-                          arguments: gender, preventDuplicates: false);
+                      if (isReady) {
+                        Get.toNamed('/AppManagerScreen',
+                            arguments: gender, preventDuplicates: false);
+                      }
                     },
                     textColor: AppColors.skyBlue,
-                    title: StringUtils.iAmReady,
+                    title: btnText,
                     hasImage: false,
                   ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                 ],
@@ -104,11 +112,13 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                         context: context,
                         bgColor: AppColors.terracotta,
                         onPressed: () {
-                          Get.toNamed('/AppManagerScreen',
-                              arguments: gender, preventDuplicates: false);
+                          if (isReady) {
+                            Get.toNamed('/AppManagerScreen',
+                                arguments: gender, preventDuplicates: false);
+                          }
                         },
                         textColor: AppColors.coral,
-                        title: StringUtils.iAmReady,
+                        title: btnText,
                         hasImage: false,
                       ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                     ],
@@ -148,11 +158,14 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                             context: context,
                             bgColor: AppColors.green,
                             onPressed: () {
-                              Get.toNamed('/AppManagerScreen',
-                                  arguments: gender, preventDuplicates: false);
+                              if (isReady) {
+                                Get.toNamed('/AppManagerScreen',
+                                    arguments: gender,
+                                    preventDuplicates: false);
+                              }
                             },
                             textColor: AppColors.mint,
-                            title: StringUtils.iAmReady,
+                            title: btnText,
                             hasImage: false,
                           ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                         ],
@@ -191,11 +204,14 @@ class FirstPersonalizedWelcomeScreen extends StatelessWidget {
                             context: context,
                             bgColor: AppColors.green,
                             onPressed: () {
-                              Get.toNamed('/AppManagerScreen',
-                                  arguments: gender, preventDuplicates: false);
+                              if (isReady) {
+                                Get.toNamed('/AppManagerScreen',
+                                    arguments: gender,
+                                    preventDuplicates: false);
+                              }
                             },
                             textColor: AppColors.mint,
-                            title: StringUtils.iAmReady,
+                            title: btnText,
                             hasImage: false,
                           ).paddingOnly(bottom: 20.h, right: 20.w, left: 20.w),
                         ],

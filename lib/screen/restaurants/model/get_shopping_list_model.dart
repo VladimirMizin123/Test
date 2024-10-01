@@ -61,6 +61,8 @@ class ShoppingListData {
   List<Option>? options;
   bool isRemoveUpdated;
   bool isAddUpdated;
+  num? orderMin;
+  num? orderMax;
 
   ShoppingListData({
     this.id,
@@ -79,6 +81,8 @@ class ShoppingListData {
     this.options,
     this.isAddUpdated = false,
     this.isRemoveUpdated = false,
+    this.orderMin,
+    this.orderMax,
   });
 
   factory ShoppingListData.fromJson(Map<String, dynamic> json) =>
@@ -98,8 +102,11 @@ class ShoppingListData {
         productType: json["productType"],
         options: json["options"] == null
             ? []
-            : List<Option>.from(
-                json["options"]!.map((x) => Option.fromJson(x))),
+            : List<Option>.from(json["options"]!.map(
+                (x) => Option.fromJson(x),
+              )),
+        orderMax: json["orderMax"],
+        orderMin: json["orderMin"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -116,6 +123,8 @@ class ShoppingListData {
         "isChecked": isChecked,
         "brandName": brandName,
         "productType": productType,
+        "orderMax": orderMax,
+        "orderMin": orderMin,
         "options": options == null
             ? []
             : List<dynamic>.from(options!.map((x) => x.toJson())),

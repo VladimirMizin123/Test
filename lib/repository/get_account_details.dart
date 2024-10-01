@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -79,12 +80,20 @@ class AccountRepository {
 
   Future<Either<ErrorModel, UpdateDietProgramResponseModel>>
       updateDietProgramInfo({String programId = "", String dietId = ""}) async {
+    Map<String, dynamic> req = {
+      "userId": userId,
+    };
+    if (programId == "") {
+      req["dietId"] = dietId;
+    } else {
+      req["programId"] = programId;
+    }
+
     String data = programId == "" ? "dietId=$dietId" : "programId=$programId";
-    print(
-        "URL:----------> ${ApiUrls.updateDietProgramByProgramId}$userID?$data");
+    log("URL:----------> ${ApiUrls.updateDietProgramByProgramId}$userID?$data");
     final response = await apiServices.put(
-      '${ApiUrls.updateDietProgramByProgramId}$userID?$data',
-      {},
+      ApiUrls.updateDietProgramByProgramId,
+      req,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

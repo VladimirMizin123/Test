@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,10 +10,10 @@ import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
 import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import '../../app/functions.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_bloc.dart';
 import '../../bloc/user_sign_up_info/user_sign_up_info_event.dart';
-import '../../bloc/user_sign_up_info/user_sign_up_info_state.dart';
 import '../../constant/app_TextStyle.dart';
 import '../../constant/asset_utils.dart';
 import '../../constant/color_utils.dart';
@@ -35,6 +37,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
   HomeScreenController homeScreenController = Get.find<HomeScreenController>();
 
   PageController pageController = PageController();
+  final GlobalKey _alertKey = GlobalKey();
   int currentPage = 0;
   int itemsPerPage = 4;
 
@@ -328,48 +331,50 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                       ),
                       SizedBox(width: 10.w),
                       Expanded(
-                        child: state is SignUpLoadingState
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : buildButton(
-                                    context: context,
-                                    onPressed: () async {
-                                      UserSignUpDataModel userSignUpDataModel =
-                                          UserSignUpDataModel(
-                                        firstName: model.firstName,
-                                        lastName: model.lastName,
-                                        email: model.email,
-                                        password: model.password,
-                                        userName: model.userName,
-                                        confirmPassword: model.confirmPassword,
-                                        phoneNumber: model.phoneNumber,
-                                        gender: model.gender,
-                                        age: model.age,
-                                        height: model.height,
-                                        weight: model.weight,
-                                        dietId: model.dietId,
-                                        surveyId: model.surveyId,
-                                        userProfileImage:
-                                            model.userProfileImage,
-                                        latitude: model
-                                            .addAddressModel?.latitude
-                                            .toString(),
-                                        longitude: model
-                                            .addAddressModel?.longitude
-                                            .toString(),
-                                        restrictionID: model.restrictionID,
-                                        addAddressModel: model.addAddressModel,
-                                        userId: model.userId,
-                                        surveyReq: model.surveyReq,
-                                      );
-                                      bloc.add(SignUpApiEvent(
-                                          model: userSignUpDataModel));
-                                    },
-                                    textColor: Colors.white,
-                                    bgColor: setColor(gender: model.gender!),
-                                    title: StringUtils.next)
-                                .paddingOnly(top: 25.h),
+                        child: buildButton(
+                                context: context,
+                                onPressed: () async {
+                                  openLoader();
+                                  UserSignUpDataModel userSignUpDataModel =
+                                      UserSignUpDataModel(
+                                    firstName: model.firstName,
+                                    lastName: model.lastName,
+                                    email: model.email,
+                                    password: model.password,
+                                    userName: model.userName,
+                                    confirmPassword: model.confirmPassword,
+                                    phoneNumber: model.phoneNumber,
+                                    gender: model.gender,
+                                    age: model.age,
+                                    height: model.height,
+                                    weight: model.weight,
+                                    dietId: model.dietId,
+                                    surveyId: model.surveyId,
+                                    userProfileImage: model.userProfileImage,
+                                    latitude: model.addAddressModel?.latitude
+                                        .toString(),
+                                    longitude: model.addAddressModel?.longitude
+                                        .toString(),
+                                    restrictionID: model.restrictionID,
+                                    addAddressModel: model.addAddressModel,
+                                    userId: model.userId,
+                                    surveyReq: model.surveyReq,
+                                  );
+                                  bloc.add(
+                                    SignUpApiEvent(
+                                      model: userSignUpDataModel,
+                                      onComplete: () {
+                                        if (_alertKey.currentContext != null) {
+                                          Get.back();
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                                textColor: Colors.white,
+                                bgColor: setColor(gender: model.gender!),
+                                title: StringUtils.next)
+                            .paddingOnly(top: 25.h),
                       ),
                     ],
                   )
@@ -382,5 +387,84 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> openLoader() async {
+    try {
+      DateTime time = DateTime.now();
+
+      showGeneralDialog(
+        context: context,
+        pageBuilder: (_, __, ___) {
+          return Material(
+            key: _alertKey,
+            color: AppColors.transparentColor,
+            child: Align(
+              alignment: Alignment.center,
+              child: IntrinsicHeight(
+                child: Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 13),
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      height: 200,
+                      width: 270,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColors.black),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 60,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: StreamBuilder(
+                                stream: Stream.periodic(
+                                    const Duration(milliseconds: 1000)),
+                                builder: (context, snapshot) {
+                                  int ml = DateTime.now()
+                                      .difference(time)
+                                      .inMilliseconds;
+                                  return Text(
+                                    ml > 8000
+                                        ? StringUtils.almostThere
+                                        : ml > 4000
+                                            ? StringUtils
+                                                .accountingForRestriction
+                                            : StringUtils.generatingNewMealPlan,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.black,
+                                      fontFamily: "Avenir",
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: AppCenterLoader(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

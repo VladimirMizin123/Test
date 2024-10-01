@@ -610,18 +610,25 @@ class GroceryRepository {
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateGroceryOrderModel createOrderModel}) async {
-    log(ApiUrls.createOrder);
-    log("Request Data : ${createOrderModel.toJson()}");
-    final response = await apiServices.post(
-      ApiUrls.createOrder,
-      createOrderModel,
-    );
-    log(response.body);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    try {
+      log(ApiUrls.createOrder);
+      log("Request Data : ${jsonEncode(createOrderModel.toJson())}");
+      final response = await apiServices.post(
+        ApiUrls.createOrder,
+        createOrderModel.toJson(),
+      );
+      log(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+      } else {
+        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      }
+    } catch (e) {
+      return Left(
+        ErrorModel(message: e.toString(), errorMessage: e.toString())
+          ..statusCode = 500,
+      );
     }
   }
 

@@ -124,6 +124,7 @@ Future<void> main() async {
       ));
     },
     (error, stack) {
+      log("Error Found : $error,${stack.toString()}");
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     },
   );

@@ -210,7 +210,8 @@ class RestaurantRepository {
       "pickup": pickup,
       "storeId": storeId,
     };
-
+    log("Api : ${ApiUrls.checkAvailableStore}");
+    log("Req Data : $data");
     final response =
         await apiServices.get(ApiUrls.checkAvailableStore, queryParams: data);
 
@@ -446,9 +447,11 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, SuccessModel>> createCheckout(
       {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
+    log("Create Check Out: ${ApiUrls.createCheckout}");
+    log("Req: ${jsonEncode(createCheckOutRequestModel.toJson())}");
     final response = await apiServices.post(
       ApiUrls.createCheckout,
-      createCheckOutRequestModel,
+      createCheckOutRequestModel.toJson(),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -543,6 +546,8 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, PaymentStatusModel>> checkPaymentStatus(
       {String? userId, String? orderId}) async {
+    log("Api : ${ApiUrls.checkPaymentStatus}");
+    log("Request Data :${jsonEncode({"userId": userId, "orderId": orderId})}");
     final response = await apiServices.get(
       ApiUrls.checkPaymentStatus,
       body: {"userId": userId, "orderId": orderId},
@@ -552,6 +557,7 @@ class RestaurantRepository {
       log(response.body.toString());
       return Right(PaymentStatusModel.fromJson(jsonDecode(response.body)));
     } else {
+      log("error  : ========== ==== ============ response : ${response.body.toString()}");
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

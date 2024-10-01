@@ -47,11 +47,11 @@ class RestaurantCard extends StatelessWidget {
             Expanded(
               flex: 6,
               child: logoPhotos.isEmpty
-                  ? Image.asset(AssetsUtils.restaurantGrocery, height: 90.h)
+                  ? Image.asset(AssetsUtils.icGenericLogo, height: 90.h)
                   : NetworkImageWidget(
                       url: logoPhotos[0],
                       height: 90.h,
-                      placeholder: AssetsUtils.restaurantGrocery,
+                      placeholder: AssetsUtils.icGenericLogo,
                     ),
             ),
             const SizedBox(width: 10),
@@ -119,12 +119,12 @@ class RestaurantCard extends StatelessWidget {
   }
 
   String getAddress(Address? address) {
-    List<String?> addresslist = [
+    List<String?> addressList = [
       address?.streetAddr,
       address?.city,
       address?.state
     ]..removeWhere((element) => element == null || element.trim().isEmpty);
 
-    return addresslist.join(" , ");
+    return addressList.join(" , ");
   }
 }

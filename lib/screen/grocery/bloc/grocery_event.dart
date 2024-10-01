@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:gymeats_mobile/models/get_grocery_item_list_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
@@ -151,10 +152,13 @@ class AddNewCustomMealEvent extends GroceryEvent {
 /// Create Order ==============================================================================
 
 class CreateOrderEvent extends GroceryEvent {
+  final BuildContext? context;
   final CreateGroceryOrderModel createGroceryOrderModel;
   final List<GroceryDetails>? orderId;
   final Function(CreateOrderData?)? onSuccess;
+
   CreateOrderEvent({
+    this.context,
     required this.createGroceryOrderModel,
     this.orderId,
     this.onSuccess,

@@ -166,7 +166,12 @@ class _AppManagerScreenState extends State<AppManagerScreen>
       case 2:
         return DashBoardScreen(isOrderComplete: widget.isOrderComplete);
       case 3:
-        return const RestaurantScreen();
+        return RestaurantScreen(
+          onBack: () {
+            selectedIndex = 2;
+            setState(() {});
+          },
+        );
       case 4:
         return const JournalScreen();
       default:

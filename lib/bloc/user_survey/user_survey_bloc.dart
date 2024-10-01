@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-
 import '../../models/get_survey_model.dart';
 import '../../repository/get_survey.dart';
 
@@ -17,6 +20,7 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
     on<NextPrevSurveyClick>(_onNextPrevSurveyClick);
     on<GetAllRestrictionEvent>(_onGetAllRestriction);
     on<GetDietPlanEvent>(_onGetDietPlan);
+    on<EditDietPlanEvent>(_onEditPlanEvent);
   }
 
   final GetSurveyRepository getSurveyRepository = GetSurveyRepository();
@@ -69,6 +73,32 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
       });
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
+    }
+  }
+
+  _onEditPlanEvent(
+      EditDietPlanEvent event, Emitter<UserSurveyState> emit) async {
+    try {
+      emit(UpdateDietLoading(isLoading: true));
+      log('${ApiUrls.updateProgram}?dietId=${event.dietId}');
+      dynamic response = await getSurveyRepository.apiServices
+          .put('${ApiUrls.updateProgram}?dietId=${event.dietId}', null);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await getSurveyRepository.apiServices
+            .get(ApiUrls.addIngredientsToUserGroceryList);
+        showToast(message: "Program updated successfully!", isSuccess: true);
+        if (Get.currentRoute.contains("EditDietScreen")) {
+          Get.offAll(() => const AppManagerScreen(selectIndex: 2));
+        }
+      } else {
+        ErrorModel error = ErrorModel.fromJson(jsonDecode(response.body));
+        showToast(message: error.errorMessage ?? "", isSuccess: false);
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(UpdateDietLoading(isLoading: false));
     }
   }
 

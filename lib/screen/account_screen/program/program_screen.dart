@@ -11,6 +11,7 @@ import 'package:gymeats_mobile/screen/account_screen/all_programs/all_program_sc
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/screen/account_screen/edit_diet/edit_diet_screen.dart';
 import 'package:gymeats_mobile/screen/user_survey/user_survey_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 import '../account/account_scrren_widget.dart';
@@ -29,6 +30,13 @@ class _ProgramScreenState extends State<ProgramScreen> {
       "title": "Retake Assessment",
       "color": AppColors.disable,
       "screen": const UserSurveyScreen(isProfile: true),
+    },
+    {
+      "image": AssetsUtils.pencil,
+      "title": "Change Diet Type",
+      "color": AppColors.disable,
+      "image1": AssetsUtils.forwardArrow,
+      "screen": const EditDietScreen(),
     },
     {
       "image": AssetsUtils.globalIcn,
@@ -159,6 +167,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
                                       UserSignUpDataModel();
                                   await Get.to(data["screen"],
                                       arguments: userSignUpDataModel);
+
                                   accountBloc.add(GetCurrentProgramEvent());
                                 } else {
                                   await Get.to(data["screen"]);

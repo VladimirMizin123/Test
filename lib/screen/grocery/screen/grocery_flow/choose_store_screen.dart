@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,39 +86,45 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
     kmRadius.value = PreferenceUtils.getGroceryRadius();
 
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
-      Geolocator.requestPermission().then((value) {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) {
-            return DeliverOrderBottomSheet(
-              selectedIndex: selectedIndex,
-              isFrom: 'isFromRestaurant',
-            );
-          },
-          isDismissible: false,
-          enableDrag: false,
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16.r),
-              topRight: Radius.circular(16.r),
+      try {
+        Geolocator.requestPermission().then((value) {
+          if (!mounted) return;
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return DeliverOrderBottomSheet(
+                selectedIndex: selectedIndex,
+                isFrom: 'isFromRestaurant',
+              );
+            },
+            isDismissible: false,
+            enableDrag: false,
+            shape: OutlineInputBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16.r),
+                topRight: Radius.circular(16.r),
+              ),
+              borderSide: const BorderSide(
+                color: Colors.transparent,
+              ),
             ),
-            borderSide: const BorderSide(
-              color: Colors.transparent,
-            ),
-          ),
-        ).then((value) {
-          selectedIndex = value == 'Bring me the order' ? 0 : 1;
-          if (selectedIndex == 0) {
-            prefKey = groceryBring;
-          } else {
-            prefKey = groceryPickup;
-          }
-          getCacheResponse();
-          restaurantBloc.add(re.GetUserAddressEvent());
-          addNewGroceryItemBloc.add(GetGroceryItemEvent());
+          ).then((value) {
+            if (!mounted) return;
+            selectedIndex = value == 'Bring me the order' ? 0 : 1;
+            if (selectedIndex == 0) {
+              prefKey = groceryBring;
+            } else {
+              prefKey = groceryPickup;
+            }
+            getCacheResponse();
+            restaurantBloc.add(re.GetUserAddressEvent());
+            addNewGroceryItemBloc.add(GetGroceryItemEvent());
+          });
         });
-      });
+      } catch (e) {
+        log(e.toString());
+      }
     });
   }
 
@@ -126,6 +133,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
     if (value.trim().isNotEmpty) {
       alreadyCache = true;
       storeList = storeListFromJson(value);
+      if (!mounted) return;
       setState(() {});
     }
   }
@@ -160,11 +168,13 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
 
           if (state is NearByStoreLoaderState) {
             pageLoader = state.isLoading;
+            if (!mounted) return;
             setState(() {});
           }
 
           if (state is VerifyLoader) {
             verifyLoaderId = state.id;
+            if (!mounted) return;
             setState(() {});
           }
         },
@@ -201,6 +211,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
               listener: (context, state) {
                 if (state is GetGroceryListSuccessState) {
                   groceryDetails = state.groceryDetails ?? [];
+                  if (!mounted) return;
                   setState(() {});
                 }
               },
@@ -234,6 +245,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                   onChange: (p0) {
                                     _debouncer.run(() {
                                       storeList = [];
+                                      if (!mounted) return;
                                       setState(() {});
                                       groceryBloc.add(
                                         StoreByNameEvent(
@@ -493,6 +505,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
             if (searchController.text.trim().isEmpty) {
               PreferenceUtils.setString(prefKey, jsonEncode(storeList));
             }
+            if (!mounted) return;
             setState(() {});
           },
           onVerify: (categorie) {

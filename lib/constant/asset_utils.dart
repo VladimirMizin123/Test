@@ -205,6 +205,7 @@ class AssetsUtils {
   /// Icons
 
   static const user = 'assets/icon/User.png';
+  static const icGenericLogo = 'assets/icon/ic_generic_logo.png';
   static const filter = 'assets/icon/filters.png';
   static const gymEatsLogo = "assets/icon/GymEatsLogo.png";
   static const arrowBack = "assets/icon/arrow_back.png";

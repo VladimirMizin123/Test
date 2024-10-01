@@ -263,6 +263,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     createCheckOutRequestModel:
                         checkout.CreateCheckOutRequestModel(
                       userId: userId,
+                      isPickUp: selectedIndex == 1,
                       phoneNumber: productData!.priceId!.userPhone,
                       mealmeOrderId: productData!.priceId!.mealmeOrderId,
                       priceId: productData!.priceId!.priceId,
@@ -324,7 +325,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           );
                           paymentStatusLoader = false;
                           if (res.isRight) {
-                            log(res.right.data?.status.toString() ?? "");
+                            log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
                             if (res.right.data?.status == "Success") {
                               if (widget.isFromGrocery) {
                                 final GroceryRepository repository =
@@ -1180,7 +1181,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 markedPrice:
                                                     element.markedPrice,
                                                 quantity: element.quantity,
-                                                productType: '1',
+                                                productType:
+                                                    widget.isFromGrocery
+                                                        ? '2'
+                                                        : '1',
                                                 productId: element.productId,
                                                 image: element.image,
                                                 basePrice: element.basePrice,
@@ -1263,10 +1267,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   e.products
                       ?.where((element) => element.isAddedToShoppingList)
                       .map(
-                        (e) => _orderCardWidget(
-                            e.cartItemCount, '${e.itemName}', e.price),
-                      )
-                      .toList() ??
+                    (e) {
+                      return _orderCardWidget(
+                          e.cartItemCount, '${e.itemName}', e.price);
+                    },
+                  ).toList() ??
                   [])
               .toList()
               .expand((element) => element)

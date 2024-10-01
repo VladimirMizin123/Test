@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gymeats_mobile/repository/get_account_details.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
@@ -46,6 +49,12 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(GetCurrentProgramLoadingState());
 
     try {
+      try {
+        await _repository.apiServices
+            .get(ApiUrls.addIngredientsToUserGroceryList);
+      } catch (e) {
+        log(e.toString());
+      }
       await _repository.getCurrentProgramData().fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
@@ -80,8 +89,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(UpdateDietProgramLoadingState());
 
     try {
-      await _repository.updateDietProgramInfo(programId: event.programId).fold(
-          (left) {
+      await _repository
+          .updateDietProgramInfo(
+        programId: event.programId,
+      )
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         emit(UpdateDietProgramSuccessState(message: right.message ?? ''));

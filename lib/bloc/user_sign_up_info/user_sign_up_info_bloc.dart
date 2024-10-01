@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
@@ -73,45 +74,25 @@ class UserSignUpInfoBloc
   _onSignUpApi(SignUpApiEvent event, Emitter<UserSignUpInfoState> emit) async {
     try {
       emit(SignUpLoadingState());
-      await _repository.signUp(model: event.model).fold((left) {
+      final response = await _repository.signUp(model: event.model);
+
+      if (response.isLeft) {
         showToast(
             isSuccess: false,
-            message: (left.message?.isNotEmpty ?? false)
-                ? left.message!
-                : (left.title ?? ""));
+            message: (response.left.message?.isNotEmpty ?? false)
+                ? response.left.message!
+                : (response.left.title ?? ""));
         emit(SignUpErrorState());
-      }, (right) async {
-        showToast(isSuccess: true, message: right.message!);
+      } else {
+        showToast(isSuccess: true, message: response.right.message!);
 
-        userID = right.data?.userId ?? '';
+        userID = response.right.data?.userId ?? '';
 
         await PreferenceUtils.setString(prefUserData, userID);
         await PreferenceUtils.setString(
             prefUserEmail, event.model.email?.trim() ?? "");
         await PreferenceUtils.setString(
             prefUserMobile, event.model.phoneNumber?.trim() ?? "");
-
-        // try {
-        //   await _addressRepository
-        //       .addAddress(
-        //     userId: userID,
-        //     state: 'Gujarat',
-        //     zipcode: event.model.addAddressModel?.zipcode ?? '',
-        //     longitude: event.model.addAddressModel?.longitude ?? 0,
-        //     streetName: event.model.addAddressModel?.streetName ?? '',
-        //     city: event.model.addAddressModel?.city ?? '',
-        //     streetNum: event.model.addAddressModel?.streetNum ?? '4',
-        //     addressType: event.model.addAddressModel?.addressType ?? '',
-        //     country: event.model.addAddressModel?.country ?? '',
-        //     isPrimary: true,
-        //     latitude: event.model.addAddressModel?.latitude ?? 0,
-        //   )
-        //       .fold((left) {
-        //     showToast(isSuccess: false, message: left.message!);
-        //   }, (right) async {});
-        // } catch (e) {
-        //   debugPrint('CATCH ERROR WHILE FETCH MEAL PLAN');
-        // }
 
         try {
           await _repository.fetchMealPlan(userID).fold((left) {
@@ -141,11 +122,12 @@ class UserSignUpInfoBloc
         } else {
           // Get.toNamed('/GenderScreen', arguments: event.model.gender);
         }
-
+        event.onComplete?.call();
         emit(SignUpSuccessState());
         Get.offAllNamed('/GenderScreen', arguments: event.model);
-      });
+      }
     } catch (e) {
+      event.onComplete?.call();
       showToast(isSuccess: false, message: e.toString());
       emit(SignUpErrorState());
     }

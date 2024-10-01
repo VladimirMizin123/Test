@@ -6,10 +6,37 @@ import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_w
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_4.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
 
-class RandomLoadingScreen extends StatelessWidget {
-  RandomLoadingScreen({super.key});
+class RandomLoadingScreen extends StatefulWidget {
+  const RandomLoadingScreen({super.key});
+
+  @override
+  State<RandomLoadingScreen> createState() => _RandomLoadingScreenState();
+}
+
+class _RandomLoadingScreenState extends State<RandomLoadingScreen> {
   final int randomNumber = Random().nextInt(3);
+  final ApiServices api = ApiServices();
+  RxBool isLoading = false.obs;
+
+  @override
+  void initState() {
+    setupIngredients();
+    super.initState();
+  }
+
+  Future<void> setupIngredients() async {
+    try {
+      isLoading.value = true;
+      await api.get(ApiUrls.addIngredientsToUserGroceryList);
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +45,25 @@ class RandomLoadingScreen extends StatelessWidget {
       gender = Get.arguments;
     }
 
-    return randomNumber == 0
-        ? FirstPersonalizedWelcomeScreen(
+    return Obx(
+      () => switch (randomNumber) {
+        0 => FirstPersonalizedWelcomeScreen(
             gender: gender.toString().capitalizeFirst ?? 'Male',
-          )
-        : randomNumber == 1
-            ? SecondPersonalizedWelcomeScreen(
-                gender: gender.toString().capitalizeFirst ?? 'Male',
-              )
-            : randomNumber == 2
-                ? ThirdPersonalizedWelcomeScreen(
-                    gender: gender.toString().capitalizeFirst ?? 'Male',
-                  )
-                : FourthPersonalizedWelcomeScreen(
-                    gender: gender.toString().capitalizeFirst ?? 'Male',
-                  );
+            isReady: !isLoading.value,
+          ),
+        1 => SecondPersonalizedWelcomeScreen(
+            gender: gender.toString().capitalizeFirst ?? 'Male',
+            isReady: !isLoading.value,
+          ),
+        2 => ThirdPersonalizedWelcomeScreen(
+            gender: gender.toString().capitalizeFirst ?? 'Male',
+            isReady: !isLoading.value,
+          ),
+        _ => FourthPersonalizedWelcomeScreen(
+            gender: gender.toString().capitalizeFirst ?? 'Male',
+            isReady: !isLoading.value,
+          ),
+      },
+    );
   }
 }

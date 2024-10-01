@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:either_dart/either.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -22,6 +23,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   GroceryBloc() : super(InitialState()) {
@@ -461,9 +463,32 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     try {
       await _repository
           .createOrder(createOrderModel: event.createGroceryOrderModel)
-          .fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        showToast(isSuccess: false, message: left.errorMessage ?? "");
+          .fold((left) async {
+        if (left.statusCode != 500) {
+          showToast(isSuccess: false, message: left.errorMessage ?? "");
+        }
+
+        if (left.statusCode == 500) {
+          dynamic result = await showModalBottomSheet(
+            context: event.context!,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            isScrollControlled: true,
+            builder: (context) => const ExtendedAddress(),
+          );
+          if (result != null) {
+            Map req = result as Map;
+            add(
+              CreateOrderEvent(
+                  createGroceryOrderModel: event.createGroceryOrderModel
+                    ..extendedAddress = req["extendedAddress"]),
+            );
+          }
+        }
 
         emit(CreateOrderErrorState());
       }, (right) async {

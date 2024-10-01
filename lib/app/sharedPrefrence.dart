@@ -49,9 +49,6 @@ const String restaurantCart = 'restaurantCart';
 
 const String understandDisclaimer = 'understandDisclaimer';
 
-const String getUserRestriction = 'getUserRestriction';
-const String getUserAllergies = 'getUserAllergies';
-
 class PreferenceUtils {
   static Future<SharedPreferences> get _instance async =>
       _prefsInstance ??= await SharedPreferences.getInstance();

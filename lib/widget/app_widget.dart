@@ -529,7 +529,7 @@ Widget mealPlanCard({
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(StringUtils.skipped,
+                              Text(StringUtils.eaten,
                                   style: FontUtils.h16(
                                       fontColor: AppColors.darkGray,
                                       fontWeight: FWT.regular)),

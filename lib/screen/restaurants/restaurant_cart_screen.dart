@@ -243,7 +243,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            '\$${cartData[index].price! / 100}',
+                                                            '\$${(cartData[index].price ?? 0) / 100}',
                                                             style:
                                                                 FontUtils.h18(
                                                               fontColor:
@@ -415,6 +415,28 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                                 .black);
                                                         return;
                                                       }
+
+                                                      if (cartData
+                                                          .any((element) {
+                                                        int pr =
+                                                            element.price ?? 0;
+                                                        return element
+                                                                    .orderMax !=
+                                                                null &&
+                                                            (pr <
+                                                                    element
+                                                                        .orderMin! ||
+                                                                pr >
+                                                                    element
+                                                                        .orderMax!);
+                                                      })) {
+                                                        showToast(
+                                                            message:
+                                                                "Your order amount not should be greater than \$${(cartData.first.orderMax ?? 0) / 100}",
+                                                            isSuccess: false);
+                                                        return;
+                                                      }
+
                                                       List<CreateOrderMealmeItems>
                                                           data = [];
 
@@ -436,7 +458,12 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             ),
                                                           );
                                                         }
-
+                                                        double
+                                                            productMarkedPrice =
+                                                            ((element.price ??
+                                                                    0) /
+                                                                (element.quantity ??
+                                                                    0));
                                                         data.add(
                                                           CreateOrderMealmeItems(
                                                             productId: element
@@ -445,8 +472,15 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             quantity: element
                                                                 .quantity,
                                                             notes: '',
-                                                            productMarkedPrice:
-                                                                element.price,
+                                                            // productMarkedPrice:
+                                                            //     element.price,
+                                                            productMarkedPrice: productMarkedPrice
+                                                                        .isNaN ||
+                                                                    productMarkedPrice
+                                                                        .isInfinite
+                                                                ? 0
+                                                                : productMarkedPrice
+                                                                    .toInt(),
                                                             selectedOptions:
                                                                 optionList,
                                                           ),

@@ -15,6 +15,8 @@ import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
@@ -1553,7 +1555,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                           ),
                                           SizedBox(height: 7.h),
                                           Row(
-                                            children: [
+                                            children: <Widget>[
                                               Expanded(
                                                   flex: 1,
                                                   child: myWidget(
@@ -1562,7 +1564,6 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                       title:
                                                           '${fetchModelData!.recipe!.totalTime}',
                                                       onTap: () {})),
-                                              const SizedBox(width: 10),
                                               Expanded(
                                                   flex: 1,
                                                   child: myWidget(
@@ -1571,16 +1572,17 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                       title:
                                                           '${fetchModelData!.recipe!.serving} Servings',
                                                       onTap: () {})),
-                                              const SizedBox(width: 10),
                                               Expanded(
-                                                  flex: 1,
-                                                  child: myWidget(
-                                                      imgURL: AssetsUtils
-                                                          .icIngredientsIcon,
-                                                      title:
-                                                          '${fetchModelData!.recipe!.ingredientsCount} Ingredients',
-                                                      onTap: () {})),
-                                            ],
+                                                flex: 1,
+                                                child: myWidget(
+                                                  imgURL: AssetsUtils
+                                                      .icIngredientsIcon,
+                                                  title:
+                                                      '${fetchModelData!.recipe!.ingredientsCount} Ingredients',
+                                                  onTap: () {},
+                                                ),
+                                              ),
+                                            ].addBetweenItems(5.width),
                                           ),
                                           SizedBox(height: 7.h),
                                           ListView.builder(
@@ -1696,13 +1698,15 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     );
   }
 
-  Widget myWidget(
-      {required String imgURL,
-      required String title,
-      required VoidCallback onTap}) {
+  Widget myWidget({
+    required String imgURL,
+    required String title,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+          height: 80,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: AppColors.whiteColor,
@@ -1715,12 +1719,24 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
             child: Column(
               children: [
-                SvgPicture.asset(imgURL),
-                const SizedBox(height: 10),
-                Text(title,
+                SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: SvgPicture.asset(imgURL, fit: BoxFit.scaleDown),
+                ),
+                FittedBox(
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                     style: FontUtils.h15(
-                        fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-              ],
+                      fontColor: AppColors.darkGray,
+                      fontWeight: FWT.medium,
+                    ),
+                  ),
+                ),
+              ].addBetweenItems(10.height),
             ),
           )),
     );

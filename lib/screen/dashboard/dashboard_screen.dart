@@ -99,7 +99,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       }
     }
     bloc.add(GenMealTrackerData());
-    bloc.add(GetAllergiesAndRestriction());
     mealPlanBloc.add(MealPlanFetchEvent());
     bloc.add(GetDashboardData());
 

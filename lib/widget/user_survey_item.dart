@@ -8,9 +8,15 @@ import 'package:gymeats_mobile/constant/app_TextStyle.dart';
 
 class UserSurveyItems extends StatelessWidget {
   final DataOption data;
+  final double scale;
   final Function() onClick;
 
-  const UserSurveyItems({super.key, required this.data, required this.onClick});
+  const UserSurveyItems({
+    super.key,
+    required this.data,
+    this.scale = 1.5,
+    required this.onClick,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,7 @@ class UserSurveyItems extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Transform.scale(
-          scale: 1.5,
+          scale: scale,
           child: Theme(
             data: ThemeData(
               unselectedWidgetColor: Theme.of(context).primaryColor,

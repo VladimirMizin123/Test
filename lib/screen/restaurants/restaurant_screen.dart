@@ -39,7 +39,11 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
 class RestaurantScreen extends StatefulWidget {
-  const RestaurantScreen({super.key});
+  const RestaurantScreen({
+    super.key,
+    this.onBack,
+  });
+  final Function()? onBack;
 
   @override
   State<RestaurantScreen> createState() => _RestaurantScreenState();
@@ -48,6 +52,7 @@ class RestaurantScreen extends StatefulWidget {
 class _RestaurantScreenState extends State<RestaurantScreen> {
   RxDouble kmRadius = 3.0.obs;
   RxBool showRadiusSlider = false.obs;
+  final GlobalKey _alertKey = GlobalKey();
 
   showBottomSheet() {
     showModalBottomSheet(
@@ -125,6 +130,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         ),
       ),
     ).then((value) {
+      if (value == null) {
+        widget.onBack?.call();
+        return;
+      }
       setState(() {
         if (value != null) {
           mealType = value;
@@ -276,7 +285,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         ),
                         10.height,
                         const Text(
-                          'The meals shown may not perfectly match your allergy preferences. To ensure safety, we strongly recommend that you customize your order by selecting from the available options.\n\nalways add details such as "no bread" or "no onions" in the "order notes" before confirming your order.',
+                          'The meals shown may not perfectly match your allergy preferences. To ensure safety, we strongly recommend that you customize your order by selecting from the available options.\n\nAlways add details such as "no bread" or "no onions" in the "order notes" before confirming your order.',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w400,
@@ -419,15 +428,66 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     if (state is VerifyRestaurantLoader) {
                       verifyLoaderId = state.id;
                       if (verifyLoaderId == null) {
-                        Get.back(canPop: true);
+                        if (_alertKey.currentContext != null) {
+                          Get.back(canPop: true);
+                        }
                       } else {
+                        DateTime time = DateTime.now();
                         showGeneralDialog(
                           barrierDismissible: false,
                           context: context,
+                          barrierColor: Colors.black54,
                           pageBuilder: (BuildContext context, _, __) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
+                            return Material(
+                              key: _alertKey,
+                              color: Colors.transparent,
+                              child: Center(
+                                child: Container(
+                                  width: context.width * 0.8,
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 300),
+                                  height: 160,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const CircularProgressIndicator(
+                                          color: AppColors.primaryBlue),
+                                      20.height,
+                                      StreamBuilder(
+                                        stream: Stream.periodic(
+                                            const Duration(milliseconds: 500)),
+                                        builder: (_, __) {
+                                          int ml = DateTime.now()
+                                              .difference(time)
+                                              .inMilliseconds;
+                                          return Text(
+                                            ml > 1500
+                                                ? StringUtils
+                                                    .organizingMenuItems
+                                                : StringUtils
+                                                    .fetchingYourDelicious,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: AppColors.black,
+                                              fontFamily: 'Avenir',
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -812,13 +872,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                           child: GestureDetector(
                                             onTap: () async {
                                               await Get.to(
-                                                  () => const GetUserAddress(),
-                                                  transition: Transition.fadeIn,
-                                                  arguments: {
-                                                    "string":
-                                                        'isFromRestaurant',
-                                                    "userData": ''
-                                                  });
+                                                () => const GetUserAddress(),
+                                                transition: Transition.fadeIn,
+                                                arguments: {
+                                                  "string": 'isFromRestaurant',
+                                                  "userData": ''
+                                                },
+                                              );
                                             },
                                             child: Row(
                                               mainAxisAlignment:
@@ -1517,28 +1577,28 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                     ],
                                                                                   ),
                                                                                 ),
-                                                                                result == 'I will pick it up myself'
-                                                                                    ? const SizedBox()
-                                                                                    : Row(
-                                                                                        children: [
-                                                                                          Image.asset(
-                                                                                            AssetsUtils.deliveryVehicle,
-                                                                                            width: 15,
-                                                                                            height: 15,
-                                                                                            color: AppColors.darkGray,
-                                                                                          ),
-                                                                                          const SizedBox(
-                                                                                            width: 8,
-                                                                                          ),
-                                                                                          Text(
-                                                                                            '\$ ${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
-                                                                                            style: FontUtils.h14(
-                                                                                              fontColor: AppColors.darkGray,
-                                                                                              fontWeight: FWT.lightMedium,
-                                                                                            ),
-                                                                                          )
-                                                                                        ],
-                                                                                      ),
+                                                                                // result == 'I will pick it up myself'
+                                                                                //     ? const SizedBox()
+                                                                                //     : Row(
+                                                                                //         children: [
+                                                                                //           Image.asset(
+                                                                                //             AssetsUtils.deliveryVehicle,
+                                                                                //             width: 15,
+                                                                                //             height: 15,
+                                                                                //             color: AppColors.darkGray,
+                                                                                //           ),
+                                                                                //           const SizedBox(
+                                                                                //             width: 8,
+                                                                                //           ),
+                                                                                //           Text(
+                                                                                //             '\$ ${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
+                                                                                //             style: FontUtils.h14(
+                                                                                //               fontColor: AppColors.darkGray,
+                                                                                //               fontWeight: FWT.lightMedium,
+                                                                                //             ),
+                                                                                //           )
+                                                                                //         ],
+                                                                                //       ),
                                                                               ],
                                                                             ),
                                                                           ),
@@ -1715,28 +1775,28 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                         ],
                                                                                       ),
                                                                                     ),
-                                                                                    result == 'I will pick it up myself'
-                                                                                        ? const SizedBox()
-                                                                                        : Row(
-                                                                                            children: [
-                                                                                              Image.asset(
-                                                                                                AssetsUtils.deliveryVehicle,
-                                                                                                width: 15,
-                                                                                                height: 15,
-                                                                                                color: AppColors.darkGray,
-                                                                                              ),
-                                                                                              const SizedBox(
-                                                                                                width: 8,
-                                                                                              ),
-                                                                                              Text(
-                                                                                                '\$ ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
-                                                                                                style: FontUtils.h14(
-                                                                                                  fontColor: AppColors.darkGray,
-                                                                                                  fontWeight: FWT.lightMedium,
-                                                                                                ),
-                                                                                              )
-                                                                                            ],
-                                                                                          ),
+                                                                                    // result == 'I will pick it up myself'
+                                                                                    //     ? const SizedBox()
+                                                                                    //     : Row(
+                                                                                    //         children: [
+                                                                                    //           Image.asset(
+                                                                                    //             AssetsUtils.deliveryVehicle,
+                                                                                    //             width: 15,
+                                                                                    //             height: 15,
+                                                                                    //             color: AppColors.darkGray,
+                                                                                    //           ),
+                                                                                    //           const SizedBox(
+                                                                                    //             width: 8,
+                                                                                    //           ),
+                                                                                    //           Text(
+                                                                                    //             '\$ ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
+                                                                                    //             style: FontUtils.h14(
+                                                                                    //               fontColor: AppColors.darkGray,
+                                                                                    //               fontWeight: FWT.lightMedium,
+                                                                                    //             ),
+                                                                                    //           )
+                                                                                    //         ],
+                                                                                    //       ),
                                                                                   ],
                                                                                 ),
                                                                               ),
@@ -1815,11 +1875,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         pickup: result == 'Bring me the order' ? false : true,
         id: res.id ?? "",
         mealType: mealType,
-        onVerify: (menu) {
+        onVerify: (menu, quote) {
           if (verifyLoaderId != null) {
             return;
           }
           log("Successfully found : ${menu?.toJson()}");
+
           Get.to(
             () => RestaurantMenuScreen(
               getUserAddress: getUserAddress,
@@ -1832,6 +1893,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               mealType: mealType,
               menu: menu,
               startedLoading: true,
+              quote: quote,
             ),
             transition: Transition.fadeIn,
           )?.then(

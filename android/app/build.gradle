@@ -1,10 +1,12 @@
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
+
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
         localProperties.load(reader)
     }
 }
+
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
@@ -12,9 +14,7 @@ if (flutterRoot == null) {
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
+flutterVersionCode = '2'
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
@@ -26,9 +26,15 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.gms.google-services'
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace "com.gymeats_mobile"
-    compileSdkVersion flutter.compileSdkVersion
+    namespace "com.gymeats.app.mobile"
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -46,7 +52,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.gymeats_mobile"
+        applicationId "com.gymeats.app.mobile"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23
@@ -55,23 +61,32 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def project = "GymEats_"
-            def date = new Date();
-            def formattedDate = date.format('dd_MMM')
-            def newApkName = project + formattedDate + ".apk"
-            outputFileName = new File(newApkName)
-        }
-    }
+    // applicationVariants.all { variant ->
+    //     variant.outputs.all { output ->
+    //         def project = "GymEats_"
+    //         def date = new Date();
+    //         def formattedDate = date.format('dd_MMM')
+    //         def newApkName = project + formattedDate + ".apk"
+    //         outputFileName = new File(newApkName)
+    //     }
+    // }
 }
 
 flutter {
@@ -82,4 +97,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
         implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation("com.google.firebase:firebase-analytics-ktx")
+
+    def billing_version = "6.1.0"
+    implementation "com.android.billingclient:billing:$billing_version"
 }

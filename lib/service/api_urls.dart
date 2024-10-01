@@ -14,6 +14,7 @@ class ApiUrls {
   static const String genMealPlan = '${baseUrl}api/Suggestic/GenMealPlan';
   static const String getMealTrackerData =
       '${baseUrl}api/Suggestic/GetMealTrackerData';
+  static const String updateProgram = '${baseUrl}api/Suggestic/UpdateProgram';
   static const String getMealPlan = '${baseUrl}api/Suggestic/GetMealPlan';
   static const String skipMeal = '${baseUrl}api/Suggestic/SkipMeal';
   static const String addToShoppingList =
@@ -22,6 +23,8 @@ class ApiUrls {
   static const String filterMenuFromAI = '${baseUrl}api/AI/FilterMenuFromAI';
   static const String addNewCustomMeal =
       '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
+  static const String addIngredientsToUserGroceryList =
+      '${baseUrl}api/AddIngradiantsToUserGroceryList/{userId}';
 
   static const String addItemsToShoppingList =
       '${baseUrl}api/ShoppingList/AddItemsToShoppingList';

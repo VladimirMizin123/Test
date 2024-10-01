@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:intl/intl.dart';
 import '../../../app/functions.dart';
 import '../../../app/sharedPrefrence.dart';
@@ -21,7 +19,6 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     on<AddEatenMealData>(_onAddEatenMeal);
     on<GetOrderInvoiceList>(_onGetOrderInvoiceList);
     on<AddIngredientGroceryList>(_onAddIngredientGroceryList);
-    on<GetAllergiesAndRestriction>(_onGetAllergiesAndRestriction);
   }
 
   final GetDashboardDataRepository _dashboardRepository =
@@ -49,35 +46,6 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       }
     } catch (e) {
       emit(ErrorStateData(errMessage: e.toString()));
-    }
-  }
-
-  _onGetAllergiesAndRestriction(
-      GetAllergiesAndRestriction event, Emitter<GetDashboardState> emit) async {
-    try {
-      _dashboardRepository.apiServices
-          .get(ApiUrls.getUserRestriction)
-          .then((value) async {
-        if (value != null) {
-          dynamic res = jsonDecode(value.body)["data"];
-          List dataList = res is List ? res : [];
-          await PreferenceUtils.setStringList(
-              getUserRestriction, dataList.map((e) => e.toString()).toList());
-        }
-      });
-
-      _dashboardRepository.apiServices
-          .get(ApiUrls.getUserAllergies)
-          .then((value) async {
-        if (value != null) {
-          dynamic res = jsonDecode(value.body)["data"];
-          List dataList = res is List ? res : [];
-          await PreferenceUtils.setStringList(
-              getUserAllergies, dataList.map((e) => e.toString()).toList());
-        }
-      });
-    } catch (e) {
-      log(e.toString());
     }
   }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/get_all_diet_model.dart';
@@ -37,6 +38,7 @@ class GetSurveyRepository {
   }
 
   Future<Either<ErrorModel, GetAllDietModel>> getDietPlan() async {
+    log(ApiUrls.getDietList.toString());
     final response = await apiServices.get(ApiUrls.getDietList);
     if (response.statusCode == 200 || response.statusCode == 201) {
       // int count = getListCount(jsonDecode(response.body['data']));

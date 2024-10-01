@@ -6,6 +6,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
 abstract class RestaurantEvent {}
 
@@ -16,11 +17,15 @@ class MealPlanMatchEvent extends RestaurantEvent {
   final String subcategoryId;
   final RestaurantMenu menu;
   final double? calories;
+  final Function()? onSuccess;
+  final Function()? onError;
 
   MealPlanMatchEvent({
     required this.menu,
     required this.subcategoryId,
     this.calories,
+    this.onSuccess,
+    this.onError,
   });
 }
 
@@ -30,7 +35,7 @@ class RestaurantVerifyEvent extends RestaurantEvent {
   final bool pickup;
   final String? id;
   final String? mealType;
-  final Function(RestaurantMenu?)? onVerify;
+  final Function(RestaurantMenu?, qu.Quote?)? onVerify;
   final Function()? notVerify;
 
   RestaurantVerifyEvent({

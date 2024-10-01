@@ -26,6 +26,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
   const RestaurantMenuDetailsScreen({
@@ -35,6 +36,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
     this.shoppingListData,
     required this.cartCount,
     required this.pickUp,
+    this.quote,
     this.onCustomizationChange,
   });
   final MenuItemList data;
@@ -42,6 +44,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
   final ShoppingListData? shoppingListData;
   final int cartCount;
   final bool pickUp;
+  final qu.Quote? quote;
   final Function(List<Customization>)? onCustomizationChange;
 
   @override
@@ -707,6 +710,9 @@ class _RestaurantMenuDetailsScreenState
     if (!(count < (cs.maxChoiceOptions ?? 1))) {
       int index = nestedOptionList
           .indexWhere((element) => optionsIds.contains(element["option_id"]));
+      if (index.isNegative) {
+        return;
+      }
       (bool, opt.Option?) newOpt =
           findOption(cs, nestedOptionList[index]["option_id"]);
       if (newOpt.$2 != null) {
@@ -775,20 +781,10 @@ class _RestaurantMenuDetailsScreenState
 
   void setTotalPrice() {
     price = widget.data.originalPrice;
-
-    if (price == 0) {
-      for (var element in nestedOptionList) {
-        price = price + element['marked_price'];
-      }
-
-      price = price * item;
-    } else {
-      price = price * item;
-
-      for (var element in nestedOptionList) {
-        price = price + element['marked_price'];
-      }
+    for (var element in nestedOptionList) {
+      price = price + element['marked_price'];
     }
+    price = price * item;
   }
 
   void addIntoTheCart() {
@@ -818,6 +814,8 @@ class _RestaurantMenuDetailsScreenState
               unitOfMeasurement: '',
               unitSize: 0,
               brandName: '',
+              orderMin: widget.quote?.orderMinimum,
+              orderMax: widget.quote?.orderMaximum,
             ),
           ),
         );

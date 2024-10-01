@@ -26,14 +26,9 @@ class JournalPlanRepository {
   String userID = PreferenceUtils.getString(prefUserData);
 
   Future<Either<ErrorModel, FetchMealPlanModel>> fetchMealPlan() async {
-    int mealPlanScreenCountState =
-        PreferenceUtils.getInt(userMealPlanCountState);
     String apiURL = '';
-    if (mealPlanScreenCountState == 0) {
-      apiURL = '${ApiUrls.genMealPlan}/$userID';
-    } else {
-      apiURL = '${ApiUrls.getMealPlan}/$userID';
-    }
+    apiURL = '${ApiUrls.genMealPlan}/$userID';
+    log("api : $apiURL");
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
@@ -136,8 +131,8 @@ class JournalPlanRepository {
     log("User Address Journal Plan :$address");
 
     Map<String, dynamic> data = {
-      "latitude": address?.latitude?.toStringAsFixed(6),
-      "longitude": address?.longitude?.toStringAsFixed(6),
+      "latitude": latitude,
+      "longitude": longitude,
       "user_street_num": address?.streetNum,
       "user_street_name": address?.streetName,
       "user_city": address?.city,

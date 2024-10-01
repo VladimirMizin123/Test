@@ -219,6 +219,7 @@ class StringUtils {
   static const mealDetails = '1 serving, 120g';
   static const day = 'Day';
   static const skipped = 'Skipped';
+  static const eaten = 'Eaten';
   static const skipMeal = 'Skip Meal';
   static const swapMeal = 'Swap Meal';
   static const doYouWantToSkipMeal = 'Do you want to Skip Meal?';
@@ -346,6 +347,8 @@ class StringUtils {
   static String cart = "Cart";
   static String addingThisItemWillClear =
       "Adding this item will clear your cart. Add anyway?";
+  static String changeDietTitle =
+      "Changing your diet will reset your meal plan and shopping list. This will take a while...";
   static String get changingAddressWillClear =>
       "Changing the address will clear your cart. Do you want to continue?";
 
@@ -358,4 +361,15 @@ class StringUtils {
   static const change = 'Change';
   static const restaurantNotAvailable =
       'This restaurant is no longer available.';
+
+  static const calculatingMealCalories = 'Calculating meal calories';
+  static const gatheringIngredients = 'Gathering ingredients';
+  static const checkingAllergies = 'Checking allergies, and restrictions...';
+  static const almostThere = 'Almost there...';
+  static const fetchingYourDelicious = 'Fetching your delicious options..';
+  static const organizingMenuItems = 'Organizing menu items...';
+
+  static const generatingNewMealPlan = 'Generating new meal plan...';
+  static const accountingForRestriction =
+      'Accounting for restrictions, allergens and preferences...';
 }

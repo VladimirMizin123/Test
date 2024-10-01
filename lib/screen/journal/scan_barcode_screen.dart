@@ -140,6 +140,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                         cutOutWidth: 300.w,
                       ),
                       cameraFacing: CameraFacing.back,
+                      formatsAllowed: const [
+                        BarcodeFormat.upcA,
+                        BarcodeFormat.upcE,
+                      ],
                       key: qrKey,
                       onQRViewCreated: _onQRViewCreated,
                     ),

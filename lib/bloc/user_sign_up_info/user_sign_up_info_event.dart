@@ -6,7 +6,7 @@ class LatLogEvent extends UserSignUpInfoEvent {}
 
 class SignUpApiEvent extends UserSignUpInfoEvent {
   UserSignUpDataModel model;
+  final Function()? onComplete;
 
-  SignUpApiEvent({required this.model});
+  SignUpApiEvent({required this.model, this.onComplete});
 }
-

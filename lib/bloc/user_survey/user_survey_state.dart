@@ -42,3 +42,8 @@ class GetDietPlanSuccessState extends UserSurveyState {
 }
 
 class PreviousScreenState extends UserSurveyState {}
+
+class UpdateDietLoading extends UserSurveyState {
+  bool isLoading;
+  UpdateDietLoading({required this.isLoading});
+}

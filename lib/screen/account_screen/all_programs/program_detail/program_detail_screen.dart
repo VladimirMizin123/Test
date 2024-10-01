@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/screen/account_screen/all_programs/program_detail/program_detail_scrern_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
@@ -228,7 +229,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                         ),
                         if (data?.sampleMeal?.isNotEmpty ?? false) ...[
                           Container(
-                            height: 170.h,
+                            height: 180.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: AppColors.whiteColor,
@@ -458,8 +459,11 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                     context: context,
                                     title: "Start New Program",
                                     onPressed: () {
-                                      accountBloc.add(UpdateProgramDietEvent(
-                                          widget.programId));
+                                      accountBloc.add(
+                                        UpdateProgramDietEvent(
+                                          widget.programId,
+                                        ),
+                                      );
                                     },
                                     textColor: AppColors.whiteColor,
                                     bgColor: AppColors.primaryBlueColor)
@@ -467,7 +471,8 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                     left: 22.w, right: 22.w, top: 12.h);
                           },
                           listener: (context, state) {},
-                        )
+                        ),
+                        20.height,
                       ],
                     ),
                   ],

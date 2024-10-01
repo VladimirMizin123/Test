@@ -7,16 +7,19 @@ class CreateGroceryOrderModel {
   int? pickupTipCents;
   String? userDropoffNotes;
   int? userPhone;
+  Map<String, dynamic>? extendedAddress;
 
-  CreateGroceryOrderModel(
-      {this.userId,
-      this.userAddress,
-      this.pickup,
-      this.groceryItems,
-      this.driverTipCents,
-      this.pickupTipCents,
-      this.userDropoffNotes,
-      this.userPhone});
+  CreateGroceryOrderModel({
+    this.userId,
+    this.userAddress,
+    this.pickup,
+    this.groceryItems,
+    this.driverTipCents,
+    this.pickupTipCents,
+    this.userDropoffNotes,
+    this.userPhone,
+    this.extendedAddress,
+  });
 
   CreateGroceryOrderModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -50,6 +53,9 @@ class CreateGroceryOrderModel {
     data['pickup_tip_cents'] = pickupTipCents;
     data['user_dropoff_notes'] = userDropoffNotes;
     data['user_phone'] = userPhone;
+    if (extendedAddress != null) {
+      data["extendedAddress"] = extendedAddress;
+    }
     return data;
   }
 }
