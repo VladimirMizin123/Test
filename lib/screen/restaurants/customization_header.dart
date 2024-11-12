@@ -126,7 +126,7 @@ class NestedCustomizationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isOptinal = customization?.minChoiceOptions == 0;
+    bool isOptional = (customization?.minChoiceOptions ?? 0) <= 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -147,7 +147,7 @@ class NestedCustomizationHeader extends StatelessWidget {
         Row(
           children: <Widget>[
             Text(
-              isOptinal
+              isOptional
                   ? 'Optional'
                   : 'Choose ${customization?.minChoiceOptions ?? 1} option',
               style: FontUtils.h12(
@@ -155,7 +155,7 @@ class NestedCustomizationHeader extends StatelessWidget {
                 fontWeight: FWT.regular,
               ),
             ),
-            if (!isOptinal) ...[
+            if (!isOptional) ...[
               Text(
                 'Required',
                 style: FontUtils.h12(

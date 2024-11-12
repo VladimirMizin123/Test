@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/functions.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -30,6 +29,7 @@ import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/add_items_shopping_list_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class MealDetailsScreen extends StatefulWidget {
@@ -1442,9 +1442,13 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                                           ),
                                                         );
                                                       } else {
-                                                        Fluttertoast.showToast(
-                                                            msg:
-                                                                'Select atleast 1 Ingredients');
+                                                        showToast(
+                                                          message:
+                                                              'Select atleast 1 Ingredients',
+                                                          isSuccess: false,
+                                                          color:
+                                                              AppColors.black,
+                                                        );
                                                       }
                                                     },
                                                     child: Padding(

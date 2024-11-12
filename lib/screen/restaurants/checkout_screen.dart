@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -26,7 +25,6 @@ import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
-import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/payment/payment_success_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/add_debit_card_screen.dart';
@@ -180,11 +178,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   @override
   Widget build(BuildContext context) {
     double subTotal =
-        (widget.orderData!.finalQuote?.quote?.subtotal ?? 0) / 100;
+        (widget.orderData?.finalQuote?.quote?.subtotal ?? 0) / 100;
     double deliveryFee =
         (widget.orderData?.finalQuote?.quote?.deliveryFeeCents ?? 0) / 100;
     double serviceFee =
-        widget.orderData?.finalQuote!.quote!.serviceFeeCents! / 100;
+        (widget.orderData?.finalQuote?.quote?.serviceFeeCents ?? 0) / 100;
     double serviceFeeTax =
         (widget.orderData?.finalQuote?.quote?.salesTaxCents ?? 0) / 100;
 
@@ -295,98 +293,102 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               if (state is CreateCheckoutSuccessState) {
                 loadCreateOrder = false;
 
-                webViewOpen = true;
-                controller
-                  ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                  ..setBackgroundColor(const Color(0x00000000))
-                  ..setNavigationDelegate(
-                    NavigationDelegate(
-                      onProgress: (int progress) {
-                        const Center(child: CircularProgressIndicator());
-                      },
-                      onPageStarted: (String url) {},
-                      onPageFinished: (String url) {},
-                      onWebResourceError: (WebResourceError error) {},
-                      onNavigationRequest: (NavigationRequest request) async {
-                        log("Request Url After Payment Completed ${request.url}");
-                        log(widget.orderData?.orderId.toString() ?? "");
+                if (state.data?['confirmUrl'] != null) {
+                  webViewOpen = true;
+                  controller
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color(0x00000000))
+                    ..setNavigationDelegate(
+                      NavigationDelegate(
+                        onProgress: (int progress) {
+                          const Center(child: CircularProgressIndicator());
+                        },
+                        onPageStarted: (String url) {},
+                        onPageFinished: (String url) {},
+                        onWebResourceError: (WebResourceError error) {},
+                        onNavigationRequest: (NavigationRequest request) async {
+                          log("Request Url After Payment Completed ${request.url}");
+                          log(widget.orderData?.orderId.toString() ?? "");
 
-                        if (request.url
-                            .startsWith('https://gymeats.azurewebsites.net/')) {
-                          // Check
-                          webViewOpen = false;
-                          paymentStatusLoader = true;
-                          setState(() {});
-                          await Future.delayed(const Duration(seconds: 5));
-                          Either<ErrorModel, PaymentStatusModel> res =
-                              await RestaurantRepository().checkPaymentStatus(
-                            orderId: widget.orderData?.orderId,
-                            userId: userId,
-                          );
-                          paymentStatusLoader = false;
-                          if (res.isRight) {
-                            log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
-                            if (res.right.data?.status == "Success") {
-                              if (widget.isFromGrocery) {
-                                final GroceryRepository repository =
-                                    GroceryRepository();
-                                await repository.clearShoppingList();
-
-                                if (!widget.hasMultipleStore) {
-                                  PreferenceUtils.removePref(paymentCard);
-                                  Get.to(
-                                    () => PaymentSuccessScreen(
-                                      createMultipleOrder:
-                                          widget.createMultipleOrder,
-                                    ),
-                                  );
-                                } else {
-                                  Get.back(result: true);
-                                }
-
-                                if (widget.groceryList?.isNotEmpty ?? false) {
-                                  widget.groceryList?.forEach((element) {
-                                    AddNewGroceryItemBloc().add(
-                                      RemoveGroceryItemEvent(
-                                        userGroceryListId: element.id,
-                                        showToast: false,
+                          if (request.url.startsWith(
+                              'https://gymeats.azurewebsites.net/')) {
+                            // Check
+                            webViewOpen = false;
+                            paymentStatusLoader = true;
+                            setState(() {});
+                            await Future.delayed(const Duration(seconds: 5));
+                            Either<ErrorModel, PaymentStatusModel> res =
+                                await RestaurantRepository().checkPaymentStatus(
+                              orderId: widget.orderData?.orderId,
+                              userId: userId,
+                            );
+                            paymentStatusLoader = false;
+                            if (res.isRight) {
+                              log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
+                              if (res.right.data?.status == "Success") {
+                                if (widget.isFromGrocery) {
+                                  if (!widget.hasMultipleStore) {
+                                    PreferenceUtils.removePref(paymentCard);
+                                    Get.to(
+                                      () => PaymentSuccessScreen(
+                                        createMultipleOrder:
+                                            widget.createMultipleOrder,
                                       ),
                                     );
-                                  });
+                                  } else {
+                                    Get.back(result: true);
+                                  }
+
+                                  if (widget.groceryList?.isNotEmpty ?? false) {
+                                    widget.groceryList?.forEach((element) {
+                                      AddNewGroceryItemBloc().add(
+                                        RemoveGroceryItemEvent(
+                                          userGroceryListId: element.id,
+                                          showToast: false,
+                                        ),
+                                      );
+                                    });
+                                  }
+                                } else {
+                                  cartBloc.add(RemoveCart());
+                                  PreferenceUtils.removePref(paymentCard);
+                                  Get.to(() => const PaymentSuccessScreen());
                                 }
                               } else {
-                                cartBloc.add(RemoveCart());
-                                PreferenceUtils.removePref(paymentCard);
-                                Get.to(() => const PaymentSuccessScreen());
+                                showToast(
+                                  message: StringUtils.paymentWasUnsuccessfull,
+                                  isSuccess: false,
+                                  timeInSecForIosWeb: 4,
+                                );
+
+                                setState(() {});
                               }
                             } else {
                               showToast(
-                                message: StringUtils.paymentWasUnsuccessfull,
+                                message: "Order not found please wait",
                                 isSuccess: false,
                                 timeInSecForIosWeb: 4,
                               );
-
                               setState(() {});
                             }
-                          } else {
-                            showToast(
-                              message: "Order not found please wait",
-                              isSuccess: false,
-                              timeInSecForIosWeb: 4,
-                            );
-                            setState(() {});
-                          }
 
-                          return NavigationDecision.prevent;
-                        } else {
-                          return NavigationDecision.navigate;
-                        }
-                      },
-                    ),
-                  )
-                  ..loadRequest(
-                    Uri.parse(state.data['confirmUrl']),
+                            return NavigationDecision.prevent;
+                          } else {
+                            return NavigationDecision.navigate;
+                          }
+                        },
+                      ),
+                    )
+                    ..loadRequest(
+                      Uri.parse(state.data?['confirmUrl'] ?? ""),
+                    );
+                } else {
+                  showToast(
+                    message: "Payment url not received",
+                    isSuccess: false,
+                    timeInSecForIosWeb: 4,
                   );
+                }
               }
 
               /// Update Delivery Status ---------------------------------------------------
@@ -617,55 +619,55 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               ),
 
                               /// Order Notes--------------------------------------------------------------------
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 16.h),
-                                child: Text(
-                                  ' Order Notes',
-                                  style: FontUtils.h18(
-                                    fontColor: const Color(0xff000000),
-                                    fontWeight: FWT.semiBold,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 0),
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xff004C63)
-                                          .withOpacity(0.08),
-                                      offset: const Offset(0, 0),
-                                      blurRadius: 16,
-                                    )
-                                  ],
-                                ),
-                                child: TextFormField(
-                                  style: const TextStyle(color: Colors.black),
-                                  controller: notes,
-                                  decoration: InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    contentPadding: const EdgeInsets.all(0),
-                                    hintText: 'Add order Notes.....',
-                                  ),
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsets.only(bottom: 16.h),
+                              //   child: Text(
+                              //     ' Order Notes',
+                              //     style: FontUtils.h18(
+                              //       fontColor: const Color(0xff000000),
+                              //       fontWeight: FWT.semiBold,
+                              //     ),
+                              //   ),
+                              // ),
+                              // Container(
+                              //   padding: const EdgeInsets.symmetric(
+                              //       horizontal: 16, vertical: 0),
+                              //   width: MediaQuery.of(context).size.width,
+                              //   decoration: BoxDecoration(
+                              //     color: Colors.white,
+                              //     borderRadius: BorderRadius.circular(8),
+                              //     boxShadow: [
+                              //       BoxShadow(
+                              //         color: const Color(0xff004C63)
+                              //             .withOpacity(0.08),
+                              //         offset: const Offset(0, 0),
+                              //         blurRadius: 16,
+                              //       )
+                              //     ],
+                              //   ),
+                              //   child: TextFormField(
+                              //     style: const TextStyle(color: Colors.black),
+                              //     controller: notes,
+                              //     decoration: InputDecoration(
+                              //       enabledBorder: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: BorderSide.none,
+                              //       ),
+                              //       focusedBorder: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: BorderSide.none,
+                              //       ),
+                              //       border: OutlineInputBorder(
+                              //         borderRadius: BorderRadius.circular(8),
+                              //         borderSide: BorderSide.none,
+                              //       ),
+                              //       contentPadding: const EdgeInsets.all(0),
+                              //       hintText: 'Add order Notes.....',
+                              //     ),
+                              //   ),
+                              // ),
 
-                              SizedBox(height: 16.h),
+                              // SizedBox(height: 16.h),
 
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -734,14 +736,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 result == 'Bring me the order'
                                                     ? 0
                                                     : 1;
-                                            if (!widget.isFromGrocery) {
-                                              selectedIndex = sIndex;
-                                            } else {
-                                              if (selectedIndex != sIndex) {
-                                                Get.offAll(
-                                                    const AppManagerScreen(
-                                                        selectIndex: 1));
-                                              }
+
+                                            if (selectedIndex != sIndex) {
+                                              Get.offAll(AppManagerScreen(
+                                                  selectIndex:
+                                                      widget.isFromGrocery
+                                                          ? 1
+                                                          : 3));
                                             }
                                           });
                                         });
@@ -1163,31 +1164,30 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         /// Create Product / Create Checkout Api
 
                                         if (cardData.isEmpty) {
-                                          Fluttertoast.showToast(
-                                            msg:
+                                          showToast(
+                                            message:
                                                 'Please Select Card For Payment',
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            backgroundColor: Colors.black,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0,
+                                            isSuccess: false,
+                                            color: AppColors.black,
                                           );
                                         } else {
+                                          productMealMeData.clear();
                                           for (var element in widget
                                               .orderData!.finalQuote!.items!) {
                                             productMealMeData.add(
                                               product.ProductMealmeItems(
                                                 name: element.name,
                                                 markedPrice:
-                                                    element.markedPrice,
-                                                quantity: element.quantity,
+                                                    element.markedPrice ?? 0,
+                                                quantity: element.quantity ?? 0,
                                                 productType:
                                                     widget.isFromGrocery
                                                         ? '2'
                                                         : '1',
                                                 productId: element.productId,
                                                 image: element.image,
-                                                basePrice: element.basePrice,
+                                                basePrice:
+                                                    element.basePrice ?? 0,
                                               ),
                                             );
                                           }

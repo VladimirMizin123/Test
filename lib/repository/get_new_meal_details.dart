@@ -27,6 +27,7 @@ class AddNewMealRepository {
     required String type,
     required String userId,
     required String quantity,
+    required String date,
   }) async {
     List<http.MultipartFile> mealItemImage = [];
     if (imageUrl != null) {
@@ -60,10 +61,12 @@ class AddNewMealRepository {
       'Calorie': num.tryParse(calorie) == null ? "0" : calorie.toString(),
       'Type': type.toString(),
       'UserId': userId.toString(),
-      'Quantity': quantity.toString()
+      'Quantity': quantity.toString(),
+      'Date': date,
     };
 
-    log('data----CUSTOM------>>>>>> $data');
+    log("--Api---${ApiUrls.addNewMeal}");
+    log('data----CUSTOM------>>>>>> ${jsonEncode(data)}');
 
     final response = await apiServices.postMultipart(
         url: ApiUrls.addNewMeal, body: data, files: mealItemImage);
@@ -146,11 +149,6 @@ class AddNewMealRepository {
 
   Future<Either<ErrorModel, GetCustomMealListModel>> getCustomMealListData(
       String? date) async {
-    log(
-        date != null
-            ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date'
-            : '${ApiUrls.getCustomMeal}?userId=$userID',
-        name: "CUSTOME LIST");
     final response = await apiServices.get(
       date != null
           ? '${ApiUrls.getCustomMeal}?userId=$userID&date=$date'

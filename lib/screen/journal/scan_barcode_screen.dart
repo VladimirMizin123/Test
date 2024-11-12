@@ -1,4 +1,6 @@
 // import 'package:camera/camera.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -100,6 +102,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                           () => BarCodeGroceryItemDetails(
                             scanData: upcNumber.toString(),
                             type: scanBarcodeArguments.type,
+                            mealType: scanBarcodeArguments.type,
+                            selectedDate: scanBarcodeArguments.selectedDateTime,
                           ),
                           transition: Transition.fadeIn,
                         );
@@ -143,6 +147,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                       formatsAllowed: const [
                         BarcodeFormat.upcA,
                         BarcodeFormat.upcE,
+                        BarcodeFormat.ean13,
                       ],
                       key: qrKey,
                       onQRViewCreated: _onQRViewCreated,
@@ -200,12 +205,16 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
       _qrViewController.resumeCamera();
     });
     _qrViewController.scannedDataStream.listen((scanData) {
-      debugPrint('scanData: ${scanData.code}');
+      log('scanData: ${scanData.code}');
       // widget.onBarcodeFetched(scanData);
       _qrViewController.dispose();
       // scanBarcodeArguments.journalPlanBloc.add(JournalScanBarcodeEvent(barcode: scanData.code!));
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return BarCodeGroceryItemDetails(scanData: scanData.code);
+        return BarCodeGroceryItemDetails(
+          scanData: scanData.code,
+          mealType: scanBarcodeArguments.type,
+          selectedDate: scanBarcodeArguments.selectedDateTime,
+        );
       }));
       // Get.toNamed('/GroceryItemDetails', arguments: GroceryItemDetailsArguments(groceryShoppingData: GroceryShoppingData()));
       // Get.offNamed('/MealDetailsScreen', arguments: MealPlanArguments(isFromScanner: true, productName: '', currentSelectedData: scanBarcodeArguments.selectedDateTime, barcodeNumber: scanData.code));

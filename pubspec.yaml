@@ -69,7 +69,6 @@ dependencies:
   scroll_to_index:
   modal_bottom_sheet: ^2.1.2
   shimmer: ^3.0.0
-  image_picker: ^1.0.4
   simple_barcode_scanner: ^0.0.8
   app_links: ^3.4.5
   app_settings: ^5.1.1
@@ -84,6 +83,9 @@ dependencies:
   flutter_animate: ^4.5.0
   firebase_crashlytics: ^3.4.9
   firebase_analytics: ^10.8.0
+  image_picker: ^1.0.8
+  sentry_flutter: ^8.9.0
+  flutter_bugfender: ^3.0.0+1
 #  firebase_dynamic_links: ^5.3.5
 #  firebase_core: ^2.15.1
 

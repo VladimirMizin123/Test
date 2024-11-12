@@ -38,9 +38,9 @@ class OrderBillWidget extends StatelessWidget {
         Row(
           children: [
             SizedBox(
-              height: 37,
-              width: 37,
-              child: "${orderData?.storeId}".storeImg(),
+              height: 40,
+              width: 40,
+              child: "${orderData?.storeId}".storeGenericImg(40),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

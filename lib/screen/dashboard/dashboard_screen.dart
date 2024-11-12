@@ -92,7 +92,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         trackerDataList = mealDataModelFromJson(trackerList);
         model = GetDashboardModel.fromJson(jsonDecode(dashboardList));
         logData = mealDateByDate(mealList);
-        loadDashboard(model, logData);
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          loadDashboard(model, logData);
+        });
       } catch (e) {
         cacheLoader = false;
         log(e.toString());
@@ -261,6 +263,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     if (state is LoadMealData) {
                       isDoneLoader = false;
                       trackerDataList = state.trackerDataList;
+                      setState(() {});
+                      // bloc.add(GetDashboardData());
                       bloc.add(AddIngredientGroceryList());
                     }
                     if (state is LoadingDoneState) {
@@ -558,15 +562,21 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   eatSubTitle: trackerDataList[index].recipe!.name ?? '',
                   textTheme: Theme.of(context).textTheme,
                   trailing: isSkipped
-                      ? SvgPicture.asset(
-                          AssetsUtils.icSkippedIcon,
+                      ? SizedBox(
                           width: 25.w,
+                          child: Center(
+                            child: SvgPicture.asset(
+                              AssetsUtils.icSkippedIcon,
+                              width: 25.w,
+                            ),
+                          ),
                         )
                       : InkWell(
                           onTap: isEaten
                               ? null
                               : () {
                                   if (!trackerDataList[index].isDone) {
+                                    cacheLoader = true;
                                     bloc.add(AddEatenMealData(
                                         value: 1,
                                         mealName:
@@ -746,17 +756,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             title.toString(),
             style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
           ),
-          SizedBox(
-            height: 5.h,
+          SizedBox(height: 5.h),
+          commonProgressBar(
+            progressColor: progressColor,
+            width: 76.w,
+            lineHeight: 10.0,
+            percentage: percentage,
           ),
-          commonProgressbar(
-              progressColor: progressColor,
-              width: 76.w,
-              lineHeight: 10.0,
-              percentage: percentage),
-          SizedBox(
-            height: 5.h,
-          ),
+          SizedBox(height: 5.h),
           Text(
             '$gramCount / $totalGram g',
             style: textTheme?.bodyMedium?.copyWith(color: AppColors.darkGray),
@@ -767,7 +774,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
   }
 
-  Widget commonProgressbar({
+  Widget commonProgressBar({
     Color? progressColor,
     double? width,
     double? lineHeight,
@@ -840,7 +847,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           SizedBox(
             height: 12.h,
           ),
-          commonProgressbar(
+          commonProgressBar(
               progressColor: progressColor,
               lineHeight: 8.0,
               percentage: percentage),
@@ -935,6 +942,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         totalFat, (model.data?.totalFat ?? 0).toString());
     await PreferenceUtils.setString(
         totalCarbs, (model.data?.totalCarbs ?? 0).toString());
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

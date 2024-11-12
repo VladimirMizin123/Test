@@ -63,6 +63,7 @@ class AccountRepository {
 
   Future<Either<ErrorModel, GetProgramInfoResponseModel>> getProgramInfo(
       {String programId = ''}) async {
+    log("Api Response : ${'${ApiUrls.getProgramInfo}$programId?userId=$userID'}");
     final response = await apiServices.get(
       '${ApiUrls.getProgramInfo}$programId?userId=$userID',
     );
@@ -139,6 +140,7 @@ class AccountRepository {
 
   Future<Either<ErrorModel, GetProfileDetailsResponseModel>> getProfileDetails(
       {String programId = ''}) async {
+    log("Api : ${'${ApiUrls.getProfileDetails}$userID'}");
     final response =
         await apiServices.get('${ApiUrls.getProfileDetails}$userID');
 
@@ -176,6 +178,8 @@ class AccountRepository {
       "birthDate": birthDate.toIso8601String().toString(),
       "gender": gender
     };
+
+    log("Req Data : ${jsonEncode(data)}");
 
     final response =
         await apiServices.post('${ApiUrls.updateProfileDetails}$userID', data);

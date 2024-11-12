@@ -111,7 +111,11 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
             for (var k = 0; k < mealDataByDate.length; k++) {
               for (var i = 0; i < mealList.length; i++) {
                 if (mealList[i].id == mealDataByDate[k].mealId) {
-                  mealList[i].isSkipped = true;
+                  if (mealDataByDate[k].value == "SKIPPED") {
+                    mealList[i].isSkipped = true;
+                  } else {
+                    mealList[i].isDone = true;
+                  }
                 }
               }
             }
@@ -141,18 +145,19 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
 
           if (state is JournalSwapMealDetailsState) {
             Get.back();
-            for (var i = 0; i < mealList.length; i++) {
-              if (mealList[i].id == state.mealId) {
-                mealList[i].recipe!.id = state.similarMealData!.id;
-                mealList[i].calories =
-                    state.similarMealData!.nutrientsPerServing!.calories;
-                mealList[i].meal = '';
-                mealList[i].numOfServings = state.similarMealData!.serving;
-                mealList[i].recipe!.mainImage =
-                    state.similarMealData!.mainImage;
-                break;
-              }
-            }
+            journalPlanBloc.add(JournalPlanFetchEvent());
+            // for (var i = 0; i < mealList.length; i++) {
+            //   if (mealList[i].id == state.mealId) {
+            //     mealList[i].recipe!.id = state.similarMealData!.id;
+            //     mealList[i].calories =
+            //         state.similarMealData!.nutrientsPerServing!.calories;
+            //     mealList[i].meal = '';
+            //     mealList[i].numOfServings = state.similarMealData!.serving;
+            //     mealList[i].recipe!.mainImage =
+            //         state.similarMealData!.mainImage;
+            //     break;
+            //   }
+            // }
           }
           if (state is JournalFetchMealPlanLoadingState) {
             isLoading = state.value;
@@ -406,6 +411,8 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                                   return JournalSkipMealBottomSheet(
                                                     bloc: journalPlanBloc,
                                                     mealData: mealList[index],
+                                                    time: widget
+                                                        .arguments?.dateTime,
                                                   );
                                                 },
                                                 isDismissible: false,
@@ -416,10 +423,10 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                                                 context: context,
                                                 builder: (context) {
                                                   return JournalSwapMealBottomSheet(
-                                                      journalPlanBloc:
-                                                          journalPlanBloc,
-                                                      mealData:
-                                                          mealList[index]);
+                                                    journalPlanBloc:
+                                                        journalPlanBloc,
+                                                    mealData: mealList[index],
+                                                  );
                                                 },
                                               );
                                             },
@@ -440,12 +447,15 @@ class _JournalMealScreenState extends State<JournalMealScreen> {
                         hasImage: false,
                         textColor: AppColors.skyBlue,
                         onPressed: () {
-                          Get.toNamed(
-                            "/AddNewItemScreen",
-                            arguments: (widget.arguments ??
-                                    journalMealScreenArguments)!
-                                .mealType!,
-                          );
+                          Get.toNamed("/AddNewItemScreen", arguments: {
+                            "title":
+                                (widget.arguments ?? journalMealScreenArguments)
+                                        ?.mealType ??
+                                    "",
+                            "date":
+                                (widget.arguments ?? journalMealScreenArguments)
+                                    ?.dateTime,
+                          });
                           // bloc.add(SaveClickEvent(
                           //     userId: userId,
                           //     workoutTime: minutesController.text,

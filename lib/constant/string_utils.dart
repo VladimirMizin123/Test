@@ -170,7 +170,7 @@ class StringUtils {
   static const dinner = 'Dinner ';
   static const subDinner = 'Eggs With Tomato';
   static const addWater = 'Add Water';
-  static const editWater = 'EditWater';
+  static const editWater = 'Edit Water';
   static const addEntry = 'Add Entry';
   static const orderHistory = 'Order History';
   static const orderDetails = 'Order details';
@@ -241,46 +241,183 @@ class StringUtils {
   static const orderType = 'Order type: ';
   static const basedMeal = 'Based on your Meal Plan';
   static const writeNewPassword = 'Write your new Password';
+  static const policyDate = 'Effective Date: October 2024';
+  static const introduction = 'Introduction';
   static const writePolicyInstructions =
-      "This Privacy Policy describes how we collect, use, and disclose your personal information when you visit our website or use our services. Please read this policy carefully to understand our practices regarding your personal data.";
+      "Welcome to GYM EATS. Your privacy is important to us, and we are committed to protecting the personal information you share with us. This Privacy Policy outlines how we collect, use, and safeguard your information when you use GYM EATS and related services, including meal planning, food order, and delivery services. Please read this policy carefully to understand our practices regarding your personal data.";
   static const policyInformationTitle1 = "Information We Collect";
-  static const policyInformationTitle2 = "Use of Information";
+  static const personalInformation = "Personal Information";
+  static const healthInformation = "Health Information";
+  static const healthInformationInstruction =
+      "With your consent, we may collect and store health-related data, such as your exercise routines, meal tracking, hydration levels, and other fitness metrics. This data helps us provide personalized nutrition and fitness recommendations.";
+  static const paymentInformation = "Payment Information";
+  static const paymentInformationInstruction =
+      "When you make a purchase, we collect payment information, such as your credit card details or other payment methods, which are securely processed by our third-party payment provider.";
+  static const usageData = "Usage Data";
+  static const usageDataInstruction =
+      "We may collect data about your use of the app, including log files, IP address, device information (such as model and operating system), and app activity (such as time spent in the app and pages visited).";
+  static const policyInformationTitle2 = "How We Use Your Information";
   static const policy1 =
-      "We may collect various types of information from you, including:";
+      "We collect various types of information to provide and improve our services, including:";
   static const policy2 =
-      "We use the collected information for the following purposes:";
+      "We use the information we collect for the following purposes:";
   static const policyStep1 =
-      "Personal identification information (such as your name, email address, phone number, etc.) that you provide voluntarily when filling out forms or contacting us.";
+      "Account Information: When you sign up, we collect your name, email address, phone number, and password to create your account.";
   static const policyStep2 =
-      "Usage information, including your IP address, browser type, operating system, and other technical information when you interact with our website or use our services.";
+      "Profile Information: To customize your meal plans, we collect information such as your age, weight, height, fitness goals, dietary preferences, allergies, and medical conditions.";
   static const policyStep3 =
-      " Cookies and similar technologies to track your activity on our website and provide a personalized experience.";
+      "Delivery Information: When you place an order, we collect your address and phone number to facilitate delivery.";
   static const policyInfo1 =
-      "To provide and improve our services, including customizing your experience and addressing your inquiries.";
+      "Personalization: To create custom meal plans, fitness recommendations, and food delivery options tailored to your unique profile.";
   static const policyInfo2 =
-      " To communicate with you regarding updates, offers, and promotional materials.";
+      "Order Processing: To manage and fulfill food orders, including delivery.";
   static const policyInfo3 =
-      "To analyze and understand how our website and services are used, and to improve their functionality and performance. To comply with legal obligations and enforce our terms and conditions.";
+      "Service Improvement: To analyze app usage and improve the app’s functionality and user experience.";
+  static const policyInfo4 =
+      "Communication: To send you notifications related to your meal plans, orders, or fitness goals, and to respond to customer support inquiries.";
+  static const policyInfo5 =
+      "Marketing: With your consent, we may send you promotional materials about GYM EATS and related services. You can opt out of marketing communications at any time.";
+  static const policyInfo6 =
+      "Legal and Compliance: To comply with legal obligations, resolve disputes, and enforce our agreements.";
+
+  static const policy3 = "How We Share Your Information";
+  static const policy3Instruction =
+      "We will never sell your personal information. However, we may share your data in the following ways:";
+  static const policy3a = "Service Providers";
+  static const policy3aDescription =
+      "We work with third-party service providers (such as payment processors, food delivery services, and cloud storage providers) to operate our app and provide our services. These providers have access to your information only as necessary to perform their tasks on our behalf and are contractually obligated to protect your data.";
+  static const policy3b = "Business Transactions";
+  static const policy3bDescription =
+      "In the event of a merger, acquisition, or sale of all or part of our business, your information may be transferred as part of the transaction. We will notify you of any such event and your related rights.";
+  static const policy3c = "Legal Obligations";
+  static const policy3cDescription =
+      "We may disclose your information if required by law or in response to valid legal processes, such as a court order, subpoena, or government request.";
+  static const policy4 = "Data Retention";
+  static const policy4Instruction =
+      "We retain your personal information for as long as your account is active or as needed to provide our services. We may also retain and use your information to comply with legal obligations, resolve disputes, and enforce agreements. Once the data is no longer necessary for these purposes, we will delete it securely.";
+  static const policy5 = "Your Data Rights";
+  static const policy5Instruction =
+      "You have the following rights regarding your personal information:";
+  static const policy5Footer =
+      "To exercise any of these rights, please contact us at sales@gymeats.net.";
+  static const policy5Info1 =
+      "Access: You can request a copy of the personal data we hold about you.";
+  static const policy5Info2 =
+      "Correction: You can update or correct your personal information at any time via your account settings.";
+  static const policy5Info3 =
+      "Deletion: You can request the deletion of your account and personal data. Please note that certain information may be retained for legal or regulatory purposes.";
+  static const policy5Info4 =
+      "Data Portability: You can request a copy of your data in a structured, machine-readable format.";
+  static const policy5Info5 =
+      "Opt-Out of Marketing: You can opt out of receiving promotional communications by following the instructions in those messages or updating your account preferences.";
+  static const policy6 = "Data Security";
+  static const policy6Instruction =
+      "We take data security seriously and implement industry-standard measures to protect your information from unauthorized access, disclosure, alteration, and destruction. However, no security system is 100% secure, and we cannot guarantee the absolute security of your data.";
+  static const policy7 = "Children's Privacy";
+  static const policy7Instruction =
+      "Our app is not intended for children under the age of 13, and we do not knowingly collect personal information from children. If you believe we have inadvertently collected such data, please contact us so we can promptly remove it.";
+  static const policy8 = "International Data Transfers";
+  static const policy8Instruction =
+      "If you are using our services outside the United States, please note that your information may be transferred to, processed, and stored in the U.S. or other countries where our servers are located. By using the app, you consent to this transfer.";
+  static const policy9 = "Changes to This Privacy Policy";
+  static const policy9Instruction =
+      "We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will notify you of any material changes through the app or via email.";
+  static const policy10 = "Contact Us";
+  static const policy10Instruction =
+      "If you have any questions or concerns about this Privacy Policy, please contact us at:";
 
   static const writeTermsInstructions =
-      "These Terms and Conditions govern your use of our website and services. By accessing or using our website, you agree to be bound by these terms. If you do not agree with any part of these terms, you should not use our website.";
+      "Welcome to GYM EATS! These Terms and Conditions govern your use of the GYM EATS mobile application and any related services provided by GYM EATS. By using our App, you agree to these Terms. If you do not agree with any part of these Terms, please do not use the App.";
 
-  static const termsInformationTitle1 = "Intellectual Property";
-  static const termsInformationTitle2 = "User Responsibilities";
+  static const termsInformationTitle1 = "Acceptance of Terms";
+  static const termsInformationTitle2 = "Use of the App";
+  static const termsInformationTitle3 = "Account Registration and Security";
+  static const termsInformationTitle4 = "Health Information Disclaimer";
+  static const termsInformationTitle5 = "Food Ordering and Delivery";
+  static const termsInformationTitle6 = "Payments and Fees";
+  static const termsInformationTitle7 = "Intellectual Property";
+  static const termsInformationTitle8 = "Third-Party Services";
+  static const termsInformationTitle9 = "Limitation of Liability";
+  static const termsInformationTitle10 = "Indemnification";
+  static const termsInformationTitle11 = "Termination";
+  static const termsInformationTitle12 = "Modifications to the App and Terms";
+  static const termsInformationTitle13 = "Governing Law";
+  static const termsInformationTitle14 = "Dispute Resolution";
+  static const termsInformationTitle15 = "Severability";
+  static const termsInformationTitle16 = "Contact Information";
+
+  static const term6 =
+      "You are responsible for all charges and fees associated with your use of GYM EATS. These may include food order charges, subscription fees for premium services, and other fees as outlined in the App. All payments are final, and refunds are only provided in cases where required by law or at our sole discretion.";
+  static const term7 =
+      "All content in the GYM EATS App, including but not limited to text, graphics, logos, images, and software, is the property of GYM EATS or its licensors and is protected by intellectual property laws. You may not use, copy, modify, distribute, or exploit any content from the App without our prior written consent.";
+  static const term8 =
+      "GYM EATS may include links to or integrations with third-party services, including payment processors and food delivery providers. Your interactions with these third-party services are subject to their own terms and policies. We are not responsible for the privacy practices, security, or content of third-party services.";
+  static const term9 =
+      "To the fullest extent permitted by law, GYM EATS and its affiliates, officers, employees, and partners will not be liable for any damages, including but not limited to direct, indirect, incidental, special, or consequential damages, arising out of or related to:";
+  static const term9Footer =
+      "This limitation of liability applies even if we have been advised of the possibility of such damages.";
+  static const term10 =
+      "You agree to indemnify, defend, and hold harmless GYM EATS, its affiliates, and their respective officers, employees, and partners from and against any claims, liabilities, damages, losses, or expenses (including legal fees) arising out of your use of the App, violation of these Terms, or infringement of any third-party rights.";
+  static const term11 =
+      "We reserve the right to suspend or terminate your account and access to GYM EATS at our sole discretion, without notice, if you violate these Terms or for any other reason. Upon termination, you must cease using the App, and all rights granted to you under these Terms will be revoked.";
+  static const term12 =
+      "We reserve the right to modify, update, or discontinue the App or these Terms at any time, with or without notice. We will notify you of material changes to the Terms by posting the updated version in the App. Your continued use of the App following any changes constitutes acceptance of the revised Terms.";
+  static const term13 =
+      "These Terms are governed by and construed in accordance with the laws of the state of Illinois, without regard to its conflict of law principles. Any legal action or proceeding related to your use of the App shall be brought exclusively in the state or federal courts located in Cook County, Orland Park Illinois.";
+  static const term14 =
+      "In the event of any dispute, claim, or controversy arising from or relating to these Terms or your use of the App, the parties agree to first attempt to resolve the dispute through informal negotiations. If the dispute cannot be resolved, it will be submitted to binding arbitration in accordance with the rules of Cook County Mandatory Arbitration Center. Any arbitration will take place in Cook County, Orland Park Illinois.";
+  static const term15 =
+      "If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will continue in full force and effect.";
+  static const term16 =
+      "If you have any questions or concerns about these Terms, please contact us at:";
+
+  static const term9Info1 = "Your use or inability to use the App.";
+  static const term9Info2 = "Any content or information provided by the App.";
+  static const term9Info3 =
+      "Errors, defects, or interruptions in the App's functionality.";
+  static const term9Info4 =
+      "Food delivery services, including errors, delays, or failure in delivery.";
 
   static const termsStep1 =
-      "All content and materials available on our website, including text, graphics, logos, images, videos, and software, are the property of our company and are protected by intellectual property laws. You may not use, reproduce, or distribute any of the content without our prior written consent.";
+      "By accessing or using GYM EATS, you confirm that you are at least 18 years old, or that you are at least 13 years old and have obtained parental or legal guardian consent to use the App. Your continued use of the App constitutes your acceptance of these Terms and any future modifications.";
 
-  static const term2 = "When using our website or services, you agree to:";
+  static const term2 =
+      "You may use the App solely for your personal, non-commercial use to manage meal planning, food orders, fitness tracking, and other related Services. You agree not to:";
+  static const term3 =
+      "To use certain features of GYM EATS, you are required to create an account. You are responsible for:";
+  static const term4 =
+      "GYM EATS provides meal plans, nutrition advice, and fitness tracking features based on the information you supply. However, we do not provide medical advice. The content in the App is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.";
+  static const term42 =
+      "You should always consult a healthcare provider before making any changes to your diet, fitness routine, or lifestyle based on the information provided by the App, especially if you have any medical conditions or specific dietary restrictions.";
+  static const term5 =
+      "When you place a food order through GYM EATS, you agree to the following terms:";
 
-  static const termInfo1 = "Provide accurate and up-to-date information.";
-  static const termInfo2 = "Comply with all applicable laws and regulations.";
+  static const term5Info1 =
+      "Order Accuracy: You are responsible for ensuring that all order details, including delivery address and preferences, are accurate.";
+  static const term5Info2 =
+      "Payment: All orders must be paid for through the payment methods available in the App. You authorize us to charge the selected payment method for the total amount of your order, including any applicable taxes, fees, and delivery charges.";
+  static const term5Info3 =
+      "Delivery: We partner with third-party delivery services. Delivery times are estimates and may vary due to factors beyond our control. We are not liable for any delivery delays, errors, or failures once the order has left the vendor.";
+  static const term5Info4 =
+      "Cancellations and Refunds: Once an order has been placed and accepted, it cannot be canceled or refunded unless otherwise stated in the App’s cancellation policy or required by law.";
+
+  static const term3Footer =
+      "We are not liable for any loss or damage resulting from unauthorized access to your account due to your failure to protect your login information.";
+  static const term3Info1 =
+      "Maintaining the confidentiality of your account credentials.";
+  static const term3Info2 =
+      "Ensuring all information you provide is accurate, current, and complete.";
+  static const term3Info3 =
+      "Notifying us immediately if you suspect unauthorized use of your account.";
+
+  static const termInfo1 =
+      "Use the App for any illegal or unauthorized purposes.";
+  static const termInfo2 =
+      "Attempt to hack, damage, or interfere with the functionality of the App.";
   static const termInfo3 =
-      " Use our website and services for lawful purposes only and not engage in any illegal activities.";
+      "Misrepresent your identity or provide false information when creating an account or using the Services.";
   static const termInfo4 =
-      "Not transmit any viruses, malware, or other malicious code.";
-  static const termInfo5 =
-      "Not interfere with or disrupt the functioning of our website or services";
+      "Reverse-engineer, decompile, or disassemble any aspect of the App.";
   static const aboutText1 =
       "Welcome to our COVID-19 Immunity Boost Program.\nOne of the best ways to protect yourself from this illness is to make sure you have a strong defense system. With our Immunity Boost program, you'll see plenty of ways to do this through the food you eat.\nThe goal is to keep your inflammation down and bolster your immune system from the COVID-19 virus.";
   static const aboutText2 =
@@ -372,4 +509,7 @@ class StringUtils {
   static const generatingNewMealPlan = 'Generating new meal plan...';
   static const accountingForRestriction =
       'Accounting for restrictions, allergens and preferences...';
+  static const theOrderNotPlacedDueToSomeIssue =
+      'The order was not placed due to some issue.';
+  static const orderCreatedSuccessfully = 'Order Created Successfully';
 }

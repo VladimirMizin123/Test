@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_event.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
@@ -15,6 +16,7 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/bloc/store_cart_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/details_view/store_meal_details.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/details_view/store_menu_details_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/store_checkout_screen.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/widget/check_list_sheet.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/widget/custom_search_field.dart';
@@ -60,6 +62,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   List<Product> groceryResult = [];
   List<Product> filterResult = [];
   List<MenuItemList> menuItemList = [];
+  List<MenuItemList> cartMenuList = [];
 
   List<Product> groceryTempResult = [];
   bool isProductSelect = false;
@@ -77,16 +80,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
         .toList();
 
     cartBloc = widget.cartBloc;
-    Object state = cartBloc.state;
-    if (state is StoreCheckoutState) {
-      for (int i = 0; i < state.menuItemList.length; i++) {
-        int menuI = menuItemList
-            .indexWhere((e) => e.productId == state.menuItemList[i].productId);
-        if (!menuI.isNegative) {
-          menuItemList[menuI] = state.menuItemList[i];
-        }
-      }
-    }
+    cartBloc.add(GetGroceryCartList());
     groceryItemBloc.add(GetGroceryItemEvent());
     super.initState();
   }
@@ -109,293 +103,328 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        body: WillPopScope(
-          onWillPop: () async {
-            groceryResult = groceryTempResult;
-            return true;
-          },
-          child: SafeArea(
-            child: Column(
-              children: [
-                15.height,
-                Image.asset(
-                  AssetsUtils.gymEatsLogo,
-                  height: 20.h,
-                  color: AppColors.green,
-                ),
-                10.height,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: bloc.BlocConsumer<StoreCartBloc, StoreCartState>(
+        bloc: widget.cartBloc,
+        listener: (context, state) {
+          if (state is StoreCheckoutState) {
+            cartMenuList = state.menuItemList;
+            setState(() {});
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            body: WillPopScope(
+              onWillPop: () async {
+                groceryResult = groceryTempResult;
+                return true;
+              },
+              child: SafeArea(
+                child: Column(
                   children: [
-                    const BackButtonWidget(),
-                    Expanded(
-                      child: Text(
-                        widget.categoryName ?? 'Almond milk',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: FontUtils.h20(
-                          fontColor: AppColors.oxFF010101,
-                          fontWeight: FWT.medium,
+                    15.height,
+                    Image.asset(
+                      AssetsUtils.gymEatsLogo,
+                      height: 20.h,
+                      color: AppColors.green,
+                    ),
+                    10.height,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const BackButtonWidget(),
+                        Expanded(
+                          child: Text(
+                            widget.categoryName ?? 'Almond milk',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: FontUtils.h20(
+                              fontColor: AppColors.oxFF010101,
+                              fontWeight: FWT.medium,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    10.width,
-                    GestureDetector(
-                      onTap: () => showModalBottomSheet(
-                        context: context,
-                        backgroundColor: AppColors.transparentColor,
-                        isScrollControlled: true,
-                        builder: (context) {
-                          return CheckListSheet(
-                              groceryDetails: widget.groceryDetails);
-                        },
-                        isDismissible: false,
-                      ),
-                      child: SvgPicture.asset(AssetsUtils.icList),
-                    ),
-                  ],
-                ).paddingOnly(left: 14, right: 14),
-                16.height,
-                CustomSearchField(
-                  onChange: (p0) => setState(() => searchText = p0),
-                  controller: searchController,
-                ).paddingOnly(left: 14, right: 14),
-                16.height,
-                Row(
-                  children: [
-                    myFilterView(
-                      AssetsUtils.icListIcon,
-                      'Category',
-                      () async {
-                        Get.back(result: "category");
-                      },
-                    ),
-                    const SizedBox(width: 10),
-                    myFilterView(
-                      AssetsUtils.icFilterIcon,
-                      'Sort & Filter',
-                      () {
-                        showModalBottomSheet(
-                          context: context,
-                          backgroundColor: AppColors.transparentColor,
-                          builder: (context) {
-                            return ItemCatalogSortByBottomSheet(
-                              selectedSort: selectedSorting,
-                              rangeValues: priceRange,
-                            );
+                        10.width,
+                        GestureDetector(
+                          onTap: () => showModalBottomSheet(
+                            context: context,
+                            backgroundColor: AppColors.transparentColor,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return CheckListSheet(
+                                  groceryDetails: widget.groceryDetails);
+                            },
+                            isDismissible: false,
+                          ),
+                          child: SvgPicture.asset(AssetsUtils.icList),
+                        ),
+                      ],
+                    ).paddingOnly(left: 14, right: 14),
+                    16.height,
+                    CustomSearchField(
+                      onChange: (p0) => setState(() => searchText = p0),
+                      controller: searchController,
+                    ).paddingOnly(left: 14, right: 14),
+                    16.height,
+                    Row(
+                      children: [
+                        myFilterView(
+                          AssetsUtils.icListIcon,
+                          'Category',
+                          () async {
+                            Get.back(result: "category");
                           },
-                          isDismissible: false,
-                        ).then(
-                          (value) {
-                            if (value != null) {
-                              if (value["value"] != null) {
-                                selectedSorting = value["value"];
-                                setState(() {});
-                                sortingData();
-                              }
-
-                              priceRange = value['priceRange'];
-                              isFilter = value['isFilter'];
-
-                              filterResult.clear();
-
-                              if (isFilter) {
-                                for (var element in groceryResult) {
-                                  double value = double.parse(
-                                      (element.formattedPrice ?? '0')
-                                          .replaceAll("\$", "")
-                                          .trim());
-                                  if ((value) > priceRange!.start &&
-                                      (value) < priceRange!.end) {
-                                    filterResult.add(element);
-                                  }
-                                }
-                              }
-                              setState(() {});
-                            }
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ).paddingOnly(left: 20, right: 20),
-                16.height,
-                const Divider(
-                    color: AppColors.lightGrey, thickness: 1, height: 0),
-                Expanded(
-                  child: Builder(
-                    builder: (_) {
-                      List<MenuItemList> filterItem =
-                          List<MenuItemList>.from(menuItemList)
-                              .where((element) =>
-                                  element.name?.toLowerCase().contains(
-                                      searchText?.toLowerCase() ?? "") ??
-                                  false)
-                              .toList();
-
-                      if (priceRange != null) {
-                        filterItem = filterItem.where((element) {
-                          double value = double.parse(
-                              (element.formattedPrice ?? '0')
-                                  .replaceAll("\$", "")
-                                  .trim());
-
-                          return (value) > priceRange!.start &&
-                              (value) < priceRange!.end;
-                        }).toList();
-                      }
-
-                      return filterItem.isEmpty
-                          ? Center(
-                              child: Text(
-                                'Grocery not found for $searchText!',
-                                textAlign: TextAlign.center,
-                                style:
-                                    FontUtils.h16(fontColor: AppColors.black),
-                              ),
-                            )
-                          : ListView.separated(
-                              itemCount: filterItem.length,
-                              padding: const EdgeInsets.fromLTRB(0, 28, 0, 28),
-                              separatorBuilder: (_, __) => Column(
-                                children: [
-                                  16.height,
-                                  const Divider(
-                                      color: AppColors.lightGrey,
-                                      thickness: 1,
-                                      height: 0),
-                                  16.height,
-                                ],
-                              ),
-                              itemBuilder: (_, index) {
-                                MenuItemList? item = filterItem[index];
-                                List<String> splitItemName = item.name
-                                        ?.toLowerCase()
-                                        .replaceAll(",", " ")
-                                        .split(" ") ??
-                                    [];
-
-                                int i = widget.groceryDetails?.indexWhere((e) =>
-                                        !(e
-                                                .itemName
-                                                ?.toLowerCase()
-                                                .split(" ")
-                                                .any((element) => !splitItemName
-                                                    .contains(element)) ??
-                                            true)) ??
-                                    -1;
-
-                                return ProductCardWidget(
-                                  categoryName: !i.isNegative
-                                      ? (widget.groceryDetails?[i].itemName ??
-                                          "")
-                                      : "",
-                                  menuItem: item,
-                                  showDiscount: false,
-                                  storeName: widget.storeName,
-                                  qty: item.cartQuantity,
-                                  isGroceryItem: !i.isNegative,
-                                  onTap: () async {
-                                    Get.to(
-                                      () => StoreMealDetails(
-                                        data: item,
-                                        storeId: widget.storeId ?? "",
-                                        shoppingListData: null,
-                                        cartCount: item.cartQuantity ?? 0,
-                                        pickUp: false,
-                                        matchMealStatus: null,
-                                        onAddToCart: (p0, qty) {
-                                          item.cartQuantity = qty;
-                                          item.selectedOptions = p0
-                                              .map(
-                                                (e) => SelectedOptions(
-                                                  markedPrice:
-                                                      e["marked_price"],
-                                                  optionId: e["option_id"],
-                                                  quantity: e["quantity"],
-                                                ),
-                                              )
-                                              .toList();
-                                          setState(() {});
-                                          widget.cartBloc.add(ModifyCart(
-                                              menuItemList: filterItem));
-                                          Get.back();
-                                        },
-                                        fromGrocery: true,
-                                        onCustomizationChange: (p0) {
-                                          item.customizations = p0;
-                                          setState(() {});
-                                        },
-                                      ),
-                                      transition: Transition.fadeIn,
-                                    );
-                                  },
-                                  onCartTap: () => {
-                                    item.cartQuantity =
-                                        (item.cartQuantity ?? 0) + 1,
-                                    widget.cartBloc.add(
-                                        ModifyCart(menuItemList: filterItem)),
-                                    setState(() {}),
-                                  },
-                                  onAdd: () {
-                                    item.cartQuantity =
-                                        (item.cartQuantity ?? 0) + 1;
-                                    widget.cartBloc.add(
-                                        ModifyCart(menuItemList: filterItem));
-                                    setState(() {});
-                                  },
-                                  onRemove: () {
-                                    item.cartQuantity =
-                                        (item.cartQuantity ?? 0) - 1;
-                                    widget.cartBloc.add(
-                                        ModifyCart(menuItemList: filterItem));
-                                    setState(() {});
-                                  },
+                        ),
+                        const SizedBox(width: 10),
+                        myFilterView(
+                          AssetsUtils.icFilterIcon,
+                          'Sort & Filter',
+                          () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: AppColors.transparentColor,
+                              builder: (context) {
+                                return ItemCatalogSortByBottomSheet(
+                                  selectedSort: selectedSorting,
+                                  rangeValues: priceRange,
                                 );
                               },
+                              isDismissible: false,
+                            ).then(
+                              (value) {
+                                if (value != null) {
+                                  if (value["value"] != null) {
+                                    selectedSorting = value["value"];
+                                    setState(() {});
+                                    sortingData();
+                                  }
+
+                                  priceRange = value['priceRange'];
+                                  isFilter = value['isFilter'];
+
+                                  filterResult.clear();
+
+                                  if (isFilter) {
+                                    for (var element in groceryResult) {
+                                      double value = double.parse(
+                                          (element.formattedPrice ?? '0')
+                                              .replaceAll("\$", "")
+                                              .trim());
+                                      if ((value) > priceRange!.start &&
+                                          (value) < priceRange!.end) {
+                                        filterResult.add(element);
+                                      }
+                                    }
+                                  }
+                                  setState(() {});
+                                }
+                              },
                             );
-                    },
-                  ),
+                          },
+                        ),
+                      ],
+                    ).paddingOnly(left: 20, right: 20),
+                    16.height,
+                    const Divider(
+                        color: AppColors.lightGrey, thickness: 1, height: 0),
+                    Expanded(
+                      child: Builder(
+                        builder: (_) {
+                          List<MenuItemList> filterItem =
+                              List<MenuItemList>.from(menuItemList)
+                                  .where((element) =>
+                                      element.name?.toLowerCase().contains(
+                                          searchText?.toLowerCase() ?? "") ??
+                                      false)
+                                  .toList();
+
+                          if (priceRange != null) {
+                            filterItem = filterItem.where((element) {
+                              double value = double.parse(
+                                  (element.formattedPrice ?? '0')
+                                      .replaceAll("\$", "")
+                                      .trim());
+
+                              return (value) > priceRange!.start &&
+                                  (value) < priceRange!.end;
+                            }).toList();
+                          }
+
+                          return filterItem.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'Grocery not found for $searchText!',
+                                    textAlign: TextAlign.center,
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.black),
+                                  ),
+                                )
+                              : ListView.separated(
+                                  itemCount: filterItem.length,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 28, 0, 28),
+                                  separatorBuilder: (_, __) => Column(
+                                    children: [
+                                      16.height,
+                                      const Divider(
+                                          color: AppColors.lightGrey,
+                                          thickness: 1,
+                                          height: 0),
+                                      16.height,
+                                    ],
+                                  ),
+                                  itemBuilder: (_, index) {
+                                    MenuItemList? item = filterItem[index];
+                                    List<String> splitItemName = item.name
+                                            ?.toLowerCase()
+                                            .replaceAll(",", " ")
+                                            .split(" ") ??
+                                        [];
+
+                                    int i = widget.groceryDetails?.indexWhere(
+                                            (e) => !(e.itemName
+                                                    ?.toLowerCase()
+                                                    .split(" ")
+                                                    .any((element) =>
+                                                        !splitItemName.contains(
+                                                            element)) ??
+                                                true)) ??
+                                        -1;
+
+                                    MenuItemList? cartMenu = cartMenuList
+                                        .firstWhereOrNull((element) =>
+                                            element.productId ==
+                                            item.productId);
+
+                                    return ProductCardWidget(
+                                      categoryName: !i.isNegative
+                                          ? (widget.groceryDetails?[i]
+                                                  .itemName ??
+                                              "")
+                                          : "",
+                                      cartItem: cartMenu,
+                                      menuItem: item,
+                                      showDiscount: false,
+                                      storeName: widget.storeName,
+                                      qty: item.cartQuantity,
+                                      isGroceryItem: !i.isNegative,
+                                      onTap: () async {
+                                        Get.to(
+                                          () => StoreMealDetails(
+                                            data: item,
+                                            cartBloc: widget.cartBloc,
+                                            storeId: widget.storeId ?? "",
+                                            shoppingListData: null,
+                                            cartCount: item.cartQuantity ?? 0,
+                                            pickUp: widget.askOrder ==
+                                                AskReceiveOrder.pickMySelf,
+                                            matchMealStatus: null,
+                                            onAddToCart: (p0, qty) {
+                                              item.cartQuantity = qty;
+                                              item.selectedOptions = p0
+                                                  .map(
+                                                    (e) => SelectedOptions(
+                                                      markedPrice:
+                                                          e["marked_price"],
+                                                      optionId: e["option_id"],
+                                                      quantity: e["quantity"],
+                                                    ),
+                                                  )
+                                                  .toList();
+                                              setState(() {});
+                                              widget.cartBloc.add(ModifyCart(
+                                                  menuItemList: filterItem));
+                                              Get.back();
+                                            },
+                                            fromGrocery: true,
+                                            onCustomizationChange: (p0) {
+                                              item.customizations = p0;
+                                              setState(() {});
+                                            },
+                                          ),
+                                          transition: Transition.fadeIn,
+                                        );
+                                      },
+                                      onCartTap: () {
+                                        Get.to(
+                                          () => StoreMenuDetailsScreen(
+                                            data: item,
+                                            cartBloc: widget.cartBloc,
+                                            restaurantId: widget.storeId ?? "",
+                                            cartCount: item.cartQuantity ?? 0,
+                                            pickUp: widget.askOrder ==
+                                                AskReceiveOrder.pickMySelf,
+                                            options: item.selectedOptions
+                                                    ?.map((e) => e.toJson())
+                                                    .toList() ??
+                                                [],
+                                            onCustomizationChange: (p0) {
+                                              item.customizations = p0;
+                                              setState(() {});
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      onAdd: () => cartBloc.add(
+                                        ChangeGroceryQty(
+                                          productID: item.productId,
+                                          type: ModifyType.decrement,
+                                        ),
+                                      ),
+                                      onRemove: () => cartBloc.add(
+                                        ChangeGroceryQty(
+                                          productID: item.productId,
+                                          type: ModifyType.increment,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: simpleTextBorderButton(
+                        context: context,
+                        color: AppColors.green,
+                        buttonLable: 'Checkout',
+                        height: context.height * 0.065,
+                        width: context.width,
+                        isLoadingWidget: false,
+                        onTap: () async {
+                          Object state = cartBloc.state;
+                          if (state is StoreCheckoutState) {
+                            if (state.menuItemList.isNotEmpty) {
+                              await Get.to(
+                                () => StoreCheckOutScreen(
+                                  storeCartBloc: widget.cartBloc,
+                                  address: widget.address,
+                                  storeName: widget.storeName,
+                                  groceryDetails: widget.groceryDetails,
+                                  askOrder: widget.askOrder,
+                                ),
+                              );
+                            } else {
+                              showToast(
+                                message: 'Please, select the product!',
+                                isSuccess: false,
+                                color: AppColors.black,
+                              );
+                            }
+                          }
+                          setState(() {});
+                        },
+                        isDarkColor: true,
+                        isFillColor: true,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: simpleTextBorderButton(
-                    context: context,
-                    color: AppColors.green,
-                    buttonLable: 'Checkout',
-                    height: context.height * 0.065,
-                    width: context.width,
-                    isLoadingWidget: false,
-                    onTap: () async {
-                      Object state = cartBloc.state;
-                      if (state is StoreCheckoutState) {
-                        if (state.menuItemList.isNotEmpty) {
-                          await Get.to(
-                            () => StoreCheckOutScreen(
-                              storeCartBloc: widget.cartBloc,
-                              address: widget.address,
-                              storeName: widget.storeName,
-                              groceryDetails: widget.groceryDetails,
-                              askOrder: widget.askOrder,
-                            ),
-                          );
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: "Please, select the product!");
-                        }
-                      }
-                      setState(() {});
-                    },
-                    isDarkColor: true,
-                    isFillColor: true,
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

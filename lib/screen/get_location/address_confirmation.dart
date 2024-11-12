@@ -29,6 +29,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
   TextEditingController city = TextEditingController();
   TextEditingController zipName = TextEditingController();
   TextEditingController addressType = TextEditingController();
+  TextEditingController country = TextEditingController();
+  TextEditingController stateField = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   AddAddressBloc bloc = AddAddressBloc();
@@ -38,6 +40,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
     streetName.text = widget.locationData['street_Name'] ?? '';
     apartmentName.text = widget.locationData['street_Num'] ?? '';
     city.text = widget.locationData['city'] ?? '';
+    country.text = widget.locationData['country'] ?? '';
+    stateField.text = widget.locationData['state'] ?? '';
     zipName.text = widget.locationData['zipcode'] ?? '';
     addressType.text = widget.locationData['addressType'] ?? '';
   }
@@ -108,7 +112,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                         commonTextField(
                             controller: streetName,
                             validator: (value) {
-                              if (value!.isEmpty) {
+                              if (value?.trim().isEmpty ?? true) {
                                 return 'Please Enter Street Name';
                               } else {
                                 return null;
@@ -122,7 +126,16 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w300)),
                         ),
-                        commonTextField(controller: apartmentName),
+                        commonTextField(
+                          controller: apartmentName,
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please Enter Street Number';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                           child: Text('Extended Address',
@@ -132,6 +145,44 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                   fontWeight: FontWeight.w300)),
                         ),
                         commonTextField(controller: floor),
+                        if (widget.arguments['string'] == 'isFromRegister') ...[
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                            child: Text('Country',
+                                style: TextStyle(
+                                    color: const Color(0xff373737),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w300)),
+                          ),
+                          commonTextField(
+                            controller: country,
+                            validator: (p0) {
+                              if (p0?.trim().isEmpty ?? true) {
+                                return 'Please Enter Country Name';
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                            child: Text('State',
+                                style: TextStyle(
+                                    color: const Color(0xff373737),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w300)),
+                          ),
+                          commonTextField(
+                            controller: stateField,
+                            validator: (p0) {
+                              if (p0?.trim().isEmpty ?? true) {
+                                return 'Please Enter State Name';
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+                        ],
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                           child: Text('City',
@@ -140,7 +191,16 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w300)),
                         ),
-                        commonTextField(controller: city),
+                        commonTextField(
+                          controller: city,
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please Enter City Name';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                           child: Text(
@@ -151,7 +211,16 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                 fontWeight: FontWeight.w300),
                           ),
                         ),
-                        commonTextField(controller: zipName),
+                        commonTextField(
+                          controller: zipName,
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please Enter ZipCode';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
                         const SizedBox(height: 10),
                       ],
                     ),
@@ -212,8 +281,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                           streetNum: apartmentName.text.toString(),
                           streetName: streetName.text.toString(),
                           city: city.text.toString(),
-                          state: widget.locationData['state'] ?? '',
-                          country: widget.locationData['country'] ?? '',
+                          state: stateField.text,
+                          country: country.text,
                           addressType: addressType.text,
                           zipcode: zipName.text.toString(),
                           isPrimary: true,

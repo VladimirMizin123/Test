@@ -116,6 +116,7 @@ class Category {
 class MenuItemList {
   String? name;
   int? price;
+  int? totalPrice;
   dynamic qtyAvailable;
   dynamic unitSize;
   String? unitOfMeasurement;
@@ -144,6 +145,7 @@ class MenuItemList {
   MenuItemList({
     this.name,
     this.price,
+    this.totalPrice,
     this.qtyAvailable,
     this.unitSize,
     this.unitOfMeasurement,
@@ -173,6 +175,7 @@ class MenuItemList {
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(
         name: json["name"],
         price: json["price"],
+        totalPrice: json["totalPrice"],
         qtyAvailable: json["qty_available"],
         unitSize: json["unit_size"],
         unitOfMeasurement: json["unit_of_measurement"],
@@ -207,6 +210,7 @@ class MenuItemList {
     return {
       "name": name,
       "price": price ?? 0,
+      "totalPrice": totalPrice ?? 0,
       "qty_available": qtyAvailable ?? 0,
       "unit_size": unitSize ?? 0,
       "unit_of_measurement": unitOfMeasurement,
@@ -277,6 +281,7 @@ class Option {
   int? price;
   int? minQty;
   int? maxQty;
+  bool? isRequired;
   String? formattedPrice;
   int? defaultQty;
   String? optionId;
@@ -287,6 +292,7 @@ class Option {
     this.price,
     this.minQty,
     this.maxQty,
+    this.isRequired,
     this.formattedPrice,
     this.defaultQty,
     this.optionId,
@@ -298,6 +304,7 @@ class Option {
       price: json["price"],
       minQty: json["min_qty"],
       maxQty: json["max_qty"],
+      isRequired: json["is_required"],
       formattedPrice: json["formatted_price"],
       defaultQty: json["default_qty"],
       optionId: json["option_id"],
@@ -311,6 +318,7 @@ class Option {
         "price": price,
         "min_qty": minQty,
         "max_qty": maxQty,
+        "is_required": isRequired,
         "formatted_price": formattedPrice,
         "default_qty": defaultQty,
         "option_id": optionId,

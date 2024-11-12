@@ -1,13 +1,10 @@
 import 'dart:async';
-
-import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_event.dart';
 import 'package:gymeats_mobile/bloc/user_sign_up_info/user_sign_up_info_state.dart';
-import 'package:gymeats_mobile/service/api_urls.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../repository/sign_up.dart';
 import '../../widget/app_widget.dart';
@@ -94,34 +91,6 @@ class UserSignUpInfoBloc
         await PreferenceUtils.setString(
             prefUserMobile, event.model.phoneNumber?.trim() ?? "");
 
-        try {
-          await _repository.fetchMealPlan(userID).fold((left) {
-            showToast(isSuccess: false, message: left.message!);
-          }, (right) async {});
-        } catch (e) {
-          debugPrint('CATCH ERROR WHILE FETCH MEAL PLAN');
-        }
-
-        print(
-            'event.model.restrictionID.LENGTH ----- ${event.model.restrictionID.length}');
-        if (event.model.restrictionID.isNotEmpty) {
-          try {
-            await _repository
-                .addUserRestriction(
-              restrictionList: event.model.restrictionID,
-              userid: userID,
-            )
-                .fold((left) {
-              showToast(isSuccess: false, message: left.message!);
-            }, (right) {
-              // Get.toNamed('/GenderScreen', arguments: event.model.gender);
-            });
-          } catch (e) {
-            showToast(isSuccess: false, message: e.toString());
-          }
-        } else {
-          // Get.toNamed('/GenderScreen', arguments: event.model.gender);
-        }
         event.onComplete?.call();
         emit(SignUpSuccessState());
         Get.offAllNamed('/GenderScreen', arguments: event.model);

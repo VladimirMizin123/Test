@@ -15,6 +15,7 @@ class GetDashboardDataRepository {
   final ApiServices apiServices = ApiServices();
 
   Future<Either<ErrorModel, GetDashboardModel>> getDashboardData() async {
+    log("api :--> ${ApiUrls.getDashboardData}/$userId");
     final response = await apiServices.get(
       '${ApiUrls.getDashboardData}/$userId',
     );
@@ -28,6 +29,7 @@ class GetDashboardDataRepository {
 
   Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
       String date) async {
+    log('${ApiUrls.getMealLogByDate}/$userId?date=$date');
     final response =
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
 

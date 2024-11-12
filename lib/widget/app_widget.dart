@@ -1,26 +1,30 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
+import 'package:gymeats_mobile/service/toast_service.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 
 import '../constant/string_utils.dart';
 
-Widget buildButton(
-    {required BuildContext context,
-    String? title,
-    void Function()? onPressed,
-    Color? bgColor,
-    Color? textColor,
-    bool? hasImage = false,
-    String? imagePath}) {
+Widget buildButton({
+  required BuildContext context,
+  String? title,
+  void Function()? onPressed,
+  Color? bgColor,
+  Color? textColor,
+  bool? hasImage = false,
+  String? imagePath,
+  bool showLoader = false,
+}) {
   return SizedBox(
     width: double.infinity.w,
     height: 48.h,
@@ -32,28 +36,39 @@ Widget buildButton(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          hasImage == true
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: SvgPicture.asset(
-                    imagePath!,
-                    height: 24.h,
-                    width: 24.w,
-                  ),
-                )
-              : const SizedBox(),
-          Text(title!,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .copyWith(color: textColor, fontSize: 19.sp)),
-        ],
-      ),
+      child: showLoader
+          ? const Center(
+              child: SizedBox(
+                height: 28,
+                width: 28,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                hasImage == true
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: SvgPicture.asset(
+                          imagePath!,
+                          height: 24.h,
+                          width: 24.w,
+                        ),
+                      )
+                    : const SizedBox(),
+                Text(title!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall!
+                        .copyWith(color: textColor, fontSize: 19.sp)),
+              ],
+            ),
     ),
   );
 }
@@ -86,19 +101,21 @@ Widget buildBorderButton({
   );
 }
 
-Widget commonTextField(
-    {String? hintText,
-    bool isPassword = false,
-    bool eyeShow = false,
-    Function()? onTap,
-    Widget? suffixIcon,
-    int? maxLength,
-    TextEditingController? controller,
-    required BuildContext context,
-    TextInputType? textInputType,
-    void Function(String)? onChanged,
-    bool? isWeight = false,
-    bool readOnly = false}) {
+Widget commonTextField({
+  String? hintText,
+  bool isPassword = false,
+  bool eyeShow = false,
+  Function()? onTap,
+  Widget? suffixIcon,
+  int? maxLength,
+  TextEditingController? controller,
+  required BuildContext context,
+  TextInputType? textInputType,
+  void Function(String)? onChanged,
+  bool? isWeight = false,
+  bool readOnly = false,
+  List<TextInputFormatter>? inputFormatters,
+}) {
   return SizedBox(
     height: 48.h,
     child: TextFormField(
@@ -113,6 +130,7 @@ Widget commonTextField(
               : true
           : false,
       keyboardType: textInputType,
+      inputFormatters: inputFormatters,
       readOnly: readOnly,
       onChanged: onChanged,
       maxLength: maxLength ?? 10000,
@@ -333,25 +351,7 @@ showToast({
   if (message.trim().isEmpty) {
     return;
   }
-  if (isSuccess) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: color ?? Colors.green,
-      textColor: Colors.white,
-      timeInSecForIosWeb: timeInSecForIosWeb ?? 1,
-      fontSize: 16.0,
-    );
-  } else {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        textColor: Colors.white,
-        backgroundColor: color ?? Colors.red,
-        fontSize: 16.0);
-  }
+  ToastService.showToast(message, isSuccess: isSuccess, defaultColor: color);
 }
 
 Widget arrowButton({String? icon, bool isDisable = false}) {
@@ -423,7 +423,7 @@ Widget commonSliderView(
     onTap: () {
       Get.toNamed("/AddNewItemScreen", arguments: {
         "title": title,
-        "weightValue": weightValue,
+        "date": DateTime.now(),
       });
     },
     child: Container(
@@ -490,6 +490,8 @@ Widget mealPlanCard({
   VoidCallback? onSwapMealTap,
   VoidCallback? onTap,
 }) {
+  bool isSkipped = (mealData?.isSkipped ?? false);
+  bool isEaten = (mealData?.isDone ?? false);
   return GestureDetector(
     onTap: onTap,
     child: Padding(
@@ -506,7 +508,7 @@ Widget mealPlanCard({
             ],
             borderRadius: BorderRadius.circular(14),
           ),
-          child: mealData!.isSkipped == true
+          child: isSkipped || isEaten
               ? Column(
                   children: [
                     Row(
@@ -518,8 +520,17 @@ Widget mealPlanCard({
                             width: 90.w,
                             color: AppColors.lightGrey,
                             child: Center(
-                                child: SvgPicture.asset(
-                                    AssetsUtils.icSkippedIcon)),
+                              child: isEaten
+                                  ? CircleAvatar(
+                                      radius: 15,
+                                      backgroundColor: AppColors.primaryBlue,
+                                      child: SvgPicture.asset(AssetsUtils.done,
+                                          color: AppColors.whiteColor),
+                                    )
+                                  : SvgPicture.asset(
+                                      AssetsUtils.icSkippedIcon,
+                                    ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -529,7 +540,10 @@ Widget mealPlanCard({
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(StringUtils.eaten,
+                              Text(
+                                  isSkipped
+                                      ? StringUtils.skipped
+                                      : StringUtils.eaten,
                                   style: FontUtils.h16(
                                       fontColor: AppColors.darkGray,
                                       fontWeight: FWT.regular)),
@@ -551,7 +565,7 @@ Widget mealPlanCard({
                             width: 90.w,
                             color: AppColors.lightGrey,
                             child: CachedNetworkImage(
-                              imageUrl: mealData.recipe!.mainImage ?? '',
+                              imageUrl: mealData?.recipe?.mainImage ?? '',
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
                                   child: CircularProgressIndicator(
@@ -569,18 +583,18 @@ Widget mealPlanCard({
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(mealData.meal ?? '',
+                                Text(mealData?.meal ?? '',
                                     style: FontUtils.h14(
                                         fontColor: AppColors.darkGray,
                                         fontWeight: FWT.lightMedium)),
-                                Text(mealData.recipe!.name ?? '',
+                                Text(mealData?.recipe?.name ?? '',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: FontUtils.h16(
                                         fontColor: AppColors.darkGray,
                                         fontWeight: FWT.regular)),
                                 Text(
-                                    "${mealData.calories!.toStringAsFixed(2)} cal",
+                                    "${mealData?.calories?.toStringAsFixed(2)} cal",
                                     style: FontUtils.h14(
                                         fontColor: AppColors.letsEatButton,
                                         fontWeight: FWT.lightMedium)),

@@ -265,24 +265,6 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                               GestureDetector(
                                 onTap: () async {
                                   showRadiusSlider.toggle();
-                                  if (!showRadiusSlider.value) {
-                                    if (PreferenceUtils.getGroceryRadius()
-                                            .round() !=
-                                        kmRadius.value.round()) {
-                                      PreferenceUtils.setGroceryRadius(
-                                          kmRadius.value.roundToDouble());
-                                      await Constant.i.removeStore();
-                                      Constant.i.handleStoreCache();
-
-                                      if (searchController.text
-                                          .trim()
-                                          .isEmpty) {
-                                        alreadyCache = false;
-                                        storeList = [];
-                                        getNearByStore();
-                                      }
-                                    }
-                                  }
                                 },
                                 child: Image.asset(
                                   AssetsUtils.icRadius,
@@ -327,6 +309,28 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                               "${kmRadius.value.round()} Mile",
                                           onChanged: (value) {
                                             kmRadius.value = value;
+                                          },
+                                          onChangeEnd: (value) async {
+                                            kmRadius.value = value;
+                                            showRadiusSlider.toggle();
+                                            if (PreferenceUtils
+                                                        .getGroceryRadius()
+                                                    .round() !=
+                                                kmRadius.value.round()) {
+                                              PreferenceUtils.setGroceryRadius(
+                                                  kmRadius.value
+                                                      .roundToDouble());
+                                              await Constant.i.removeStore();
+                                              Constant.i.handleStoreCache();
+
+                                              if (searchController.text
+                                                  .trim()
+                                                  .isEmpty) {
+                                                alreadyCache = false;
+                                                storeList = [];
+                                                getNearByStore();
+                                              }
+                                            }
                                           },
                                         ),
                                       ).paddingOnly(right: 10, left: 10),
@@ -509,16 +513,20 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
             setState(() {});
           },
           onVerify: (categorie) {
-            Get.to(
-              () => StoreCategoriesScreen(
-                storeId: id,
-                address: getUserAddress,
-                storeName: storeName,
-                groceryDetails: groceryDetails,
-                askOrder: askOrder,
-                categorie: categorie,
-              ),
-            );
+            if (mounted) {
+              Get.to(
+                () => StoreCategoriesScreen(
+                  storeId: id,
+                  address: getUserAddress,
+                  storeName: storeName,
+                  groceryDetails: groceryDetails,
+                  askOrder: askOrder,
+                  categorie: categorie,
+                ),
+              );
+            } else {
+              return;
+            }
           },
         ),
       );

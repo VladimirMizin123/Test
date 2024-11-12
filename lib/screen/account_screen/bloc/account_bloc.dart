@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/repository/get_account_details.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
@@ -50,8 +51,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
     try {
       try {
-        await _repository.apiServices
-            .get(ApiUrls.addIngredientsToUserGroceryList);
+        await _repository.apiServices.get(ApiUrls
+            .addIngredientsToUserGroceryList
+            .replaceAll("{userId}", userId));
       } catch (e) {
         log(e.toString());
       }
@@ -91,12 +93,18 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     try {
       await _repository
           .updateDietProgramInfo(
-        programId: event.programId,
+        dietId: event.programId,
       )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        emit(UpdateDietProgramSuccessState(message: right.message ?? ''));
+        if (right.success ?? false) {
+          emit(UpdateDietProgramSuccessState(message: right.message ?? ''));
+        } else {
+          showToast(isSuccess: false, message: right.errorMessage.toString());
+          emit(UpdateDietProgramErrorState(
+              message: right.errorMessage.toString()));
+        }
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -182,8 +190,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
           (left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
-        showToast(isSuccess: true, message: right.message.toString());
-        emit(UpdateProfileImageSuccessState(profileDetails: right.data));
+        showToast(isSuccess: true, message: right.data.toString());
+        emit(UpdateProfileImageSuccessState(profileDetails: null));
+        add(GetProfileImageEvent());
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

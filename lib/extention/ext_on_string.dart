@@ -26,4 +26,24 @@ extension ExtString on String {
                 ),
               ),
       );
+
+  Widget storeGenericImg([double? size]) => SizedBox(
+        height: size ?? 37,
+        width: size ?? 37,
+        child: (restaurantImg.isNotEmpty)
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: NetworkImageWidget(
+                  url: restaurantImg,
+                  fit: BoxFit.cover,
+                  placeholder: AssetsUtils.icGenericLogo,
+                ),
+              )
+            : Center(
+                child: Image.asset(
+                  AssetsUtils.icGenericLogo,
+                  height: 30,
+                ),
+              ),
+      );
 }

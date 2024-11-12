@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -187,7 +188,7 @@ class _GetUserAddressState extends State<GetUserAddress>
   }
 
   Future<bool> appSettingDialogBox() async {
-    bool fromRegister = argumentsValue['string'] == 'isFromRegister';
+    bool fromRegister = argumentsValue?['string'] == 'isFromRegister';
     bool value = fromRegister
         // ignore: use_build_context_synchronously
         ? await showDialog(
@@ -372,146 +373,155 @@ class _GetUserAddressState extends State<GetUserAddress>
   String zipcode = '';
 
   Future<void> findAddressURL({String? lat, String? lng}) async {
-    streetNum = '';
-    streetName = '';
-    city = '';
-    stateName = '';
-    country = '';
-    zipcode = '';
+    try {
+      streetNum = '';
+      streetName = '';
+      city = '';
+      stateName = '';
+      country = '';
+      zipcode = '';
 
-    await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold(
-        (left) {
-      showToast(isSuccess: false, message: left.errorMessage ?? "");
-    }, (right) {
-      // showToast(isSuccess: true, message: right.message!);
-      FindAddressResponseModel(
-          plusCode: right.plusCode,
-          status: right.status,
-          results: right.results);
+      await _googleMapSearchRepository.findAddressURL(lat: lat, lng: lng).fold(
+          (left) {
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
+      }, (right) {
+        // showToast(isSuccess: true, message: right.message!);
+        FindAddressResponseModel(
+            plusCode: right.plusCode,
+            status: right.status,
+            results: right.results);
 
-      if (right.results?.isNotEmpty ?? false) {
-        right.results?.first.addressComponents?.forEach((element) {
-          ///streetNum
+        if (right.results?.isNotEmpty ?? false) {
+          right.results?.first.addressComponents?.forEach((element) {
+            ///streetNum
 
-          List<String> streetNumList = element.types
-                  ?.where((element1) => element1 == 'premise')
-                  .toList() ??
-              [];
+            List<String> streetNumList = element.types
+                    ?.where((element1) => element1 == 'premise')
+                    .toList() ??
+                [];
 
-          if (streetNumList.isNotEmpty) {
-            streetNum = element.longName ?? "";
-          }
+            if (streetNumList.isNotEmpty) {
+              streetNum = element.longName ?? "";
+            }
 
-          ///streetName
+            ///streetName
 
-          List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'sublocality_level_2')
-                  .toList() ??
-              [];
+            List<String> streetNameList = element.types
+                    ?.where((element1) => element1 == 'sublocality_level_2')
+                    .toList() ??
+                [];
 
-          if (streetNameList.isNotEmpty) {
-            streetName = element.longName ?? "";
-          }
+            if (streetNameList.isNotEmpty) {
+              streetName = element.longName ?? "";
+            }
 
-          ///city
+            ///city
 
-          List<String> cityList = element.types
-                  ?.where((element1) => element1 == 'locality')
-                  .toList() ??
-              [];
+            List<String> cityList = element.types
+                    ?.where((element1) => element1 == 'locality')
+                    .toList() ??
+                [];
 
-          if (cityList.isNotEmpty) {
-            city = element.longName ?? "";
-          }
+            if (cityList.isNotEmpty) {
+              city = element.longName ?? "";
+            }
 
-          ///State
+            ///State
 
-          List<String> stateList = element.types
-                  ?.where(
-                      (element1) => element1 == 'administrative_area_level_1')
-                  .toList() ??
-              [];
+            List<String> stateList = element.types
+                    ?.where(
+                        (element1) => element1 == 'administrative_area_level_1')
+                    .toList() ??
+                [];
 
-          if (stateList.isNotEmpty) {
-            stateName = element.longName ?? "";
-          }
+            if (stateList.isNotEmpty) {
+              stateName = element.longName ?? "";
+            }
 
-          ///country
+            ///country
 
-          List<String> countryList = element.types
-                  ?.where((element1) => element1 == 'country')
-                  .toList() ??
-              [];
+            List<String> countryList = element.types
+                    ?.where((element1) => element1 == 'country')
+                    .toList() ??
+                [];
 
-          if (countryList.isNotEmpty) {
-            country = element.longName ?? "";
-          }
+            if (countryList.isNotEmpty) {
+              country = element.longName ?? "";
+            }
 
-          ///ZIP CODE
-          List<String> pinCodeList = element.types
-                  ?.where((element1) => element1 == 'postal_code')
-                  .toList() ??
-              [];
+            ///ZIP CODE
+            List<String> pinCodeList = element.types
+                    ?.where((element1) => element1 == 'postal_code')
+                    .toList() ??
+                [];
 
-          if (pinCodeList.isNotEmpty) {
-            zipcode = element.longName ?? "";
-          }
-        });
-      }
+            if (pinCodeList.isNotEmpty) {
+              zipcode = element.longName ?? "";
+            }
+          });
+        }
 
-      searchTextController.text = right.results?.first.formattedAddress ??
-          right.plusCode?.compoundCode ??
-          "";
-      setState(() {});
-    });
+        searchTextController.text = (right.results?.first.formattedAddress) ??
+            (right.plusCode?.compoundCode) ??
+            "";
+        setState(() {});
+      });
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> findLatLng(String value) async {
-    await _googleMapSearchRepository.findLatLng(value).fold((left) {
-      showToast(isSuccess: false, message: left.errorMessage!);
-    }, (right) async {
-      // showToast(isSuccess: true, message: right.message!);
-      FindLatLngResponseModel(
-          result: right.result,
-          status: right.status,
-          htmlAttributions: right.htmlAttributions);
+    try {
+      await _googleMapSearchRepository.findLatLng(value).fold((left) {
+        showToast(isSuccess: false, message: left.errorMessage!);
+      }, (right) async {
+        // showToast(isSuccess: true, message: right.message!);
+        FindLatLngResponseModel(
+            result: right.result,
+            status: right.status,
+            htmlAttributions: right.htmlAttributions);
 
-      selectedLatLng = LatLng(right.result!.geometry!.location!.lat!,
-          right.result!.geometry!.location!.lng!);
+        selectedLatLng = LatLng(right.result?.geometry?.location?.lat ?? 0,
+            right.result?.geometry?.location?.lng ?? 0);
 
-      BitmapDescriptor? customIcon;
+        BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-      await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(
-          size: Size(0, 0),
-        ),
-        AssetsUtils.locationMarker,
-      ).then((d) {
-        customIcon = d;
+        await BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(
+            size: Size(0, 0),
+          ),
+          AssetsUtils.locationMarker,
+        ).then((d) {
+          customIcon = d;
+        });
+
+        currentPosition = CameraPosition(
+          target: LatLng(
+              selectedLatLng?.latitude ?? 0, selectedLatLng?.longitude ?? 0),
+          zoom: 14.4746,
+        );
+
+        if (markers.length > 1) {
+          markers.removeLast();
+        }
+        markers.add(
+          Marker(
+              markerId: const MarkerId('1'),
+              position: LatLng(selectedLatLng?.latitude ?? 0,
+                  selectedLatLng?.longitude ?? 0),
+              icon: customIcon ?? BitmapDescriptor.defaultMarker),
+        );
+
+        mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+        searchList.clear();
+        setState(() {});
       });
-
-      currentPosition = CameraPosition(
-        target: LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude),
-        zoom: 14.4746,
-      );
-
-      if (markers.length > 1) {
-        markers.removeLast();
-      }
-      markers.add(
-        Marker(
-            markerId: const MarkerId('1'),
-            position:
-                LatLng(selectedLatLng!.latitude, selectedLatLng!.longitude),
-            icon: customIcon!),
-      );
-
-      mapController
-          ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-      searchList.clear();
-      setState(() {});
-    });
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   FocusNode searchTextFocus = FocusNode();
@@ -524,7 +534,7 @@ class _GetUserAddressState extends State<GetUserAddress>
     getCurrentLocation();
     argumentsValue = Get.arguments;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (argumentsValue['string'] != 'isFromRegister') {
+      if (argumentsValue?['string'] != 'isFromRegister') {
         addressBloc.add(GetUserAddressEvent());
         cartBloc.add(GetCartEvent());
       }
@@ -563,38 +573,44 @@ class _GetUserAddressState extends State<GetUserAddress>
                   zoomControlsEnabled: false,
                   compassEnabled: true,
                   onTap: (argument) async {
-                    BitmapDescriptor? customIcon;
+                    try {
+                      BitmapDescriptor? customIcon;
 
-                    customIcon = BitmapDescriptor.fromBytes(
-                      await getBytesFromAsset(AssetsUtils.locationMarker, 150),
-                    );
+                      customIcon = BitmapDescriptor.fromBytes(
+                        await getBytesFromAsset(
+                            AssetsUtils.locationMarker, 150),
+                      );
 
-                    if (markers.length > 1) {
-                      markers.removeLast();
+                      if (markers.length > 1) {
+                        markers.removeLast();
+                      }
+                      markers.add(
+                        Marker(
+                          markerId: const MarkerId('1'),
+                          position:
+                              LatLng(argument.latitude, argument.longitude),
+                          icon: customIcon,
+                        ),
+                      );
+
+                      selectedLatLng =
+                          LatLng(argument.latitude, argument.longitude);
+                      currentPosition = CameraPosition(
+                        target: LatLng(argument.latitude, argument.longitude),
+                        zoom: 14.4746,
+                      );
+                      mapController?.animateCamera(
+                          CameraUpdate.newCameraPosition(currentPosition));
+
+                      findAddressURL(
+                        lat: argument.latitude.toString(),
+                        lng: argument.longitude.toString(),
+                      );
+
+                      setState(() {});
+                    } catch (e) {
+                      log(e.toString());
                     }
-                    markers.add(
-                      Marker(
-                        markerId: const MarkerId('1'),
-                        position: LatLng(argument.latitude, argument.longitude),
-                        icon: customIcon,
-                      ),
-                    );
-
-                    selectedLatLng =
-                        LatLng(argument.latitude, argument.longitude);
-                    currentPosition = CameraPosition(
-                      target: LatLng(argument.latitude, argument.longitude),
-                      zoom: 14.4746,
-                    );
-                    mapController?.animateCamera(
-                        CameraUpdate.newCameraPosition(currentPosition));
-
-                    findAddressURL(
-                      lat: argument.latitude.toString(),
-                      lng: argument.longitude.toString(),
-                    );
-
-                    setState(() {});
                   },
                 ),
                 Positioned(
@@ -713,9 +729,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                       bloc: addressBloc,
                       builder: (context, state) {
                         bool showManual =
-                            argumentsValue['string'] == 'isFromRestaurant' ||
-                                argumentsValue['string'] == 'isFromCheckout' ||
-                                argumentsValue['string'] == 'isFromGrocery';
+                            argumentsValue?['string'] == 'isFromRestaurant' ||
+                                argumentsValue?['string'] == 'isFromCheckout' ||
+                                argumentsValue?['string'] == 'isFromGrocery';
                         return state is GetUserAddressLoadingState
                             ? const SizedBox()
                             : ListView.separated(
@@ -819,11 +835,11 @@ class _GetUserAddressState extends State<GetUserAddress>
                       listener: (context, state) async {
                         if (state is SetAddressPrimarySuccessState) {
                           Constant.i.removeStore();
-                          if (argumentsValue['string'] == 'isFromRestaurant' ||
-                              argumentsValue['string'] == 'isFromCheckout' ||
-                              argumentsValue['string'] == 'isFromGrocery') {
+                          if (argumentsValue?['string'] == 'isFromRestaurant' ||
+                              argumentsValue?['string'] == 'isFromCheckout' ||
+                              argumentsValue?['string'] == 'isFromGrocery') {
                             await PreferenceUtils.setManualLoation(true);
-                            if (argumentsValue['string'] == 'isFromGrocery') {
+                            if (argumentsValue?['string'] == 'isFromGrocery') {
                               Get.offAll(
                                   () => const AppManagerScreen(selectIndex: 1));
                             } else {
@@ -831,7 +847,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                                 () => const AppManagerScreen(selectIndex: 3),
                               );
                             }
-                          } else if (argumentsValue['string'] ==
+                          } else if (argumentsValue?['string'] ==
                               'isFromGroceryCheckout') {
                             Get.offAll(
                               () => const AppManagerScreen(selectIndex: 1),
@@ -879,7 +895,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                   GestureDetector(
                     onTap: () async {
                       bool isFromRegister =
-                          argumentsValue['string'] == 'isFromRegister';
+                          argumentsValue?['string'] == 'isFromRegister';
                       if (!isFromRegister) {
                         LocationPermission permission =
                             await Geolocator.checkPermission();
@@ -935,7 +951,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                           city != "" ||
                           stateName != "" ||
                           country != "" ||
-                          argumentsValue['string'] == 'isFromRegister') {
+                          argumentsValue?['string'] == 'isFromRegister') {
                         Get.to(
                           () => AddressConfirmation(
                             locationData: addressData,

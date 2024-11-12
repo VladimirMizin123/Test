@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
@@ -27,6 +28,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dar
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
+import 'model/get_user_address_model.dart' as address;
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
   const RestaurantMenuDetailsScreen({
@@ -37,6 +39,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
     required this.cartCount,
     required this.pickUp,
     this.quote,
+    required this.userAddress,
     this.onCustomizationChange,
   });
   final MenuItemList data;
@@ -46,6 +49,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
   final bool pickUp;
   final qu.Quote? quote;
   final Function(List<Customization>)? onCustomizationChange;
+  final address.UserAddress? userAddress;
 
   @override
   State<RestaurantMenuDetailsScreen> createState() =>
@@ -70,7 +74,9 @@ class _RestaurantMenuDetailsScreenState
   List<Map<String, dynamic>> secondOptionsList = [];
   ShoppingListData? shoppingListData;
   List<Customization> customizationList = [];
-  Rxn<opt.Option> routing = Rxn<opt.Option>(null);
+  RxList<opt.Option> routingList = RxList<opt.Option>();
+  // Rxn<opt.Option> routing = Rxn<opt.Option>(null);
+  ScrollController controller = ScrollController();
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
@@ -103,6 +109,7 @@ class _RestaurantMenuDetailsScreenState
         callback: (menu) {
           customizationList = menu.customizations ?? [];
           widget.onCustomizationChange?.call(customizationList);
+
           getData();
           setState(() {});
         },
@@ -142,6 +149,7 @@ class _RestaurantMenuDetailsScreenState
               item = data.quantity ?? 0;
               cartCount = state.shoppingList.length;
             } else {
+              routingList.clear();
               alreadyInCart = false;
               item = 0;
               cartCount = 0;
@@ -161,6 +169,7 @@ class _RestaurantMenuDetailsScreenState
                       child: AppCenterLoader(),
                     )
                   : SingleChildScrollView(
+                      controller: controller,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -390,7 +399,10 @@ class _RestaurantMenuDetailsScreenState
                                                 } else {
                                                   Get.to(
                                                     () => RestaurantCart(
-                                                        pickUp: widget.pickUp),
+                                                      pickUp: widget.pickUp,
+                                                      userAddress:
+                                                          widget.userAddress,
+                                                    ),
                                                     transition:
                                                         Transition.fadeIn,
                                                   );
@@ -430,7 +442,7 @@ class _RestaurantMenuDetailsScreenState
 
   Widget nestedItemView() {
     return Obx(
-      () => routing.value == null
+      () => routingList.isEmpty
           ? Column(
               children: List.generate(
                 customizationList.length,
@@ -450,32 +462,38 @@ class _RestaurantMenuDetailsScreenState
                 },
               ),
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                routing.value?.customizations?.length ?? 0,
-                (index) {
-                  List<Customization> routeCs =
-                      routing.value?.customizations ?? [];
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 16.h),
-                    child: Column(
-                      children: [
-                        CustomizationHeader(
-                          customization: routeCs[index],
-                          setBackButton: index == 0 ? true : false,
-                          parentTitle: routing.value?.name,
-                          onBack: () {
-                            routing.value = null;
-                          },
+          : Builder(
+              builder: (context) {
+                opt.Option routing = routingList.last;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(
+                    routing.customizations?.length ?? 0,
+                    (index) {
+                      List<Customization> routeCs =
+                          routing.customizations ?? [];
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 16.h),
+                        child: Column(
+                          children: [
+                            CustomizationHeader(
+                              customization: routeCs[index],
+                              setBackButton: index == 0 ? true : false,
+                              parentTitle: routing.name,
+                              onBack: () {
+                                routingList.removeLast();
+                                // routing.value = null;
+                              },
+                            ),
+                            16.h.height,
+                            nestedView(routeCs[index], parent: routeCs[index]),
+                          ],
                         ),
-                        16.h.height,
-                        nestedView(routeCs[index], parent: routeCs[index]),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
     );
   }
@@ -500,12 +518,32 @@ class _RestaurantMenuDetailsScreenState
                     border:
                         Border.all(color: const Color(0xffECECED), width: 1.2),
                   ),
-                  child: Column(
-                    children: <Widget>[
-                      normalTile(customization, currentOpt,
-                          showRadioButton: false, parent: parent),
-                    ].addBetweenItems(15.height),
-                  ),
+                  child: Builder(builder: (context) {
+                    return Column(
+                      children: <Widget>[
+                        normalTile(customization, currentOpt,
+                            showRadioButton: false, parent: parent),
+                        // ! Add For Nested Item
+                        // if (routingList.isNotEmpty)
+                        //   ...csList.map((e) {
+                        //     return Column(
+                        //       children: [
+                        //         NestedCustomizationHeader(
+                        //           customization: e,
+                        //           style: FontUtils.h16(
+                        //             fontColor: Colors.black,
+                        //             fontWeight: FWT.medium,
+                        //           ),
+                        //         ).paddingOnly(left: 5, right: 5),
+                        //         15.height,
+                        //         expandableTile(e, parent: parent)
+                        //             .paddingOnly(left: 20, right: 5),
+                        //       ],
+                        //     );
+                        //   }).toList(),
+                      ].addBetweenItems(15.height),
+                    );
+                  }),
                 )
               : Column(
                   children: [
@@ -589,16 +627,17 @@ class _RestaurantMenuDetailsScreenState
       {bool showRadioButton = true,
       required Customization parent,
       bool setRouting = true}) {
+    bool isOptionRequired = option.isRequired ?? false;
     return GestureDetector(
       onTap: () {
         bool isSelected = nestedOptionList
             .any((element) => element["option_id"] == option.optionId);
-
         if (cs.name == parent.name &&
             setRouting &&
             (option.customizations?.isNotEmpty ?? false) &&
             isSelected) {
-          routing.value = option;
+          routingList.add(option);
+          _animateToTop();
         }
       },
       child: Row(
@@ -626,14 +665,33 @@ class _RestaurantMenuDetailsScreenState
           ),
           SizedBox(width: 12.w),
           Expanded(
-            child: Text(
-              option.name ?? '',
-              style: FontUtils.h15(
-                fontColor: Colors.black,
-                fontWeight: FWT.lightMedium,
+            child: RichText(
+              text: TextSpan(
+                text: option.name ?? '',
+                style: FontUtils.h15(
+                  fontColor: Colors.black,
+                  fontWeight: FWT.lightMedium,
+                ),
+                children: isOptionRequired
+                    ? <InlineSpan>[
+                        const WidgetSpan(
+                          alignment: PlaceholderAlignment.baseline,
+                          baseline: TextBaseline.alphabetic,
+                          child: SizedBox(width: 10),
+                        ),
+                        TextSpan(
+                          text: "Required",
+                          style: FontUtils.h12(
+                            fontColor: AppColors.terracotta,
+                            fontWeight: FWT.medium,
+                          ),
+                        )
+                      ]
+                    : [],
               ),
             ),
           ),
+          10.width,
           Text(
             option.formattedPrice ?? '',
             style: const TextStyle(color: Colors.black),
@@ -653,10 +711,9 @@ class _RestaurantMenuDetailsScreenState
         removeOptions(option);
         return;
       }
-      if (cs.name == parent.name &&
-          setRouting &&
-          (option.customizations?.isNotEmpty ?? false)) {
-        routing.value = option;
+      if (setRouting && (option.customizations?.isNotEmpty ?? false)) {
+        routingList.add(option);
+        _animateToTop();
       }
       findOptionPath(parent, option);
       removeIfNotValidate(cs);
@@ -669,6 +726,11 @@ class _RestaurantMenuDetailsScreenState
     });
   }
 
+  void _animateToTop() {
+    controller.animateTo(0,
+        duration: const Duration(milliseconds: 1000), curve: Curves.easeInOut);
+  }
+
   bool isFormValid(List<Customization> cList) {
     for (var i = 0; i < cList.length; i++) {
       int count = nestedOptionList
@@ -677,19 +739,35 @@ class _RestaurantMenuDetailsScreenState
               false))
           .toList()
           .length;
-      List<opt.Option> validOptinList = cList[i]
+
+      List<opt.Option> requiredOptions = cList[i]
+              .options
+              ?.where((element) => element.isRequired ?? false)
+              .toList() ??
+          [];
+
+      if (requiredOptions.isNotEmpty) {
+        log("${cList[i].name}:-------Required Option---------${requiredOptions.map((e) => e.name).toList()}");
+      }
+
+      bool requiredOptionNotSelected = requiredOptions.isNotEmpty &&
+          !requiredOptions.every((element) =>
+              nestedOptionList.any((e) => e["option_id"] == element.optionId));
+
+      List<opt.Option> validOptionList = cList[i]
               .options
               ?.where((element) => nestedOptionList
                   .any((e) => e["option_id"] == element.optionId))
               .toList() ??
           [];
 
-      if ((count < (cList[i].minChoiceOptions ?? 0))) {
+      if ((count < (cList[i].minChoiceOptions ?? 0)) ||
+          requiredOptionNotSelected) {
         return false;
       }
 
       if (cList[i].options?.isNotEmpty ?? false) {
-        for (opt.Option ele in validOptinList) {
+        for (opt.Option ele in validOptionList) {
           if (!isFormValid(ele.customizations ?? [])) {
             return false;
           }
@@ -800,6 +878,7 @@ class _RestaurantMenuDetailsScreenState
               productName: widget.data.name ?? '',
               quantity: item,
               price: price,
+              originalPrice: widget.data.originalPrice,
               options: nestedOptionList
                   .map((e) => s_opt.Option(
                         optionId: e["option_id"],
@@ -820,105 +899,18 @@ class _RestaurantMenuDetailsScreenState
           ),
         );
       } else {
-        Fluttertoast.showToast(
-          msg: 'Please Select Required Item',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0,
+        showToast(
+          message: 'Please Select Required Item',
+          isSuccess: false,
+          color: AppColors.black,
         );
       }
     } else {
-      Fluttertoast.showToast(
-        msg: 'Please Select One Item',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToast(
+        message: 'Please Select One Item',
+        isSuccess: false,
+        color: AppColors.black,
       );
     }
-  }
-}
-
-class NestedCustomizationItem extends StatelessWidget {
-  const NestedCustomizationItem({
-    super.key,
-    required this.customization,
-    required this.isSelected,
-    required this.onTap,
-  });
-  final Customization customization;
-  final bool isSelected;
-  final Function(int) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10, bottom: 10),
-      child: Column(
-        children: [
-          CustomizationHeader(
-            customization: customization,
-            style: FontUtils.h16(
-              fontColor: Colors.black,
-              fontWeight: FWT.medium,
-            ),
-          ).paddingOnly(right: 12, left: 12),
-          Container(
-            margin: EdgeInsets.only(top: 10.h),
-            padding: const EdgeInsets.only(left: 12, right: 12),
-            child: Column(
-              children: List.generate(
-                customization.options!.length,
-                (index1) {
-                  return Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () => onTap.call(index1),
-                            child: Image.asset(
-                              isSelected
-                                  ? AssetsUtils.terracotaCheck
-                                  : AssetsUtils.greyCircle,
-                              height: 18.h,
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          SizedBox(
-                            width: 230.w,
-                            child: Text(
-                              customization.options?[index1].name ?? '',
-                              style: FontUtils.h15(
-                                fontColor: Colors.black,
-                                fontWeight: FWT.lightMedium,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            customization.options?[index1].formattedPrice ?? '',
-                            style: const TextStyle(color: Colors.black),
-                          )
-                        ],
-                      ),
-                      customization.options!.length - 1 == index1
-                          ? const SizedBox()
-                          : Divider(
-                              color: const Color(0xffECECED),
-                              thickness: 1,
-                              height: 20.h,
-                            )
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

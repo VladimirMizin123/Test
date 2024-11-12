@@ -15,14 +15,22 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class JournalSkipMealBottomSheet extends StatefulWidget {
   final MealData? mealData;
+  final DateTime? time;
   final JournalPlanBloc bloc;
-  const JournalSkipMealBottomSheet({super.key, this.mealData, required this.bloc});
+  const JournalSkipMealBottomSheet({
+    super.key,
+    this.mealData,
+    required this.bloc,
+    this.time,
+  });
 
   @override
-  State<JournalSkipMealBottomSheet> createState() => _JournalSkipMealBottomSheetState();
+  State<JournalSkipMealBottomSheet> createState() =>
+      _JournalSkipMealBottomSheetState();
 }
 
-class _JournalSkipMealBottomSheetState extends State<JournalSkipMealBottomSheet> {
+class _JournalSkipMealBottomSheetState
+    extends State<JournalSkipMealBottomSheet> {
   int selectedIndex = 0;
 
   @override
@@ -38,7 +46,8 @@ class _JournalSkipMealBottomSheetState extends State<JournalSkipMealBottomSheet>
         builder: (context, state) {
           return Material(
             color: AppColors.whiteColor,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
@@ -50,14 +59,18 @@ class _JournalSkipMealBottomSheetState extends State<JournalSkipMealBottomSheet>
                         child: Container(
                           height: 3.h,
                           width: 80.w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColors.disable),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.disable),
                         )),
                     const SizedBox(height: 10),
                     SvgPicture.asset(AssetsUtils.icQuestionMarkIcon),
                     const SizedBox(height: 15),
                     Text(
                       StringUtils.doYouWantToSkipMeal,
-                      style: FontUtils.h20(fontColor: AppColors.darkGray, fontWeight: FWT.semiBold),
+                      style: FontUtils.h20(
+                          fontColor: AppColors.darkGray,
+                          fontWeight: FWT.semiBold),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -77,7 +90,8 @@ class _JournalSkipMealBottomSheetState extends State<JournalSkipMealBottomSheet>
                             ? SizedBox(
                                 height: screenSize.height * 0.04,
                                 width: screenSize.width * 0.41,
-                                child: const Center(child: CircularProgressIndicator()),
+                                child: const Center(
+                                    child: CircularProgressIndicator()),
                               )
                             : simpleTextBorderButton(
                                 height: screenSize.height * 0.05,
@@ -85,7 +99,25 @@ class _JournalSkipMealBottomSheetState extends State<JournalSkipMealBottomSheet>
                                 context: context,
                                 buttonLable: StringUtils.skip,
                                 onTap: () {
-                                  widget.bloc.add(JournalSkipMealPlanEvent(mealID: widget.mealData!.id!));
+                                  widget.bloc.add(
+                                    JournalSkipMealPlanEvent(
+                                      mealID: widget.mealData!.id!,
+                                      calorie: widget.mealData!.recipe!
+                                          .nutrientsPerServing!.calories,
+                                      carbs: widget.mealData!.recipe!
+                                          .nutrientsPerServing!.carbs,
+                                      fat: widget.mealData!.recipe!
+                                          .nutrientsPerServing!.fat,
+                                      protein: widget.mealData!.recipe!
+                                          .nutrientsPerServing!.protein,
+                                      noOfServing:
+                                          widget.mealData!.recipe!.serving,
+                                      mealType: widget.mealData!.meal,
+                                      mealName: widget.mealData!.recipe!.name,
+                                      recipeId: widget.mealData!.recipe!.id,
+                                      date: widget.time?.toIso8601String(),
+                                    ),
+                                  );
                                 },
                                 isDarkColor: true,
                                 isFillColor: true,

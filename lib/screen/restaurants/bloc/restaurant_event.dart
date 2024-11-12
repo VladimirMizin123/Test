@@ -55,11 +55,17 @@ class GetRestaurantListEvent extends RestaurantEvent {
   final double? longitude;
   final bool pickup;
   final List categotyData;
+  final String? mealName;
   final bool storeLocal;
 
   GetRestaurantListEvent(
-      this.latitude, this.longitude, this.pickup, this.categotyData,
-      {this.storeLocal = true});
+    this.latitude,
+    this.longitude,
+    this.pickup,
+    this.categotyData, {
+    this.storeLocal = true,
+    this.mealName,
+  });
 }
 
 class RestaurantByNameEvent extends RestaurantEvent {
@@ -189,7 +195,10 @@ class FetchCustomizationEvent extends RestaurantEvent {
   final String productId;
   final Function(MenuItemList) callback;
 
-  FetchCustomizationEvent({required this.productId, required this.callback});
+  FetchCustomizationEvent({
+    required this.productId,
+    required this.callback,
+  });
 }
 
 class ProductCustomizationEvent extends RestaurantEvent {

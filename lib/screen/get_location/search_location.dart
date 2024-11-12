@@ -27,7 +27,7 @@ class _SearchLocationState extends State<SearchLocation> {
   LatLng? selectedLatLng;
   Future<void> searchLocation(String value) async {
     await _googleMapSearchRepository.searchLocation(value).fold((left) {
-      showToast(isSuccess: false, message: left.errorMessage!);
+      showToast(isSuccess: false, message: left.errorMessage ?? "");
     }, (right) {
       // showToast(isSuccess: true, message: right.message!);
       SearchAddressResponseModel(

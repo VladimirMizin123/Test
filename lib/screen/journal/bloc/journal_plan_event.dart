@@ -8,14 +8,42 @@ class JournalPlanFetchEvent extends JournalPlanEvent {
   JournalPlanFetchEvent();
 }
 
+class UserInvoiceListEvent extends JournalPlanEvent {
+  UserInvoiceListEvent();
+}
+
 class GetMealLogByDateEvent extends JournalPlanEvent {
   final String? date;
   GetMealLogByDateEvent({this.date});
 }
 
 class JournalSkipMealPlanEvent extends JournalPlanEvent {
+  // final String mealID;
   final String mealID;
-  JournalSkipMealPlanEvent({required this.mealID});
+  final String? mealName;
+  final num? calorie;
+  final String? mealType;
+  final num? noOfServing;
+  final String? recipeId;
+  final num? protein;
+  final num? fat;
+  final num? carbs;
+  final int? value;
+  final String? date;
+
+  JournalSkipMealPlanEvent({
+    required this.mealID,
+    this.mealName,
+    this.calorie,
+    this.mealType,
+    this.noOfServing,
+    this.recipeId,
+    this.protein,
+    this.fat,
+    this.carbs,
+    this.value,
+    this.date,
+  });
 }
 
 class JournalAddToGroceryListEvent extends JournalPlanEvent {
@@ -40,8 +68,14 @@ class JournalSwapMealDetailsEvent extends JournalPlanEvent {
   final SimilarMealData? similarMealData;
   final int? day;
   final String? mealId;
+  final Function()? onComplete;
 
-  JournalSwapMealDetailsEvent({this.similarMealData, this.day, this.mealId});
+  JournalSwapMealDetailsEvent({
+    this.similarMealData,
+    this.day,
+    this.mealId,
+    this.onComplete,
+  });
 }
 
 class JournalRestaurantSearchEvent extends JournalPlanEvent {

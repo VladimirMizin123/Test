@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
@@ -27,17 +27,20 @@ class AddNewItemScreen extends StatefulWidget {
   final String? name;
   final String? weight;
   final String? imageUrl;
+  final DateTime? selectedDate;
 
-  const AddNewItemScreen(
-      {super.key,
-      this.id,
-      this.cal,
-      this.fat,
-      this.carbs,
-      this.protein,
-      this.name,
-      this.weight,
-      this.imageUrl});
+  const AddNewItemScreen({
+    super.key,
+    this.id,
+    this.cal,
+    this.fat,
+    this.carbs,
+    this.protein,
+    this.name,
+    this.weight,
+    this.imageUrl,
+    this.selectedDate,
+  });
 
   @override
   State<AddNewItemScreen> createState() => _AddNewItemScreenState();
@@ -55,6 +58,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
 
   String pickedImageFilePath = '';
   bool isButtonEnable = false;
+  Map<String, dynamic> arguments = {};
 
   bool isLoader = false;
   // int? weightValue;
@@ -62,6 +66,8 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    arguments =
+        Get.arguments is Map ? Get.arguments as Map<String, dynamic> : {};
     nameController.text = widget.name ?? '';
     weightController.text = widget.weight ?? '';
     calController.text = widget.cal ?? '';
@@ -138,22 +144,27 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                 } else if (weightController.text.isEmpty) {
                   isButtonEnable = false;
                 } else if (calController.text.isEmpty ||
-                    (double.parse(calController.text) >
-                        double.parse(
-                            PreferenceUtils.getString(totalCalorie)))) {
+                    ((double.tryParse(calController.text) ?? 0) >
+                        (double.tryParse(
+                                PreferenceUtils.getString(totalCalorie)) ??
+                            0))) {
                   isButtonEnable = false;
                 } else if (fatController.text.isEmpty ||
-                    (double.parse(fatController.text) >
-                        double.parse(PreferenceUtils.getString(totalFat)))) {
+                    ((double.tryParse(fatController.text) ?? 0) >
+                        (double.tryParse(PreferenceUtils.getString(totalFat)) ??
+                            0))) {
                   isButtonEnable = false;
                 } else if (carbsController.text.isEmpty ||
-                    (double.parse(carbsController.text) >
-                        double.parse(PreferenceUtils.getString(totalCarbs)))) {
+                    ((double.tryParse(carbsController.text) ?? 0) >
+                        (double.tryParse(
+                                PreferenceUtils.getString(totalCarbs)) ??
+                            0))) {
                   isButtonEnable = false;
                 } else if (proteinController.text.isEmpty ||
-                    (double.parse(proteinController.text) >
-                        double.parse(
-                            PreferenceUtils.getString(totalProtein)))) {
+                    ((double.tryParse(proteinController.text) ?? 0) >
+                        (double.tryParse(
+                                PreferenceUtils.getString(totalProtein)) ??
+                            0))) {
                   isButtonEnable = false;
                 } else {
                   isButtonEnable = true;
@@ -192,28 +203,28 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     } else if (weightController.text.isEmpty) {
                                       isButtonEnable = false;
                                     } else if (calController.text.isEmpty ||
-                                        (double.parse(calController.text) >
-                                            double.parse(
-                                                PreferenceUtils.getString(
-                                                    totalCalorie)))) {
+                                        ((double.tryParse(calController.text) ?? 0) >
+                                            (double.tryParse(
+                                                    PreferenceUtils.getString(
+                                                        totalCalorie)) ??
+                                                0))) {
                                       isButtonEnable = false;
                                     } else if (fatController.text.isEmpty ||
-                                        (double.parse(fatController.text) >
-                                            double.parse(
-                                                PreferenceUtils.getString(
-                                                    totalFat)))) {
+                                        ((double.tryParse(fatController.text) ?? 0) >
+                                            (double.tryParse(PreferenceUtils.getString(totalFat)) ??
+                                                0))) {
                                       isButtonEnable = false;
                                     } else if (carbsController.text.isEmpty ||
-                                        (double.parse(carbsController.text) >
-                                            double.parse(
-                                                PreferenceUtils.getString(
-                                                    totalCarbs)))) {
+                                        ((double.tryParse(carbsController.text) ?? 0) >
+                                            (double.tryParse(PreferenceUtils.getString(totalCarbs)) ??
+                                                0))) {
                                       isButtonEnable = false;
                                     } else if (proteinController.text.isEmpty ||
-                                        (double.parse(proteinController.text) >
-                                            double.parse(
-                                                PreferenceUtils.getString(
-                                                    totalProtein)))) {
+                                        ((double.tryParse(proteinController.text) ?? 0) >
+                                            (double.tryParse(
+                                                    PreferenceUtils.getString(
+                                                        totalProtein)) ??
+                                                0))) {
                                       isButtonEnable = false;
                                     } else {
                                       isButtonEnable = true;
@@ -350,9 +361,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                  // "${StringUtils.weight} / ${Get.arguments?["weightValue"] == 1 ? "Pound" : "Kg"}",
-                                  "${StringUtils.weight} ",
+                              Text("${StringUtils.weight} ",
                                   style: textTheme.bodyLarge
                                       ?.copyWith(color: Colors.black)),
                               SizedBox(
@@ -389,31 +398,6 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                   onChanged: (value) {
                                     setState(
                                       () {
-                                        //*
-                                        // if (Get.arguments["weightValue"] ==
-                                        //     1) {
-                                        //   num? valueA = num.tryParse(value);
-                                        //   if (weightController
-                                        //       .text.isNotEmpty) {
-                                        //     if (valueA != null &&
-                                        //         valueA != 0) {
-                                        //       _debouncer.run(() {
-                                        //         weightController
-                                        //             .text = weightKGToPound(
-                                        //                 textValue:
-                                        //                     int.tryParse(
-                                        //                         value),
-                                        //                 weightValue: Get
-                                        //                         .arguments[
-                                        //                     "weightValue"])
-                                        //             .toString();
-                                        //         setState(() {});
-                                        //       });
-                                        //     }
-                                        //   }
-                                        // }
-                                        //*
-
                                         if (nameController.text.isEmpty) {
                                           isButtonEnable = false;
                                         } else if (weightController
@@ -514,23 +498,28 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     title: 'Cal',
                                     percent: calController.text.isEmpty
                                         ? 0
-                                        : (double.parse(calController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCalorie)))
+                                        : ((double.tryParse(
+                                                        calController.text) ??
+                                                    0) >
+                                                (double.tryParse(PreferenceUtils
+                                                        .getString(
+                                                            totalCalorie)) ??
+                                                    0))
                                             ? 1
-                                            : (double.parse(
-                                                    calController.text) /
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCalorie))),
+                                            : ((double.tryParse(
+                                                        calController.text) ??
+                                                    0) /
+                                                (double.tryParse(PreferenceUtils
+                                                        .getString(
+                                                            totalCalorie)) ??
+                                                    0)),
                                     gramCount: calController.text.isEmpty
                                         ? '0'
                                         : calController.text,
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
-                                        '${double.parse(PreferenceUtils.getString(totalCalorie)).toStringAsFixed(2)} cal',
+                                        '${double.tryParse(PreferenceUtils.getString(totalCalorie))?.toStringAsFixed(2) ?? 0} cal',
                                     controller: calController,
                                   ),
                                 ),
@@ -545,30 +534,27 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     title: 'Fat',
                                     percent: fatController.text.isEmpty
                                         ? 0
-                                        : (double.parse(fatController.text) >
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalFat)))
+                                        : ((double.tryParse(
+                                                        fatController.text) ??
+                                                    0) >
+                                                (double.tryParse(PreferenceUtils
+                                                        .getString(totalFat)) ??
+                                                    0))
                                             ? 1
-                                            : (double.parse(
-                                                    fatController.text) /
-                                                double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalFat))),
+                                            : ((double.tryParse(
+                                                        fatController.text) ??
+                                                    0) /
+                                                (double.tryParse(PreferenceUtils
+                                                        .getString(totalFat)) ??
+                                                    0)),
                                     gramCount: fatController.text.isEmpty
                                         ? '0'
                                         : fatController.text,
-                                    // weightKGToPound(
-                                    //     textValue: int.tryParse(
-                                    //         fatController.text),
-                                    //     weightValue:
-                                    //         Get.arguments["weightvalue"]),
 
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
-                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalFat)), weightValue: Get.arguments["weightValue"])} ${Get.arguments["weightValue"] == 1 ? "Pound" : "g"}",
-                                        '${double.parse(PreferenceUtils.getString(totalFat)).toStringAsFixed(2)} g',
+                                        '${double.tryParse(PreferenceUtils.getString(totalFat))?.toStringAsFixed(2) ?? 0} g',
 
                                     controller: fatController,
                                     // percent: 0.77,
@@ -610,8 +596,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
-                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalCarbs)), weightValue: Get.arguments?["weightValue"])} ${Get.arguments?["weightValue"] == 1 ? "Pound" : "g"}",
-                                        '${double.parse(PreferenceUtils.getString(totalCarbs)).toStringAsFixed(2)} g',
+                                        '${double.tryParse(PreferenceUtils.getString(totalCarbs))?.toStringAsFixed(2) ?? 0} g',
 
                                     // textTheme: textTheme,
                                     // gramCount: carbsController.text,
@@ -650,8 +635,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                     progressColor: AppColors.primaryBlue,
                                     textTheme: textTheme,
                                     totalGram:
-                                        // "${weightGramToPound(textValue: double.parse(PreferenceUtils.getString(totalProtein)), weightValue: Get.arguments?["weightValue"])} ${Get.arguments["weightValue"] == 1 ? "Pound" : "g"}",
-                                        '${double.parse(PreferenceUtils.getString(totalProtein)).toStringAsFixed(2)} g',
+                                        '${double.tryParse(PreferenceUtils.getString(totalProtein))?.toStringAsFixed(2) ?? 0} g',
 
                                     // textTheme: textTheme,
                                     // gramCount: proteinController.text,
@@ -687,43 +671,61 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                             Fluttertoast.showToast(msg: 'Please Select Image');
                           } else*/
                           if (nameController.text.isEmpty) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Name value');
+                            showToast(
+                              message: 'Please fill correct Name value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else if (weightController.text.isEmpty) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Weight value');
+                            showToast(
+                              message: 'Please fill correct Weight value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else if (calController.text
                                   .isEmpty /*||
                               (double.parse(calController.text) >
                                   double.parse(PreferenceUtils.getString(
                                       totalCalorie)))*/
                               ) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Cal value');
+                            showToast(
+                              message: 'Please fill correct Cal value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else if (fatController.text
                                   .isEmpty /*||
                               (double.parse(fatController.text) >
                                   double.parse(
                                       PreferenceUtils.getString(totalFat)))*/
                               ) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Fat value');
+                            showToast(
+                              message: 'Please fill correct Fat value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else if (carbsController.text
                                   .isEmpty /*||
                               (double.parse(carbsController.text) >
                                   double.parse(
                                       PreferenceUtils.getString(totalCarbs)))*/
                               ) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Carbs value');
+                            showToast(
+                              message: 'Please fill correct Carbs value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else if (proteinController.text
                                   .isEmpty /*||
                               (double.parse(proteinController.text) >
                                   double.parse(PreferenceUtils.getString(
                                       totalProtein)))*/
                               ) {
-                            Fluttertoast.showToast(
-                                msg: 'Please fill correct Protein value');
+                            showToast(
+                              message: 'Please fill correct Protein value',
+                              isSuccess: false,
+                              color: AppColors.black,
+                            );
                           } else {
                             log("LAST");
                             (widget.protein != null)
@@ -743,42 +745,6 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                             .removeAllWhitespace,
                                         userId: userId,
                                         quantity: weightController.text),
-                                    // UpdateNewMealEvent(
-                                    //   id: widget.id!,
-                                    //   name: nameController.text,
-                                    //   imageUrl: pickedImageFilePath != ''
-                                    //       ? File(pickedImageFilePath)
-                                    //       : null,
-                                    //   protein: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               proteinController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   fat: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               fatController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   carbs: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               carbsController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   calorie: calController.text,
-                                    //   type: Get.arguments["title"]
-                                    //       .toString()
-                                    //       .removeAllWhitespace,
-                                    //   userId: userId,
-                                    //   quantity: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               weightController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    // ),
                                   )
                                 : getAddNewMealBloc.add(
                                     AddNewMeal(
@@ -790,47 +756,14 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                       fat: fatController.text,
                                       carbs: carbsController.text,
                                       calorie: calController.text,
-                                      type: Get.arguments
-                                          .toString()
-                                          .removeAllWhitespace,
+                                      type: arguments["title"] ?? "",
                                       userId: userId,
                                       quantity: weightController.text,
+                                      date: (arguments["date"] is DateTime
+                                              ? (arguments["date"] as DateTime)
+                                              : DateTime.now())
+                                          .toIso8601String(),
                                     ),
-                                    // AddNewMeal(
-                                    //   name: nameController.text,
-                                    //   imageUrl: pickedImageFilePath != ''
-                                    //       ? File(pickedImageFilePath)
-                                    //       : null,
-                                    //   protein: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               proteinController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   fat: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               fatController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   carbs: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               carbsController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    //   calorie: calController.text,
-                                    //   type: Get.arguments
-                                    //       .toString()
-                                    //       .removeAllWhitespace,
-                                    //   userId: userId,
-                                    //   quantity: weightGramToPound(
-                                    //           textValue: num.tryParse(
-                                    //               weightController.text),
-                                    //           weightValue:
-                                    //               Get.arguments["weightValue"])
-                                    //       .toString(),
-                                    // ),
                                   );
                           }
                         },
@@ -892,24 +825,10 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
             hintText: label,
             isPassword: false,
             controller: controller,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+            ],
             onChanged: (value) {
-              //*
-              // if (isWeight == true) {
-              //   if (Get.arguments["weightValue"] == 1) {
-              //     num? valueA = num.tryParse(value);
-              //     if (valueA != null && valueA != 0) {
-              //       _debouncer.run(() {
-              //         controller?.text = weightKGToPound(
-              //                 textValue: int.tryParse(value),
-              //                 weightValue: Get.arguments["weightValue"])
-              //             .toString();
-              //         setState(() {});
-              //       });
-              //     }
-              //   }
-              // }
-              //*
-
               if (value != '') {
                 setState(() {
                   /* if (pickedImageFilePath.isEmpty) {

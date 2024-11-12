@@ -37,6 +37,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         zipcode: event.zipcode,
         isPrimary: event.isPrimary,
         userId: event.userId,
+        floor: event.floor,
       )
           .fold(
         (left) {
@@ -90,6 +91,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         zipcode: event.zipcode,
         isPrimary: event.isPrimary,
         addressId: event.addressId,
+        floor: event.floor,
       )
           .fold(
         (left) {

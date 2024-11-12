@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +41,13 @@ class _PremiumScreenState extends State<PremiumScreen> {
     productList = await IapService.i.getProducts();
     IapService.i.fetchStatus();
     selectedIndex = productList.length - 1;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   bool alreadyItemPurchased = false;
+  RxBool showLoader = false.obs;
 
   UserSignUpDataModel userSignUpDataModel =
       Get.arguments ?? UserSignUpDataModel();
@@ -60,6 +64,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
       listener: (context, state) {
         if (state is SubscriptionStatusErrorState) {
           showToast(message: state.message, isSuccess: false);
+        }
+
+        if (state is ReceiptDetailsLoadingState) {
+          showLoader.value = state.isLoading;
         }
 
         if (state is ReceiptDetailsSuccessState) {
@@ -210,22 +218,34 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     ],
                   ).paddingSymmetric(),
                 ),
-                buildButton(
-                  context: context,
-                  title: 'Start 14 days free trial',
-                  bgColor: AppColors.appColor,
-                  textColor: const Color(0xFFC1EACE),
-                  onPressed: () async {
-                    if (productList.isEmpty) {
-                      showToast(
+                Obx(
+                  () => buildButton(
+                    context: context,
+                    showLoader: showLoader.value,
+                    title: 'Start 14 days free trial',
+                    bgColor: AppColors.appColor,
+                    textColor: const Color(0xFFC1EACE),
+                    onPressed: () async {
+                      if (showLoader.value) {
+                        return;
+                      }
+                      if (productList.isEmpty) {
+                        showToast(
                           message: "Subscription plan not found",
-                          isSuccess: false);
-                      return;
-                    }
-                    ProductDetails details = productList[selectedIndex];
-                    await IapService.i.buyProduct(details);
-                  },
-                ).paddingOnly(bottom: 8.h, top: 23.h, right: 20.w, left: 20.w),
+                          isSuccess: false,
+                        );
+                        return;
+                      }
+                      try {
+                        ProductDetails details = productList[selectedIndex];
+                        await IapService.i.buyProduct(details);
+                      } catch (e) {
+                        log(e.toString());
+                      }
+                    },
+                  ).paddingOnly(
+                      bottom: 8.h, top: 23.h, right: 20.w, left: 20.w),
+                ),
                 Text('No commitment. Cancel any time.',
                     style: textTheme.bodyLarge!.copyWith(
                       color: Colors.white,

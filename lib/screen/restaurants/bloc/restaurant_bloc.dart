@@ -11,11 +11,13 @@ import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
@@ -98,15 +100,21 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       Either<ErrorModel, CheckStoreModel> value =
           await _repository.checkAvailableStore(
         storeType: 'restaurant',
-        latitude: latitude,
-        longitude: longitude,
+        latitude: event.latitude.toString(),
+        longitude: event.longitude.toString(),
         pickup: event.pickup,
         storeId: event.id ?? "",
         position: pos,
       );
-
+      if (event.id != prevId) {
+        return;
+      }
       emit(VerifyRestaurantLoader(id: null));
       await Future.delayed(const Duration(milliseconds: 200));
+      if (event.id != prevId) {
+        return;
+      }
+
       if (value.isLeft) {
         if (value.left.errorMessage != null) {
           showToast(isSuccess: false, message: value.right.errorMessage ?? "");
@@ -129,13 +137,17 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             showToast(
                 isSuccess: false, message: StringUtils.restaurantNotAvailable);
           }
+
           event.notVerify?.call();
         }
       }
     } catch (e) {
       event.notVerify?.call();
       emit(VerifyRestaurantLoader(id: null));
-      showToast(isSuccess: false, message: StringUtils.restaurantNotAvailable);
+      if (event.id == prevId) {
+        showToast(
+            isSuccess: false, message: StringUtils.restaurantNotAvailable);
+      }
     }
   }
 
@@ -155,6 +167,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       maximumMiles: PreferenceUtils.getRestaurantsRadius().round(),
       pickup: event.pickup,
       categoriesData: event.categotyData,
+      mealName: event.mealName,
     );
     if (data.isRight) {
       GetRestaurantListModel right = data.right;
@@ -364,10 +377,18 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         }
         emit(CreateOrderErrorState());
       }, (right) {
+        // if (right.data?.orderPlaced ?? false) {
         emit(CreateOrderSuccessState(orderData: right.data));
         showToast(
             isSuccess: true,
-            message: right.message ?? "Order Created Successfully");
+            message: right.message ?? StringUtils.orderCreatedSuccessfully);
+        // } else {
+        //   emit(CreateOrderErrorState());
+        //   showToast(
+        //       isSuccess: false,
+        //       message:
+        //           right.message ?? StringUtils.theOrderNotPlacedDueToSomeIssue);
+        // }
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -500,7 +521,31 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       FetchCustomizationEvent event, Emitter<RestaurantState> emit) async {
     try {
       emit(FetchCustomizationLoaderState());
-      await _repository.fetchCustomization(event.productId).fold(
+      UserAddress? address;
+      (double?, double?) pos = await Constant.i.position;
+      if (pos.$1 == null && pos.$2 == null) {
+        Either<ErrorModel, GetUserAddressModel> res =
+            await GetAddressRepository().getUserAddressData();
+        if (res.isRight) {
+          res.right.data?.forEach((element) async {
+            if (element.isPrimary == true) {
+              address = element;
+            }
+          });
+          if ((res.right.data?.isNotEmpty ?? false) &&
+              !res.right.data!.any((element) => (element.isPrimary ?? false))) {
+            address = res.right.data?.first;
+          }
+        }
+      }
+
+      await _repository
+          .fetchCustomization(
+        event.productId,
+        latitude: pos.$1 ?? address?.latitude,
+        longitude: pos.$2 ?? address?.longitude,
+      )
+          .fold(
         (left) {
           showToast(isSuccess: false, message: left.errorMessage ?? "");
         },
@@ -535,6 +580,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   }
 
   String? prevName;
+  String? prevId;
 
   _onGetStoreByName(
       RestaurantByNameEvent event, Emitter<RestaurantState> emit) async {

@@ -99,7 +99,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                   children: [
                     Stack(
                       children: [
-                        (data?.backgroundImage != null ||
+                        (data?.backgroundImage != null &&
                                 data?.backgroundImage != "")
                             ? Container(
                                 height: 230,
@@ -461,7 +461,7 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
                                     onPressed: () {
                                       accountBloc.add(
                                         UpdateProgramDietEvent(
-                                          widget.programId,
+                                          data?.databaseId ?? "",
                                         ),
                                       );
                                     },
@@ -493,6 +493,8 @@ class _ProgramDetailScreenState extends State<ProgramDetailScreen> {
           },
           listener: (context, state) {
             if (state is UpdateDietProgramSuccessState) {
+              showToast(
+                  message: 'Program updated successfully!', isSuccess: true);
               Get.offAll(
                 () => const AppManagerScreen(
                   selectIndex: 2,

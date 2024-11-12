@@ -25,6 +25,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:http/http.dart';
 
 class RestaurantRepository {
@@ -56,6 +57,7 @@ class RestaurantRepository {
     required double? latitude,
     required double? longitude,
     required bool pickup,
+    String? mealName,
     required int maximumMiles,
     required List categoriesData,
   }) async {
@@ -90,6 +92,9 @@ class RestaurantRepository {
       "maximum_miles": maximumMiles,
       "categories": categoriesData,
     };
+    if (mealName != null) {
+      data["mealName"] = mealName;
+    }
     log("Api Url : ${ApiUrls.getRestaurantList}");
     log('data---------->>>>>> ${jsonEncode(data)}');
 
@@ -124,6 +129,8 @@ class RestaurantRepository {
       "maximum_miles": PreferenceUtils.getRestaurantsRadius(),
       "cuisine": cuisine,
     };
+
+    log("Req : ${jsonEncode(data)}");
 
     final response = await apiServices.get(apiURL, queryParams: data);
 
@@ -205,8 +212,12 @@ class RestaurantRepository {
     (double?, double?) pos = position ?? await Constant.i.position;
     Map<String, dynamic> data = {
       "storeType": storeType,
-      "latitude": double.tryParse((pos.$1?.toString()) ?? latitude) ?? 0.0,
-      "longitude": double.tryParse((pos.$2?.toString()) ?? longitude) ?? 0.0,
+      "latitude": double.tryParse(
+              (pos.$1?.toString()) ?? (latitude?.toString() ?? "")) ??
+          0.0,
+      "longitude": double.tryParse(
+              (pos.$2?.toString()) ?? (longitude?.toString() ?? "")) ??
+          0.0,
       "pickup": pickup,
       "storeId": storeId,
     };
@@ -234,29 +245,41 @@ class RestaurantRepository {
     required double? longitude,
     (double?, double?)? position,
   }) async {
-    (double?, double?) pos = position ?? await Constant.i.position;
-    Map<String, dynamic> data = {
-      "userId": userId,
-      "mealType": mealType,
-      "restaurantId": restaurantId,
-      "latitude": pos.$1 ?? latitude,
-      "longitude": pos.$2 ?? longitude,
-      "pickup": pickup,
-    };
-    log("Api Url : ${ApiUrls.getRestaurantMenuList}");
-    log("Request Data : $data");
+    try {
+      (double?, double?) pos = position ?? await Constant.i.position;
+      Map<String, dynamic> data = {
+        "userId": userId,
+        "mealType": mealType,
+        "restaurantId": restaurantId,
+        "latitude": pos.$1 ?? latitude,
+        "longitude": pos.$2 ?? longitude,
+        "pickup": pickup,
+      };
+      log("Api Url : ${ApiUrls.getRestaurantMenuList}");
+      log("Request Data : $data");
 
-    final response =
-        await apiServices.post(ApiUrls.getRestaurantMenuList, data);
+      final response = await apiServices
+          .post(ApiUrls.getRestaurantMenuList, data, customToast: true);
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(
-          GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+      } else if (response.statusCode == 400) {
+        return Right(
+            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
+      } else {
+        showToast(
+          message: Left(ErrorModel.fromJson(jsonDecode(response.body)))
+              .value
+              .errorMessage
+              .toString(),
+          isSuccess: false,
+        );
+        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      }
+    } catch (e) {
+      showToast(message: e.toString(), isSuccess: false);
+      return Left(ErrorModel(errorMessage: e.toString()));
     }
   }
 
@@ -375,26 +398,6 @@ class RestaurantRepository {
     }
   }
 
-  /// Clear Shopping List Item ====================================================================
-
-  Future<Either<ErrorModel, SuccessModel>> clearShoppingListItem(
-      {String? productID}) async {
-    final response =
-        await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
-    }
-    // else if (response.statusCode == 400) {
-    //   log('GetRestaurantMenuListErrorState---------->>>>>>}');
-    //
-    //   return Right(
-    //       GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-    // }
-    else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
-  }
-
   /// Create Order ====================================================================
 
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
@@ -497,11 +500,18 @@ class RestaurantRepository {
     }
   }
 
-  Future<Either<ErrorModel, MenuItemList>> fetchCustomization(
-      String productId) async {
+  Future<Either<ErrorModel, MenuItemList>> fetchCustomization(String productId,
+      {double? latitude, double? longitude}) async {
+    Map<String, dynamic> query = {};
+    if (latitude != null && longitude != null) {
+      query["latitude"] = latitude;
+      query["longitude"] = longitude;
+    }
+
     log("${ApiUrls.fetchCustomization}/$productId");
-    final response =
-        await apiServices.get("${ApiUrls.fetchCustomization}/$productId");
+    log("Query Params : $query");
+    final response = await apiServices
+        .get("${ApiUrls.fetchCustomization}/$productId", queryParams: query);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(

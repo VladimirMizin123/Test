@@ -129,8 +129,6 @@ class GroceryProductListEvent extends GroceryEvent {
   GroceryProductListEvent({required this.productList, this.productId});
 }
 
-class CleatGroceryEvent extends GroceryEvent {}
-
 class BarcodeScanEvent extends GroceryEvent {
   final String barcode;
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -14,6 +15,7 @@ class GetUserJournalDataRepository {
 
   Future<Either<ErrorModel, GetDashboardModel>> getUserJournalData(
       {required String date}) async {
+    log(' Api Call ----${ApiUrls.getUserJournalData}/$userId?date=$date');
     final response = await apiServices.get(
       '${ApiUrls.getUserJournalData}/$userId?date=$date',
     );

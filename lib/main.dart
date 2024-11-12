@@ -7,7 +7,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_bugfender/flutter_bugfender.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
@@ -75,11 +78,13 @@ import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
 import 'package:gymeats_mobile/service/in_app_purchase_service.dart';
+import 'package:gymeats_mobile/service/toast_service.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'app/firebase_deep_link.dart';
 import 'app/sharedPrefrence.dart';
@@ -95,39 +100,70 @@ final configuration = ValueNotifier<VideoControllerConfiguration>(
 );
 
 late HiveSingleton hiveSingleton;
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      MediaKit.ensureInitialized();
+  // Capture Flutter Error
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    FlutterError.presentError(details);
+    FirebaseCrashlytics.instance
+        .recordError(details.exception, details.stack, fatal: true);
+    Sentry.captureException(details.exception, stackTrace: details.stack);
+    FlutterBugfender.sendCrash(
+        details.exception.toString(), details.stack.toString());
+  };
 
-      hiveSingleton = HiveSingleton();
-      await hiveSingleton.initHive();
+  // Capture Dart Exceptions
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await FlutterBugfender.init(
+      "CYsHG8KWiT3K45gulDGTBThTR94cbkTr",
+      apiUri: Uri.parse("https://api.bugfender.com/"),
+      baseUri: Uri.parse("https://dashboard.bugfender.com/"),
+      enableCrashReporting: true,
+      enableUIEventLogging: true,
+      enableAndroidLogcatLogging: true,
+    );
 
-      await PreferenceUtils.init();
+    MediaKit.ensureInitialized();
 
-      await Firebase.initializeApp();
-      await initDynamicLinks();
-      IapService.i.initialize();
+    hiveSingleton = HiveSingleton();
+    await hiveSingleton.initHive();
 
-      String? forgetPasswordToken;
-      bool? isFromConfirm;
-      if (PreferenceUtils.getBool(prefIsLogin)) {
-        if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
-          userId = PreferenceUtils.getString(prefUserData);
-        }
+    await PreferenceUtils.init();
+
+    await Firebase.initializeApp();
+    await initDynamicLinks();
+    IapService.i.initialize();
+
+    String? forgetPasswordToken;
+    bool? isFromConfirm;
+    if (PreferenceUtils.getBool(prefIsLogin)) {
+      if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
+        userId = PreferenceUtils.getString(prefUserData);
       }
-      runApp(MyApp(
+    }
+
+    await SentryFlutter.init(
+      (options) {
+        options.dsn =
+            'https://24f303bb3f375b9701cf72f9749679c6@o4508239741124608.ingest.us.sentry.io/4508239742304256';
+        options.tracesSampleRate = 1.0;
+        options.profilesSampleRate = 1.0;
+      },
+      appRunner: () => runApp(MyApp(
         forgotPasswordToken: forgetPasswordToken,
         isFromConfirm: isFromConfirm,
-      ));
-    },
-    (error, stack) {
-      log("Error Found : $error,${stack.toString()}");
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    },
-  );
+      )),
+    );
+  }, (exception, stackTrace) async {
+    await Future.wait([
+      FirebaseCrashlytics.instance
+          .recordError(exception, stackTrace, fatal: true),
+      Sentry.captureException(exception, stackTrace: stackTrace),
+      FlutterBugfender.sendCrash(exception.toString(), stackTrace.toString())
+    ]);
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -147,6 +183,7 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appLinks = AppLinks();
       appLinks.allUriLinkStream.listen((uri) {
+        log("Global Path Find--------${uri.path}------");
         if (uri.path == '/auth/setNewPassword') {
           final token = PreferenceUtils.getString(forgetPassToken);
           if (token != '') {
@@ -159,71 +196,83 @@ class _MyAppState extends State<MyApp> {
             showToast(message: 'Link has Expired.', isSuccess: false);
           }
         } else {
-          Get.offAllNamed(
-            '/LoginScreen',
-          );
+          Get.offAllNamed('/LoginScreen');
         }
       });
     });
     // bloc.add(LatLogEvent());
     _dbTest();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _postFrameInitialization();
+    });
+
     super.initState();
   }
 
+  Future<void> _postFrameInitialization() async {
+    try {
+      ToastService.init();
+    } catch (e) {
+      debugPrint("Post-frame initialization error: $e");
+    }
+  }
+
   Future<void> _dbTest() async {
-    /*--------------Hive box Version--------------------*/
-    var nxBoxVersion = await Hive.openBox(StringUtils.hiveBoxVersionName);
-    /*--------------Hive box Version--------------------*/
+    try {
+      /*--------------Hive box Version--------------------*/
+      var nxBoxVersion = await Hive.openBox(StringUtils.hiveBoxVersionName);
+      /*--------------Hive box Version--------------------*/
 
-    /*--------------Hive box Nx Data--------------------*/
-    await hiveSingleton.openBox(StringUtils.hiveBoxNxName);
-    /*--------------Hive box Nx Data--------------------*/
+      /*--------------Hive box Nx Data--------------------*/
+      await hiveSingleton.openBox(StringUtils.hiveBoxNxName);
+      /*--------------Hive box Nx Data--------------------*/
 
-    final ApiServices apiServices = ApiServices();
-    String apiURL = ApiUrls.getNXJsonFile;
-    log(apiURL, name: 'API URL :');
-    final response = await apiServices.get(apiURL);
-    if (response.statusCode == 200) {
-      Map<String, dynamic> json = jsonDecode(response.body);
-      if (json["success"] == true) {
-        debugPrint('localdbtask ${json["data"]["nxJsonFileUrl"]}');
-        final String nxJsonFileUrl = json["data"]["nxJsonFileUrl"];
-        final response = await http.get(Uri.parse(nxJsonFileUrl));
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> data = jsonDecode(response.body);
-          debugPrint('localdbtask $data');
-          debugPrint('localdbtask ${data['version']}');
+      final ApiServices apiServices = ApiServices();
+      String apiURL = ApiUrls.getNXJsonFile;
+      log("---api : ${apiURL}");
+      final response = await apiServices.get(apiURL);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> json = jsonDecode(response.body);
+        if (json["success"] == true) {
+          debugPrint('localdbtask ${json["data"]["nxJsonFileUrl"]}');
+          final String nxJsonFileUrl = json["data"]["nxJsonFileUrl"];
+          final response = await http.get(Uri.parse(nxJsonFileUrl));
+          if (response.statusCode == 200) {
+            final Map<String, dynamic> data = jsonDecode(response.body);
+            debugPrint('localdbtask $data');
+            debugPrint('localdbtask ${data['version']}');
 
-          if (nxBoxVersion.containsKey('version')) {
-            //Already exists data
-            debugPrint('localdbtask Exists');
-            final jsonFileVersion = await nxBoxVersion.get('version');
-            debugPrint(
-                'localdbtask file Version -- ${jsonFileVersion['value']}');
-            if (jsonFileVersion['value'] < data['version']) {
-              debugPrint('localdbtask Server version is higher');
-              await hiveSingleton.clearBox();
+            if (nxBoxVersion.containsKey('version')) {
+              //Already exists data
+              debugPrint('localdbtask Exists');
+              final jsonFileVersion = await nxBoxVersion.get('version');
+              debugPrint(
+                  'localdbtask file Version -- ${jsonFileVersion['value']}');
+              if (jsonFileVersion['value'] < data['version']) {
+                debugPrint('localdbtask Server version is higher');
+                await hiveSingleton.clearBox();
+                for (var item in data['data']) {
+                  var foodName = item['foodName'];
+                  await hiveSingleton.addValueToBox(foodName, item);
+                }
+                debugPrint('localdbtask Replace and added new data done');
+              } else {
+                debugPrint('localdbtask Server version is equal or lower');
+              }
+            } else {
+              //First time Install
+              await nxBoxVersion.put('version', {'value': data['version']});
               for (var item in data['data']) {
                 var foodName = item['foodName'];
                 await hiveSingleton.addValueToBox(foodName, item);
               }
-              debugPrint('localdbtask Replace and added new data done');
-            } else {
-              debugPrint('localdbtask Server version is equal or lower');
+              debugPrint('localdbtask added new data done');
             }
-          } else {
-            //First time Install
-            await nxBoxVersion.put('version', {'value': data['version']});
-            for (var item in data['data']) {
-              var foodName = item['foodName'];
-              await hiveSingleton.addValueToBox(foodName, item);
-            }
-            debugPrint('localdbtask added new data done');
           }
-        } else {
-          throw Exception('Failed to load data');
         }
       }
+    } catch (e) {
+      //
     }
   }
 
@@ -240,6 +289,8 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
           home: child,
+          navigatorKey: navigatorKey,
+          builder: FToastBuilder(),
           initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
                   PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
@@ -249,6 +300,7 @@ class _MyAppState extends State<MyApp> {
           // initialRoute: 'SignUpScreen',
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+            SentryNavigatorObserver(),
           ],
           getPages: [
             GetPage(
@@ -556,7 +608,7 @@ class _MyAppState extends State<MyApp> {
 
             GetPage(
               name: '/RandomLoginScreen',
-              page: () => RandomLoadingScreen(),
+              page: () => const RandomLoadingScreen(),
             ),
 
             // GetPage(

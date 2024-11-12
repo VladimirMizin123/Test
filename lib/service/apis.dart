@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_exception.dart';
@@ -85,7 +86,8 @@ class ApiServices {
     return params;
   }
 
-  Future<http.Response> post(String url, dynamic body) async {
+  Future<http.Response> post(String url, dynamic body,
+      {bool customToast = false}) async {
     try {
       Map<String, String>? headers;
       if (token.isEmpty) {
@@ -104,6 +106,7 @@ class ApiServices {
       }
 
       log("token:$token");
+      print("token:$token");
 
       final jsonBody = jsonEncode(body);
       final response = await http.post(
@@ -113,7 +116,10 @@ class ApiServices {
       );
 
       return _returnResponse(response);
-    } on SocketException {
+    } on SocketException catch (e) {
+      if (customToast) {
+        showToast(message: "$url->${e.toString()}", isSuccess: false);
+      }
       throw NoInternetException('No Internet connection');
     } on HttpException {
       throw FetchDataException('No Service found');

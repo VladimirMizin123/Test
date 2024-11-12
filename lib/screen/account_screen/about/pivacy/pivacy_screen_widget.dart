@@ -34,9 +34,7 @@ Widget bulletPointWidget({String? text}) {
             fontSize: 20.sp,
             color: Colors.black,
           )),
-      SizedBox(
-        width: 10.w,
-      ),
+      SizedBox(width: 10.w),
       Expanded(
         child: Text(
           text!,
@@ -50,4 +48,37 @@ Widget bulletPointWidget({String? text}) {
       ),
     ],
   ).paddingOnly(left: 7.w, bottom: 10.h);
+}
+
+Widget contactFooter() {
+  return Text.rich(
+    TextSpan(
+      children: [
+        TextSpan(
+          text: "GYM EATS\n",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        TextSpan(
+          text: "Email: sales@gymeats.net\n",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        TextSpan(
+          text: "Address: 15610 South 70th Court Orland Park, Il 60462",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    ),
+  );
 }

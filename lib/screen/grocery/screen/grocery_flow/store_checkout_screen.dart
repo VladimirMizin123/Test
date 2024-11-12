@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
@@ -58,6 +59,7 @@ class StoreCheckOutScreen extends StatefulWidget {
 class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
   TextEditingController search = TextEditingController();
   String? searchText;
+  // List<MenuItemList> cartMenuList = [];
   List<MenuItemList> cartMenuList = [];
   bool orderLoader = false;
   GroceryBloc groceryBloc = GroceryBloc();
@@ -66,6 +68,8 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
   final formKey = GlobalKey<FormState>();
 
   TextEditingController addressNameController = TextEditingController();
+  TextEditingController notes = TextEditingController();
+
   TextEditingController streetDetailsController = TextEditingController();
   TextEditingController apartmentNumberController = TextEditingController();
   TextEditingController floorNumberController = TextEditingController();
@@ -74,329 +78,404 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
 
   @override
   void initState() {
-    bloc = widget.storeCartBloc;
-    Object state = bloc.state;
-    if (state is StoreCheckoutState) {
-      cartMenuList = state.menuItemList;
-    }
+    widget.storeCartBloc.add(GetGroceryCartList());
     super.initState();
   }
 
+  int price = 0;
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GroceryBloc, GroceryState>(
-      bloc: groceryBloc,
+    return BlocConsumer<StoreCartBloc, StoreCartState>(
+      bloc: widget.storeCartBloc,
       listener: (context, state) {
-        if (state is CreateOrderLoadingState) {
-          orderLoader = state.isLoading;
+        if (state is StoreCheckoutState) {
+          cartMenuList = state.menuItemList;
           setState(() {});
-        }
-        if (state is CreateOrderSuccessState) {
-          Get.to(
-            () => CheckOutScreen(
-              isFromGrocery: true,
-              cartData: cartMenuList,
-              orderData: state.orderData,
-              getUserAddress: widget.address,
-              groceryList: [],
-              hasMultipleStore: false,
-              createMultipleOrder: false,
-              currentAddress: streetDetailsController.text,
-            ),
-          );
+
+          price = 0;
+          for (var element in cartMenuList) {
+            price = price + (element.totalPrice ?? 0);
+          }
+          setState(() {});
         }
       },
       builder: (context, state) {
-        return GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Scaffold(
-            body: WillPopScope(
-              onWillPop: () async {
-                return true;
-              },
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    15.height,
-                    Align(
-                      child: Image.asset(
-                        AssetsUtils.gymEatsLogo,
-                        height: 20.h,
-                        color: AppColors.green,
-                      ),
-                    ),
-                    10.height,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return BlocConsumer<GroceryBloc, GroceryState>(
+          bloc: groceryBloc,
+          listener: (context, state) {
+            if (state is CreateOrderLoadingState) {
+              orderLoader = state.isLoading;
+              setState(() {});
+            }
+            if (state is CreateOrderSuccessState) {
+              Get.to(
+                () => CheckOutScreen(
+                  isFromGrocery: true,
+                  cartData: cartMenuList,
+                  orderData: state.orderData,
+                  getUserAddress: widget.address,
+                  groceryList: [],
+                  hasMultipleStore: false,
+                  createMultipleOrder: false,
+                  currentAddress: streetDetailsController.text,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: Scaffold(
+                body: WillPopScope(
+                  onWillPop: () async {
+                    return true;
+                  },
+                  child: SafeArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const BackButtonWidget(),
+                        15.height,
+                        Align(
+                          child: Image.asset(
+                            AssetsUtils.gymEatsLogo,
+                            height: 20.h,
+                            color: AppColors.green,
+                          ),
+                        ),
+                        10.height,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const BackButtonWidget(),
+                            Text(
+                              'Cart',
+                              style: FontUtils.h22(
+                                fontColor: AppColors.oxFF010101,
+                                fontWeight: FWT.medium,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                backgroundColor: AppColors.transparentColor,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return CheckListSheet(
+                                      groceryDetails: widget.groceryDetails);
+                                },
+                                isDismissible: false,
+                              ),
+                              child: SvgPicture.asset(AssetsUtils.icList),
+                            ),
+                          ],
+                        ).paddingOnly(left: 14, right: 14),
+                        10.height,
+                        Align(
+                          child: IntrinsicWidth(
+                            child: GestureDetector(
+                              onTap: () => Get.offAll(
+                                  () => const AppManagerScreen(selectIndex: 1)),
+                              child: Container(
+                                height: 26,
+                                constraints:
+                                    const BoxConstraints(maxWidth: 180),
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: AppColors.green),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(AssetsUtils.icPin),
+                                    10.width,
+                                    Expanded(
+                                        child: Text(
+                                      widget.storeName ?? "",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: FontUtils.h14(
+                                          fontColor: AppColors.green,
+                                          fontWeight: FWT.semiBold),
+                                    )),
+                                    8.width,
+                                    SvgPicture.asset(AssetsUtils.downArrow,
+                                        color: AppColors.green),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        16.height,
+                        CustomSearchField(
+                          hintText: "Search for item",
+                          controller: search,
+                          readOnly: false,
+                          onChange: (p0) => setState(() => searchText = p0),
+                        ).paddingOnly(left: 14, right: 14),
+                        12.height,
                         Text(
-                          'Cart',
-                          style: FontUtils.h22(
-                            fontColor: AppColors.oxFF010101,
+                          "${cartMenuList.length} items",
+                          style: FontUtils.h16(
+                            fontColor: AppColors.middleGray,
                             fontWeight: FWT.medium,
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () => showModalBottomSheet(
-                            context: context,
-                            backgroundColor: AppColors.transparentColor,
-                            isScrollControlled: true,
+                        ).paddingOnly(left: 14, right: 14),
+                        Expanded(
+                          child: Builder(
                             builder: (context) {
-                              return CheckListSheet(
-                                  groceryDetails: widget.groceryDetails);
-                            },
-                            isDismissible: false,
-                          ),
-                          child: SvgPicture.asset(AssetsUtils.icList),
-                        ),
-                      ],
-                    ).paddingOnly(left: 14, right: 14),
-                    10.height,
-                    Align(
-                      child: IntrinsicWidth(
-                        child: GestureDetector(
-                          onTap: () => Get.offAll(
-                              () => const AppManagerScreen(selectIndex: 1)),
-                          child: Container(
-                            height: 26,
-                            constraints: const BoxConstraints(maxWidth: 180),
-                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: AppColors.green),
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset(AssetsUtils.icPin),
-                                10.width,
-                                Expanded(
-                                    child: Text(
-                                  widget.storeName ?? "",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: FontUtils.h14(
-                                      fontColor: AppColors.green,
-                                      fontWeight: FWT.semiBold),
-                                )),
-                                8.width,
-                                SvgPicture.asset(AssetsUtils.downArrow,
-                                    color: AppColors.green),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    16.height,
-                    CustomSearchField(
-                      hintText: "Search for item",
-                      controller: search,
-                      readOnly: false,
-                      onChange: (p0) => setState(() => searchText = p0),
-                    ).paddingOnly(left: 14, right: 14),
-                    12.height,
-                    Text(
-                      "${cartMenuList.length} items",
-                      style: FontUtils.h16(
-                        fontColor: AppColors.middleGray,
-                        fontWeight: FWT.medium,
-                      ),
-                    ).paddingOnly(left: 14, right: 14),
-                    Expanded(
-                      child: Builder(
-                        builder: (context) {
-                          List<MenuItemList> filterList = cartMenuList
-                              .where((element) =>
-                                  element.name?.toLowerCase().contains(
-                                      searchText?.toLowerCase() ?? "") ??
-                                  false)
-                              .toList();
-                          return filterList.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    cartMenuList.isEmpty
-                                        ? "Cart items not found !"
-                                        : 'Cart items not found for $searchText!',
-                                    textAlign: TextAlign.center,
-                                    style: FontUtils.h16(
-                                        fontColor: AppColors.black),
-                                  ),
-                                )
-                              : SingleChildScrollView(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                                  child: Column(
-                                    children: [
-                                      ListView.separated(
-                                        itemCount: filterList.length,
-                                        separatorBuilder: (context, index) =>
-                                            15.height,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 0, 0, 12),
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          MenuItemList? item =
-                                              filterList[index];
-
-                                          return ProductCardWidget(
-                                            imgSize: 75,
-                                            showDiscount: false,
-                                            qty: item.cartQuantity,
-                                            menuItem: item,
-                                            storeName: widget.storeName,
-                                            add: true,
-                                            onCartTap: () {
-                                              item.cartQuantity =
-                                                  (item.cartQuantity ?? 0) + 1;
-                                              setState(() {});
-                                            },
-                                            onAdd: () {
-                                              item.cartQuantity =
-                                                  (item.cartQuantity ?? 0) + 1;
-                                              setState(() {});
-                                            },
-                                            onRemove: () {
-                                              if ((item.cartQuantity ?? 0) >
-                                                  1) {
-                                                item.cartQuantity =
-                                                    (item.cartQuantity ?? 0) -
-                                                        1;
-                                                setState(() {});
-                                              }
-                                            },
-                                          );
-                                        },
+                              List<MenuItemList> filterList = cartMenuList
+                                  .where((element) =>
+                                      element.name?.toLowerCase().contains(
+                                          searchText?.toLowerCase() ?? "") ??
+                                      false)
+                                  .toList();
+                              return filterList.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        cartMenuList.isEmpty
+                                            ? "Cart items not found !"
+                                            : 'Cart items not found for $searchText!',
+                                        textAlign: TextAlign.center,
+                                        style: FontUtils.h16(
+                                            fontColor: AppColors.black),
                                       ),
-                                    ],
-                                  ),
-                                );
-                        },
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: boxShadowWidget,
-                        color: AppColors.whiteColor,
-                      ),
-                      child: Column(
-                        children: [
-                          12.height,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Total",
-                                style: FontUtils.h18(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.semiBold,
-                                ),
-                              ),
-                              Text(
-                                "\$ ${getTotal().toStringAsFixed(2)}",
-                                style: FontUtils.h22(
-                                  fontColor: AppColors.darkGray,
-                                  fontWeight: FWT.semiBold,
-                                ),
-                              ),
-                            ],
-                          ).paddingOnly(left: 20, right: 20),
-                          20.height,
-                          orderLoader == true
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                ).paddingOnly(left: 20, right: 20, bottom: 20)
-                              : simpleTextBorderButton(
-                                  width: context.width,
-                                  height: 48,
-                                  context: context,
-                                  color: AppColors.green,
-                                  buttonLable: StringUtils.checkout,
-                                  isLoadingWidget: false,
-                                  onTap: () async {
-                                    if (!PreferenceUtils.isManualLocation) {
-                                      dynamic result = await addressDialog();
-                                      if (result != true) {
-                                        return;
-                                      }
-                                    }
-                                    List<CreateOrderGroceryItems> data = [];
-                                    for (var element in cartMenuList) {
-                                      data.add(
-                                        CreateOrderGroceryItems(
-                                          productId: element.productId,
-                                          productType: 2,
-                                          quantity: element.cartQuantity,
-                                          notes: element.name,
-                                          productMarkedPrice:
-                                              element.originalPrice,
-                                          selectedOptions:
-                                              element.selectedOptions ?? [],
-                                        ),
-                                      );
-                                    }
+                                    )
+                                  : SingleChildScrollView(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 12, 0, 12),
+                                      child: Column(
+                                        children: [
+                                          ListView.separated(
+                                            itemCount: filterList.length,
+                                            separatorBuilder:
+                                                (context, index) => 15.height,
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 0, 12),
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemBuilder: (context, index) {
+                                              MenuItemList? item =
+                                                  filterList[index];
 
-                                    if (data.isEmpty) {
-                                      return;
-                                    }
-
-                                    (double?, double?) pos =
-                                        await Constant.i.position;
-
-                                    bool isCurrentLocation =
-                                        !PreferenceUtils.isManualLocation;
-
-                                    groceryBloc.add(
-                                      CreateOrderEvent(
-                                        context: context,
-                                        createGroceryOrderModel:
-                                            CreateGroceryOrderModel(
-                                          userId: userId,
-                                          pickup: widget.askOrder ==
-                                              AskReceiveOrder.pickMySelf,
-                                          groceryItems: data,
-                                          userAddress: o_address.UserAddress(
-                                            latitude: pos.$1 ??
-                                                widget.address?.latitude,
-                                            longitude: pos.$2 ??
-                                                widget.address?.longitude,
-                                            streetName: isCurrentLocation
-                                                ? streetDetailsController.text
-                                                : widget.address?.streetName,
-                                            streetNum: isCurrentLocation
-                                                ? apartmentNumberController.text
-                                                : widget.address?.streetNum,
-                                            city: isCurrentLocation
-                                                ? city.text
-                                                : widget.address?.city,
-                                            country: widget.address?.country,
-                                            state: widget.address?.state,
-                                            zipcode: isCurrentLocation
-                                                ? zipCodeController.text
-                                                : widget.address?.zipcode,
+                                              return ProductCardWidget(
+                                                imgSize: 75,
+                                                showDiscount: false,
+                                                checkoutScreen: true,
+                                                qty: item.cartQuantity,
+                                                menuItem: item,
+                                                cartItem: item,
+                                                storeName: widget.storeName,
+                                                add: true,
+                                                onCartTap: () {},
+                                                onAdd: () =>
+                                                    widget.storeCartBloc.add(
+                                                  ChangeGroceryQty(
+                                                    productID: item.productId,
+                                                    type: ModifyType.decrement,
+                                                  ),
+                                                ),
+                                                onRemove: () =>
+                                                    widget.storeCartBloc.add(
+                                                  ChangeGroceryQty(
+                                                    productID: item.productId,
+                                                    type: ModifyType.increment,
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                          userPhone: 1234567890,
-                                          driverTipCents: 0,
-                                          pickupTipCents: 0,
-                                          userDropoffNotes: '',
-                                        ),
+                                        ],
                                       ),
                                     );
-                                  },
-                                  isDarkColor: true,
-                                  isFillColor: true,
-                                ).paddingOnly(left: 20, right: 20, bottom: 20),
-                        ],
-                      ),
-                    )
-                  ],
+                            },
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            boxShadow: boxShadowWidget,
+                            color: AppColors.whiteColor,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 10.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!orderLoader) ...[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 16.h),
+                                  child: Text(
+                                    ' Order Notes',
+                                    style: FontUtils.h18(
+                                      fontColor: const Color(0xff000000),
+                                      fontWeight: FWT.semiBold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 0),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
+                                      )
+                                    ],
+                                  ),
+                                  child: TextFormField(
+                                    style: const TextStyle(color: Colors.black),
+                                    controller: notes,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.all(0),
+                                      hintText: 'Add order Notes.....',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              12.height,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Total",
+                                    style: FontUtils.h18(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.semiBold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '\$ ${price / 100}',
+                                    style: FontUtils.h22(
+                                      fontColor: AppColors.darkGray,
+                                      fontWeight: FWT.semiBold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              10.height,
+                              orderLoader == true
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    ).paddingOnly(
+                                      left: 20, right: 20, bottom: 20)
+                                  : simpleTextBorderButton(
+                                      width: context.width,
+                                      height: 48,
+                                      context: context,
+                                      color: AppColors.green,
+                                      buttonLable: StringUtils.checkout,
+                                      isLoadingWidget: false,
+                                      onTap: () async {
+                                        if (!PreferenceUtils.isManualLocation) {
+                                          dynamic result =
+                                              await addressDialog();
+                                          if (result != true) {
+                                            return;
+                                          }
+                                        }
+                                        List<CreateOrderGroceryItems> data = [];
+                                        for (var element in cartMenuList) {
+                                          data.add(
+                                            CreateOrderGroceryItems(
+                                              productId: element.productId,
+                                              productType: 2,
+                                              quantity: element.cartQuantity,
+                                              notes: element.name,
+                                              productMarkedPrice:
+                                                  element.originalPrice,
+                                              selectedOptions:
+                                                  element.selectedOptions ?? [],
+                                            ),
+                                          );
+                                        }
+
+                                        if (data.isEmpty) {
+                                          return;
+                                        }
+
+                                        (double?, double?) pos =
+                                            await Constant.i.position;
+
+                                        bool isCurrentLocation =
+                                            !PreferenceUtils.isManualLocation;
+
+                                        groceryBloc.add(
+                                          CreateOrderEvent(
+                                            context: context,
+                                            createGroceryOrderModel:
+                                                CreateGroceryOrderModel(
+                                              userId: userId,
+                                              pickup: widget.askOrder ==
+                                                  AskReceiveOrder.pickMySelf,
+                                              groceryItems: data,
+                                              userAddress:
+                                                  o_address.UserAddress(
+                                                latitude: pos.$1 ??
+                                                    widget.address?.latitude,
+                                                longitude: pos.$2 ??
+                                                    widget.address?.longitude,
+                                                streetName: isCurrentLocation
+                                                    ? streetDetailsController
+                                                        .text
+                                                    : widget
+                                                        .address?.streetName,
+                                                streetNum: isCurrentLocation
+                                                    ? apartmentNumberController
+                                                        .text
+                                                    : widget.address?.streetNum,
+                                                city: isCurrentLocation
+                                                    ? city.text
+                                                    : widget.address?.city,
+                                                country:
+                                                    widget.address?.country,
+                                                state: widget.address?.state,
+                                                zipcode: isCurrentLocation
+                                                    ? zipCodeController.text
+                                                    : widget.address?.zipcode,
+                                              ),
+                                              userPhone: 1234567890,
+                                              driverTipCents: 0,
+                                              pickupTipCents: 0,
+                                              userDropoffNotes: notes.text,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      isDarkColor: true,
+                                      isFillColor: true,
+                                    ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

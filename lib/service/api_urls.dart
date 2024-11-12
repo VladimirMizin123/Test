@@ -21,8 +21,6 @@ class ApiUrls {
       '${baseUrl}api/Suggestic/AddToShoppingList';
   static const String byBarcodeScan = '${baseUrl}api/AI/GetDataFromBarcodescan';
   static const String filterMenuFromAI = '${baseUrl}api/AI/FilterMenuFromAI';
-  static const String addNewCustomMeal =
-      '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
   static const String addIngredientsToUserGroceryList =
       '${baseUrl}api/AddIngradiantsToUserGroceryList/{userId}';
 
@@ -60,8 +58,6 @@ class ApiUrls {
       '${baseUrl}api/ShoppingList/UpdateItemToShoppingList';
   static const String addItemShoppingList =
       '${baseUrl}api/ShoppingList/AddItemShoppingList';
-  static const String clearShoppingList =
-      '${baseUrl}api/ShoppingList/ClearShoppingList';
   static const String removeProduct =
       '${baseUrl}api/ShoppingList/RemoveProduct';
 
@@ -188,8 +184,6 @@ class ApiUrls {
   //     '${baseUrl}api/UserGroceryList/ClearUserGroceryList';
   //
   // // Custom Meal Details Api
-  // static const String addNewMeal =
-  //     '${baseUrl}api/UserCustomMeal/AddNewCustomMeal';
 
   static const String getCustomMeal =
       '${baseUrl}api/UserCustomMeal/GetUserCustomMealList';
@@ -246,6 +240,8 @@ class ApiUrls {
       '${baseUrl}api/UserDetails/UpdateDeliveryStatus';
   static const String getOrderInvoiceList =
       '${baseUrl}api/OrderInvoice/GetUserOrderInvoiceList';
+  static const String getUserInvoiceList =
+      '${baseUrl}api/OrderInvoice/GetUserInvoiceList';
 
   ///Account APis---------------------------------------------------------
 

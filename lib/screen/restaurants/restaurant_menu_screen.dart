@@ -26,6 +26,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dar
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
+import 'package:gymeats_mobile/widget/network_image_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
@@ -147,7 +148,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                 }
               }
             }
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           }
         },
         builder: (context, state) {
@@ -174,7 +177,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     restaurantMenu?.categories?[index].menuItemList =
                         state.updatedList;
                   }
-                  setState(() {});
+                  if (mounted) {
+                    setState(() {});
+                  }
                 }
               },
               builder: (context, state) {
@@ -656,8 +661,10 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                   onTap: () {
                                                     Get.to(
                                                       () => RestaurantCart(
-                                                          pickUp:
-                                                              widget.pickup),
+                                                        pickUp: widget.pickup,
+                                                        userAddress: widget
+                                                            .getUserAddress,
+                                                      ),
                                                       // transition: Transition.fadeIn,
                                                     )!;
                                                   },
@@ -723,6 +730,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                       pickUp: widget.pickup,
                       matchMealStatus: iCanEat ? status(menuItem) : null,
                       quote: widget.quote,
+                      getUserAddress: widget.getUserAddress,
                       onCustomizationChange: (p0) {
                         menuItem.customizations = p0;
                         setState(() {});
@@ -736,6 +744,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   shoppingListData: selectedCartData,
                   cartCount: cartCount,
                   pickUp: widget.pickup,
+                  getUserAddress: widget.getUserAddress,
                   matchMealStatus: iCanEat ? status(menuItem) : null,
                   quote: widget.quote,
                   onCustomizationChange: (p0) {
@@ -758,13 +767,12 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 menuItem.image == null
-                    ? Image.asset(
-                        AssetsUtils.food1,
+                    ? Image.asset(AssetsUtils.food1, width: 80.w)
+                    : NetworkImageWidget(
+                        url: menuItem.image!,
+                        placeholder: AssetsUtils.icGenericLogo,
                         width: 80.w,
-                      )
-                    : Image.network(
-                        menuItem.image!,
-                        width: 80.w,
+                        showLoader: false,
                       ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -844,6 +852,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
                                     quote: widget.quote,
+                                    userAddress: widget.getUserAddress,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
                                       setState(() {});
@@ -859,6 +868,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
                                     quote: widget.quote,
+                                    userAddress: widget.getUserAddress,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
                                       setState(() {});
@@ -1182,6 +1192,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         }
       }
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

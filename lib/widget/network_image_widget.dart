@@ -13,12 +13,14 @@ class NetworkImageWidget extends StatelessWidget {
     this.placeholder,
     this.height,
     this.width,
+    this.showLoader = true,
     this.fit,
   });
   final String url;
   final String? placeholder;
   final double? height;
   final double? width;
+  final bool showLoader;
   final BoxFit? fit;
 
   @override
@@ -44,11 +46,13 @@ class NetworkImageWidget extends StatelessWidget {
               AssetsUtils.gymEatsLogoRound,
               color: AppColors.green,
             ),
-      placeholder: (context, url) => const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.lightGrey,
-        ),
-      ),
+      placeholder: (context, url) => showLoader
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.lightGrey,
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

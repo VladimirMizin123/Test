@@ -539,18 +539,6 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, RecipesAddToGroceryModel>>
-      clearShoppingList() async {
-    final response =
-        await apiServices.delete('${ApiUrls.clearShoppingList}/$userID');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          RecipesAddToGroceryModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
-  }
-
   Future<Either<ErrorModel, BarcodeScannerModal>> fetchBarcode(
       String barcodeID) async {
     final response =
@@ -562,15 +550,17 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, SuccessModel>> addNewCustomMeal(
-      {String? name,
-      String? protein,
-      String? fat,
-      String? carbs,
-      String? calorie,
-      String? type}) async {
+  Future<Either<ErrorModel, SuccessModel>> addNewCustomMeal({
+    String? name,
+    String? protein,
+    String? fat,
+    String? carbs,
+    String? calorie,
+    String? type,
+    String? date,
+  }) async {
     final response = await apiServices.postMultipart(
-      url: ApiUrls.addNewCustomMeal,
+      url: ApiUrls.addNewMeal,
       body: {
         'Name': name ?? '',
         'Protein': protein ?? '',
@@ -579,6 +569,7 @@ class GroceryRepository {
         'Calorie': calorie ?? '',
         'Type': type ?? '',
         'userId': userID,
+        'Date': date ?? DateTime.now().toIso8601String(),
       },
       files: [],
     );
@@ -697,6 +688,9 @@ class GroceryRepository {
       "sub_categorieId": subCategorieId,
     };
 
+    log("Api : ${ApiUrls.getMenuList}");
+    log("Request Data : ${jsonEncode(reqData)}");
+
     final response = await apiServices.post(ApiUrls.getMenuList, reqData);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -722,6 +716,8 @@ class GroceryRepository {
       "pickup": askReceiveOrder != 0,
     };
 
+    log("Api : ${ApiUrls.getStoreCategorieList}");
+    log("Req Data : ${jsonEncode(reqData)}");
     final response =
         await apiServices.post(ApiUrls.getStoreCategorieList, reqData);
 

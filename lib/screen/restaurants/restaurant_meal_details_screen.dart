@@ -19,6 +19,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_details_screen
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
+import 'model/get_user_address_model.dart' as address;
 
 class RestaurantMealDetails extends StatefulWidget {
   const RestaurantMealDetails({
@@ -29,6 +30,7 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.cartCount,
     required this.pickUp,
     this.quote,
+   required this.getUserAddress,
     this.matchMealStatus,
     this.onCustomizationChange,
   });
@@ -40,6 +42,7 @@ class RestaurantMealDetails extends StatefulWidget {
   final int? matchMealStatus;
   final bool pickUp;
   final qu.Quote? quote;
+  final address.UserAddress? getUserAddress;
   final Function(List<Customization>)? onCustomizationChange;
 
   @override
@@ -435,6 +438,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
                                                     quote: widget.quote,
+                                                    userAddress:
+                                                        widget.getUserAddress,
                                                     onCustomizationChange:
                                                         (p0) => widget
                                                             .onCustomizationChange
@@ -452,6 +457,8 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                     cartCount: widget.cartCount,
                                                     pickUp: widget.pickUp,
                                                     quote: widget.quote,
+                                                    userAddress:
+                                                        widget.getUserAddress,
                                                     onCustomizationChange:
                                                         (p0) => widget
                                                             .onCustomizationChange

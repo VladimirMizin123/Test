@@ -13,7 +13,6 @@ import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
-import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
@@ -28,7 +27,12 @@ import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_mod
     as u_add;
 
 class RestaurantCart extends StatefulWidget {
-  const RestaurantCart({super.key, required this.pickUp});
+  const RestaurantCart({
+    super.key,
+    required this.pickUp,
+    required this.userAddress,
+  });
+  final address.UserAddress? userAddress;
 
   final bool pickUp;
 
@@ -41,7 +45,6 @@ class _RestaurantCartState extends State<RestaurantCart> {
   RestaurantBloc restaurantBloc = RestaurantBloc();
   dynamic price = 0;
   bool loadCreateOrder = false;
-  address.UserAddress? getUserAddress;
 
   order.CreateOrderData? orderData;
   final formKey = GlobalKey<FormState>();
@@ -52,12 +55,12 @@ class _RestaurantCartState extends State<RestaurantCart> {
   TextEditingController floorNumberController = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
+  TextEditingController notes = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     cartBloc.add(GetCartEvent());
-    restaurantBloc.add(GetUserAddressEvent());
   }
 
   @override
@@ -96,7 +99,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                           isFromGrocery: false,
                           cartData: cartData,
                           orderData: orderData,
-                          getUserAddress: getUserAddress,
+                          getUserAddress: widget.userAddress,
                           currentAddress: streetDetailsController.text,
                         ),
                         transition: Transition.fadeIn,
@@ -104,29 +107,6 @@ class _RestaurantCartState extends State<RestaurantCart> {
                     }
 
                     loadCreateOrder = false;
-                  }
-
-                  if (state is GetUserAddressSuccessState) {
-                    if (state.userAddress.isEmpty) return;
-
-                    for (var i = 0; i < state.userAddress.length; i++) {
-                      if (state.userAddress[i].isPrimary == true) {
-                        getUserAddress = state.userAddress[i];
-                        break;
-                      }
-                    }
-
-                    getUserAddress ??= state.userAddress[0];
-
-                    if (getUserAddress!.streetName.toString().isEmpty ||
-                        getUserAddress!.streetName == null) {
-                      Get.to(() => const GetUserAddress(),
-                          transition: Transition.fadeIn,
-                          arguments: {
-                            "string": 'isFromRestaurant',
-                            "userData": ''
-                          });
-                    }
                   }
                 },
                 builder: (context, state) {
@@ -360,7 +340,78 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 16.w, vertical: 10.h),
                                       child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
+                                          if (!loadCreateOrder) ...[
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 16.h),
+                                              child: Text(
+                                                ' Order Notes',
+                                                style: FontUtils.h18(
+                                                  fontColor:
+                                                      const Color(0xff000000),
+                                                  fontWeight: FWT.semiBold,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 0),
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color:
+                                                        const Color(0xff004C63)
+                                                            .withOpacity(0.08),
+                                                    offset: const Offset(0, 0),
+                                                    blurRadius: 16,
+                                                  )
+                                                ],
+                                              ),
+                                              child: TextFormField(
+                                                style: const TextStyle(
+                                                    color: Colors.black),
+                                                controller: notes,
+                                                decoration: InputDecoration(
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide: BorderSide.none,
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide: BorderSide.none,
+                                                  ),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide: BorderSide.none,
+                                                  ),
+                                                  contentPadding:
+                                                      const EdgeInsets.all(0),
+                                                  hintText:
+                                                      'Add order Notes.....',
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.h),
+                                          ],
                                           Padding(
                                             padding: EdgeInsets.only(top: 8.h),
                                             child: Row(
@@ -405,17 +456,9 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                     buttonLable: 'Checkout ',
                                                     lableColor: Colors.white,
                                                     onTap: () async {
-                                                      if (getUserAddress ==
-                                                          null) {
-                                                        showToast(
-                                                            message:
-                                                                "Waiting while fetching address",
-                                                            isSuccess: false,
-                                                            color: AppColors
-                                                                .black);
-                                                        return;
-                                                      }
-
+                                                      (double?, double?) pos =
+                                                          await Constant
+                                                              .i.position;
                                                       if (cartData
                                                           .any((element) {
                                                         int pr =
@@ -460,10 +503,9 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                         }
                                                         double
                                                             productMarkedPrice =
-                                                            ((element.price ??
-                                                                    0) /
-                                                                (element.quantity ??
-                                                                    0));
+                                                            element.originalPrice
+                                                                    ?.toDouble() ??
+                                                                0;
                                                         data.add(
                                                           CreateOrderMealmeItems(
                                                             productId: element
@@ -472,8 +514,6 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             quantity: element
                                                                 .quantity,
                                                             notes: '',
-                                                            // productMarkedPrice:
-                                                            //     element.price,
                                                             productMarkedPrice: productMarkedPrice
                                                                         .isNaN ||
                                                                     productMarkedPrice
@@ -486,10 +526,6 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                           ),
                                                         );
                                                       }
-
-                                                      (double?, double?) pos =
-                                                          await Constant
-                                                              .i.position;
 
                                                       restaurantBloc.add(
                                                         CreateOrderEvent(
@@ -504,12 +540,14 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                                 .UserAddress(
                                                               latitude: pos
                                                                       .$1 ??
-                                                                  getUserAddress
+                                                                  widget
+                                                                      .userAddress
                                                                       ?.latitude ??
                                                                   0,
                                                               longitude: pos
                                                                       .$2 ??
-                                                                  getUserAddress
+                                                                  widget
+                                                                      .userAddress
                                                                       ?.longitude ??
                                                                   0,
                                                             ),
@@ -526,7 +564,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             driverTipCents: 0,
                                                             pickupTipCents: 0,
                                                             userDropoffNotes:
-                                                                '',
+                                                                notes.text,
                                                           ),
                                                         ),
                                                       );

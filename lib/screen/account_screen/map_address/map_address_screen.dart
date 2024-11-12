@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -457,7 +458,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
 
   @override
   void dispose() {
-    print("dispose call");
     super.dispose();
   }
 
@@ -476,26 +476,26 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                 return Column(
                   children: [
                     Expanded(
+                      flex: 2,
                       child: Stack(
                         children: [
-                          SizedBox(
-                            height: 330,
-                            child: GoogleMap(
-                              myLocationEnabled: false,
-                              myLocationButtonEnabled: true,
-                              zoomControlsEnabled: false,
-                              compassEnabled: true,
-                              onMapCreated: (controller) async {
-                                _onMapCreated(controller);
-                              },
-                              initialCameraPosition: currentPosition,
-                              markers: {
-                                marker ??
-                                    const Marker(
-                                      markerId: MarkerId("0"),
-                                    ), // Marker
-                              },
-                              onTap: (argument) async {
+                          GoogleMap(
+                            myLocationEnabled: false,
+                            myLocationButtonEnabled: true,
+                            zoomControlsEnabled: false,
+                            compassEnabled: true,
+                            onMapCreated: (controller) async {
+                              _onMapCreated(controller);
+                            },
+                            initialCameraPosition: currentPosition,
+                            markers: {
+                              marker ??
+                                  const Marker(
+                                    markerId: MarkerId("0"),
+                                  ), // Marker
+                            },
+                            onTap: (argument) async {
+                              try {
                                 BitmapDescriptor? customIcon;
 
                                 customIcon = BitmapDescriptor.fromBytes(
@@ -527,8 +527,10 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 );
 
                                 setState(() {});
-                              },
-                            ),
+                              } catch (e) {
+                                log(e.toString());
+                              }
+                            },
                           ),
                           Positioned(
                             top: 40.h,
@@ -539,7 +541,10 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                       ),
                     ),
                     Expanded(
+                      flex: 3,
                       child: SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom),
                         child: Form(
                           key: formKey,
                           child: Column(

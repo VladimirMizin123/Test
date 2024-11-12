@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -12,6 +11,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/filter_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 
 // ignore: must_be_immutable
 class FilterScreen extends StatefulWidget {
@@ -724,8 +724,10 @@ class _FilterScreenState extends State<FilterScreen> {
                         }
 
                         if (isFilter == false) {
-                          Fluttertoast.showToast(
-                            msg: 'Select atleast 1 Category',
+                          showToast(
+                            message: 'Select atleast 1 Category',
+                            isSuccess: false,
+                            color: AppColors.black,
                           );
                         } else {
                           ratingFilter.clear();

@@ -7,3 +7,13 @@ class ModifyCart extends StoreCartEvent {
 
   ModifyCart({required this.menuItemList});
 }
+
+class GetGroceryCartList extends StoreCartEvent {
+  GetGroceryCartList();
+}
+
+class ChangeGroceryQty extends StoreCartEvent {
+  final String? productID;
+  final ModifyType type;
+  ChangeGroceryQty({required this.productID, required this.type});
+}

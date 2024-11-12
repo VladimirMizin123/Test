@@ -25,15 +25,17 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
     try {
       await _repository
           .addMeal(
-              imageUrl: event.imageUrl,
-              calorie: event.calorie,
-              carbs: event.carbs,
-              fat: event.fat,
-              name: event.name,
-              protein: event.protein,
-              type: event.type,
-              userId: event.userId,
-              quantity: event.quantity)
+        imageUrl: event.imageUrl,
+        calorie: event.calorie,
+        carbs: event.carbs,
+        fat: event.fat,
+        name: event.name,
+        protein: event.protein,
+        type: event.type,
+        userId: event.userId,
+        quantity: event.quantity,
+        date: event.date ?? DateTime.now().toIso8601String(),
+      )
           .fold(
         (left) {
           onFailError(emit: emit, text: left.errorMessage!);

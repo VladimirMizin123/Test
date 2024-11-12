@@ -177,7 +177,7 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                                             waterController
                                                 .text = convertMilliToOz(
                                                     isWatervalue: waterValue,
-                                                    textValue: 500)
+                                                    textValue: 250)
                                                 .toString();
                                           },
                                         ),
@@ -191,7 +191,7 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                                             waterController
                                                 .text = convertMilliToOz(
                                                     isWatervalue: waterValue,
-                                                    textValue: 1000)
+                                                    textValue: 500)
                                                 .toString();
                                           },
                                         ).paddingOnly(left: 30.w),
@@ -202,17 +202,10 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                                               textValue: 1000,
                                               isWatervalue: waterValue),
                                           onTap: () {
-                                            // var amountOfWater = int.parse(
-                                            //         waterController.text)
-                                            //   ;
-
-                                            // var sum = amountOfWater + 1000;
-                                            // waterController.text =
-                                            //     sum.toString();
                                             waterController
                                                 .text = convertMilliToOz(
                                                     isWatervalue: waterValue,
-                                                    textValue: 2000)
+                                                    textValue: 1000)
                                                 .toString();
                                           },
                                         ).paddingOnly(left: 30.w),
@@ -247,7 +240,6 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                       onPressed: () {
                         setState(() {
                           bloc.add(
-                            // UpdateWaterEvent(waterML: waterController.text),
                             UpdateWaterEvent(
                                 waterML: (waterController.text == "16.91" ||
                                         waterController.text == "33.81" ||

@@ -18,12 +18,17 @@ class GoogleMapSearchRepository {
 
   Future<Either<ErrorModel, SearchAddressResponseModel>> searchLocation(
       String value) async {
-    final response = await apiServices.get(ApiUrls.searchLocationURL(value));
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(
-          SearchAddressResponseModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    try {
+      final response = await apiServices.get(ApiUrls.searchLocationURL(value));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Right(
+            SearchAddressResponseModel.fromJson(jsonDecode(response.body)));
+      } else {
+        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      }
+    } catch (e) {
+      return Left(ErrorModel(
+          success: false, errorMessage: "something went wrong here."));
     }
   }
 

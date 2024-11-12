@@ -42,6 +42,7 @@ class StoreCategoriesScreen extends StatefulWidget {
   final List<GroceryDetails>? groceryDetails;
   final AskReceiveOrder? askOrder;
   final CategorieModel? categorie;
+
   @override
   State<StoreCategoriesScreen> createState() => _StoreCategoriesScreenState();
 }

@@ -9,8 +9,11 @@ import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
+import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/swap_meal_model.dart';
 import 'package:gymeats_mobile/screen/widget/swap_meal_card_widget.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 class JournalSwapMealBottomSheet extends StatefulWidget {
@@ -29,6 +32,7 @@ class _JournalSwapMealBottomSheetState
     extends State<JournalSwapMealBottomSheet> {
   bool isSelectAnyOneMeal = false;
   List<SimilarMealData> similarMealDataList = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -133,34 +137,46 @@ class _JournalSwapMealBottomSheetState
                   ),
                   Align(
                       alignment: Alignment.center,
-                      child: simpleTextBorderButton(
-                          context: context,
-                          buttonLable: isSelectAnyOneMeal
-                              ? 'Confirm New Meal'
-                              : StringUtils.back,
-                          height: screenSize.height * 0.055,
-                          width: screenSize.width * 0.85,
-                          isFillColor: isSelectAnyOneMeal,
-                          onTap: () {
-                            if (!isSelectAnyOneMeal) {
-                              Get.back();
-                            } else {
-                              for (var i = 0;
-                                  i < similarMealDataList.length;
-                                  i++) {
-                                if (similarMealDataList[i].isSelectedForSwap!) {
-                                  widget.journalPlanBloc.add(
-                                      JournalSwapMealDetailsEvent(
-                                          similarMealData:
-                                              similarMealDataList[i],
-                                          day: widget.day,
-                                          mealId: widget.mealData!.id!));
-                                  break;
+                      child: isLoading
+                          ? const AppCenterLoader()
+                          : simpleTextBorderButton(
+                              context: context,
+                              buttonLable: isSelectAnyOneMeal
+                                  ? 'Confirm New Meal'
+                                  : StringUtils.back,
+                              height: screenSize.height * 0.055,
+                              width: screenSize.width * 0.85,
+                              isFillColor: isSelectAnyOneMeal,
+                              onTap: () {
+                                if (!isSelectAnyOneMeal) {
+                                  Get.back();
+                                } else {
+                                  for (var i = 0;
+                                      i < similarMealDataList.length;
+                                      i++) {
+                                    if (similarMealDataList[i]
+                                        .isSelectedForSwap!) {
+                                      isLoading = true;
+                                      setState(() {});
+                                      widget.journalPlanBloc.add(
+                                        JournalSwapMealDetailsEvent(
+                                            similarMealData:
+                                                similarMealDataList[i],
+                                            day: widget.day,
+                                            mealId: widget.mealData!.id!,
+                                            onComplete: () {
+                                              isLoading = false;
+                                              setState(() {});
+                                              MealPlanBloc()
+                                                  .add(MealPlanFetchEvent());
+                                            }),
+                                      );
+                                      break;
+                                    }
+                                  }
                                 }
-                              }
-                            }
-                          },
-                          isDarkColor: true)),
+                              },
+                              isDarkColor: true)),
                 ],
               ),
             ),

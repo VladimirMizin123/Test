@@ -8,7 +8,6 @@ import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
-import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
@@ -41,6 +40,7 @@ class JournalPlanRepository {
   Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
       String date) async {
     String apiURL = '${ApiUrls.getMealLogByDate}/$userId?date=$date';
+    log("Api : $apiURL");
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(GetMealLogByDate.fromJson(jsonDecode(response.body)));
@@ -60,13 +60,46 @@ class JournalPlanRepository {
     }
   }
 
-  Future<Either<ErrorModel, SkipMealPlanModel>> skipMealPlan(
-      {required String mealID}) async {
-    final response =
-        await apiServices.get('${ApiUrls.skipMeal}/$userID?mealId=$mealID');
-
+  Future<Either<ErrorModel, List<String>>> getUserInvoiceList() async {
+    final response = await apiServices.get(ApiUrls.getUserInvoiceList);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(SkipMealPlanModel.fromJson(jsonDecode(response.body)));
+      return Right(List<String>.from(jsonDecode(response.body)["data"]));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
+  Future<Either<ErrorModel, SuccessModel>> skipMealPlan({
+    required String mealId,
+    String? mealName,
+    num? calorie,
+    String? mealType,
+    num? noOfServing,
+    String? recipeId,
+    num? protein,
+    num? fat,
+    num? carbs,
+    int? value,
+    String? date,
+  }) async {
+    Map<String, dynamic> data = {
+      "mealName": mealName ?? '',
+      "suggesticMealId": mealId,
+      "calorie": calorie ?? 0,
+      "mealType": mealType ?? '',
+      "noOfServing": noOfServing ?? 0,
+      "recipeId": recipeId,
+      "protein": protein ?? 0,
+      "fat": fat ?? 0,
+      "carbs": carbs ?? 0,
+      "value": value ?? 2,
+      "userId": userID,
+    };
+    data.addIf(date != null, "date", date);
+    log("Req Data : ${jsonEncode(data)}");
+    final response = await apiServices.post(ApiUrls.addMealLog, data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
@@ -185,7 +218,7 @@ class JournalPlanRepository {
   //   }
   // }
   Future<Either<ErrorModel, SuccessModel>> addEatenMeal({
-    required String mealId,
+    required String? mealId,
     String? mealName,
     num? calorie,
     String? mealType,
@@ -194,6 +227,7 @@ class JournalPlanRepository {
     num? protein,
     num? fat,
     num? carbs,
+    num? value,
     String? date,
   }) async {
     Map<String, dynamic> data = {
@@ -206,10 +240,11 @@ class JournalPlanRepository {
       "protein": protein ?? 0,
       "fat": fat ?? 0,
       "carbs": carbs ?? 0,
-      "value": 2,
+      "value": value ?? 2,
       "userId": userID,
     };
     data.addIf(date != null, "date", date);
+    log("Req Data : ${jsonEncode(data)}");
     final response = await apiServices.post(ApiUrls.addMealLog, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));

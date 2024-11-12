@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_bloc.dart';
 import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_event.dart';
+import 'package:gymeats_mobile/bloc/journal/custom_meal_bloc/custom_meal_item_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
@@ -13,6 +15,7 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -21,7 +24,15 @@ import '../../bloc/grocery/add_new_grocery/add_new_grocery_state.dart';
 class BarCodeGroceryItemDetails extends StatefulWidget {
   final String? scanData;
   final String? type;
-  const BarCodeGroceryItemDetails({super.key, this.scanData, this.type});
+  final String? mealType;
+  final DateTime? selectedDate;
+  const BarCodeGroceryItemDetails({
+    super.key,
+    this.scanData,
+    this.type,
+    this.mealType,
+    required this.selectedDate,
+  });
 
   @override
   State<BarCodeGroceryItemDetails> createState() =>
@@ -29,8 +40,6 @@ class BarCodeGroceryItemDetails extends StatefulWidget {
 }
 
 class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
-  String _selectProduct = 'Spoon';
-  List<String> productList = ['Spoon', 'Cup'];
   GroceryBloc groceryBloc = GroceryBloc();
   BarcodeScannerData? barcodeScannerData;
   int totalCount = 1;
@@ -38,7 +47,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
   @override
   void initState() {
     super.initState();
-    groceryBloc.add(BarcodeScanEvent(barcode: widget.scanData!));
+    groceryBloc.add(BarcodeScanEvent(barcode: widget.scanData ?? ""));
   }
 
   @override
@@ -54,6 +63,13 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
 
             if (state is AddNewCustomMealSuccessState) {
               Navigator.pop(context);
+            }
+            if (state is BarcodeScannerErrorState) {
+              log("Call Error");
+              Get.offNamed("/AddNewItemScreen", arguments: {
+                "title": widget.mealType,
+                "date": widget.selectedDate,
+              });
             }
           },
           builder: (context, state) {
@@ -126,88 +142,6 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    // Row(
-                                    //   children: [
-                                    //     GestureDetector(
-                                    //       onTap: () {
-                                    //         if (totalCount != 1) {
-                                    //           totalCount = totalCount - 1;
-                                    //           setState(() {});
-                                    //         }
-                                    //       },
-                                    //       child: Container(
-                                    //         height: size.height * 0.070,
-                                    //         width: size.height * 0.070,
-                                    //         decoration: BoxDecoration(
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(6),
-                                    //           color: AppColors.skyBlue,
-                                    //         ),
-                                    //         child: const Center(
-                                    //           child: Icon(Icons.remove, size: 27),
-                                    //         ),
-                                    //       ),
-                                    //     ),
-                                    //     SizedBox(width: 8.w),
-                                    //     Container(
-                                    //       height: size.height * 0.070,
-                                    //       width: size.height * 0.070,
-                                    //       decoration: BoxDecoration(
-                                    //           border: Border.all(
-                                    //               color: AppColors.disable),
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(6)),
-                                    //       child: Center(
-                                    //           child: Text(
-                                    //         totalCount.toString(),
-                                    //         style: FontUtils.h18(
-                                    //             fontWeight: FWT.semiBold,
-                                    //             fontColor: AppColors.darkGray),
-                                    //       )),
-                                    //     ),
-                                    //     SizedBox(width: 8.w),
-                                    //     GestureDetector(
-                                    //       onTap: () {
-                                    //         totalCount = totalCount + 1;
-                                    //         setState(() {});
-                                    //       },
-                                    //       child: Container(
-                                    //         height: size.height * 0.070,
-                                    //         width: size.height * 0.070,
-                                    //         decoration: BoxDecoration(
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(6),
-                                    //           color: AppColors.skyBlue,
-                                    //         ),
-                                    //         child: const Center(
-                                    //           child: Icon(Icons.add, size: 27),
-                                    //         ),
-                                    //       ),
-                                    //     ),
-                                    //     SizedBox(width: 8.w),
-                                    //
-                                    //   ],
-                                    // ),
-                                    DropdownButtonFormField(
-                                        decoration: const InputDecoration(
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.black))),
-                                        padding: EdgeInsets.zero,
-                                        value: _selectProduct,
-                                        borderRadius: BorderRadius.circular(12),
-                                        items: productList
-                                            .map((e) => DropdownMenuItem(
-                                                  value: e,
-                                                  child: Text(e),
-                                                ))
-                                            .toList(),
-                                        onChanged: (val) {
-                                          setState(() {
-                                            _selectProduct = val!;
-                                          });
-                                        }),
-                                    const SizedBox(height: 10),
                                     GridView(
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
@@ -221,61 +155,78 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                       children: [
                                         myProgressBarCardView(
                                             'Cal',
-                                            barcodeScannerData!.nfCalories ==
+                                            barcodeScannerData?.nfCalories ==
                                                     null
                                                 ? 0
-                                                : double.parse(
-                                                    barcodeScannerData!
-                                                        .nfCalories
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCalorie))
-                                                .toStringAsFixed(2)),
+                                                : double.tryParse(
+                                                        barcodeScannerData
+                                                                ?.nfCalories
+                                                                .toString() ??
+                                                            "") ??
+                                                    0,
+                                            double.parse(double.tryParse(
+                                                        PreferenceUtils
+                                                            .getString(
+                                                                totalCalorie))
+                                                    ?.toStringAsFixed(2) ??
+                                                "0"),
                                             AppColors.primaryBlue),
                                         myProgressBarCardView(
-                                            'Fat',
-                                            barcodeScannerData!.nfTotalFat ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    barcodeScannerData!
-                                                        .nfTotalFat
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalFat))
-                                                .toStringAsFixed(2)),
-                                            AppColors.coral),
+                                          'Fat',
+                                          barcodeScannerData?.nfTotalFat == null
+                                              ? 0
+                                              : double.tryParse(
+                                                      barcodeScannerData
+                                                              ?.nfTotalFat
+                                                              .toString() ??
+                                                          "") ??
+                                                  0,
+                                          double.parse(double.parse(
+                                                  PreferenceUtils.getString(
+                                                      totalFat))
+                                              .toStringAsFixed(2)),
+                                          AppColors.coral,
+                                          isGram: true,
+                                        ),
                                         myProgressBarCardView(
-                                            'Carbs',
-                                            barcodeScannerData!
-                                                        .nfTotalCarbohydrate ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    barcodeScannerData!
-                                                        .nfTotalCarbohydrate
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalCarbs))
-                                                .toStringAsFixed(2)),
-                                            AppColors.mint),
+                                          'Carbs',
+                                          barcodeScannerData
+                                                      ?.nfTotalCarbohydrate ==
+                                                  null
+                                              ? 0
+                                              : double.tryParse(barcodeScannerData
+                                                          ?.nfTotalCarbohydrate
+                                                          .toString() ??
+                                                      "") ??
+                                                  0,
+                                          double.parse(double.tryParse(
+                                                      PreferenceUtils.getString(
+                                                          totalCarbs))
+                                                  ?.toStringAsFixed(2) ??
+                                              "0"),
+                                          AppColors.mint,
+                                          isGram: true,
+                                        ),
                                         myProgressBarCardView(
-                                            'Protein',
-                                            barcodeScannerData!.nfTotalFat ==
-                                                    null
-                                                ? 0
-                                                : double.parse(
-                                                    barcodeScannerData!
-                                                        .nfTotalFat
-                                                        .toString()),
-                                            double.parse(double.parse(
-                                                    PreferenceUtils.getString(
-                                                        totalProtein))
-                                                .toStringAsFixed(2)),
-                                            AppColors.skyBlue),
+                                          'Protein',
+                                          barcodeScannerData?.nfTotalFat == null
+                                              ? 0
+                                              : double.tryParse(
+                                                      barcodeScannerData
+                                                              ?.nfTotalFat
+                                                              .toString() ??
+                                                          "") ??
+                                                  0,
+                                          double.tryParse(double.tryParse(
+                                                          PreferenceUtils
+                                                              .getString(
+                                                                  totalProtein))
+                                                      ?.toStringAsFixed(2) ??
+                                                  "0") ??
+                                              0,
+                                          AppColors.skyBlue,
+                                          isGram: true,
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
@@ -295,7 +246,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
                                         Text(
-                                            '${barcodeScannerData!.nfCalories}g',
+                                            '${barcodeScannerData?.nfCalories ?? 0} cal',
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
@@ -315,7 +266,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
                                         Text(
-                                            '${barcodeScannerData!.nfProtein}g',
+                                            '${barcodeScannerData?.nfProtein ?? 0}g',
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
@@ -335,7 +286,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
                                         Text(
-                                            '${barcodeScannerData!.nfTotalCarbohydrate}g',
+                                            '${barcodeScannerData?.nfTotalCarbohydrate ?? 0}g',
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
@@ -355,7 +306,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
                                         Text(
-                                            '${barcodeScannerData!.nfTotalFat}g',
+                                            '${barcodeScannerData?.nfTotalFat ?? 0}g',
                                             style: FontUtils.h16(
                                                 fontColor: AppColors.darkGray,
                                                 fontWeight: FWT.medium)),
@@ -365,128 +316,52 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
                                     Divider(
                                         color: AppColors.disabledColor,
                                         height: 2.h),
-
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Divider(color: AppColors.disabledColor, height: 2.h),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Divider(color: AppColors.disabledColor, height: 2.h),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Fat', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //     Text('2g', style: FontUtils.h16(fontColor: AppColors.darkGray, fontWeight: FWT.medium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    //   children: [
-                                    //     Text('Trans Fat', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //     Text('0g', style: FontUtils.h14(fontColor: AppColors.darkGray, fontWeight: FWT.lightMedium)),
-                                    //   ],
-                                    // ),
                                     const SizedBox(height: 40),
-                                    simpleTextBorderButton(
-                                      context: context,
-                                      buttonLable: 'Add Item',
-                                      height: size.height * 0.065,
-                                      width: size.width,
-                                      isLoadingWidget: state is LoadingState,
-                                      onTap: () {
-                                        // groceryBloc.add(AddNewCustomMealEvent(
-                                        //   calorie: barcodeScannerData!.nfCalories
-                                        //       .toString(),
-                                        //   carbs: barcodeScannerData!
-                                        //       .nfTotalCarbohydrate
-                                        //       .toString(),
-                                        //   fat: barcodeScannerData!.nfTotalFat
-                                        //       .toString(),
-                                        //   name: barcodeScannerData!.foodName,
-                                        //   protein: barcodeScannerData!.nfProtein
-                                        //       .toString(),
-                                        //   type: 'breakfast',
-                                        // ));
-
-                                        getAddNewMealBloc.add(
-                                          AddNewMeal(
-                                            name:
-                                                barcodeScannerData?.foodName ??
-                                                    '',
-                                            protein: barcodeScannerData
-                                                    ?.nfProtein
-                                                    .toString() ??
-                                                '',
-                                            fat: barcodeScannerData?.nfTotalFat
-                                                    .toString() ??
-                                                '',
-                                            carbs: barcodeScannerData
-                                                    ?.nfTotalCarbohydrate
-                                                    .toString() ??
-                                                '',
-                                            calorie: barcodeScannerData
-                                                    ?.nfCalories
-                                                    .toString() ??
-                                                '',
-                                            type: widget.type
-                                                    ?.toString()
-                                                    .removeAllWhitespace ??
-                                                '',
-                                            userId: userId,
-                                            quantity: '1',
+                                    state is AddNewMealLoadingState
+                                        ? const AppCenterLoader()
+                                        : simpleTextBorderButton(
+                                            context: context,
+                                            buttonLable: 'Add Item',
+                                            height: size.height * 0.065,
+                                            width: size.width,
+                                            isLoadingWidget:
+                                                state is LoadingState,
+                                            onTap: () {
+                                              getAddNewMealBloc.add(
+                                                AddNewMeal(
+                                                  name: barcodeScannerData
+                                                          ?.foodName ??
+                                                      '',
+                                                  protein: barcodeScannerData
+                                                          ?.nfProtein
+                                                          .toString() ??
+                                                      '',
+                                                  fat: barcodeScannerData
+                                                          ?.nfTotalFat
+                                                          .toString() ??
+                                                      '',
+                                                  carbs: barcodeScannerData
+                                                          ?.nfTotalCarbohydrate
+                                                          .toString() ??
+                                                      '',
+                                                  calorie: barcodeScannerData
+                                                          ?.nfCalories
+                                                          .toString() ??
+                                                      '',
+                                                  type: widget.type
+                                                          ?.toString()
+                                                          .removeAllWhitespace ??
+                                                      '',
+                                                  userId: userId,
+                                                  quantity: '1',
+                                                  date: widget.selectedDate
+                                                      ?.toIso8601String(),
+                                                ),
+                                              );
+                                            },
+                                            isDarkColor: true,
+                                            isFillColor: true,
                                           ),
-                                        );
-                                      },
-                                      isDarkColor: true,
-                                      isFillColor: true,
-                                    ),
                                     SizedBox(height: 14.h),
                                   ],
                                 ),
@@ -502,7 +377,8 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
   }
 
   Widget myProgressBarCardView(
-      String title, double value, double totalValue, Color progressBarColor) {
+      String title, double value, double totalValue, Color progressBarColor,
+      {bool isGram = false}) {
     final screenSize = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -532,7 +408,7 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
               ],
             ),
             Text(
-                '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} cal',
+                '${value.toStringAsFixed(2)} / ${totalValue.toStringAsFixed(2)} ${isGram ? "g" : "cal"}',
                 style: FontUtils.h15(
                     fontColor: AppColors.darkGray,
                     fontWeight: FWT.lightMedium)),
@@ -549,9 +425,9 @@ class _BarCodeGroceryItemDetailsState extends State<BarCodeGroceryItemDetails> {
       width: width,
       barRadius: const Radius.circular(10),
       animation: true,
-      lineHeight: lineHeight!,
+      lineHeight: lineHeight ?? 5.0,
       animationDuration: 2000,
-      percent: percentage ?? 0,
+      percent: percentage != null && percentage > 1 ? 1 : percentage ?? 0,
       center: const Text(""),
       linearStrokeCap: LinearStrokeCap.round,
       progressColor: progressColor,

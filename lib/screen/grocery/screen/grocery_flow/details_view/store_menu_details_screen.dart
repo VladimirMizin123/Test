@@ -1,17 +1,20 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_list.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/bloc/store_cart_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/customization_header.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart'
     as opt;
@@ -23,6 +26,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 class StoreMenuDetailsScreen extends StatefulWidget {
   const StoreMenuDetailsScreen({
     super.key,
+    required this.cartBloc,
     required this.data,
     required this.restaurantId,
     this.shoppingListData,
@@ -32,6 +36,7 @@ class StoreMenuDetailsScreen extends StatefulWidget {
     this.options,
     this.onAddToCart,
   });
+  final StoreCartBloc cartBloc;
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
@@ -53,6 +58,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   bool selectSecond = false;
   bool isAddUpdate = false;
   bool customizationChange = false;
+  bool alreadyInCart = false;
   Map<String, dynamic> selectedData = {};
   List selectedOption = [];
   List data = [];
@@ -61,6 +67,10 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   List<Map<String, dynamic>> secondOptionsList = [];
   ShoppingListData? shoppingListData;
   List<Customization> customizationList = [];
+  List<MenuItemList> cartMenuList = [];
+
+  RxList<opt.Option> routingList = RxList<opt.Option>();
+  List<Map<String, dynamic>> nestedOptionList = [];
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
@@ -97,7 +107,9 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
           customizationList = menu.customizations ?? [];
           widget.onCustomizationChange?.call(customizationList);
           getData();
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
           log(customizationList.length.toString());
         },
       ));
@@ -112,12 +124,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     customizationList = widget.data.customizations ?? [];
     getData();
     _handleCustomization();
-    // restaurantBloc.add(
-    //   ProductCustomizationEvent(
-    //     productId: widget.data.productId ?? "",
-    //     callback: (p0) => {},
-    //   ),
-    // );
+    widget.cartBloc.add(GetGroceryCartList());
   }
 
   @override
@@ -126,581 +133,179 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     return WillPopScope(
       onWillPop: () => Future(() => false),
       child: Scaffold(
-        body: bloc.BlocConsumer(
-          bloc: restaurantBloc,
+        body: BlocConsumer<StoreCartBloc, StoreCartState>(
+          bloc: widget.cartBloc,
           listener: (context, state) {
-            if (state is AddToRestaurantCartLoadingState) {
-              if (customizationChange == false) {
-                isAdding = true;
+            if (state is StoreCheckoutState) {
+              cartMenuList = state.menuItemList;
+              int index = cartMenuList.indexWhere(
+                  (element) => element.productId == widget.data.productId);
+
+              if (!index.isNegative) {
+                alreadyInCart = true;
+                MenuItemList data = cartMenuList[index];
+                nestedOptionList = data.selectedOptions
+                        ?.map((e) => {
+                              "option_id": e.optionId ?? '',
+                              "quantity": e.quantity,
+                              "marked_price": e.markedPrice,
+                            })
+                        .toList() ??
+                    [];
+                item = data.cartQuantity ?? 0;
+                cartCount = cartMenuList.length;
               } else {
-                if (state.productId == widget.data.productId) {
-                  if (isAddUpdate == true) {
-                    widget.data.isAddUpdated = true;
-                  } else {
-                    widget.data.isRemoveUpdated = true;
-                  }
-                }
-              }
-            }
-            if (state is AddToRestaurantCartSuccessState) {
-              widget.data.cartQuantity = state.data[0]['quantity'];
-              widget.data.cartPrice = state.data[0]['price'];
-              widget.data.isAdded = true;
-
-              isAdding = false;
-
-              addApiData = state.data;
-
-              cartCount = cartCount + 1;
-
-              if (state.data[0]['productId'] == widget.data.productId) {
-                item = state.data[0]['quantity'];
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = false;
-                } else {
-                  widget.data.isRemoveUpdated = false;
-                }
-                isAddUpdate = false;
-              }
-
-              customizationChange = false;
-            }
-            if (state is AddToRestaurantCartErrorState) {
-              if (customizationChange == false) {
-                isAdding = false;
-              } else {
-                if (state.productId == widget.data.productId) {
-                  if (isAddUpdate == true) {
-                    widget.data.isAddUpdated = true;
-                  } else {
-                    widget.data.isRemoveUpdated = true;
-                  }
-                }
-                customizationChange = false;
-              }
-            }
-
-            if (state is UpdateToRestaurantCartSuccessState) {
-              if (state.data['productId'] == widget.data.productId) {
-                widget.data.cartQuantity = state.data['quantity'];
-                widget.data.cartPrice = state.data['price'];
-                item = state.data['quantity'];
-
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = false;
-                } else {
-                  widget.data.isRemoveUpdated = false;
-                }
-                isAddUpdate = false;
-              }
-            }
-
-            if (state is UpdateToRestaurantCartLoadingState) {
-              if (state.productId == widget.data.productId) {
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = true;
-                } else {
-                  widget.data.isRemoveUpdated = true;
-                }
-              }
-            }
-
-            if (state is UpdateToRestaurantCartErrorState) {
-              if (state.productId == widget.data.productId) {
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = false;
-                } else {
-                  widget.data.isRemoveUpdated = false;
-                }
-
-                isAddUpdate = false;
-              }
-            }
-
-            ///Remove To RestaurantCart State ====================================================================
-
-            if (state is RemoveShoppingListItemSuccessState) {
-              cartCount = cartCount - 1;
-
-              if (customizationChange == true) {
-                price = widget.data.originalPrice;
-
-                isAddUpdate == true
-                    ? item = widget.data.cartQuantity! + 1
-                    : item = widget.data.cartQuantity! - 1;
-
-                if (price == 0) {
-                  for (var element in secondOptionsList) {
-                    price = price + element['marked_price'];
-                  }
-
-                  isAddUpdate == true
-                      ? price = price * item
-                      : price = price * item;
-                } else {
-                  isAddUpdate == true
-                      ? price = price * item
-                      : price = price * item;
-
-                  for (var element in secondOptionsList) {
-                    price = price + element['marked_price'];
-                  }
-                }
-
-                restaurantBloc.add(
-                  AddRestaurantCartEvent(
-                    addItemsList: [
-                      AddRestaurantItemsToShoppingListModel(
-                        productId: widget.data.productId ?? '',
-                        productName: widget.data.name ?? '',
-                        quantity: item,
-                        price: price,
-                        options: secondOptionsList,
-                        mealmeStoreId: widget.restaurantId,
-                        productType: 'Restaurant',
-                        isChecked: false,
-                        recipeId: '',
-                        unitOfMeasurement: '',
-                        unitSize: 0,
-                        brandName: '',
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                if (state.productId == widget.data.productId) {
-                  widget.data.cartQuantity = 0;
-                  widget.data.cartPrice = 0;
-                  item = 0;
-                  widget.data.isAdded = false;
-                  if (isAddUpdate == true) {
-                    widget.data.isAddUpdated = false;
-                  } else {
-                    widget.data.isRemoveUpdated = false;
-                  }
-
-                  isAddUpdate = false;
-                }
-              }
-            }
-
-            if (state is RemoveShoppingListItemLoadingState) {
-              if (state.productId == widget.data.productId) {
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = true;
-                } else {
-                  widget.data.isRemoveUpdated = true;
-                }
-              }
-            }
-
-            if (state is RemoveShoppingListItemErrorState) {
-              if (state.productId == widget.data.productId) {
-                if (isAddUpdate == true) {
-                  widget.data.isAddUpdated = false;
-                } else {
-                  widget.data.isRemoveUpdated = false;
-                }
-              }
-            }
-
-            /// Get SHopping List State ==========================================================================
-
-            if (state is GetShoppingListSuccessState) {
-              if (state.shoppingListData!.isEmpty) {
-                widget.data.cartQuantity = 0;
-                widget.data.cartPrice = 0;
-                widget.data.isAdded = false;
-                selectedOption.clear();
-                secondOptionsList.clear();
-                optionsList.clear();
-                getData();
+                routingList.clear();
+                alreadyInCart = false;
                 item = 0;
-              } else {
-                for (var element in state.shoppingListData!) {
-                  if (element.productId == widget.data.productId) {
-                    shoppingListData = element;
-                    widget.data.cartQuantity = element.quantity;
-                    widget.data.cartPrice = element.price;
-                    item = element.quantity!;
-                    getData();
-                  }
-                }
+                cartCount = 0;
+                nestedOptionList.clear();
               }
-              loading = false;
-            }
-
-            if (state is GetShoppingListLoadingState) {
-              loading = true;
-            }
-            if (state is GetShoppingListErrorState) {
-              loading = false;
             }
           },
           builder: (context, state) {
-            return loading == true
-                ? const Align(
-                    alignment: Alignment.center,
-                    child: AppCenterLoader(),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: size.height * 0.45,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            image: widget.data.image == null ||
-                                    widget.data.image!.isEmpty
-                                ? const DecorationImage(
-                                    image: AssetImage(AssetsUtils.food3),
-                                    fit: BoxFit.cover)
-                                : DecorationImage(
-                                    image: NetworkImage(widget.data.image!),
-                                    fit: BoxFit.cover),
-                          ),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 30.h, left: 15.w),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Get.back(result: addToCart);
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back_ios,
-                                  color: Colors.black,
+            MenuItemList? cartMenu = cartMenuList.firstWhereOrNull(
+                (element) => element.productId == widget.data.productId);
+
+            return BlocConsumer(
+              bloc: restaurantBloc,
+              listener: (context, state) {},
+              builder: (context, state) {
+                return loading == true
+                    ? const Align(
+                        alignment: Alignment.center,
+                        child: AppCenterLoader(),
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: size.height * 0.45,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                image: widget.data.image == null ||
+                                        widget.data.image!.isEmpty
+                                    ? const DecorationImage(
+                                        image: AssetImage(AssetsUtils.food3),
+                                        fit: BoxFit.cover)
+                                    : DecorationImage(
+                                        image: NetworkImage(widget.data.image!),
+                                        fit: BoxFit.cover),
+                              ),
+                              child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 30.h, left: 15.w),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.back(result: addToCart);
+                                    },
+                                    child: const Icon(
+                                      Icons.arrow_back_ios,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: SizedBox(
-                            height: customizationList.isEmpty
-                                ? size.height * 0.55
-                                : null,
-                            width: context.width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                const SizedBox(height: 8),
-                                Text(
-                                  widget.data.name!,
-                                  style: FontUtils.h24(
-                                    fontColor: Colors.black,
-                                    fontWeight: FWT.medium,
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 2),
-                                  child: Text(
-                                    widget.data.formattedPrice!,
-                                    style: FontUtils.h18(
-                                      fontColor: Colors.black,
-                                      fontWeight: FWT.medium,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              child: SizedBox(
+                                height: customizationList.isEmpty
+                                    ? size.height * 0.55
+                                    : null,
+                                width: context.width,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.data.name ?? "",
+                                      style: FontUtils.h24(
+                                        fontColor: Colors.black,
+                                        fontWeight: FWT.medium,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      right: 10.w, bottom: 10.h),
-                                  child: Text(
-                                    widget.data.description ?? '',
-                                    style: FontUtils.h14(
-                                      fontColor: const Color(0xffA2A4A7),
-                                      fontWeight: FWT.lightMedium,
-                                    ),
-                                  ),
-                                ),
-                                bloc.BlocBuilder(
-                                  bloc: restaurantBloc,
-                                  builder: (context, state) {
-                                    return state
-                                            is FetchCustomizationLoaderState
-                                        ? const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              AppCenterLoader(),
-                                            ],
-                                          ).paddingOnly(top: 20, bottom: 20)
-                                        : const SizedBox.shrink();
-                                  },
-                                ),
-                                customizationList.isEmpty
-                                    ? const SizedBox()
-                                    : Column(
-                                        children: List.generate(
-                                          customizationList.length,
-                                          (index) => Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  SizedBox(
-                                                    width: customizationList[
-                                                                    index]
-                                                                .minChoiceOptions ==
-                                                            0
-                                                        ? 250.w
-                                                        : 140.w,
-                                                    child: Text(
-                                                      customizationList[index]
-                                                              .name ??
-                                                          '',
-                                                      style: FontUtils.h18(
-                                                        fontColor: Colors.black,
-                                                        fontWeight:
-                                                            FWT.semiBold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const Spacer(),
-                                                  customizationList[index]
-                                                              .minChoiceOptions ==
-                                                          0
-                                                      ? Text(
-                                                          'Optional',
-                                                          style: FontUtils.h12(
-                                                            fontColor: AppColors
-                                                                .middleGray,
-                                                            fontWeight:
-                                                                FWT.regular,
-                                                          ),
-                                                        )
-                                                      : Row(
-                                                          children: [
-                                                            Text(
-                                                              'Choose ${customizationList[index].minChoiceOptions ?? 1} option',
-                                                              style:
-                                                                  FontUtils.h14(
-                                                                fontColor:
-                                                                    Colors
-                                                                        .black,
-                                                                fontWeight:
-                                                                    FWT.regular,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            Container(
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
-                                                                      horizontal:
-                                                                          8.w,
-                                                                      vertical:
-                                                                          4.h),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: AppColors
-                                                                    .coral,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8),
-                                                              ),
-                                                              child: Text(
-                                                                'Required',
-                                                                style: FontUtils
-                                                                    .h12(
-                                                                  fontColor:
-                                                                      AppColors
-                                                                          .terracotta,
-                                                                  fontWeight: FWT
-                                                                      .regular,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 16.h,
-                                              ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(12),
-                                                margin: EdgeInsets.only(
-                                                    bottom: 16.h),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    border: Border.all(
-                                                        color: const Color(
-                                                            0xffECECED),
-                                                        width: 1)),
-                                                child: Column(
-                                                  children: List.generate(
-                                                    customizationList[index]
-                                                        .options!
-                                                        .length,
-                                                    (index1) {
-                                                      opt.Option option =
-                                                          customizationList[
-                                                                  index]
-                                                              .options![index1];
-
-                                                      return Column(
-                                                        children: [
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  if (optionsList.any((element) =>
-                                                                      element[
-                                                                          "option_id"] ==
-                                                                      option
-                                                                          .optionId)) {
-                                                                    optionsList.removeWhere((element) =>
-                                                                        element[
-                                                                            "option_id"] ==
-                                                                        option
-                                                                            .optionId);
-                                                                    setState(
-                                                                        () {});
-                                                                    return;
-                                                                  }
-
-                                                                  if (optionsList
-                                                                          .length >=
-                                                                      (customizationList[index]
-                                                                              .maxChoiceOptions ??
-                                                                          0)) {
-                                                                    optionsList
-                                                                        .removeAt(
-                                                                            0);
-                                                                  }
-                                                                  optionsList
-                                                                      .add({
-                                                                    "option_id":
-                                                                        option.optionId ??
-                                                                            '',
-                                                                    "quantity":
-                                                                        1,
-                                                                    "marked_price":
-                                                                        option
-                                                                            .price
-                                                                  });
-                                                                  setState(
-                                                                      () {});
-                                                                },
-                                                                child:
-                                                                    Image.asset(
-                                                                  optionsList.firstWhereOrNull((element) =>
-                                                                              element["option_id"] ==
-                                                                              option
-                                                                                  .optionId) !=
-                                                                          null
-                                                                      ? AssetsUtils
-                                                                          .terracotaCheck
-                                                                      : AssetsUtils
-                                                                          .greyCircle,
-                                                                  height: 18.h,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 12.w,
-                                                              ),
-                                                              SizedBox(
-                                                                width: 230.w,
-                                                                child: Text(
-                                                                  customizationList[
-                                                                              index]
-                                                                          .options?[
-                                                                              index1]
-                                                                          .name ??
-                                                                      '',
-                                                                  style:
-                                                                      FontUtils
-                                                                          .h15(
-                                                                    fontColor:
-                                                                        Colors
-                                                                            .black,
-                                                                    fontWeight:
-                                                                        FWT.lightMedium,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                customizationList[
-                                                                            index]
-                                                                        .options?[
-                                                                            index1]
-                                                                        .formattedPrice ??
-                                                                    '',
-                                                                style: const TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                              )
-                                                            ],
-                                                          ),
-                                                          customizationList[index]
-                                                                          .options!
-                                                                          .length -
-                                                                      1 ==
-                                                                  index1
-                                                              ? const SizedBox()
-                                                              : Divider(
-                                                                  color: const Color(
-                                                                      0xffECECED),
-                                                                  thickness: 1,
-                                                                  height: 20.h,
-                                                                )
-                                                        ],
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: Text(
+                                        widget.data.formattedPrice ?? "",
+                                        style: FontUtils.h18(
+                                          fontColor: Colors.black,
+                                          fontWeight: FWT.medium,
                                         ),
                                       ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 8, bottom: 18),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (item > 0) {
-                                            item -= 1;
-                                            setState(() {});
-                                          }
-                                        },
-                                        child: Container(
-                                          height: size.height * 0.060,
-                                          width: size.height * 0.060,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              border: Border.all(
-                                                  color: AppColors.terracotta)),
-                                          child: Center(
-                                            child: widget
-                                                        .data.isRemoveUpdated ==
-                                                    true
-                                                ? Transform.scale(
-                                                    scale: 0.5,
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                      color:
-                                                          AppColors.terracotta,
-                                                    ),
-                                                  )
-                                                : widget.data.cartQuantity == 1
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          right: 10.w, bottom: 10.h),
+                                      child: Text(
+                                        widget.data.description ?? '',
+                                        style: FontUtils.h14(
+                                          fontColor: const Color(0xffA2A4A7),
+                                          fontWeight: FWT.lightMedium,
+                                        ),
+                                      ),
+                                    ),
+                                    BlocBuilder(
+                                      bloc: restaurantBloc,
+                                      builder: (context, state) {
+                                        return state
+                                                is FetchCustomizationLoaderState
+                                            ? const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  AppCenterLoader(),
+                                                ],
+                                              ).paddingOnly(top: 20, bottom: 20)
+                                            : const SizedBox.shrink();
+                                      },
+                                    ),
+                                    customizationList.isEmpty
+                                        ? const SizedBox()
+                                        : nestedItemView(),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8, bottom: 18),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              if (alreadyInCart) {
+                                                cartMenu?.cartQuantity =
+                                                    (cartMenu.cartQuantity ??
+                                                            0) -
+                                                        1;
+                                                widget.cartBloc.add(ModifyCart(
+                                                    menuItemList:
+                                                        cartMenuList));
+                                              } else {
+                                                if (item > 0) {
+                                                  item--;
+                                                }
+                                              }
+                                              setState(() {});
+                                            },
+                                            child: Container(
+                                              height: size.height * 0.060,
+                                              width: size.height * 0.060,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                      color: AppColors
+                                                          .terracotta)),
+                                              child: Center(
+                                                child: item == 1
                                                     ? SvgPicture.asset(
                                                         AssetsUtils.icDelete,
                                                         color: AppColors
@@ -711,168 +316,548 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                                         color: AppColors
                                                             .terracotta,
                                                       ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Container(
-                                        height: size.height * 0.060,
-                                        width: size.height * 0.060,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: AppColors.disable),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                        child: Center(
-                                            child: Text(
-                                          '$item',
-                                          style: FontUtils.h18(
-                                              fontWeight: FWT.semiBold,
-                                              fontColor: AppColors.darkGray),
-                                        )),
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      GestureDetector(
-                                        onTap: () {
-                                          item += 1;
-                                          setState(() {});
-                                        },
-                                        child: Container(
-                                          height: size.height * 0.060,
-                                          width: size.height * 0.060,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                            color: AppColors.coral,
+                                          SizedBox(width: 8.w),
+                                          Container(
+                                            height: size.height * 0.060,
+                                            width: size.height * 0.060,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: AppColors.disable),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Center(
+                                                child: Text(
+                                              '$item',
+                                              style: FontUtils.h18(
+                                                  fontWeight: FWT.semiBold,
+                                                  fontColor:
+                                                      AppColors.darkGray),
+                                            )),
                                           ),
-                                          child: Center(
-                                            child: widget.data.isAddUpdated ==
-                                                    true
-                                                ? Transform.scale(
-                                                    scale: 0.5,
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                      color:
-                                                          AppColors.terracotta,
-                                                    ))
-                                                : const Icon(
-                                                    Icons.add,
-                                                    size: 27,
-                                                    color: AppColors.terracotta,
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                isAdding == true
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    : RestaurantMealAddButtonWidget(
-                                        onTap: () {
-                                          if (state ==
-                                              FetchCustomizationLoaderState) {
-                                            showToast(
-                                              message:
-                                                  'Please wait for customization',
-                                              isSuccess: false,
-                                              color: Colors.black,
-                                            );
-                                            return;
-                                          }
-                                          bool isSelected = false;
-                                          if (item > 0) {
-                                            for (var element in widget
-                                                .data.customizations!) {
-                                              if (selectedData[element.name]
-                                                          .length >=
-                                                      element
-                                                          .minChoiceOptions &&
-                                                  selectedData[element.name]
-                                                          .length <=
-                                                      element
-                                                          .maxChoiceOptions) {
+                                          SizedBox(width: 8.w),
+                                          GestureDetector(
+                                            onTap: () {
+                                              if (alreadyInCart) {
+                                                cartMenu?.cartQuantity =
+                                                    (cartMenu.cartQuantity ??
+                                                            0) +
+                                                        1;
+                                                widget.cartBloc.add(ModifyCart(
+                                                    menuItemList:
+                                                        cartMenuList));
                                               } else {
-                                                isSelected = true;
-                                                Fluttertoast.showToast(
-                                                  msg:
-                                                      'Please Select Required Item',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  backgroundColor: Colors.black,
-                                                  textColor: Colors.white,
-                                                  fontSize: 16.0,
-                                                );
+                                                item++;
+                                                setState(() {});
                                               }
-                                            }
-
-                                            if (isSelected == false) {
-                                              price = widget.data.originalPrice;
-
-                                              if (price == 0) {
-                                                for (var element
-                                                    in optionsList) {
-                                                  price = price +
-                                                      element['marked_price'];
-                                                }
-
-                                                price = price * item;
-                                              } else {
-                                                price = price * item;
-
-                                                for (var element
-                                                    in optionsList) {
-                                                  price = price +
-                                                      element['marked_price'];
-                                                }
-                                              }
-                                              widget.onAddToCart
-                                                  ?.call(optionsList, item);
-                                            }
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Please Select One Item',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              backgroundColor: Colors.black,
-                                              textColor: Colors.white,
-                                              fontSize: 16.0,
-                                            );
-                                          }
-                                        },
-                                        buttonLable: widget.data.isAdded == true
-                                            ? 'View Cart'
-                                            : 'Add to cart',
-                                        isFillColor: true,
-                                        selectedItemCount:
-                                            widget.data.isAdded == true
-                                                ? cartCount
-                                                : 0,
+                                            },
+                                            child: Container(
+                                              height: size.height * 0.060,
+                                              width: size.height * 0.060,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                color: AppColors.coral,
+                                              ),
+                                              child: Center(
+                                                child: widget.data
+                                                            .isAddUpdated ==
+                                                        true
+                                                    ? Transform.scale(
+                                                        scale: 0.5,
+                                                        child:
+                                                            const CircularProgressIndicator(
+                                                          color: AppColors
+                                                              .terracotta,
+                                                        ))
+                                                    : const Icon(
+                                                        Icons.add,
+                                                        size: 27,
+                                                        color: AppColors
+                                                            .terracotta,
+                                                      ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                const SizedBox(
-                                  height: 5,
+                                    ),
+                                    RestaurantMealAddButtonWidget(
+                                      onTap: () {
+                                        if (!alreadyInCart) {
+                                          addIntoTheCart();
+                                        } else {
+                                          Get.back();
+                                        }
+                                      },
+                                      buttonLable: cartMenu != null
+                                          ? 'View Cart'
+                                          : 'Add to cart',
+                                      isFillColor: true,
+                                      selectedItemCount: cartMenu != null
+                                          ? cartMenuList.length
+                                          : 0,
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Center(
+                                      child: Image.asset(
+                                        AssetsUtils.gymEatsSpoon,
+                                        height: 22.h,
+                                        width: 56.w,
+                                        color: AppColors.terracotta,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Center(
-                                  child: Image.asset(
-                                    AssetsUtils.gymEatsSpoon,
-                                    height: 22.h,
-                                    width: 56.w,
-                                    color: AppColors.terracotta,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  );
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+              },
+            );
           },
         ),
       ),
     );
+  }
+
+  // ! New Flow
+
+  Widget nestedItemView() {
+    return Obx(
+      () => routingList.isEmpty
+          ? Column(
+              children: List.generate(
+                customizationList.length,
+                (index) {
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    child: Column(
+                      children: [
+                        CustomizationHeader(
+                            customization: customizationList[index]),
+                        16.h.height,
+                        expandableTile(customizationList[index],
+                            parent: customizationList[index]),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            )
+          : Builder(
+              builder: (context) {
+                opt.Option routing = routingList.last;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(
+                    routing.customizations?.length ?? 0,
+                    (index) {
+                      List<Customization> routeCs =
+                          routing.customizations ?? [];
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 16.h),
+                        child: Column(
+                          children: [
+                            CustomizationHeader(
+                              customization: routeCs[index],
+                              setBackButton: index == 0 ? true : false,
+                              parentTitle: routing.name,
+                              onBack: () {
+                                routingList.removeLast();
+                                // routing.value = null;
+                              },
+                            ),
+                            16.h.height,
+                            nestedView(routeCs[index], parent: routeCs[index]),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget expandableTile(Customization customization,
+      {required Customization parent}) {
+    List<opt.Option> options = customization.options ?? [];
+
+    return Column(
+      children: List<Widget>.generate(
+        options.length,
+        (index1) {
+          opt.Option currentOpt = options[index1];
+          List<Customization> csList = currentOpt.customizations ?? [];
+          bool isLastRecord = index1 < options.length - 1;
+          return csList.isNotEmpty
+              ? Container(
+                  margin: EdgeInsets.only(bottom: 16.h),
+                  padding: const EdgeInsets.only(bottom: 15, top: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border:
+                        Border.all(color: const Color(0xffECECED), width: 1.2),
+                  ),
+                  child: Builder(builder: (context) {
+                    return Column(
+                      children: <Widget>[
+                        normalTile(customization, currentOpt,
+                            showRadioButton: false, parent: parent),
+                      ].addBetweenItems(15.height),
+                    );
+                  }),
+                )
+              : Column(
+                  children: [
+                    normalTile(customization, currentOpt, parent: parent)
+                        .paddingOnly(bottom: isLastRecord ? 15 : 0),
+                    if (isLastRecord)
+                      Container(
+                        height: 1,
+                        color: AppColors.lightGrey,
+                      ).paddingOnly(bottom: 15),
+                  ],
+                );
+        },
+      ),
+    );
+  }
+
+  Widget nestedView(Customization customization,
+      {required Customization parent}) {
+    List<opt.Option> options = customization.options ?? [];
+
+    return Column(
+      children: List<Widget>.generate(
+        options.length,
+        (index1) {
+          opt.Option currentOpt = options[index1];
+          List<Customization> csList = currentOpt.customizations ?? [];
+          bool isLastRecord = index1 < options.length - 1;
+          return csList.isNotEmpty
+              ? Container(
+                  margin: EdgeInsets.only(bottom: 16.h),
+                  padding: const EdgeInsets.only(bottom: 15, top: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border:
+                        Border.all(color: const Color(0xffECECED), width: 1.2),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      normalTile(customization, currentOpt,
+                          showRadioButton: false,
+                          parent: parent,
+                          setRouting: false),
+                      ...csList.map((e) {
+                        return Column(
+                          children: [
+                            NestedCustomizationHeader(
+                              customization: e,
+                              style: FontUtils.h16(
+                                fontColor: Colors.black,
+                                fontWeight: FWT.medium,
+                              ),
+                            ).paddingOnly(left: 5, right: 5),
+                            15.height,
+                            expandableTile(e, parent: parent)
+                                .paddingOnly(left: 20, right: 5),
+                          ],
+                        );
+                      }).toList(),
+                    ].addBetweenItems(15.height),
+                  ),
+                )
+              : Column(
+                  children: [
+                    normalTile(customization, currentOpt,
+                            parent: parent, setRouting: false)
+                        .paddingOnly(bottom: isLastRecord ? 15 : 0),
+                    if (isLastRecord)
+                      Container(
+                        height: 1,
+                        color: AppColors.lightGrey,
+                      ).paddingOnly(bottom: 15),
+                  ],
+                );
+        },
+      ),
+    );
+  }
+
+  Widget normalTile(Customization cs, opt.Option option,
+      {bool showRadioButton = true,
+      required Customization parent,
+      bool setRouting = true}) {
+    bool isOptionRequired = option.isRequired ?? false;
+    return GestureDetector(
+      onTap: () {
+        bool isSelected = nestedOptionList
+            .any((element) => element["option_id"] == option.optionId);
+        if (cs.name == parent.name &&
+            setRouting &&
+            (option.customizations?.isNotEmpty ?? false) &&
+            isSelected) {
+          routingList.add(option);
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (!alreadyInCart) {
+                onTileTap(cs, option, parent: parent, setRouting: setRouting);
+              } else {
+                showToast(
+                    isSuccess: false,
+                    color: AppColors.black,
+                    message:
+                        "This product is already in the cart and cannot be modified.");
+              }
+            },
+            child: Image.asset(
+              nestedOptionList
+                      .any((element) => element["option_id"] == option.optionId)
+                  ? AssetsUtils.terracotaCheck
+                  : AssetsUtils.greyCircle,
+              height: 18.h,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                text: option.name ?? '',
+                style: FontUtils.h15(
+                  fontColor: Colors.black,
+                  fontWeight: FWT.lightMedium,
+                ),
+                children: isOptionRequired
+                    ? <InlineSpan>[
+                        const WidgetSpan(
+                          alignment: PlaceholderAlignment.baseline,
+                          baseline: TextBaseline.alphabetic,
+                          child: SizedBox(width: 10),
+                        ),
+                        TextSpan(
+                          text: "Required",
+                          style: FontUtils.h12(
+                            fontColor: AppColors.terracotta,
+                            fontWeight: FWT.medium,
+                          ),
+                        )
+                      ]
+                    : [],
+              ),
+            ),
+          ),
+          10.width,
+          Text(
+            option.formattedPrice ?? '',
+            style: const TextStyle(color: Colors.black),
+          )
+        ],
+      ).paddingOnly(left: 15, right: 15),
+    );
+  }
+
+  void onTileTap(Customization cs, opt.Option option,
+      {required Customization parent, bool setRouting = true}) {
+    setState(() {
+      if (nestedOptionList
+          .any((element) => element["option_id"] == option.optionId)) {
+        nestedOptionList
+            .removeWhere((element) => element["option_id"] == option.optionId);
+        removeOptions(option);
+        return;
+      }
+      if (setRouting && (option.customizations?.isNotEmpty ?? false)) {
+        routingList.add(option);
+      }
+      findOptionPath(parent, option);
+      removeIfNotValidate(cs);
+
+      nestedOptionList.add({
+        "option_id": option.optionId ?? '',
+        "quantity": 1,
+        "marked_price": option.price,
+      });
+    });
+  }
+
+  bool isFormValid(List<Customization> cList) {
+    for (var i = 0; i < cList.length; i++) {
+      int count = nestedOptionList
+          .where((e) => cList.any((element) =>
+              cList[i].options?.any((k) => k.optionId == e["option_id"]) ??
+              false))
+          .toList()
+          .length;
+
+      List<opt.Option> requiredOptions = cList[i]
+              .options
+              ?.where((element) => element.isRequired ?? false)
+              .toList() ??
+          [];
+
+      bool requiredOptionNotSelected = requiredOptions.isNotEmpty &&
+          !requiredOptions.every((element) =>
+              nestedOptionList.any((e) => e["option_id"] == element.optionId));
+
+      List<opt.Option> validOptionList = cList[i]
+              .options
+              ?.where((element) => nestedOptionList
+                  .any((e) => e["option_id"] == element.optionId))
+              .toList() ??
+          [];
+
+      if ((count < (cList[i].minChoiceOptions ?? 0)) ||
+          requiredOptionNotSelected) {
+        return false;
+      }
+
+      if (cList[i].options?.isNotEmpty ?? false) {
+        for (opt.Option ele in validOptionList) {
+          if (!isFormValid(ele.customizations ?? [])) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  void removeIfNotValidate(Customization cs) {
+    List<String> optionsIds =
+        cs.options?.map((e) => e.optionId ?? "").toList() ?? [];
+    int count = nestedOptionList
+        .where((element) => optionsIds.contains(element["option_id"]))
+        .toList()
+        .length;
+
+    if (!(count < (cs.maxChoiceOptions ?? 1))) {
+      int index = nestedOptionList
+          .indexWhere((element) => optionsIds.contains(element["option_id"]));
+      if (index.isNegative) {
+        return;
+      }
+      (bool, opt.Option?) newOpt =
+          findOption(cs, nestedOptionList[index]["option_id"]);
+      if (newOpt.$2 != null) {
+        removeOptions(newOpt.$2!);
+      }
+      nestedOptionList.removeAt(index);
+    }
+  }
+
+  bool findOptionPath(Customization customization, opt.Option findOption) {
+    if (customization.options != null) {
+      for (opt.Option option in customization.options!) {
+        if (option.optionId == findOption.optionId) {
+          return true;
+        }
+        if (option.customizations != null) {
+          for (Customization subCustomization in option.customizations!) {
+            if (findOptionPath(subCustomization, findOption)) {
+              if (!nestedOptionList
+                  .any((element) => element["option_id"] == option.optionId)) {
+                removeIfNotValidate(customization);
+                nestedOptionList.add({
+                  "option_id": option.optionId ?? '',
+                  "quantity": 1,
+                  "marked_price": option.price
+                });
+              }
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  void removeOptions(opt.Option option) {
+    if (option.customizations != null) {
+      for (Customization subCustomization in option.customizations!) {
+        for (opt.Option element in (subCustomization.options ?? [])) {
+          nestedOptionList
+              .removeWhere((e) => e["option_id"] == element.optionId);
+          removeOptions(element);
+        }
+      }
+    }
+  }
+
+  (bool, opt.Option?) findOption(Customization customization, String optionId) {
+    if (customization.options != null) {
+      for (opt.Option option in customization.options!) {
+        if (option.optionId == optionId) {
+          return (true, option);
+        }
+        if (option.customizations != null) {
+          for (Customization subCustomization in option.customizations!) {
+            if (findOption(subCustomization, optionId).$1) {
+              return (true, option);
+            }
+          }
+        }
+      }
+    }
+    return (false, null);
+  }
+
+  void setTotalPrice() {
+    price = widget.data.originalPrice;
+    for (var element in nestedOptionList) {
+      price = price + element['marked_price'];
+    }
+    price = price * item;
+  }
+
+  void addIntoTheCart() {
+    if (item > 0) {
+      bool valid = isFormValid(customizationList);
+      if (valid) {
+        setTotalPrice();
+        MenuItemList menuItem = widget.data;
+        menuItem
+          ..cartQuantity = item
+          ..totalPrice = price;
+        menuItem.selectedOptions = nestedOptionList
+            .map(
+              (e) => SelectedOptions(
+                optionId: e["option_id"],
+                quantity: e["quantity"],
+                markedPrice: e["marked_price"],
+              ),
+            )
+            .toList();
+        cartMenuList.add(menuItem);
+        widget.cartBloc.add(ModifyCart(menuItemList: cartMenuList));
+      } else {
+        showToast(
+          message: 'Please Select Required Item',
+          isSuccess: false,
+          color: AppColors.black,
+        );
+      }
+    } else {
+      showToast(
+        message: 'Please Select One Item',
+        isSuccess: false,
+        color: AppColors.black,
+      );
+    }
   }
 }

@@ -6,7 +6,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -365,8 +364,11 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       if (selectedStoreProductList.isEmpty) {
-                                        Fluttertoast.showToast(
-                                            msg: 'Please, select a Store!');
+                                        showToast(
+                                          message: 'Please, select a Store!',
+                                          isSuccess: false,
+                                          color: AppColors.black,
+                                        );
                                       } else {
                                         setState(() {
                                           selectedIndex = 0;
@@ -412,9 +414,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             // From 1 store only
                                             if (selectedStoreProductList
                                                 .isEmpty) {
-                                              Fluttertoast.showToast(
-                                                  msg:
-                                                      'Please, select a Store!');
+                                              showToast(
+                                                message:
+                                                    'Please, select a Store!',
+                                                isSuccess: false,
+                                                color: AppColors.black,
+                                              );
                                             } else {
                                               setState(() {
                                                 selectedIndex = 1;
@@ -546,9 +551,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             // From 1 store only
                                             if (selectedStoreProductList
                                                 .isEmpty) {
-                                              Fluttertoast.showToast(
-                                                  msg:
-                                                      'Please, select a Store!');
+                                              showToast(
+                                                message:
+                                                    'Please, select a Store!',
+                                                isSuccess: false,
+                                                color: AppColors.black,
+                                              );
                                             } else {
                                               ///new code
                                               setState(() {
@@ -690,9 +698,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                             // From 1 store only
                                             if (selectedStoreProductList
                                                 .isEmpty) {
-                                              Fluttertoast.showToast(
-                                                  msg:
-                                                      'Please, select a Store!');
+                                              showToast(
+                                                message:
+                                                    'Please, select a Store!',
+                                                isSuccess: false,
+                                                color: AppColors.black,
+                                              );
                                             } else {
                                               setState(() {
                                                 selectedIndex = 3;
@@ -926,13 +937,11 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       .length;
                                   if (emptyIndex > 0) {
                                     if (getUserAddress == null) {
-                                      Fluttertoast.showToast(
-                                        msg: 'Please Select Address For Order',
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.black,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0,
+                                      showToast(
+                                        message:
+                                            'Please Select Address For Order',
+                                        isSuccess: false,
+                                        color: AppColors.black,
                                       );
                                     } else {
                                       // loadCreateOrder = true;
@@ -1043,11 +1052,12 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                                       }
                                     }
                                   } else {
-                                    Fluttertoast.showToast(
-                                        msg: 'Please, select the product!');
+                                    showToast(
+                                      message: 'Please, select the product!',
+                                      isSuccess: false,
+                                      color: AppColors.black,
+                                    );
                                   }
-                                  // loadCreateOrder = false;
-                                  // setState(() {});
                                 },
                                 isDarkColor: true,
                                 isFillColor: true,
@@ -1436,15 +1446,22 @@ class _GroceryCartScreenState extends State<GroceryCartScreen> {
                               typeOfProduct: displayData[index].itemName ?? '',
                             ));
                       } else {
-                        Fluttertoast.showToast(
-                            msg: StringUtils.thisItemIsUnAvailalbe);
+                        showToast(
+                          message: StringUtils.thisItemIsUnAvailalbe,
+                          isSuccess: false,
+                          color: AppColors.black,
+                        );
                       }
                       /*Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return ;
                     }));*/
                     } else {
-                      Fluttertoast.showToast(msg: 'Please, Select Store!');
+                      showToast(
+                        message: 'Please, Select Store!',
+                        isSuccess: false,
+                        color: AppColors.black,
+                      );
                     }
                   },
                   getList(displayData, index),

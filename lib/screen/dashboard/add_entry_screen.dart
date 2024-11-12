@@ -5,7 +5,7 @@ import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_event.dart';
@@ -309,13 +309,19 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                             onPressed: () {
                               if (minutesController.text == '0' ||
                                   minutesController.text.isEmpty) {
-                                Fluttertoast.showToast(
-                                    msg: 'Minutes can\'t be 0');
+                                showToast(
+                                  message: 'Minutes can\'t be 0',
+                                  isSuccess: false,
+                                  color: AppColors.black,
+                                );
                               } else if (caloriesTextBurnedController.text ==
                                       '0' ||
                                   caloriesTextBurnedController.text.isEmpty) {
-                                Fluttertoast.showToast(
-                                    msg: 'Calories can\'t be 0');
+                                showToast(
+                                  message: 'Minutes can\'t be 0',
+                                  isSuccess: false,
+                                  color: AppColors.black,
+                                );
                               } else {
                                 FocusScope.of(context).unfocus();
                                 bloc.add(SaveClickEvent(

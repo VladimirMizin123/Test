@@ -98,14 +98,14 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
               calorie: event.calorie)
           .fold((left) {
         showToast(isSuccess: false, message: left.errorMessage!);
-      }, (right) {
+      }, (right) async {
         showToast(isSuccess: true, message: right.message!);
         dataList.map((e) {
           if (e.id!.contains(event.mealId)) {
             e.isDone = true;
           }
         }).toList();
-
+        await _onGetSurveyData(GetDashboardData(), emit);
         emit(LoadMealData(trackerDataList: dataList));
       });
     } catch (e) {

@@ -41,6 +41,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
   Future<void> _onReceiptDetailAdd(
       AddReceiptDetailsEvent event, Emitter<SubscriptionState> emit) async {
     try {
+      emit(ReceiptDetailsLoadingState(isLoading: true));
       Either<ErrorModel, bool> res =
           await _repo.receiptDetailAdd(event.requestData);
       if (res.isLeft) {
@@ -53,6 +54,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
       }
     } catch (e) {
       log(e.toString());
+    } finally {
+      emit(ReceiptDetailsLoadingState(isLoading: false));
     }
   }
 }

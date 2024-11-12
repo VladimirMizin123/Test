@@ -37,7 +37,6 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     on<GroceryDetailsMealInfoEvent>(_onGroceryDetailsMealInfo);
     on<GrocerySelectedStoreEvent>(_onGrocerySelectedStoreEvent);
     on<GroceryProductListEvent>(_onGroceryProductList);
-    on<CleatGroceryEvent>(_onClearShoppingList);
     on<BarcodeScanEvent>(_onScanBarcode);
     on<AddNewCustomMealEvent>(_onAddCustomMeal);
     on<GetUserAddressEvent>(_onGetUserAddress);
@@ -81,12 +80,14 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
     try {
       await _repository
           .addNewCustomMeal(
-              calorie: event.calorie,
-              carbs: event.carbs,
-              fat: event.fat,
-              name: event.name,
-              protein: event.protein,
-              type: event.type)
+        calorie: event.calorie,
+        carbs: event.carbs,
+        fat: event.fat,
+        name: event.name,
+        protein: event.protein,
+        type: event.type,
+        date: DateTime.now().toIso8601String(),
+      )
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(AddNewCustomMealErrorState());
@@ -393,26 +394,6 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
       GrocerySelectedStoreEvent event, Emitter<GroceryState> emit) async {
     emit(
         GrocerySelectedStoreEventState(productsList: event.productsList ?? []));
-  }
-
-  _onClearShoppingList(
-      CleatGroceryEvent event, Emitter<GroceryState> emit) async {
-    emit(ClearShoppingListLoadingState());
-
-    try {
-      await _repository.clearShoppingList().fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
-        emit(GroceryAddToGroceryErrorState());
-      }, (right) {
-        log('RIGHT PART CALL - - - - - - - - - - - - ');
-
-        emit(ClearShoppingListSuccessState(isClear: right.success ?? true));
-        showToast(isSuccess: true, message: right.message ?? 'Added!');
-      });
-    } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
-      emit(GroceryAddToGroceryErrorState());
-    }
   }
 
   /// ON FAIL

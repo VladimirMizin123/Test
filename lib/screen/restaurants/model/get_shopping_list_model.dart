@@ -51,6 +51,7 @@ class ShoppingListData {
   String? productName;
   int? quantity;
   int? price;
+  int? originalPrice;
   dynamic unitSize;
   String? unitOfMeasurement;
   String? recipeId;
@@ -71,6 +72,7 @@ class ShoppingListData {
     this.productName,
     this.quantity,
     this.price,
+    this.originalPrice,
     this.unitSize,
     this.unitOfMeasurement,
     this.recipeId,
@@ -93,6 +95,7 @@ class ShoppingListData {
         productName: json["productName"],
         quantity: json["quantity"],
         price: json["price"],
+        originalPrice: json["originalPrice"],
         unitSize: json["unitSize"],
         unitOfMeasurement: json["unitOfMeasurement"],
         recipeId: json["recipeId"],
@@ -116,6 +119,7 @@ class ShoppingListData {
         "productName": productName,
         "quantity": quantity,
         "price": price,
+        "originalPrice": originalPrice,
         "unitSize": unitSize,
         "unitOfMeasurement": unitOfMeasurement,
         "recipeId": recipeId,

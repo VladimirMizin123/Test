@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/bloc/login/login_state.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/screen/account_screen/about/pivacy/privacy_policy_screen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../bloc/login/login_bloc.dart';
@@ -254,7 +255,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w400),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            // Single tapped.
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const PolicyScreen(),
+                                ));
                           },
                       ),
                       TextSpan(

@@ -2,13 +2,16 @@ import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_event.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/journal/bloc/journal_plan_state.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -26,6 +29,7 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     on<JournalAddToShoppingListEvent>(_onAddToShoppingList);
     on<JournalAddToEatenEvent>(_onAddEaten);
     on<GetMealLogByDateEvent>(_onGetMealLogByDate);
+    on<UserInvoiceListEvent>(_onGetUserInvoiceList);
   }
 
   final JournalPlanRepository _repository = JournalPlanRepository();
@@ -33,10 +37,37 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   _onSwapMealDetails(JournalSwapMealDetailsEvent event,
       Emitter<JournalMealPlanState> emit) async {
-    emit(JournalSwapMealDetailsState(
-        similarMealData: event.similarMealData,
-        day: event.day,
-        mealId: event.mealId));
+    try {
+      String userID = PreferenceUtils.getString(prefUserData);
+      final response = await _repository.apiServices.get(
+          '${ApiUrls.addSwapMeal}/$userID?recipeId=${event.similarMealData?.id}&mealId=${event.mealId}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emit(JournalSwapMealDetailsState(
+            similarMealData: event.similarMealData,
+            day: event.day,
+            mealId: event.mealId));
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      event.onComplete?.call();
+    }
+  }
+
+  _onGetUserInvoiceList(
+      UserInvoiceListEvent event, Emitter<JournalMealPlanState> emit) async {
+    try {
+      emit(UserInvoiceLoadingState(isLoading: true));
+      Either<ErrorModel, List<String>> response =
+          await _repository.getUserInvoiceList();
+      if (response.isRight) {
+        emit(UserInvoiceSuccessState(invoiceList: response.right));
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      emit(UserInvoiceLoadingState(isLoading: false));
+    }
   }
 
   _onScanBarcode(
@@ -80,7 +111,7 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
       GetMealLogByDateEvent event, Emitter<JournalMealPlanState> emit) async {
     emit(OnGetMealLogByDateLoadingState());
     try {
-      await _repository.getMealLogByDate(event.date!).fold((left) {
+      await _repository.getMealLogByDate(event.date ?? "").fold((left) {
         emit(OnGetMealLogByDateErrorState());
         // onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
@@ -97,13 +128,26 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
     emit(JournalSkipMealPlanLoadingState());
 
     try {
-      await _repository.skipMealPlan(mealID: event.mealID).fold((left) {
+      await _repository
+          .skipMealPlan(
+        mealId: event.mealID,
+        calorie: event.calorie,
+        carbs: event.carbs,
+        date: event.date,
+        fat: event.fat,
+        mealName: event.mealName,
+        mealType: event.mealType,
+        noOfServing: event.noOfServing,
+        protein: event.protein,
+        recipeId: event.recipeId,
+        value: event.value,
+      )
+          .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
       }, (right) {
         log('RIGHT PART CALL - - - - - - - - - - - - ');
 
-        emit(JournalSkipMealPlanSuccessState(
-            skipMealPlanData: right.data!, mealID: event.mealID));
+        emit(JournalSkipMealPlanSuccessState(mealID: event.mealID));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
@@ -283,11 +327,12 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
 
   _onAddEaten(
       JournalAddToEatenEvent event, Emitter<JournalMealPlanState> emit) async {
-    emit(JournalAddEatenLoadingState(mealID: event.mealId!));
+    emit(JournalAddEatenLoadingState(
+        mealID: event.mealId ?? (event.mealName ?? '')));
     try {
       await _repository
           .addEatenMeal(
-              mealId: event.mealId!,
+              mealId: event.mealId,
               calorie: event.calorie,
               carbs: event.carbs,
               fat: event.fat,
@@ -298,10 +343,11 @@ class JournalPlanBloc extends Bloc<JournalPlanEvent, JournalMealPlanState> {
               recipeId: event.recipeId)
           .fold((left) {
         emit(JournalSearchErrorState());
-        onFailError(emit: emit, text: left.errorMessage!);
+        onFailError(emit: emit, text: left.errorMessage ?? "");
       }, (right) {
         emit(JournalAddEatenSuccessState(
-            isAdded: right.success, mealID: event.mealId!));
+            isAdded: right.success,
+            mealID: event.mealId ?? (event.mealName ?? "")));
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

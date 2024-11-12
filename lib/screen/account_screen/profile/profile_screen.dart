@@ -93,6 +93,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               if (state is GetProfileImageSuccessState) {
                 profileImageUrl = state.imageUrl ?? '';
+                if (profileImageUrl.isNotEmpty) {
+                  pickedImageFile = null;
+                }
                 isProfileImageLoader = false;
                 setState(() {});
               }
@@ -149,7 +152,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               if (state is GetProfileImageLoadingState) {
                 profileImageUrl = '';
-                isProfileImageLoader = true;
+                if (pickedImageFile == null) {
+                  isProfileImageLoader = true;
+                }
                 setState(() {});
               }
 

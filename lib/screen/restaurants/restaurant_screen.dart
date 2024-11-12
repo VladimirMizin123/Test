@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -36,6 +35,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/network_image_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
 class RestaurantScreen extends StatefulWidget {
@@ -175,9 +175,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     kmRadius.value = PreferenceUtils.getRestaurantsRadius();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Geolocator.requestPermission().then((value) {
-        restaurantBloc.add(GetUserAddressEvent());
-        cartBloc.add(GetCartEvent());
-        restaurantBloc.add(GetDeliveryStatusEvent());
+        if (mounted) {
+          restaurantBloc.add(GetUserAddressEvent());
+          cartBloc.add(GetCartEvent());
+          restaurantBloc.add(GetDeliveryStatusEvent());
+        }
       });
     });
   }
@@ -429,7 +431,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       verifyLoaderId = state.id;
                       if (verifyLoaderId == null) {
                         if (_alertKey.currentContext != null) {
-                          Get.back(canPop: true);
+                          Get.back();
                         }
                       } else {
                         DateTime time = DateTime.now();
@@ -451,39 +453,56 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                     color: AppColors.whiteColor,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  child: Stack(
+                                    fit: StackFit.expand,
                                     children: [
-                                      const CircularProgressIndicator(
-                                          color: AppColors.primaryBlue),
-                                      20.height,
-                                      StreamBuilder(
-                                        stream: Stream.periodic(
-                                            const Duration(milliseconds: 500)),
-                                        builder: (_, __) {
-                                          int ml = DateTime.now()
-                                              .difference(time)
-                                              .inMilliseconds;
-                                          return Text(
-                                            ml > 1500
-                                                ? StringUtils
-                                                    .organizingMenuItems
-                                                : StringUtils
-                                                    .fetchingYourDelicious,
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: AppColors.black,
-                                              fontFamily: 'Avenir',
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 18,
-                                            ),
-                                          );
-                                        },
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const CircularProgressIndicator(
+                                              color: AppColors.primaryBlue),
+                                          20.height,
+                                          StreamBuilder(
+                                            stream: Stream.periodic(
+                                                const Duration(
+                                                    milliseconds: 500)),
+                                            builder: (_, __) {
+                                              int ml = DateTime.now()
+                                                  .difference(time)
+                                                  .inMilliseconds;
+                                              return Text(
+                                                ml > 1500
+                                                    ? StringUtils
+                                                        .organizingMenuItems
+                                                    : StringUtils
+                                                        .fetchingYourDelicious,
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: AppColors.black,
+                                                  fontFamily: 'Avenir',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ).paddingAll(15),
+                                      Positioned(
+                                        right: 2,
+                                        top: 2,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Get.back();
+                                            restaurantBloc.prevId = null;
+                                            verifyLoaderId = null;
+                                          },
+                                          icon: const Icon(Icons.close),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -655,21 +674,21 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       showRadiusSlider.toggle();
-                                      if (!showRadiusSlider.value) {
-                                        if (PreferenceUtils
-                                                    .getRestaurantsRadius()
-                                                .round() !=
-                                            kmRadius.value.round()) {
-                                          PreferenceUtils.setRestaurantsRadius(
-                                              kmRadius.value);
-                                          Constant.i.removeStore();
-                                          Constant.i.handleStoreCache();
-                                          isChange = true;
-                                          if (search.text.trim().isEmpty) {
-                                            fetchRestaurant();
-                                          }
-                                        }
-                                      }
+                                      // if (!showRadiusSlider.value) {
+                                      //   if (PreferenceUtils
+                                      //               .getRestaurantsRadius()
+                                      //           .round() !=
+                                      //       kmRadius.value.round()) {
+                                      //     PreferenceUtils.setRestaurantsRadius(
+                                      //         kmRadius.value);
+                                      //     Constant.i.removeStore();
+                                      //     Constant.i.handleStoreCache();
+                                      //     isChange = true;
+                                      //     if (search.text.trim().isEmpty) {
+                                      //       fetchRestaurant();
+                                      //     }
+                                      //   }
+                                      // }
                                     },
                                     child: Image.asset(
                                       AssetsUtils.icRadius,
@@ -717,6 +736,24 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                               "${kmRadius.value.round()} Mile",
                                           onChanged: (value) {
                                             kmRadius.value = value;
+                                          },
+                                          onChangeEnd: (value) {
+                                            kmRadius.value = value;
+                                            showRadiusSlider.toggle();
+                                            if (PreferenceUtils
+                                                        .getRestaurantsRadius()
+                                                    .round() !=
+                                                kmRadius.value.round()) {
+                                              PreferenceUtils
+                                                  .setRestaurantsRadius(
+                                                      kmRadius.value);
+                                              Constant.i.removeStore();
+                                              Constant.i.handleStoreCache();
+                                              isChange = true;
+                                              if (search.text.trim().isEmpty) {
+                                                fetchRestaurant();
+                                              }
+                                            }
                                           },
                                         ),
                                       ).paddingOnly(right: 10, left: 10),
@@ -810,6 +847,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                       'Bring me the order'
                                                                   ? false
                                                                   : true,
+                                                              userAddress:
+                                                                  getUserAddress,
                                                             ),
                                                         transition:
                                                             Transition.fadeIn)!
@@ -1463,83 +1502,86 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                                               mainAxisSize: MainAxisSize.max,
                                                                               children: [
-                                                                                Container(
+                                                                                SizedBox(
                                                                                   height: 160,
                                                                                   width: MediaQuery.of(context).size.width,
-                                                                                  decoration: BoxDecoration(
-                                                                                    borderRadius: BorderRadius.circular(8),
-                                                                                    image: searchRestaurantList.elementAt(index).logoPhotos!.isEmpty
-                                                                                        ? const DecorationImage(
-                                                                                            image: AssetImage(
-                                                                                              AssetsUtils.restaurantFood,
-                                                                                            ),
-                                                                                            fit: BoxFit.cover,
-                                                                                          )
-                                                                                        : DecorationImage(
-                                                                                            image: CachedNetworkImageProvider(
-                                                                                              searchRestaurantList.elementAt(index).logoPhotos![0],
-                                                                                              cacheKey: searchRestaurantList.elementAt(index).logoPhotos![0],
-                                                                                            ),
-                                                                                            fit: BoxFit.cover,
-                                                                                          ),
-                                                                                  ),
-                                                                                  child: Column(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                  child: Stack(
                                                                                     children: [
-                                                                                      searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
-                                                                                          ? Container(
-                                                                                              width: 109,
-                                                                                              margin: const EdgeInsets.all(12),
-                                                                                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                              child: Center(
-                                                                                                child: Text(
-                                                                                                  'Free Delivery',
-                                                                                                  style: FontUtils.h16(
-                                                                                                    fontColor: Colors.black,
-                                                                                                    fontWeight: FWT.regular,
-                                                                                                  ),
+                                                                                      Positioned.fill(
+                                                                                        child: ClipRRect(
+                                                                                          borderRadius: BorderRadius.circular(8),
+                                                                                          child: (restaurantList.elementAt(index).logoPhotos?.isEmpty ?? true)
+                                                                                              ? Image.asset(
+                                                                                                  AssetsUtils.icGenericLogo,
+                                                                                                  fit: BoxFit.cover,
+                                                                                                )
+                                                                                              : NetworkImageWidget(
+                                                                                                  url: restaurantList.elementAt(index).logoPhotos?[0] ?? "",
+                                                                                                  showLoader: false,
+                                                                                                  placeholder: AssetsUtils.icGenericLogo,
+                                                                                                  fit: BoxFit.cover,
                                                                                                 ),
-                                                                                              ),
-                                                                                            )
-                                                                                          : const SizedBox(),
-                                                                                      const Spacer(),
-                                                                                      Align(
-                                                                                        alignment: Alignment.bottomRight,
-                                                                                        child: Container(
-                                                                                          height: 30,
-                                                                                          width: 109,
-                                                                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                                                          margin: const EdgeInsets.all(9),
-                                                                                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                          child: Row(
-                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                            children: [
-                                                                                              Image.asset(AssetsUtils.ratingStar),
-                                                                                              Padding(
-                                                                                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                                                                                child: Center(
-                                                                                                  child: Text(
-                                                                                                    searchRestaurantList.elementAt(index).weightedRatingValue!.toStringAsFixed(1),
-                                                                                                    style: FontUtils.h16(
-                                                                                                      fontColor: Colors.black,
-                                                                                                      fontWeight: FWT.regular,
+                                                                                        ),
+                                                                                      ),
+                                                                                      Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        children: [
+                                                                                          searchRestaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
+                                                                                              ? Container(
+                                                                                                  width: 109,
+                                                                                                  margin: const EdgeInsets.all(12),
+                                                                                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                                                                                                  child: Center(
+                                                                                                    child: Text(
+                                                                                                      'Free Delivery',
+                                                                                                      style: FontUtils.h16(
+                                                                                                        fontColor: Colors.black,
+                                                                                                        fontWeight: FWT.regular,
+                                                                                                      ),
                                                                                                     ),
                                                                                                   ),
-                                                                                                ),
-                                                                                              ),
-                                                                                              Center(
-                                                                                                child: Text(
-                                                                                                  '(${searchRestaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
-                                                                                                  style: FontUtils.h12(
-                                                                                                    fontColor: AppColors.disable,
-                                                                                                    fontWeight: FWT.regular,
+                                                                                                )
+                                                                                              : const SizedBox(),
+                                                                                          const Spacer(),
+                                                                                          Align(
+                                                                                            alignment: Alignment.bottomRight,
+                                                                                            child: Container(
+                                                                                              height: 30,
+                                                                                              width: 109,
+                                                                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                                                              margin: const EdgeInsets.all(9),
+                                                                                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                                                                                              child: Row(
+                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                children: [
+                                                                                                  Image.asset(AssetsUtils.ratingStar),
+                                                                                                  Padding(
+                                                                                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                                                                    child: Center(
+                                                                                                      child: Text(
+                                                                                                        searchRestaurantList.elementAt(index).weightedRatingValue!.toStringAsFixed(1),
+                                                                                                        style: FontUtils.h16(
+                                                                                                          fontColor: Colors.black,
+                                                                                                          fontWeight: FWT.regular,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ),
                                                                                                   ),
-                                                                                                ),
+                                                                                                  Center(
+                                                                                                    child: Text(
+                                                                                                      '(${searchRestaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
+                                                                                                      style: FontUtils.h12(
+                                                                                                        fontColor: AppColors.disable,
+                                                                                                        fontWeight: FWT.regular,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
                                                                                               ),
-                                                                                            ],
-                                                                                          ),
-                                                                                        ),
-                                                                                      )
+                                                                                            ),
+                                                                                          )
+                                                                                        ],
+                                                                                      ),
                                                                                     ],
                                                                                   ),
                                                                                 ),
@@ -1661,83 +1703,86 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                                                   mainAxisSize: MainAxisSize.max,
                                                                                   children: [
-                                                                                    Container(
+                                                                                    SizedBox(
                                                                                       height: 160,
                                                                                       width: MediaQuery.of(context).size.width,
-                                                                                      decoration: BoxDecoration(
-                                                                                        borderRadius: BorderRadius.circular(8),
-                                                                                        image: restaurantList.elementAt(index).logoPhotos!.isEmpty
-                                                                                            ? const DecorationImage(
-                                                                                                image: AssetImage(
-                                                                                                  AssetsUtils.restaurantFood,
-                                                                                                ),
-                                                                                                fit: BoxFit.cover,
-                                                                                              )
-                                                                                            : DecorationImage(
-                                                                                                image: CachedNetworkImageProvider(
-                                                                                                  restaurantList.elementAt(index).logoPhotos![0],
-                                                                                                  cacheKey: restaurantList.elementAt(index).logoPhotos![0],
-                                                                                                ),
-                                                                                                fit: BoxFit.cover,
-                                                                                              ),
-                                                                                      ),
-                                                                                      child: Column(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      child: Stack(
                                                                                         children: [
-                                                                                          restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
-                                                                                              ? Container(
-                                                                                                  width: 109,
-                                                                                                  margin: const EdgeInsets.all(12),
-                                                                                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                                  child: Center(
-                                                                                                    child: Text(
-                                                                                                      'Free Delivery',
-                                                                                                      style: FontUtils.h16(
-                                                                                                        fontColor: Colors.black,
-                                                                                                        fontWeight: FWT.regular,
-                                                                                                      ),
+                                                                                          Positioned.fill(
+                                                                                            child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(8),
+                                                                                              child: (restaurantList.elementAt(index).logoPhotos?.isEmpty ?? true)
+                                                                                                  ? Image.asset(
+                                                                                                      AssetsUtils.icGenericLogo,
+                                                                                                      fit: BoxFit.cover,
+                                                                                                    )
+                                                                                                  : NetworkImageWidget(
+                                                                                                      url: restaurantList.elementAt(index).logoPhotos?[0] ?? "",
+                                                                                                      showLoader: false,
+                                                                                                      placeholder: AssetsUtils.icGenericLogo,
+                                                                                                      fit: BoxFit.cover,
                                                                                                     ),
-                                                                                                  ),
-                                                                                                )
-                                                                                              : const SizedBox(),
-                                                                                          const Spacer(),
-                                                                                          Align(
-                                                                                            alignment: Alignment.bottomRight,
-                                                                                            child: Container(
-                                                                                              height: 30,
-                                                                                              width: 109,
-                                                                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                                                              margin: const EdgeInsets.all(9),
-                                                                                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                              child: Row(
-                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                                children: [
-                                                                                                  Image.asset(AssetsUtils.ratingStar),
-                                                                                                  Padding(
-                                                                                                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                                                                                                    child: Center(
-                                                                                                      child: Text(
-                                                                                                        restaurantList.elementAt(index).weightedRatingValue?.toStringAsFixed(1) ?? "",
-                                                                                                        style: FontUtils.h16(
-                                                                                                          fontColor: Colors.black,
-                                                                                                          fontWeight: FWT.regular,
+                                                                                            ),
+                                                                                          ),
+                                                                                          Column(
+                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                            children: [
+                                                                                              restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
+                                                                                                  ? Container(
+                                                                                                      width: 109,
+                                                                                                      margin: const EdgeInsets.all(12),
+                                                                                                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                                                                                                      child: Center(
+                                                                                                        child: Text(
+                                                                                                          'Free Delivery',
+                                                                                                          style: FontUtils.h16(
+                                                                                                            fontColor: Colors.black,
+                                                                                                            fontWeight: FWT.regular,
+                                                                                                          ),
                                                                                                         ),
                                                                                                       ),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Center(
-                                                                                                    child: Text(
-                                                                                                      '(${restaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
-                                                                                                      style: FontUtils.h12(
-                                                                                                        fontColor: AppColors.disable,
-                                                                                                        fontWeight: FWT.regular,
+                                                                                                    )
+                                                                                                  : const SizedBox(),
+                                                                                              const Spacer(),
+                                                                                              Align(
+                                                                                                alignment: Alignment.bottomRight,
+                                                                                                child: Container(
+                                                                                                  height: 30,
+                                                                                                  width: 109,
+                                                                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                                                                  margin: const EdgeInsets.all(9),
+                                                                                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                                                                                                  child: Row(
+                                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                    children: [
+                                                                                                      Image.asset(AssetsUtils.ratingStar),
+                                                                                                      Padding(
+                                                                                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                                                                        child: Center(
+                                                                                                          child: Text(
+                                                                                                            restaurantList.elementAt(index).weightedRatingValue?.toStringAsFixed(1) ?? "",
+                                                                                                            style: FontUtils.h16(
+                                                                                                              fontColor: Colors.black,
+                                                                                                              fontWeight: FWT.regular,
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                        ),
                                                                                                       ),
-                                                                                                    ),
+                                                                                                      Center(
+                                                                                                        child: Text(
+                                                                                                          '(${restaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
+                                                                                                          style: FontUtils.h12(
+                                                                                                            fontColor: AppColors.disable,
+                                                                                                            fontWeight: FWT.regular,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ],
                                                                                                   ),
-                                                                                                ],
-                                                                                              ),
-                                                                                            ),
-                                                                                          )
+                                                                                                ),
+                                                                                              )
+                                                                                            ],
+                                                                                          ),
                                                                                         ],
                                                                                       ),
                                                                                     ),
@@ -1861,58 +1906,61 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     );
   }
 
-  void verifyRestaurant({
-    required RestaurantList res,
-  }) {
-    if (verifyLoaderId != null) {
-      return;
+  void verifyRestaurant({required RestaurantList res}) async {
+    try {
+      restaurantBloc.prevId = res.id;
+      if (verifyLoaderId != null) {
+        return;
+      }
+
+      restaurantBloc.add(
+        RestaurantVerifyEvent(
+          latitude: getUserAddress?.latitude ?? 0,
+          longitude: getUserAddress?.longitude ?? 0,
+          pickup: result == 'Bring me the order' ? false : true,
+          id: res.id ?? "",
+          mealType: mealType,
+          onVerify: (menu, quote) {
+            if (verifyLoaderId != null || !mounted) {
+              return;
+            }
+            log("Successfully found : ${menu?.toJson()}");
+
+            Get.to(
+              () => RestaurantMenuScreen(
+                getUserAddress: getUserAddress,
+                address: res.address!,
+                userId: res.id ?? "",
+                restaurantName: res.name ?? '',
+                restaurantId: res.id ?? "",
+                pickup: result == 'Bring me the order' ? false : true,
+                bloc: restaurantBloc,
+                mealType: mealType,
+                menu: menu,
+                startedLoading: true,
+                quote: quote,
+              ),
+              transition: Transition.fadeIn,
+            )?.then(
+              (value) {
+                cartBloc.add(GetCartEvent());
+              },
+            );
+          },
+          notVerify: () {
+            restaurantList.removeWhere((element) => element.id == res.id);
+            searchRestaurantList.removeWhere((element) => element.id == res.id);
+            if (search.text.trim().isEmpty) {
+              PreferenceUtils.setString(
+                  prefKey, jsonEncode(restaurantList.toList()));
+            }
+            setState(() {});
+          },
+        ),
+      );
+    } catch (e) {
+      log(e.toString());
     }
-
-    restaurantBloc.add(
-      RestaurantVerifyEvent(
-        latitude: getUserAddress?.latitude ?? 0,
-        longitude: getUserAddress?.longitude ?? 0,
-        pickup: result == 'Bring me the order' ? false : true,
-        id: res.id ?? "",
-        mealType: mealType,
-        onVerify: (menu, quote) {
-          if (verifyLoaderId != null) {
-            return;
-          }
-          log("Successfully found : ${menu?.toJson()}");
-
-          Get.to(
-            () => RestaurantMenuScreen(
-              getUserAddress: getUserAddress,
-              address: res.address!,
-              userId: res.id ?? "",
-              restaurantName: res.name ?? '',
-              restaurantId: res.id ?? "",
-              pickup: result == 'Bring me the order' ? false : true,
-              bloc: restaurantBloc,
-              mealType: mealType,
-              menu: menu,
-              startedLoading: true,
-              quote: quote,
-            ),
-            transition: Transition.fadeIn,
-          )?.then(
-            (value) {
-              cartBloc.add(GetCartEvent());
-            },
-          );
-        },
-        notVerify: () {
-          restaurantList.removeWhere((element) => element.id == res.id);
-          searchRestaurantList.removeWhere((element) => element.id == res.id);
-          if (search.text.trim().isEmpty) {
-            PreferenceUtils.setString(
-                prefKey, jsonEncode(restaurantList.toList()));
-          }
-          setState(() {});
-        },
-      ),
-    );
   }
 }
 

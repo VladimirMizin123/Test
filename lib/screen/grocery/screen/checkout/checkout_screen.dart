@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -67,37 +67,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   /// Get Current location ---------------------------------------------------------
   Future getCurrentLocation({dynamic latitude, dynamic longitude}) async {
-    // bool serviceEnabled = await _handleLocationPermission();
-    // if (!serviceEnabled) return;
+    try {
+      // bool serviceEnabled = await _handleLocationPermission();
+      // if (!serviceEnabled) return;
 
-    BitmapDescriptor? customIcon;
+      BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-    customIcon = BitmapDescriptor.fromBytes(
-        await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
+      customIcon = BitmapDescriptor.fromBytes(
+          await getBytesFromAsset(AssetsUtils.currentLocationMarker, 150));
 
-    // Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+      // Position position = await GeolocatorPlatform.instance.getCurrentPosition();
 
-    selectedLatLng = LatLng(latitude, longitude);
+      selectedLatLng = LatLng(latitude, longitude);
 
-    currentPosition = CameraPosition(
-      target: LatLng(latitude, longitude),
-      zoom: 14.4746,
-    );
+      currentPosition = CameraPosition(
+        target: LatLng(latitude, longitude),
+        zoom: 14.4746,
+      );
 
-    setState(() {
-      markers = [
-        Marker(
-          markerId: const MarkerId('0'),
-          position: LatLng(latitude, longitude),
-          icon: customIcon!,
-        )
-      ];
-    });
-    mapController
-        .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-    setState(() {});
-    return true;
+      setState(() {
+        markers = [
+          Marker(
+            markerId: const MarkerId('0'),
+            position: LatLng(latitude, longitude),
+            icon: customIcon!,
+          )
+        ];
+      });
+      mapController
+          .animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+      setState(() {});
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
   }
 
   /// Marker Icon for location ---------------------------------------------------------
@@ -973,14 +978,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     lableColor: Colors.white,
                                     onTap: () {
                                       if (getUserAddress == null) {
-                                        Fluttertoast.showToast(
-                                          msg:
+                                        showToast(
+                                          message:
                                               'Please Select Address For Order',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          backgroundColor: Colors.black,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0,
+                                          isSuccess: false,
+                                          color: AppColors.black,
                                         );
                                         return;
                                       }
@@ -1045,14 +1047,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         /// Create Product / Create Checkout Api
 
                                         if (cardData.isEmpty) {
-                                          Fluttertoast.showToast(
-                                            msg:
+                                          showToast(
+                                            message:
                                                 'Please Select Card For Payment',
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            backgroundColor: Colors.black,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0,
+                                            isSuccess: false,
+                                            color: AppColors.black,
                                           );
                                         } else {
                                           for (var element in orderData!

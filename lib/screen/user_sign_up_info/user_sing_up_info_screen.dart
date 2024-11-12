@@ -82,7 +82,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
           .map(
             (i, e) => MapEntry(
               i,
-              CustomOptions(optionColor: color, optionName: e!),
+              CustomOptions(optionColor: color, optionName: e ?? ""),
             ),
           )
           .values
@@ -162,7 +162,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(model.age!,
+                                        Text(model.age ?? "",
                                                 style: AppTextStyle.gymEatsStyle
                                                     .copyWith(
                                                         color: Colors.white,
@@ -184,7 +184,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                             .marginOnly(right: 105),
                                       ],
                                     ),
-                                    Text(model.weight!,
+                                    Text(model.weight ?? "",
                                             style: AppTextStyle.gymEatsStyle
                                                 .copyWith(
                                                     color: Colors.white,
@@ -323,8 +323,9 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                 onPressed: () {
                                   Get.back();
                                 },
-                                textColor: setColor(gender: model.gender!),
-                                borderColor: setColor(gender: model.gender!),
+                                textColor: setColor(gender: model.gender ?? ""),
+                                borderColor:
+                                    setColor(gender: model.gender ?? ""),
                                 bgColor: Colors.white,
                                 title: StringUtils.previous)
                             .paddingOnly(top: 25.h),
@@ -372,7 +373,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                   );
                                 },
                                 textColor: Colors.white,
-                                bgColor: setColor(gender: model.gender!),
+                                bgColor: setColor(gender: model.gender ?? ""),
                                 title: StringUtils.next)
                             .paddingOnly(top: 25.h),
                       ),

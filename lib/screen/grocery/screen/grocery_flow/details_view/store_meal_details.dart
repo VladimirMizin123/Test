@@ -12,6 +12,7 @@ import 'package:gymeats_mobile/screen/grocery/bloc/grocery_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/bloc/store_cart_bloc.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_flow/details_view/store_menu_details_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
@@ -21,6 +22,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class StoreMealDetails extends StatefulWidget {
   const StoreMealDetails({
     super.key,
+    required this.cartBloc,
     required this.data,
     required this.storeId,
     this.shoppingListData,
@@ -32,6 +34,7 @@ class StoreMealDetails extends StatefulWidget {
     this.onAddToCart,
   });
 
+  final StoreCartBloc cartBloc;
   final String storeId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
@@ -414,6 +417,7 @@ class _StoreMealDetailsState extends State<StoreMealDetails> {
                                         Get.to(
                                           () => StoreMenuDetailsScreen(
                                             data: widget.data,
+                                            cartBloc: widget.cartBloc,
                                             restaurantId: widget.storeId,
                                             cartCount: widget.cartCount,
                                             pickUp: widget.pickUp,

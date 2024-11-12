@@ -40,6 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             email: event.email.trim(), password: event.password);
 
         if (response.isRight) {
+          log(response.right.data?.toJson().toString() ?? "");
           LoginModel right = response.right;
           await PreferenceUtils.setString(
               prefToken, right.data!.token!.accessToken!);

@@ -13,15 +13,20 @@ class UserPhotoSelectionBloc
   }
 
   final ImagePicker _picker = ImagePicker();
+
   Future<File?> _getImage({required ImageSource source}) async {
-    XFile? pickedFile = await _picker.pickImage(
-      source: source,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-      return File(pickedFile.path);
-    } else {
+    try {
+      XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 1800,
+        maxHeight: 1800,
+      );
+      if (pickedFile != null) {
+        return File(pickedFile.path);
+      } else {
+        return null;
+      }
+    } catch (e) {
       return null;
     }
   }

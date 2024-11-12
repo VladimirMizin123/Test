@@ -1,7 +1,6 @@
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/models/recipes_add_to_grocery_modal.dart';
-import 'package:gymeats_mobile/models/skip_meal_plan_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/screen/journal/modal/barcode_scanner_modal.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/model/fatch_meal_details_model.dart';
@@ -28,11 +27,9 @@ class JournalFetchMealPlanErrorState extends JournalMealPlanState {}
 
 // SKIP MEAL PLAN
 class JournalSkipMealPlanSuccessState extends JournalMealPlanState {
-  final SkipMealPlanData skipMealPlanData;
   final String mealID;
 
-  JournalSkipMealPlanSuccessState(
-      {required this.skipMealPlanData, required this.mealID});
+  JournalSkipMealPlanSuccessState({required this.mealID});
 }
 
 class JournalSkipMealPlanLoadingState extends JournalMealPlanState {}
@@ -99,6 +96,18 @@ class JournalBarcodeScannerSuccessState extends JournalMealPlanState {
   final BarcodeScannerData? barcodeScannerData;
 
   JournalBarcodeScannerSuccessState({this.barcodeScannerData});
+}
+
+class UserInvoiceSuccessState extends JournalMealPlanState {
+  final List<String> invoiceList;
+
+  UserInvoiceSuccessState({required this.invoiceList});
+}
+
+class UserInvoiceLoadingState extends JournalMealPlanState {
+  final bool isLoading;
+
+  UserInvoiceLoadingState({required this.isLoading});
 }
 
 class JournalBarcodeScannerErrorState extends JournalMealPlanState {}

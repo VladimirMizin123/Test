@@ -24,3 +24,8 @@ final class SubscriptionStatusErrorState extends SubscriptionState {
 }
 
 final class ReceiptDetailsSuccessState extends SubscriptionState {}
+
+final class ReceiptDetailsLoadingState extends SubscriptionState {
+  final bool isLoading;
+  ReceiptDetailsLoadingState({required this.isLoading});
+}

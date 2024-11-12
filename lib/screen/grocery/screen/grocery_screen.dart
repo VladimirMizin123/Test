@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/grocery/add_new_grocery/add_new_grocery_bloc.dart';
@@ -26,6 +25,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/widget/grocery_add_button_widget.dart';
+import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
@@ -993,7 +993,11 @@ class _GroceryPlanScreenState extends State<GroceryPlanScreen> {
                             isDismissible: false,
                           );
                         } else {
-                          Fluttertoast.showToast(msg: 'Select atleast 1 item');
+                          showToast(
+                            message: 'Select atleast 1 item',
+                            isSuccess: false,
+                            color: AppColors.black,
+                          );
                         }
                       },
                       buttonLable: 'View Cart',

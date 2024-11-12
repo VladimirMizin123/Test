@@ -7,6 +7,7 @@ import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/controller/home_screen_controller.dart';
+import 'package:gymeats_mobile/screen/account_screen/about/pivacy/privacy_policy_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 
 import '../../bloc/sign_up/sign_up_bloc.dart';
@@ -252,7 +253,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontWeight: FontWeight.w400),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              // Single tapped.
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const PolicyScreen(),
+                                  ));
                             },
                         ),
                         TextSpan(

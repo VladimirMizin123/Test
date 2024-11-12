@@ -68,7 +68,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
   @override
   void initState() {
     super.initState();
-    log("INIT STATE");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getData();
     });
@@ -96,6 +95,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
             }
 
             if (state is FetchMealPlanLoadingState) {
+              log("-----------Start Loading------------");
               isLoadingData = true;
             }
             log("state == > $state");
@@ -106,9 +106,12 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                 for (var i = 0; i < mealPlanList.length; i++) {
                   for (var j = 0; j < mealPlanList[i].meals!.length; j++) {
                     if (mealPlanList[i].meals![j].id ==
-                            mealDataByDate[k].mealId &&
-                        mealDataByDate[k].value == 'SKIPPED') {
-                      mealPlanList[i].meals![j].isSkipped = true;
+                        mealDataByDate[k].mealId) {
+                      if ((mealDataByDate[k].value == 'SKIPPED')) {
+                        mealPlanList[i].meals![j].isSkipped = true;
+                      } else {
+                        mealPlanList[i].meals![j].isDone = true;
+                      }
                     }
                   } // TWVhbDoxNTQ2NDM1NzY=
                 }
@@ -349,23 +352,21 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     Wrap(
                                       children: [
                                         GestureDetector(
-                                            onTap: () {
-                                              if (selectedDayIndex == 0) {
-                                                _pageController.jumpToPage(
-                                                    selectedDayIndex + 1);
-                                              } else {
-                                                _pageController.jumpToPage(
-                                                    selectedDayIndex + 1);
-                                              }
-                                            },
-                                            child: arrowButton(
-                                                    icon: AssetsUtils.arrowBack,
-                                                    isDisable:
-                                                        selectedDayIndex ==
-                                                            mealPlanList
-                                                                    .length -
-                                                                1)
-                                                .paddingOnly(right: 8.w)),
+                                          onTap: () {
+                                            if (selectedDayIndex == 0) {
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex + 1);
+                                            } else {
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex + 1);
+                                            }
+                                          },
+                                          child: arrowButton(
+                                                  icon: AssetsUtils.arrowBack,
+                                                  isDisable: selectedDayIndex ==
+                                                      mealPlanList.length - 1)
+                                              .paddingOnly(right: 8.w),
+                                        ),
                                         GestureDetector(
                                           onTap: () {
                                             if (selectedDayIndex ==
@@ -441,6 +442,7 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     setState(() {
                                       selectedDayIndex = value ?? 0;
                                     });
+                                    log("-------------Page Change ------------------ :$selectedDayIndex------");
                                     debugPrint('CURRENT PAGE : $value');
                                   },
                                   children: mealPlanList.map((e) {
