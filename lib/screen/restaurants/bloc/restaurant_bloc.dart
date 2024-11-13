@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
-import 'package:gymeats_mobile/models/check_store_model.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
@@ -21,6 +20,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
+import 'package:gymeats_mobile/widget/food_menu_address.dart';
 
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   RestaurantBloc() : super(InitialState()) {
@@ -83,65 +83,88 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   _onStoreVerify(
       RestaurantVerifyEvent event, Emitter<RestaurantState> emit) async {
     try {
-      emit(VerifyRestaurantLoader(id: event.id));
+      // !
+      Map<String, dynamic> req = PreferenceUtils.getMenuAddress();
+      final value =
+          Constant.i.requiredAddressField.every((e) => req.containsKey(e));
 
-      (double?, double?) pos = await Constant.i.position;
-      Either<ErrorModel, GetRestaurantMenuListModel>? menuRes;
-      _repository
-          .getRestaurantMenuList(
-            restaurantId: event.id,
-            pickup: event.pickup,
-            latitude: event.latitude,
-            longitude: event.longitude,
-            mealType: "restaurant",
-            position: pos,
-          )
-          .then((value) => menuRes = value);
-      Either<ErrorModel, CheckStoreModel> value =
-          await _repository.checkAvailableStore(
-        storeType: 'restaurant',
-        latitude: event.latitude.toString(),
-        longitude: event.longitude.toString(),
-        pickup: event.pickup,
-        storeId: event.id ?? "",
-        position: pos,
-      );
-      if (event.id != prevId) {
-        return;
-      }
-      emit(VerifyRestaurantLoader(id: null));
-      await Future.delayed(const Duration(milliseconds: 200));
-      if (event.id != prevId) {
-        return;
-      }
+      if (value) {
+        emit(VerifyRestaurantLoader(id: event.id));
+        final response = await _repository.storeLookup(storeId: event.id ?? "");
+        if (response.isRight) {
+          final store = response.right.data?.store?.quoteIds ?? [];
 
-      if (value.isLeft) {
-        if (value.left.errorMessage != null) {
-          showToast(isSuccess: false, message: value.right.errorMessage ?? "");
-        } else {
-          showToast(
-              isSuccess: false, message: StringUtils.restaurantNotAvailable);
-        }
-        event.notVerify?.call();
-      } else {
-        if ((value.right.success ?? false) &&
-            (value.right.data?.quote?.asapAvailable ?? false)) {
-          event.onVerify?.call(
-              (menuRes?.isRight ?? false) ? (menuRes?.right.data) : null,
-              value.right.data?.quote);
-        } else {
-          if (value.right.errorMessage != null) {
-            showToast(
-                isSuccess: false, message: value.right.errorMessage ?? "");
+          if (store.isNotEmpty) {
+            (double?, double?) pos = await Constant.i.position;
+            List<Future<Either<ErrorModel, GetRestaurantMenuListModel>>>
+                futureList = store
+                    .map(
+                      (e) => _repository.getRestaurantMenuList(
+                        restaurantId: event.id,
+                        pickup: event.pickup,
+                        latitude: event.latitude,
+                        longitude: event.longitude,
+                        mealType: "restaurant",
+                        position: pos,
+                        menuId: e,
+                        additionalData: req,
+                      ),
+                    )
+                    .toList();
+
+            Either<ErrorModel, GetRestaurantMenuListModel> storeRes =
+                await Future.any(futureList);
+            if (event.id != prevId) {
+              return;
+            }
+            emit(VerifyRestaurantLoader(id: null));
+            await Future.delayed(const Duration(milliseconds: 200));
+            if (event.id != prevId) {
+              return;
+            }
+            log("-----Is Right : ${storeRes.isRight} -> : ${storeRes.isRight ? storeRes.right.data : null}");
+            if (storeRes.isRight) {
+              if (storeRes.right.success ?? false) {
+                event.onVerify
+                    ?.call(storeRes.right.data, storeRes.right.data?.quote);
+              } else {
+                showToast(
+                    isSuccess: false,
+                    message: storeRes.right.errorMessage ?? "");
+                event.notVerify?.call();
+              }
+            } else {
+              showToast(
+                  isSuccess: false,
+                  message: storeRes.left.errorMessage != null
+                      ? storeRes.left.errorMessage!
+                      : StringUtils.restaurantNotAvailable);
+              event.notVerify?.call();
+            }
           } else {
-            showToast(
-                isSuccess: false, message: StringUtils.restaurantNotAvailable);
+            event.notVerify?.call();
           }
-
+        } else {
           event.notVerify?.call();
+        }
+      } else {
+        dynamic result = await showModalBottomSheet(
+          context: event.context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+          ),
+          isScrollControlled: true,
+          builder: (context) => FoodMenuAddress(request: req),
+        );
+        if (result == true) {
+          add(event);
         }
       }
     } catch (e) {
+      log(e.toString());
       event.notVerify?.call();
       emit(VerifyRestaurantLoader(id: null));
       if (event.id == prevId) {
@@ -544,6 +567,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         event.productId,
         latitude: pos.$1 ?? address?.latitude,
         longitude: pos.$2 ?? address?.longitude,
+        pickup: event.pickUp,
       )
           .fold(
         (left) {

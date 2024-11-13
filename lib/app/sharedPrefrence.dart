@@ -1,7 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:either_dart/either.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
+import 'package:gymeats_mobile/models/find_address_model.dart';
+import 'package:gymeats_mobile/repository/google_map_searching.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,6 +54,7 @@ const String restaurantsRadius = 'restaurantsRadius';
 const String restaurantCart = 'restaurantCart';
 
 const String understandDisclaimer = 'understandDisclaimer';
+const String foodMenuAddress = 'foodMenuAddress';
 
 class PreferenceUtils {
   static Future<SharedPreferences> get _instance async =>
@@ -197,6 +204,114 @@ class PreferenceUtils {
     } catch (e) {
       log(e.toString());
       return [];
+    }
+  }
+
+  static final GoogleMapSearchRepository _repo = GoogleMapSearchRepository();
+
+  static void setFoodMenuAddress({Map<String, dynamic>? req}) async {
+    try {
+      if (!isManualLocation) {
+        if (getString(foodMenuAddress).trim().isEmpty) {
+          LocationPermission permission = await Geolocator.checkPermission();
+          if (permission == LocationPermission.denied ||
+              permission == LocationPermission.deniedForever) return;
+          (double?, double?) pos = await Constant.i.position;
+          Either<ErrorModel, FindAddressResponseModel> address = await _repo
+              .findAddressURL(lat: pos.$1?.toString(), lng: pos.$2?.toString());
+          if (address.isRight) {
+            Map<String, dynamic> req = setFromCurrentLocation(address.right);
+            await setString(foodMenuAddress, jsonEncode(req));
+          }
+        }
+      } else {
+        if (req != null) {
+          await setString(foodMenuAddress, jsonEncode(req));
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  static Map<String, dynamic> setFromCurrentLocation(
+      FindAddressResponseModel right) {
+    try {
+      Map<String, dynamic> req = {};
+      if (right.results?.isNotEmpty ?? false) {
+        right.results!.first.addressComponents?.forEach((element) {
+          List<String> streetNumList = element.types
+                  ?.where((element1) => element1 == 'premise')
+                  .toList() ??
+              [];
+
+          if (streetNumList.isNotEmpty) {
+            req["user_street_num"] = element.longName ?? "";
+          }
+
+          List<String> streetNameList = element.types
+                  ?.where((element1) => element1 == 'route')
+                  .toList() ??
+              [];
+
+          if (streetNameList.isNotEmpty) {
+            req["user_street_name"] = element.longName ?? "";
+          }
+
+          List<String> cityList = element.types
+                  ?.where((element1) => element1 == 'locality')
+                  .toList() ??
+              [];
+
+          if (cityList.isNotEmpty) {
+            req["user_city"] = element.longName ?? "";
+          }
+
+          List<String> stateList = element.types
+                  ?.where(
+                      (element1) => element1 == 'administrative_area_level_1')
+                  .toList() ??
+              [];
+
+          if (stateList.isNotEmpty) {
+            req["user_state"] = element.shortName ?? "";
+          }
+
+          List<String> countryList = element.types
+                  ?.where((element1) => element1 == 'country')
+                  .toList() ??
+              [];
+
+          if (countryList.isNotEmpty) {
+            req["user_country"] = element.shortName ?? "";
+          }
+
+          List<String> pinCodeList = element.types
+                  ?.where((element1) => element1 == 'postal_code')
+                  .toList() ??
+              [];
+
+          if (pinCodeList.isNotEmpty) {
+            req["user_zipcode"] = element.longName;
+          }
+        });
+      }
+      return req;
+    } catch (e) {
+      return {};
+    }
+  }
+
+  static Map<String, dynamic> getMenuAddress() {
+    try {
+      String value = getString(foodMenuAddress);
+      if (value.isNotEmpty) {
+        return jsonDecode(value);
+      }
+      return {};
+    } catch (e) {
+      log("Find Menu Address Error:-> ${e.toString()}");
+      return {};
     }
   }
 }

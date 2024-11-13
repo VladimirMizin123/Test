@@ -769,6 +769,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                                                     false ||
                                                 !PreferenceUtils
                                                     .isManualLocation) {
+                                              final add = userAddress![index];
                                               addressBloc.add(
                                                 SetPrimaryAddressEvent(
                                                   lat: userAddress![index]
@@ -777,6 +778,40 @@ class _GetUserAddressState extends State<GetUserAddress>
                                                       .longitude,
                                                   addressId:
                                                       userAddress![index].id,
+                                                  onSuccess: () async {
+                                                    if (argumentsValue?[
+                                                                'string'] ==
+                                                            'isFromRestaurant' ||
+                                                        argumentsValue?[
+                                                                'string'] ==
+                                                            'isFromCheckout' ||
+                                                        argumentsValue?[
+                                                                'string'] ==
+                                                            'isFromGrocery') {
+                                                      await PreferenceUtils
+                                                          .setManualLoation(
+                                                              true);
+                                                    }
+
+                                                    PreferenceUtils
+                                                        .setFoodMenuAddress(
+                                                      req: {
+                                                        "user_street_num":
+                                                            add.streetNum ?? "",
+                                                        "user_street_name":
+                                                            add.streetName ??
+                                                                "",
+                                                        "user_city":
+                                                            add.city ?? "",
+                                                        "user_state":
+                                                            add.state ?? "",
+                                                        "user_country":
+                                                            add.country ?? "",
+                                                        "user_zipcode":
+                                                            add.zipcode ?? "",
+                                                      },
+                                                    );
+                                                  },
                                                 ),
                                               );
                                             }
@@ -838,7 +873,6 @@ class _GetUserAddressState extends State<GetUserAddress>
                           if (argumentsValue?['string'] == 'isFromRestaurant' ||
                               argumentsValue?['string'] == 'isFromCheckout' ||
                               argumentsValue?['string'] == 'isFromGrocery') {
-                            await PreferenceUtils.setManualLoation(true);
                             if (argumentsValue?['string'] == 'isFromGrocery') {
                               Get.offAll(
                                   () => const AppManagerScreen(selectIndex: 1));

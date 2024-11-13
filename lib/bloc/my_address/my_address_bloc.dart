@@ -54,6 +54,7 @@ class MyAddressBloc extends Bloc<MyAddressEvent, MyAddressState> {
         emit(SetAddressPrimaryErrorState(id: event.addressId));
       }, (right) {
         emit(SetAddressPrimarySuccessState(id: event.addressId));
+        event.onSuccess?.call();
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

@@ -60,6 +60,15 @@ class Constant {
     }
   }
 
+  List<String> requiredAddressField = [
+    "user_zipcode",
+    "user_country",
+    "user_state",
+    "user_street_name",
+    "user_street_num",
+    "user_city"
+  ];
+
   Future<dynamic> showAlertDialog({
     required BuildContext context,
     required String title,

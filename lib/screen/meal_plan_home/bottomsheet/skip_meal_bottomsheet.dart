@@ -78,7 +78,7 @@ class _SkipMealBottomSheetState extends State<SkipMealBottomSheet> {
                               Get.back();
                             },
                             isDarkColor: true),
-                        state is SkipMealPlanLoadingState
+                        state is SkipMealPlanLoadingState && state.value
                             ? SizedBox(
                                 height: screenSize.height * 0.04,
                                 width: screenSize.width * 0.41,

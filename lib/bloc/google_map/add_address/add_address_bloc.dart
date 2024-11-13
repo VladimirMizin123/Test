@@ -43,7 +43,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         (left) {
           onFailError(emit: emit, text: left.errorMessage!);
         },
-        (right) {
+        (right) async {
           // showToast(isSuccess: true, message: right.message!);
           cartBloc.add(RemoveCart());
           Constant.i.removeStore();
@@ -51,7 +51,18 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
           if (event.isFrom == 'isFromRestaurant' ||
               event.isFrom == 'isFromCheckout' ||
               event.isFrom == 'isFromGrocery') {
-            PreferenceUtils.setManualLoation(true);
+            await PreferenceUtils.setManualLoation(true);
+            PreferenceUtils.setFoodMenuAddress(
+              req: {
+                "user_street_num": event.streetNum,
+                "user_street_name": event.streetName,
+                "user_city": event.city,
+                "user_state": event.state,
+                "user_country": event.country,
+                "user_zipcode": event.zipcode,
+              },
+            );
+
             if (event.isFrom == "isFromGrocery") {
               Get.offAll(() => const AppManagerScreen(selectIndex: 1));
             } else {

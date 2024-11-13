@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
+import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 
 GetRestaurantMenuListModel getRestaurantMenuListModelFromJson(String str) =>
     GetRestaurantMenuListModel.fromJson(json.decode(str));
@@ -39,6 +40,7 @@ class GetRestaurantMenuListModel {
 }
 
 class RestaurantMenu {
+  qu.Quote? quote;
   String? menuId;
   double? breakfastCalorie;
   double? lunchCalorie;
@@ -47,6 +49,7 @@ class RestaurantMenu {
   List<Category>? categories;
 
   RestaurantMenu({
+    this.quote,
     this.menuId,
     this.categories,
     this.breakfastCalorie,
@@ -56,6 +59,9 @@ class RestaurantMenu {
   });
 
   factory RestaurantMenu.fromJson(Map<String, dynamic> json) => RestaurantMenu(
+        quote: json["quote"] != null && json["quote"] is Map
+            ? qu.Quote.fromJson(json["quote"])
+            : null,
         menuId: json["menu_id"],
         breakfastCalorie:
             num.tryParse(json["breakfastCalorie"]?.toString() ?? "")

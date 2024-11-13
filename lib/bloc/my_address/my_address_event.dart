@@ -11,5 +11,11 @@ class SetPrimaryAddressEvent extends MyAddressEvent {
   final String? addressId;
   final double? lat;
   final double? lng;
-  SetPrimaryAddressEvent({this.lat, this.lng, this.addressId});
+  final Function()? onSuccess;
+  SetPrimaryAddressEvent({
+    this.lat,
+    this.lng,
+    this.addressId,
+    this.onSuccess,
+  });
 }

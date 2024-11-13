@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/models/available_store_model.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
 import 'package:gymeats_mobile/models/payment_status_model.dart';
+import 'package:gymeats_mobile/models/store_lookup_model.dart';
 import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
@@ -235,6 +236,22 @@ class RestaurantRepository {
     }
   }
 
+  Future<Either<ErrorModel, StoreLookUpModel>> storeLookup(
+      {required String storeId}) async {
+    final response = await apiServices.get(
+      ApiUrls.storeLookup,
+      queryParams: {"storeId": storeId},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Right(StoreLookUpModel.fromJson(jsonDecode(response.body)));
+    } else if (response.statusCode == 400) {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    } else {
+      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+
   /// Get Restaurant Menu List ====================================================================
 
   Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList({
@@ -243,7 +260,9 @@ class RestaurantRepository {
     String? mealType,
     required double? latitude,
     required double? longitude,
+    String? menuId,
     (double?, double?)? position,
+    Map<String, dynamic>? additionalData,
   }) async {
     try {
       (double?, double?) pos = position ?? await Constant.i.position;
@@ -255,8 +274,14 @@ class RestaurantRepository {
         "longitude": pos.$2 ?? longitude,
         "pickup": pickup,
       };
+      if (menuId != null) {
+        data["menuId"] = menuId;
+      }
+      if (additionalData != null) {
+        data.addAll(additionalData);
+      }
       log("Api Url : ${ApiUrls.getRestaurantMenuList}");
-      log("Request Data : $data");
+      log("Request Data : ${jsonEncode(data)}");
 
       final response = await apiServices
           .post(ApiUrls.getRestaurantMenuList, data, customToast: true);
@@ -501,11 +526,12 @@ class RestaurantRepository {
   }
 
   Future<Either<ErrorModel, MenuItemList>> fetchCustomization(String productId,
-      {double? latitude, double? longitude}) async {
+      {double? latitude, double? longitude, bool pickup = false}) async {
     Map<String, dynamic> query = {};
     if (latitude != null && longitude != null) {
       query["latitude"] = latitude;
       query["longitude"] = longitude;
+      query["pickup"] = pickup;
     }
 
     log("${ApiUrls.fetchCustomization}/$productId");

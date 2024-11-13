@@ -106,6 +106,7 @@ class _RestaurantMenuDetailsScreenState
         (widget.data.shouldFetchCustomizations ?? false)) {
       restaurantBloc.add(FetchCustomizationEvent(
         productId: widget.data.productId ?? "",
+        pickUp: widget.pickUp,
         callback: (menu) {
           customizationList = menu.customizations ?? [];
           widget.onCustomizationChange?.call(customizationList);

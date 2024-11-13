@@ -99,10 +99,12 @@ class _BestMatchRestaurantsScreenState
                   } else {
                     restaurantBloc.add(
                       GetRestaurantListEvent(
-                          getUserAddress?.latitude ?? 0,
-                          getUserAddress?.longitude ?? 0,
-                          false,
-                          categoryDataList.map((e) => e["title"]).toList()),
+                        getUserAddress?.latitude ?? 0,
+                        getUserAddress?.longitude ?? 0,
+                        false,
+                        categoryDataList.map((e) => e["title"]).toList(),
+                        // mealName: widget.productName,
+                      ),
                     );
                   }
                 }
@@ -180,6 +182,7 @@ class _BestMatchRestaurantsScreenState
                             child: const Icon(Icons.keyboard_arrow_left_sharp,
                                 color: AppColors.darkGray, size: 40))),
                     DraggableScrollableSheet(
+                        expand: true,
                         initialChildSize: 0.4,
                         minChildSize: 0.2,
                         maxChildSize: 0.7,

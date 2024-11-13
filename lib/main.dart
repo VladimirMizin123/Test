@@ -104,14 +104,14 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   // Capture Flutter Error
-  FlutterError.onError = (FlutterErrorDetails details) async {
-    FlutterError.presentError(details);
-    FirebaseCrashlytics.instance
-        .recordError(details.exception, details.stack, fatal: true);
-    Sentry.captureException(details.exception, stackTrace: details.stack);
-    FlutterBugfender.sendCrash(
-        details.exception.toString(), details.stack.toString());
-  };
+  // FlutterError.onError = (FlutterErrorDetails details) async {
+  //   FlutterError.presentError(details);
+  //   FirebaseCrashlytics.instance
+  //       .recordError(details.exception, details.stack, fatal: true);
+  //   Sentry.captureException(details.exception, stackTrace: details.stack);
+  //   FlutterBugfender.sendCrash(
+  //       details.exception.toString(), details.stack.toString());
+  // };
 
   // Capture Dart Exceptions
   runZonedGuarded(() async {

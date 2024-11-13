@@ -179,6 +179,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           restaurantBloc.add(GetUserAddressEvent());
           cartBloc.add(GetCartEvent());
           restaurantBloc.add(GetDeliveryStatusEvent());
+          PreferenceUtils.setFoodMenuAddress();
         }
       });
     });
@@ -1920,11 +1921,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           pickup: result == 'Bring me the order' ? false : true,
           id: res.id ?? "",
           mealType: mealType,
+          context: context,
           onVerify: (menu, quote) {
             if (verifyLoaderId != null || !mounted) {
               return;
             }
-            log("Successfully found : ${menu?.toJson()}");
 
             Get.to(
               () => RestaurantMenuScreen(

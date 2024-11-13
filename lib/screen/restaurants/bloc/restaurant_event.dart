@@ -35,6 +35,7 @@ class RestaurantVerifyEvent extends RestaurantEvent {
   final bool pickup;
   final String? id;
   final String? mealType;
+  final BuildContext context;
   final Function(RestaurantMenu?, qu.Quote?)? onVerify;
   final Function()? notVerify;
 
@@ -44,6 +45,7 @@ class RestaurantVerifyEvent extends RestaurantEvent {
     required this.pickup,
     required this.id,
     this.mealType,
+    required this.context,
     required this.onVerify,
     this.notVerify,
   });
@@ -193,11 +195,13 @@ class UpdateDeliveryStatusEvent extends RestaurantEvent {
 
 class FetchCustomizationEvent extends RestaurantEvent {
   final String productId;
+  final bool pickUp;
   final Function(MenuItemList) callback;
 
   FetchCustomizationEvent({
     required this.productId,
     required this.callback,
+    this.pickUp = false,
   });
 }
 
