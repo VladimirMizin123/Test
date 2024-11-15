@@ -1926,7 +1926,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             if (verifyLoaderId != null || !mounted) {
               return;
             }
-
             Get.to(
               () => RestaurantMenuScreen(
                 getUserAddress: getUserAddress,

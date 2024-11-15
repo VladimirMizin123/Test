@@ -64,6 +64,9 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   TextEditingController apartmentNumberController = TextEditingController();
   TextEditingController floorNumberController = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
+  TextEditingController cityField = TextEditingController();
+  TextEditingController stateField = TextEditingController();
+  TextEditingController countryField = TextEditingController();
 
   _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -317,7 +320,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
           results: right.results);
 
       if (right.results?.isNotEmpty ?? false) {
-        right.results!.first.addressComponents?.forEach((element) {
+        right.results?.first.addressComponents?.forEach((element) {
           ///streetNum
 
           List<String> streetNumList = element.types
@@ -332,7 +335,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
           ///streetName
 
           List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'route')
+                  ?.where((element1) => element1 == 'sublocality_level_2')
                   .toList() ??
               [];
 
@@ -360,7 +363,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
               [];
 
           if (stateList.isNotEmpty) {
-            stateData = element.longName ?? "";
+            stateData = element.shortName ?? "";
           }
 
           ///country
@@ -371,7 +374,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
               [];
 
           if (countryList.isNotEmpty) {
-            country = element.longName ?? "";
+            country = element.shortName ?? "";
           }
 
           ///ZIP CODE
@@ -386,11 +389,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
         });
       }
 
-      streetDetailsController.text =
-          '${streetName.isNotEmpty ? '$streetName, ' : ''}${city.isNotEmpty ? '$city, ' : ''}${stateData.isNotEmpty ? '$stateData, ' : ''}${country.isNotEmpty ? '$country. ' : ''}';
+      streetDetailsController.text = streetName;
       apartmentNumberController.text = streetNum;
       floorNumberController.text = '';
       zipCodeController.text = zipcode;
+      cityField.text = city;
+      stateField.text = stateData;
+      countryField.text = country;
     });
   }
 
@@ -418,6 +423,9 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       floorNumberController.text =
           widget.userAddress?.extendedAddress?.toString() ?? "";
       zipCodeController.text = widget.userAddress?.zipcode ?? "";
+      stateField.text = widget.userAddress?.state ?? "";
+      cityField.text = widget.userAddress?.city ?? "";
+      countryField.text = widget.userAddress?.country ?? "";
 
       currentPosition = CameraPosition(
         target: LatLng(
@@ -550,7 +558,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                           child: Column(
                             children: [
                               mapDetailWidget(
-                                title: "Name",
+                                title: "Address Type",
                                 textEditingController: addressNameController,
                                 readOnly: false,
                                 suffixIcon: const Padding(
@@ -576,6 +584,26 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                               mapDetailWidget(
                                 title: "Extended Address",
                                 textEditingController: floorNumberController,
+                              ),
+                              mapDetailWidget(
+                                title: "Country",
+                                textEditingController: countryField,
+                                hintText: "Country (e.g., US)",
+                                inputFormatters: [
+                                  s.LengthLimitingTextInputFormatter(2),
+                                ],
+                              ),
+                              mapDetailWidget(
+                                title: "State",
+                                hintText: "State (e.g., NY)",
+                                textEditingController: stateField,
+                                inputFormatters: [
+                                  s.LengthLimitingTextInputFormatter(2),
+                                ],
+                              ),
+                              mapDetailWidget(
+                                title: "City",
+                                textEditingController: cityField,
                               ),
                               mapDetailWidget(
                                 title: "Zip",
@@ -605,9 +633,9 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                     longitude: selectedLatLng!.longitude,
                                     streetNum: apartmentNumberController.text,
                                     streetName: streetDetailsController.text,
-                                    city: city,
-                                    state: stateData,
-                                    country: country,
+                                    city: cityField.text,
+                                    state: stateField.text,
+                                    country: countryField.text,
                                     addressType: addressNameController.text,
                                     zipcode: zipCodeController.text,
                                     isPrimary:

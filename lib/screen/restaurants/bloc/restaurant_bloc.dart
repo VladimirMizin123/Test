@@ -93,28 +93,57 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         final response = await _repository.storeLookup(storeId: event.id ?? "");
         if (response.isRight) {
           final store = response.right.data?.store?.quoteIds ?? [];
+          log("Store Id Find : $store");
 
           if (store.isNotEmpty) {
             (double?, double?) pos = await Constant.i.position;
             List<Future<Either<ErrorModel, GetRestaurantMenuListModel>>>
-                futureList = store
-                    .map(
-                      (e) => _repository.getRestaurantMenuList(
-                        restaurantId: event.id,
-                        pickup: event.pickup,
-                        latitude: event.latitude,
-                        longitude: event.longitude,
-                        mealType: "restaurant",
-                        position: pos,
-                        menuId: e,
-                        additionalData: req,
-                      ),
-                    )
-                    .toList();
+                futureList = [];
+            for (int i = 0; i < store.length; i++) {
+              futureList.add(
+                _repository.getRestaurantMenuList(
+                  restaurantId: event.id,
+                  pickup: event.pickup,
+                  latitude: event.latitude,
+                  longitude: event.longitude,
+                  mealType: "restaurant",
+                  position: pos,
+                  menuId: store[i],
+                  additionalData: req,
+                  needLeft: true,
+                ),
+              );
+            }
 
-            Either<ErrorModel, GetRestaurantMenuListModel> storeRes =
-                await Future.any(futureList);
-            if (event.id != prevId) {
+            Stream<Either<ErrorModel, GetRestaurantMenuListModel>>
+                futureStream = Stream.fromFutures(futureList);
+            Either<ErrorModel, GetRestaurantMenuListModel>? storeRes;
+            bool hasError = false;
+
+            await for (Either<ErrorModel, GetRestaurantMenuListModel> result
+                in futureStream) {
+              if (result.isRight &&
+                  (result.right.data?.categories?.isNotEmpty ?? false)) {
+                storeRes = result;
+                hasError = false;
+                break;
+              } else if (result.isLeft) {
+                storeRes = result;
+                hasError = true;
+              }
+            }
+            if (event.id != prevId || storeRes == null || hasError) {
+              if (storeRes == null || hasError) {
+                if (storeRes != null && hasError) {
+                  showToast(
+                      isSuccess: false,
+                      message: storeRes.left.errorMessage != null
+                          ? storeRes.left.errorMessage!
+                          : StringUtils.restaurantNotAvailable);
+                }
+                emit(VerifyRestaurantLoader(id: null));
+                event.notVerify?.call();
+              }
               return;
             }
             emit(VerifyRestaurantLoader(id: null));
@@ -122,7 +151,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
             if (event.id != prevId) {
               return;
             }
-            log("-----Is Right : ${storeRes.isRight} -> : ${storeRes.isRight ? storeRes.right.data : null}");
             if (storeRes.isRight) {
               if (storeRes.right.success ?? false) {
                 event.onVerify
@@ -183,6 +211,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     } else {
       pref = restaurantsBring;
     }
+
     Either<ErrorModel, GetRestaurantListModel> data =
         await _repository.getRestaurantListData(
       latitude: event.latitude,
@@ -194,14 +223,17 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     );
     if (data.isRight) {
       GetRestaurantListModel right = data.right;
-      log("Set Cache : $pref");
-      PreferenceUtils.setString(pref, jsonEncode(right.data ?? []));
-      for (int i = 0; i < (right.data?.length ?? 0); i++) {
-        if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
-          PreferenceUtils.setString(
-              "${right.data?[i].id}_img", right.data?[i].logoPhotos?[0] ?? "");
+      if (event.storeLocal) {
+        log("Set Cache : $pref");
+        PreferenceUtils.setString(pref, jsonEncode(right.data ?? []));
+        for (int i = 0; i < (right.data?.length ?? 0); i++) {
+          if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
+            PreferenceUtils.setString("${right.data?[i].id}_img",
+                right.data?[i].logoPhotos?[0] ?? "");
+          }
         }
       }
+
       emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
       emit(RestaurantVerificationLoader(isLoading: false));
     } else {

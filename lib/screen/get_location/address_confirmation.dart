@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -110,14 +111,15 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                   fontWeight: FontWeight.w300)),
                         ),
                         commonTextField(
-                            controller: streetName,
-                            validator: (value) {
-                              if (value?.trim().isEmpty ?? true) {
-                                return 'Please Enter Street Name';
-                              } else {
-                                return null;
-                              }
-                            }),
+                          controller: streetName,
+                          validator: (value) {
+                            if (value?.trim().isEmpty ?? true) {
+                              return 'Please Enter Street Name';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                           child: Text('Street Number',
@@ -145,44 +147,52 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                                   fontWeight: FontWeight.w300)),
                         ),
                         commonTextField(controller: floor),
-                        if (widget.arguments['string'] == 'isFromRegister') ...[
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                            child: Text('Country',
-                                style: TextStyle(
-                                    color: const Color(0xff373737),
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w300)),
-                          ),
-                          commonTextField(
-                            controller: country,
-                            validator: (p0) {
-                              if (p0?.trim().isEmpty ?? true) {
-                                return 'Please Enter Country Name';
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                            child: Text('State',
-                                style: TextStyle(
-                                    color: const Color(0xff373737),
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w300)),
-                          ),
-                          commonTextField(
-                            controller: stateField,
-                            validator: (p0) {
-                              if (p0?.trim().isEmpty ?? true) {
-                                return 'Please Enter State Name';
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
-                        ],
+                        // if (widget.arguments['string'] == 'isFromRegister') ...[
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('Country',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(
+                          controller: country,
+                          hintText: "Country (e.g., US)",
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(2),
+                          ],
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please Enter Country Name';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
+                          child: Text('State',
+                              style: TextStyle(
+                                  color: const Color(0xff373737),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300)),
+                        ),
+                        commonTextField(
+                          controller: stateField,
+                          hintText: "State (e.g., NY)",
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(2),
+                          ],
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please Enter State Name';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                        // ],
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
                           child: Text('City',
@@ -330,17 +340,21 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
     );
   }
 
-  Widget commonTextField(
-      {String? Function(String?)? validator,
-      TextEditingController? controller}) {
+  Widget commonTextField({
+    String? Function(String?)? validator,
+    TextEditingController? controller,
+    List<TextInputFormatter>? inputFormatters,
+    String? hintText,
+  }) {
     return TextFormField(
       style: const TextStyle(color: Colors.black),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
       controller: controller,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
-        hintText: '',
+        hintText: hintText ?? '',
         hintStyle: TextStyle(
           color: const Color(0xff5F5F5F),
           fontWeight: FontWeight.w300,

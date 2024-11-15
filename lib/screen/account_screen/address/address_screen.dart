@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/my_address/my_address_event.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/map_address/map_address_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
@@ -241,6 +243,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: state.userAddress.length,
                                 itemBuilder: (context, index) {
+                                  final add = state.userAddress[index];
                                   return Row(
                                     children: [
                                       Expanded(
@@ -269,10 +272,39 @@ class _AddressScreenState extends State<AddressScreen> {
                                                 groupValue: selectedAddress,
                                                 onChanged: (value) {
                                                   selectedAddress = value;
-
                                                   addressBloc.add(
-                                                      SetPrimaryAddressEvent(
-                                                          addressId: value));
+                                                    SetPrimaryAddressEvent(
+                                                      addressId: value,
+                                                      onSuccess: () async {
+                                                        await PreferenceUtils
+                                                            .setManualLoation(
+                                                                true);
+                                                        Constant.i
+                                                            .removeStore();
+                                                        PreferenceUtils
+                                                            .setFoodMenuAddress(
+                                                          req: {
+                                                            "user_street_num":
+                                                                add.streetNum ??
+                                                                    "",
+                                                            "user_street_name":
+                                                                add.streetName ??
+                                                                    "",
+                                                            "user_city":
+                                                                add.city ?? "",
+                                                            "user_state":
+                                                                add.state ?? "",
+                                                            "user_country":
+                                                                add.country ??
+                                                                    "",
+                                                            "user_zipcode":
+                                                                add.zipcode ??
+                                                                    "",
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
 
                                                   // setState(() {});
                                                 },

@@ -435,7 +435,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                 [];
 
             if (stateList.isNotEmpty) {
-              stateName = element.longName ?? "";
+              stateName = element.shortName ?? "";
             }
 
             ///country
@@ -446,7 +446,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                 [];
 
             if (countryList.isNotEmpty) {
-              country = element.longName ?? "";
+              country = element.shortName ?? "";
             }
 
             ///ZIP CODE

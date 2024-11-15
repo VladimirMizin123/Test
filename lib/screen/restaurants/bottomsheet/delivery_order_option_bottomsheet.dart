@@ -132,6 +132,10 @@ class _DeliverOrderBottomSheetState extends State<DeliverOrderBottomSheet> {
                     width: screenSize.width,
                     isLoadingWidget: false,
                     onTap: () {
+                      if (widget.isFrom == "isFromBestMatch") {
+                        Get.back(result: selectedIndex);
+                        return;
+                      }
                       if (selectedIndex == -1) {
                         Get.back();
                       } else {

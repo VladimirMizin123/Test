@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -97,6 +98,9 @@ class _ExtendedAddressState extends State<ExtendedAddress> {
                 title: "State",
                 hintText: "State (e.g., NY)",
                 textEditingController: state,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(2),
+                ],
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please Enter State Code';
@@ -109,6 +113,9 @@ class _ExtendedAddressState extends State<ExtendedAddress> {
                 title: "Country",
                 hintText: "Country (e.g., US)",
                 textEditingController: country,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(2),
+                ],
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please Enter State Code';
@@ -137,22 +144,21 @@ class _ExtendedAddressState extends State<ExtendedAddress> {
                       shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   )),
-                  onPressed: () => {
-                    if (formKey.currentState?.validate() ?? false)
-                      {
-                        Get.back(
-                          result: {
-                            "extendedAddress": {
-                              "street_Num": sNumber.text,
-                              "street_Name": sName.text,
-                              "city": city.text,
-                              "state": state.text,
-                              "Country": country.text,
-                              "zipCode": zipCode.text,
-                            }
-                          },
-                        ),
-                      }
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      Get.back(
+                        result: {
+                          "extendedAddress": {
+                            "street_Num": sNumber.text,
+                            "street_Name": sName.text,
+                            "city": city.text,
+                            "state": state.text,
+                            "Country": country.text,
+                            "zipCode": zipCode.text,
+                          }
+                        },
+                      );
+                    }
                   },
                   child: Text(
                     widget.fromSignup

@@ -277,4 +277,5 @@ class ApiUrls {
 
   static const String checkPaymentStatus =
       '${baseUrl}api/StripePayment/CheckPaymentStatus';
+  static const String storeLookup = '${baseUrl}api/MealMe/StoreLookup';
 }
