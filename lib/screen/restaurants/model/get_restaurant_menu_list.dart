@@ -328,6 +328,6 @@ class Option {
         "formatted_price": formattedPrice,
         "default_qty": defaultQty,
         "option_id": optionId,
-        "customization": customizations?.map((e) => e.toJson()).toList(),
+        "customizations": customizations?.map((e) => e.toJson()).toList(),
       };
 }

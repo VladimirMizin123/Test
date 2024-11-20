@@ -121,6 +121,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
             restaurantBloc.add(re.GetUserAddressEvent());
             addNewGroceryItemBloc.add(GetGroceryItemEvent());
           });
+          PreferenceUtils.setFoodMenuAddress();
         });
       } catch (e) {
         log(e.toString());

@@ -213,9 +213,6 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16.w),
                               child: SizedBox(
-                                height: customizationList.isEmpty
-                                    ? size.height * 0.55
-                                    : null,
                                 width: context.width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

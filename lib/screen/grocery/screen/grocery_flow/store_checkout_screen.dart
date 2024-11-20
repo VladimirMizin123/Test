@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,6 +34,7 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.d
     as o_address;
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user_address;
+import 'package:gymeats_mobile/widget/food_menu_address.dart';
 
 class StoreCheckOutScreen extends StatefulWidget {
   final String? storeName;
@@ -388,9 +388,25 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                       buttonLable: StringUtils.checkout,
                                       isLoadingWidget: false,
                                       onTap: () async {
-                                        if (!PreferenceUtils.isManualLocation) {
+                                        Map<String, dynamic> req =
+                                            PreferenceUtils.getMenuAddress();
+                                        final value = Constant
+                                            .i.requiredAddressField
+                                            .every((e) => req.containsKey(e));
+                                        if (!value) {
                                           dynamic result =
-                                              await addressDialog();
+                                              await showModalBottomSheet(
+                                            context: context,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(10),
+                                                topRight: Radius.circular(10),
+                                              ),
+                                            ),
+                                            isScrollControlled: true,
+                                            builder: (context) =>
+                                                FoodMenuAddress(request: req),
+                                          );
                                           if (result != true) {
                                             return;
                                           }
@@ -418,8 +434,13 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                         (double?, double?) pos =
                                             await Constant.i.position;
 
-                                        bool isCurrentLocation =
-                                            !PreferenceUtils.isManualLocation;
+                                        Map<String, dynamic> extAddress =
+                                            PreferenceUtils.getMenuAddress();
+
+                                        double? lat =
+                                            pos.$1 ?? widget.address?.latitude;
+                                        double? lng =
+                                            pos.$1 ?? widget.address?.longitude;
 
                                         groceryBloc.add(
                                           CreateOrderEvent(
@@ -432,33 +453,38 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                               groceryItems: data,
                                               userAddress:
                                                   o_address.UserAddress(
-                                                latitude: pos.$1 ??
-                                                    widget.address?.latitude,
-                                                longitude: pos.$2 ??
-                                                    widget.address?.longitude,
-                                                streetName: isCurrentLocation
-                                                    ? streetDetailsController
-                                                        .text
-                                                    : widget
-                                                        .address?.streetName,
-                                                streetNum: isCurrentLocation
-                                                    ? apartmentNumberController
-                                                        .text
-                                                    : widget.address?.streetNum,
-                                                city: isCurrentLocation
-                                                    ? city.text
-                                                    : widget.address?.city,
+                                                latitude: lat,
+                                                longitude: lng,
+                                                streetName: extAddress[
+                                                    'user_street_name'],
+                                                streetNum: extAddress[
+                                                    'user_street_num'],
+                                                city: extAddress['user_city'],
                                                 country:
-                                                    widget.address?.country,
-                                                state: widget.address?.state,
-                                                zipcode: isCurrentLocation
-                                                    ? zipCodeController.text
-                                                    : widget.address?.zipcode,
+                                                    extAddress['user_country'],
+                                                state: extAddress['user_state'],
+                                                zipcode:
+                                                    extAddress['user_zipcode'],
                                               ),
                                               userPhone: 1234567890,
                                               driverTipCents: 0,
                                               pickupTipCents: 0,
                                               userDropoffNotes: notes.text,
+                                              extendedAddress: {
+                                                "latitude": lat,
+                                                "longitude": lng,
+                                                "street_Num": extAddress[
+                                                    "user_street_num"],
+                                                "street_Name": extAddress[
+                                                    "user_street_name"],
+                                                "city": extAddress["user_city"],
+                                                "state":
+                                                    extAddress["user_state"],
+                                                "country":
+                                                    extAddress["user_country"],
+                                                "zipcode":
+                                                    extAddress["user_zipcode"],
+                                              },
                                             ),
                                           ),
                                         );
