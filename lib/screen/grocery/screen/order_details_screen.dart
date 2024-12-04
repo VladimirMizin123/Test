@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/grocery/screen/grocery_bg.dart';
@@ -14,6 +16,7 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_order_details.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:livechatt/livechatt.dart';
 
 class GroceryOrderDetailsScreen extends StatefulWidget {
   const GroceryOrderDetailsScreen({super.key, required this.mealMeOrderId});
@@ -275,7 +278,20 @@ class _GroceryOrderDetailsScreenState extends State<GroceryOrderDetailsScreen> {
                       buildButton(
                               context: context,
                               bgColor: AppColors.primaryBlue,
-                              onPressed: () {},
+                              onPressed: () {
+                                Livechat.beginChat(
+                                  Constant.i.chatId,
+                                  visitorEmail:
+                                      PreferenceUtils.getString(prefUserEmail),
+                                  visitorName:
+                                      PreferenceUtils.getString(prefUserName),
+                                  customParams: <String, String>{
+                                    'org':
+                                        PreferenceUtils.getString(prefUserName),
+                                    'position': 'user'
+                                  },
+                                );
+                              },
                               textColor: AppColors.skyBlue,
                               title: 'Support')
                           .paddingOnly(

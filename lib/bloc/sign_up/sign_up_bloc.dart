@@ -42,6 +42,7 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
             userId: right.data?.userId,
           );
           await PreferenceUtils.setString(prefUserEmail, event.email.trim());
+          await PreferenceUtils.setString(prefUserName, event.userName);
           emit(InitialState());
           await Get.toNamed('/GoogleMapScreen',
               arguments: {"string": 'isFromRegister', "userData": userData});

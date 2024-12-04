@@ -3,6 +3,7 @@ PODS:
     - Flutter
   - app_settings (5.1.1):
     - Flutter
+  - BugfenderSDK (2.0.0)
   - camera_avfoundation (0.0.1):
     - Flutter
   - Firebase/Analytics (10.18.0):
@@ -100,6 +101,9 @@ PODS:
     - PromisesSwift (~> 2.1)
   - Flutter (1.0.0)
   - flutter_barcode_scanner (2.0.0):
+    - Flutter
+  - flutter_bugfender (2.0.0):
+    - BugfenderSDK (~> 2.0)
     - Flutter
   - fluttertoast (0.0.2):
     - Flutter
@@ -262,6 +266,11 @@ PODS:
   - RecaptchaInterop (100.0.0)
   - screen_brightness_ios (0.1.0):
     - Flutter
+  - Sentry/HybridSDK (8.40.1)
+  - sentry_flutter (8.10.1):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.40.1)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -294,6 +303,7 @@ DEPENDENCIES:
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - Flutter (from `Flutter`)
   - flutter_barcode_scanner (from `.symlinks/plugins/flutter_barcode_scanner/ios`)
+  - flutter_bugfender (from `.symlinks/plugins/flutter_bugfender/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
@@ -312,6 +322,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - screen_brightness_ios (from `.symlinks/plugins/screen_brightness_ios/ios`)
+  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -323,6 +334,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - BugfenderSDK
     - Firebase
     - FirebaseAnalytics
     - FirebaseAppCheckInterop
@@ -354,6 +366,7 @@ SPEC REPOS:
     - PromisesObjC
     - PromisesSwift
     - RecaptchaInterop
+    - Sentry
     - Toast
     - TOCropViewController
 
@@ -378,6 +391,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_barcode_scanner:
     :path: ".symlinks/plugins/flutter_barcode_scanner/ios"
+  flutter_bugfender:
+    :path: ".symlinks/plugins/flutter_bugfender/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   geolocator_apple:
@@ -414,6 +429,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
   screen_brightness_ios:
     :path: ".symlinks/plugins/screen_brightness_ios/ios"
+  sentry_flutter:
+    :path: ".symlinks/plugins/sentry_flutter/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sign_in_with_apple:
@@ -434,6 +451,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_links: 5ef33d0d295a89d9d16bb81b0e3b0d5f70d6c875
   app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
+  BugfenderSDK: 290a6c6163c2212c819e63c49d192c8625046602
   camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
   firebase_analytics: b3d6dd14c61549a29abb10e9843446a4d8bb53eb
@@ -453,7 +471,8 @@ SPEC CHECKSUMS:
   FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_barcode_scanner: 7a1144744c28dc0c57a8de7218ffe5ec59a9e4bf
-  fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
+  flutter_bugfender: fe840a7f37a3515f75df98b3693a9f90e67bf868
+  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   google_maps_flutter_ios: abdac20d6ce8931f6ebc5f46616df241bfaa2cfd
@@ -468,7 +487,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   image_cropper: a3291c624a953049bc6a02e1f8c8ceb162a24b25
-  image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
+  image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   in_app_purchase_storekit: 9e9931234f0adcf71ae323f8c83785b96030edf1
   LiveChat: 63028afb59c57ae6771d59838b1097def6e560ed
   livechatt: 1069cacc03bb67f5a230fbb11edcebe006f23ac7
@@ -491,6 +510,8 @@ SPEC CHECKSUMS:
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
+  Sentry: e9215d7b17f7902692b4f8700e061e4f853e3521
+  sentry_flutter: 927eed60d66951d1b0f1db37fe94ff5cb7c80231
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
@@ -504,4 +525,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 2de2b759a858f81887e57f2e6ccf526c53efa4fc
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

@@ -17,6 +17,7 @@ const String prefIsLogin = 'isLogin';
 const String prefIsConfirmEmail = 'isConfirmEmail';
 const String prefUserData = 'userData';
 const String prefUserEmail = 'userEmail';
+const String prefUserName = 'prefUserName';
 const String prefUserMobile = 'userPhone';
 const String prefToken = 'token';
 const String latitude = 'latitude';

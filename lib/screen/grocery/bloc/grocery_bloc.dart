@@ -6,11 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/models/available_store_model.dart';
-import 'package:gymeats_mobile/models/check_store_model.dart';
 import 'package:gymeats_mobile/models/error_model.dart';
-import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_event.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_repository.dart';
 import 'package:gymeats_mobile/screen/grocery/bloc/grocery_state.dart';
@@ -23,7 +22,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
+import 'package:gymeats_mobile/widget/food_menu_address.dart';
 
 class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   GroceryBloc() : super(InitialState()) {
@@ -51,7 +50,6 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   }
 
   final GroceryRepository _repository = GroceryRepository();
-  final RestaurantRepository _resRepo = RestaurantRepository();
 
   _onGroceryProductList(
       GroceryProductListEvent event, Emitter<GroceryState> emit) async {
@@ -243,63 +241,77 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
 
   _onStoreVerify(StoreVerifyEvent event, Emitter<GroceryState> emit) async {
     try {
+      Map<String, dynamic> req = PreferenceUtils.getMenuAddress();
+      final value =
+          Constant.i.requiredAddressField.every((e) => req.containsKey(e));
+
+      if (!value) {
+        dynamic result = await showModalBottomSheet(
+          context: event.context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+          ),
+          isScrollControlled: true,
+          builder: (context) => FoodMenuAddress(request: req),
+        );
+        if (result != true) {
+          return;
+        }
+      }
+
       emit(VerifyLoader(id: event.id));
 
       DateTime time = DateTime.now();
 
       (double?, double?) pos = await Constant.i.position;
 
-      List<Either<ErrorModel, Object>> resList = await Future.wait(
-        [
-          _repository.getStoreCategorieList(event.getUserAddress,
-              event.askReceiveOrder?.index, event.id ?? "",
-              position: pos),
-          _resRepo.checkAvailableStore(
-            storeType: 'grocery',
-            latitude: event.getUserAddress?.latitude.toString(),
-            longitude: event.getUserAddress?.longitude.toString(),
-            pickup: event.askReceiveOrder?.index == 1,
-            storeId: event.id ?? "",
-            position: pos,
-          )
-        ],
-      );
-
       log("Take Time : ${DateTime.now().difference(time).inSeconds}.${DateTime.now().difference(time).inMilliseconds % 1000}");
 
       Either<ErrorModel, CategorieModel> categoriesRes =
-          resList[0] as Either<ErrorModel, CategorieModel>;
-      Either<ErrorModel, CheckStoreModel> response =
-          resList[1] as Either<ErrorModel, CheckStoreModel>;
+          await _repository.getStoreCategorieList(event.getUserAddress,
+              event.askReceiveOrder?.index, event.id ?? "",
+              position: pos);
 
-      if (response.isLeft) {
-        if (response.left.errorMessage != null) {
+      emit(VerifyLoader(id: null));
+      if (event.id != prevId) {
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (event.id != prevId) {
+        return;
+      }
+
+      if (categoriesRes.isLeft) {
+        if (categoriesRes.left.errorMessage != null) {
           showToast(
-              isSuccess: false, message: response.right.errorMessage ?? "");
+              isSuccess: false, message: categoriesRes.left.errorMessage ?? "");
         } else {
-          showToast(isSuccess: false, message: "Store not available");
+          showToast(isSuccess: false, message: StringUtils.storeNotAvailable);
         }
         event.notVerify?.call();
       } else {
-        if ((response.right.success ?? false) &&
-            (response.right.data?.quote?.asapAvailable ?? false)) {
+        if (categoriesRes.isRight && (categoriesRes.right.success ?? false)) {
           event.onVerify
               ?.call(categoriesRes.isRight ? categoriesRes.right : null);
         } else {
-          if (response.right.errorMessage != null) {
+          if (categoriesRes.right.errorMessage != null) {
             showToast(
-                isSuccess: false, message: response.right.errorMessage ?? "");
+                isSuccess: false,
+                message: categoriesRes.right.errorMessage ?? "");
           } else {
-            showToast(isSuccess: false, message: "Store not available");
+            showToast(isSuccess: false, message: StringUtils.storeNotAvailable);
           }
           event.notVerify?.call();
         }
       }
-
-      emit(VerifyLoader(id: null));
     } catch (e) {
       emit(VerifyLoader(id: null));
-      showToast(isSuccess: false, message: "Store not available");
+      if (event.id == prevId) {
+        showToast(isSuccess: false, message: StringUtils.storeNotAvailable);
+      }
     }
   }
 
@@ -334,6 +346,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   }
 
   String? prevName;
+  String? prevId;
 
   _onGetStoreByName(StoreByNameEvent event, Emitter<GroceryState> emit) async {
     emit(GrocerySearchLoadingState());
@@ -445,32 +458,7 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
       await _repository
           .createOrder(createOrderModel: event.createGroceryOrderModel)
           .fold((left) async {
-        if (left.statusCode != 500) {
-          showToast(isSuccess: false, message: left.errorMessage ?? "");
-        }
-
-        if (left.statusCode == 500) {
-          dynamic result = await showModalBottomSheet(
-            context: event.context!,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            isScrollControlled: true,
-            builder: (context) => const ExtendedAddress(),
-          );
-          if (result != null) {
-            Map req = result as Map;
-            add(
-              CreateOrderEvent(
-                  createGroceryOrderModel: event.createGroceryOrderModel
-                    ..extendedAddress = req["extendedAddress"]),
-            );
-          }
-        }
-
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
         emit(CreateOrderErrorState());
       }, (right) async {
         if (event.onSuccess != null) {

@@ -185,6 +185,9 @@ class AccountRepository {
         await apiServices.post('${ApiUrls.updateProfileDetails}$userID', data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      await PreferenceUtils.setString(
+          prefUserName, [firstName, lastName].join(" "));
+
       return Right(updateProfileDetailsResponseModelFromJson(response.body));
     } else if (response.statusCode == 400) {
       return Right(updateProfileDetailsResponseModelFromJson(response.body));

@@ -99,6 +99,7 @@ class StoreVerifyEvent extends GroceryEvent {
   final user_address.UserAddress? getUserAddress;
   final AskReceiveOrder? askReceiveOrder;
   final Function(CategorieModel? categories)? onVerify;
+  final BuildContext context;
   final Function()? notVerify;
 
   StoreVerifyEvent({
@@ -106,6 +107,7 @@ class StoreVerifyEvent extends GroceryEvent {
     required this.getUserAddress,
     this.askReceiveOrder,
     this.onVerify,
+    required this.context,
     this.notVerify,
   });
 }
@@ -153,12 +155,16 @@ class CreateOrderEvent extends GroceryEvent {
   final BuildContext? context;
   final CreateGroceryOrderModel createGroceryOrderModel;
   final List<GroceryDetails>? orderId;
+  final dynamic lat;
+  final dynamic lng;
   final Function(CreateOrderData?)? onSuccess;
 
   CreateOrderEvent({
     this.context,
     required this.createGroceryOrderModel,
     this.orderId,
+    this.lat,
+    this.lng,
     this.onSuccess,
   });
 }

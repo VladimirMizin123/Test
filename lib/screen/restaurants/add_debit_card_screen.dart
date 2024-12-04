@@ -41,237 +41,244 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Center(
-                          child: Image.asset(
-                            AssetsUtils.gymEatsSpoon,
-                            height: 22.h,
-                            width: 56.w,
-                            color: AppColors.terracotta,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 5,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Get.back();
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back_ios,
+                          Center(
+                            child: Image.asset(
+                              AssetsUtils.gymEatsSpoon,
+                              height: 22.h,
+                              width: 56.w,
+                              color: AppColors.terracotta,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => Get.back(),
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                  ),
                                 ),
-                              ),
-                              const Text(
-                                'Add Card',
+                                const Text(
+                                  'Add Card',
+                                  style: TextStyle(
+                                    color: Color(0xFF010101),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 24,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(width: 30)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 4.h, top: 10.h),
+                            child: Text('Name',
                                 style: TextStyle(
-                                  color: Color(0xFF010101),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 24,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(
-                                width: 30,
-                              )
-                            ],
+                                    color: const Color(0xff373737),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w300)),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 4.h, top: 10.h),
-                          child: Text('Name',
-                              style: TextStyle(
-                                  color: const Color(0xff373737),
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w300)),
-                        ),
-                        commonTextField(
-                          label: 'Please Enter Name',
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please Enter Name';
-                            } else {
-                              return null;
-                            }
-                          },
-                          controller: cardName,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 4.h, top: 10.h),
-                          child: Text('Card number',
-                              style: TextStyle(
-                                  color: const Color(0xff373737),
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w300)),
-                        ),
-                        commonTextField(
-                            label: 'Please Card number',
+                          commonTextField(
+                            label: 'Please Enter Name',
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Please Card number';
+                                return 'Please Enter Name';
                               } else {
                                 return null;
                               }
                             },
-                            controller: cardNumber,
-                            maxLength: 16,
-                            keyboardType: TextInputType.number,
-                            suffixIcon: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 13),
-                              child: GestureDetector(
-                                onTap: () async {
-                                  await Get.to(() => const CreditCard())!
-                                      .then((value) {
-                                    setState(() {
-                                      _cardInfo = value;
+                            controller: cardName,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 4.h, top: 10.h),
+                            child: Text('Card number',
+                                style: TextStyle(
+                                    color: const Color(0xff373737),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w300)),
+                          ),
+                          commonTextField(
+                              label: 'Please Card number',
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please Card number';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              controller: cardNumber,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(16),
+                                CardNumberFormatter(),
+                              ],
+                              suffixIcon: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 13),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await Get.to(() => const CreditCard())!
+                                        .then((value) {
+                                      setState(() {
+                                        _cardInfo = value;
 
-                                      cardNumber.text = _cardInfo!.number;
+                                        cardNumber.text = _cardInfo!.number;
+                                      });
                                     });
-                                  });
-                                },
-                                child: Image.asset(
-                                  AssetsUtils.scanner,
-                                  height: 10.h,
-                                  width: 10.w,
-                                  color: AppColors.darkGray,
+                                  },
+                                  child: Image.asset(
+                                    AssetsUtils.scanner,
+                                    height: 10.h,
+                                    width: 10.w,
+                                    color: AppColors.darkGray,
+                                  ),
+                                ),
+                              )),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 4.h, top: 10.h),
+                                      child: Text('Valid until',
+                                          style: TextStyle(
+                                              color: const Color(0xff373737),
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w300)),
+                                    ),
+                                    commonTextField(
+                                      label: 'MM/YYYY',
+                                      controller: controller,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please Enter Month/Month';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      onChanged: (value) {},
+                                      maxLength: 6,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9]'))
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                            )),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(bottom: 4.h, top: 10.h),
-                                    child: Text('Valid until',
-                                        style: TextStyle(
-                                            color: const Color(0xff373737),
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w300)),
-                                  ),
-                                  commonTextField(
-                                    label: 'MM/YYYY',
-                                    controller: controller,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Please Enter Month/Month';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    onChanged: (value) {},
-                                    maxLength: 6,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[0-9]'))
-                                    ],
-                                  ),
-                                ],
+                              SizedBox(
+                                width: 8.w,
                               ),
-                            ),
-                            SizedBox(
-                              width: 8.w,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(bottom: 4.h, top: 10.h),
-                                    child: Text('CVV',
-                                        style: TextStyle(
-                                            color: const Color(0xff373737),
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w300)),
-                                  ),
-                                  commonTextField(
-                                    label: '***',
-                                    keyboardType: TextInputType.number,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Please Enter CVV Number';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    maxLength: 3,
-                                    controller: cvvNumber,
-                                    suffixIcon: const Icon(
-                                      Icons.info_outline,
-                                      color: AppColors.darkGray,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 4.h, top: 10.h),
+                                      child: Text('CVV',
+                                          style: TextStyle(
+                                              color: const Color(0xff373737),
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w300)),
                                     ),
-                                  ),
-                                ],
+                                    commonTextField(
+                                      label: '***',
+                                      keyboardType: TextInputType.number,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please Enter CVV Number';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      maxLength: 3,
+                                      controller: cvvNumber,
+                                      suffixIcon: const Icon(
+                                        Icons.info_outline,
+                                        color: AppColors.darkGray,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    if (!formKey.currentState!.validate()) {
-                      return;
-                    }
+                  GestureDetector(
+                    onTap: () async {
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
 
-                    Map<String, dynamic> data1 = {
-                      'name': cardName.text,
-                      'number': cardNumber.text,
-                      'valid': controller.text,
-                      'cvv': cvvNumber.text,
-                    };
+                      Map<String, dynamic> data1 = {
+                        'name': cardName.text,
+                        'number': cardNumber.text.replaceAll(" ", ""),
+                        'valid': controller.text,
+                        'cvv': cvvNumber.text,
+                      };
 
-                    Get.back(result: data1);
-                  },
-                  child: Container(
-                    height: 45.h,
-                    margin: EdgeInsets.only(bottom: 40.h),
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.r),
-                      color: const Color(0xffCE6B53),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Avenir',
+                      Get.back(result: data1);
+                    },
+                    child: Container(
+                      height: 45.h,
+                      margin: EdgeInsets.only(bottom: 40.h),
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: const Color(0xffCE6B53),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Avenir',
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -336,6 +343,37 @@ class _AddDebitCardScreenState extends State<AddDebitCardScreen> {
           ),
         ),
         suffixIcon: suffixIcon,
+      ),
+    );
+  }
+}
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var inputText = newValue.text;
+
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    var bufferString = StringBuffer();
+    for (int i = 0; i < inputText.length; i++) {
+      bufferString.write(inputText[i]);
+      var nonZeroIndexValue = i + 1;
+      if (nonZeroIndexValue % 4 == 0 && nonZeroIndexValue != inputText.length) {
+        bufferString.write(' ');
+      }
+    }
+
+    var string = bufferString.toString();
+    return newValue.copyWith(
+      text: string,
+      selection: TextSelection.collapsed(
+        offset: string.length,
       ),
     );
   }

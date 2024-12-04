@@ -89,6 +89,9 @@ class UserSignUpInfoBloc
         await PreferenceUtils.setString(
             prefUserEmail, event.model.email?.trim() ?? "");
         await PreferenceUtils.setString(
+            prefUserName, event.model.userName?.trim() ?? "");
+
+        await PreferenceUtils.setString(
             prefUserMobile, event.model.phoneNumber?.trim() ?? "");
 
         event.onComplete?.call();

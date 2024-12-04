@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
@@ -58,7 +59,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
 
 class _RestaurantMenuDetailsScreenState
     extends State<RestaurantMenuDetailsScreen> {
-  int item = 0;
+  int item = 1;
   dynamic price = 0;
   int cartCount = 0;
   bool selectFirst = false;
@@ -98,7 +99,7 @@ class _RestaurantMenuDetailsScreenState
         selectedOption.add(element.optionId);
       }
     }
-    item = widget.data.cartQuantity!;
+    item = widget.data.cartQuantity != 0 ? widget.data.cartQuantity ?? 1 : 1;
   }
 
   void _handleCustomization() {
@@ -147,12 +148,12 @@ class _RestaurantMenuDetailsScreenState
                           })
                       .toList() ??
                   [];
-              item = data.quantity ?? 0;
+              item = data.quantity ?? 1;
               cartCount = state.shoppingList.length;
             } else {
               routingList.clear();
               alreadyInCart = false;
-              item = 0;
+              item = 1;
               cartCount = 0;
               nestedOptionList.clear();
             }
@@ -218,7 +219,7 @@ class _RestaurantMenuDetailsScreenState
                                 children: [
                                   const SizedBox(height: 8),
                                   Text(
-                                    widget.data.name!,
+                                    widget.data.name ?? "",
                                     style: FontUtils.h24(
                                       fontColor: Colors.black,
                                       fontWeight: FWT.medium,
@@ -228,7 +229,7 @@ class _RestaurantMenuDetailsScreenState
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 2),
                                     child: Text(
-                                      widget.data.formattedPrice!,
+                                      widget.data.formattedPrice ?? "",
                                       style: FontUtils.h18(
                                         fontColor: Colors.black,
                                         fontWeight: FWT.medium,
@@ -390,6 +391,18 @@ class _RestaurantMenuDetailsScreenState
                                           ],
                                         ),
                                       ),
+                                      if (alreadyInCart) ...[
+                                        TextButton(
+                                          onPressed: () => Get.back(),
+                                          child: Text(
+                                            "Back to Menu",
+                                            style: FontUtils.h18(
+                                              fontColor: AppColors.black,
+                                              fontWeight: FWT.medium,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                       isAdding == true
                                           ? const Center(
                                               child:
@@ -426,6 +439,7 @@ class _RestaurantMenuDetailsScreenState
                                           color: AppColors.terracotta,
                                         ),
                                       ),
+                                      const SizedBox(height: 25),
                                     ],
                                   ),
                                 ],
@@ -640,6 +654,16 @@ class _RestaurantMenuDetailsScreenState
             isSelected) {
           routingList.add(option);
           _animateToTop();
+        } else {
+          if (!alreadyInCart) {
+            onTileTap(cs, option, parent: parent, setRouting: setRouting);
+          } else {
+            showToast(
+              isSuccess: false,
+              color: AppColors.black,
+              message: StringUtils.productAlreadyInCart,
+            );
+          }
         }
       },
       child: Row(
@@ -651,10 +675,10 @@ class _RestaurantMenuDetailsScreenState
                 onTileTap(cs, option, parent: parent, setRouting: setRouting);
               } else {
                 showToast(
-                    isSuccess: false,
-                    color: AppColors.black,
-                    message:
-                        "This product is already in the cart and cannot be modified.");
+                  isSuccess: false,
+                  color: AppColors.black,
+                  message: StringUtils.productAlreadyInCart,
+                );
               }
             },
             child: Image.asset(

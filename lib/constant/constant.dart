@@ -38,6 +38,8 @@ class Constant {
 
   Constant._();
 
+  String get chatId => "17386518";
+
   Future<(double?, double?)> get position async {
     try {
       if (PreferenceUtils.isManualLocation) {
@@ -169,5 +171,79 @@ class Constant {
       PreferenceUtils.setDouble(currentLat, pos.latitude);
       PreferenceUtils.setDouble(currentLat, pos.longitude);
     }
+  }
+
+  deleteAlertDialog({
+    required String title,
+    required String desc,
+    String? desc2,
+    required Function onTap,
+    required bool buttonLoader,
+  }) {
+    return AlertDialog(
+      scrollable: true,
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 17,
+          fontFamily: 'Avenir',
+        ),
+      ),
+      contentPadding: const EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 10,
+        bottom: 0,
+      ),
+      content: Column(
+        children: [
+          Text(
+            desc,
+            style: const TextStyle(
+              fontSize: 15,
+            ),
+          ),
+          if (desc2 != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                desc2,
+                style: const TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+            )
+        ],
+      ),
+      actionsPadding: const EdgeInsets.all(0.0),
+      buttonPadding: const EdgeInsets.all(0.0),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(
+                StringUtils.cancel.toUpperCase(),
+              ),
+            ),
+            TextButton(
+              onPressed: () => onTap.call(),
+              child: buttonLoader
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Text(
+                      "ok".toUpperCase(),
+                    ),
+            ),
+          ],
+        )
+      ],
+    );
   }
 }

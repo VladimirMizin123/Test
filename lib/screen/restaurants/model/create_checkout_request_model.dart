@@ -8,6 +8,7 @@ class CreateCheckOutRequestModel {
   int? phoneNumber;
   int? totalPrice;
   bool? isPickUp;
+  String? cardId;
   UserCardDetails? userCardDetails;
 
   CreateCheckOutRequestModel(
@@ -18,7 +19,8 @@ class CreateCheckOutRequestModel {
       this.phoneNumber,
       this.totalPrice,
       this.isPickUp,
-      this.userCardDetails});
+      this.userCardDetails,
+      this.cardId});
 
   CreateCheckOutRequestModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -33,6 +35,7 @@ class CreateCheckOutRequestModel {
     phoneNumber = json['phoneNumber'];
     totalPrice = json['totalPrice'];
     isPickUp = json['isPickUp'] ?? false;
+    cardId = json["cardId"];
     userCardDetails = json['userCardDetails'] != null
         ? UserCardDetails.fromJson(json['userCardDetails'])
         : null;
@@ -51,6 +54,9 @@ class CreateCheckOutRequestModel {
     data['isPickUp'] = isPickUp;
     if (userCardDetails != null) {
       data['userCardDetails'] = userCardDetails!.toJson();
+    }
+    if (cardId != null) {
+      data['cardId'] = cardId;
     }
     return data;
   }

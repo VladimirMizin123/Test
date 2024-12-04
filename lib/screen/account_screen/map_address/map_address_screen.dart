@@ -580,6 +580,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 title: "Street Number",
                                 textEditingController:
                                     apartmentNumberController,
+                                validator: (p0) {
+                                  if (p0?.trim().isEmpty ?? true) {
+                                    return 'Please Enter Street Number';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
                               mapDetailWidget(
                                 title: "Extended Address",
@@ -592,6 +599,13 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 inputFormatters: [
                                   s.LengthLimitingTextInputFormatter(2),
                                 ],
+                                validator: (p0) {
+                                  if (p0?.trim().isEmpty ?? true) {
+                                    return 'Please Enter Country Name';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
                               mapDetailWidget(
                                 title: "State",
@@ -600,14 +614,35 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                                 inputFormatters: [
                                   s.LengthLimitingTextInputFormatter(2),
                                 ],
+                                validator: (p0) {
+                                  if (p0?.trim().isEmpty ?? true) {
+                                    return 'Please Enter State Name';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
                               mapDetailWidget(
                                 title: "City",
                                 textEditingController: cityField,
+                                validator: (p0) {
+                                  if (p0?.trim().isEmpty ?? true) {
+                                    return 'Please Enter City Name';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
                               mapDetailWidget(
                                 title: "Zip",
                                 textEditingController: zipCodeController,
+                                validator: (p0) {
+                                  if (p0?.trim().isEmpty ?? true) {
+                                    return 'Please Enter ZipCode';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
                             ],
                           ).paddingOnly(left: 22.w, right: 22.w, top: 8.h),

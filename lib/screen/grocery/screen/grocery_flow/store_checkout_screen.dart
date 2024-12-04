@@ -294,207 +294,189 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                             },
                           ),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: boxShadowWidget,
-                            color: AppColors.whiteColor,
-                          ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 10.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (!orderLoader) ...[
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 16.h),
-                                  child: Text(
-                                    ' Order Notes',
-                                    style: FontUtils.h18(
-                                      fontColor: const Color(0xff000000),
-                                      fontWeight: FWT.semiBold,
+                        if (cartMenuList.isNotEmpty)
+                          Container(
+                            decoration: BoxDecoration(
+                              boxShadow: boxShadowWidget,
+                              color: AppColors.whiteColor,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 10.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (!orderLoader) ...[
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 16.h),
+                                    child: Text(
+                                      ' Order Notes',
+                                      style: FontUtils.h18(
+                                        fontColor: const Color(0xff000000),
+                                        fontWeight: FWT.semiBold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xff004C63)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 16,
-                                      )
-                                    ],
-                                  ),
-                                  child: TextFormField(
-                                    style: const TextStyle(color: Colors.black),
-                                    controller: notes,
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      contentPadding: const EdgeInsets.all(0),
-                                      hintText: 'Add order Notes.....',
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 0),
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff004C63)
+                                              .withOpacity(0.08),
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 16,
+                                        )
+                                      ],
                                     ),
-                                  ),
-                                ),
-                              ],
-                              12.height,
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Total",
-                                    style: FontUtils.h18(
-                                      fontColor: AppColors.darkGray,
-                                      fontWeight: FWT.semiBold,
-                                    ),
-                                  ),
-                                  Text(
-                                    '\$ ${price / 100}',
-                                    style: FontUtils.h22(
-                                      fontColor: AppColors.darkGray,
-                                      fontWeight: FWT.semiBold,
+                                    child: TextFormField(
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                      controller: notes,
+                                      decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: const EdgeInsets.all(0),
+                                        hintText: 'Add order Notes.....',
+                                      ),
                                     ),
                                   ),
                                 ],
-                              ),
-                              10.height,
-                              orderLoader == true
-                                  ? const Center(
-                                      child: CircularProgressIndicator(),
-                                    ).paddingOnly(
-                                      left: 20, right: 20, bottom: 20)
-                                  : simpleTextBorderButton(
-                                      width: context.width,
-                                      height: 48,
-                                      context: context,
-                                      color: AppColors.green,
-                                      buttonLable: StringUtils.checkout,
-                                      isLoadingWidget: false,
-                                      onTap: () async {
-                                        Map<String, dynamic> req =
-                                            PreferenceUtils.getMenuAddress();
-                                        final value = Constant
-                                            .i.requiredAddressField
-                                            .every((e) => req.containsKey(e));
-                                        if (!value) {
-                                          dynamic result =
-                                              await showModalBottomSheet(
-                                            context: context,
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10),
+                                12.height,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Total",
+                                      style: FontUtils.h18(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.semiBold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '\$ ${price / 100}',
+                                      style: FontUtils.h22(
+                                        fontColor: AppColors.darkGray,
+                                        fontWeight: FWT.semiBold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                10.height,
+                                orderLoader == true
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      ).paddingOnly(
+                                        left: 20, right: 20, bottom: 20)
+                                    : simpleTextBorderButton(
+                                        width: context.width,
+                                        height: 48,
+                                        context: context,
+                                        color: AppColors.green,
+                                        buttonLable: StringUtils.checkout,
+                                        isLoadingWidget: false,
+                                        onTap: () async {
+                                          Map<String, dynamic> req =
+                                              PreferenceUtils.getMenuAddress();
+                                          final value = Constant
+                                              .i.requiredAddressField
+                                              .every((e) => req.containsKey(e));
+                                          if (!value) {
+                                            dynamic result =
+                                                await showModalBottomSheet(
+                                              context: context,
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(10),
+                                                  topRight: Radius.circular(10),
+                                                ),
                                               ),
-                                            ),
-                                            isScrollControlled: true,
-                                            builder: (context) =>
-                                                FoodMenuAddress(request: req),
-                                          );
-                                          if (result != true) {
+                                              isScrollControlled: true,
+                                              builder: (context) =>
+                                                  FoodMenuAddress(request: req),
+                                            );
+                                            if (result != true) {
+                                              return;
+                                            }
+                                          }
+                                          List<CreateOrderGroceryItems> data =
+                                              [];
+                                          for (var element in cartMenuList) {
+                                            data.add(
+                                              CreateOrderGroceryItems(
+                                                productId: element.productId,
+                                                productType: 2,
+                                                quantity: element.cartQuantity,
+                                                notes: element.name,
+                                                productMarkedPrice:
+                                                    element.originalPrice,
+                                                selectedOptions:
+                                                    element.selectedOptions ??
+                                                        [],
+                                              ),
+                                            );
+                                          }
+
+                                          if (data.isEmpty) {
                                             return;
                                           }
-                                        }
-                                        List<CreateOrderGroceryItems> data = [];
-                                        for (var element in cartMenuList) {
-                                          data.add(
-                                            CreateOrderGroceryItems(
-                                              productId: element.productId,
-                                              productType: 2,
-                                              quantity: element.cartQuantity,
-                                              notes: element.name,
-                                              productMarkedPrice:
-                                                  element.originalPrice,
-                                              selectedOptions:
-                                                  element.selectedOptions ?? [],
+
+                                          (double?, double?) pos =
+                                              await Constant.i.position;
+
+                                          double? lat = pos.$1 ??
+                                              widget.address?.latitude;
+                                          double? lng = pos.$2 ??
+                                              widget.address?.longitude;
+
+                                          groceryBloc.add(
+                                            CreateOrderEvent(
+                                              context: context,
+                                              lat: lat,
+                                              lng: lng,
+                                              createGroceryOrderModel:
+                                                  CreateGroceryOrderModel(
+                                                userId: userId,
+                                                pickup: widget.askOrder ==
+                                                    AskReceiveOrder.pickMySelf,
+                                                groceryItems: data,
+                                                userAddress:
+                                                    o_address.UserAddress(
+                                                  latitude: lat,
+                                                  longitude: lng,
+                                                ),
+                                                userPhone: 1234567890,
+                                                driverTipCents: 0,
+                                                pickupTipCents: 0,
+                                                userDropoffNotes: notes.text,
+                                              ),
                                             ),
                                           );
-                                        }
-
-                                        if (data.isEmpty) {
-                                          return;
-                                        }
-
-                                        (double?, double?) pos =
-                                            await Constant.i.position;
-
-                                        Map<String, dynamic> extAddress =
-                                            PreferenceUtils.getMenuAddress();
-
-                                        double? lat =
-                                            pos.$1 ?? widget.address?.latitude;
-                                        double? lng =
-                                            pos.$1 ?? widget.address?.longitude;
-
-                                        groceryBloc.add(
-                                          CreateOrderEvent(
-                                            context: context,
-                                            createGroceryOrderModel:
-                                                CreateGroceryOrderModel(
-                                              userId: userId,
-                                              pickup: widget.askOrder ==
-                                                  AskReceiveOrder.pickMySelf,
-                                              groceryItems: data,
-                                              userAddress:
-                                                  o_address.UserAddress(
-                                                latitude: lat,
-                                                longitude: lng,
-                                                streetName: extAddress[
-                                                    'user_street_name'],
-                                                streetNum: extAddress[
-                                                    'user_street_num'],
-                                                city: extAddress['user_city'],
-                                                country:
-                                                    extAddress['user_country'],
-                                                state: extAddress['user_state'],
-                                                zipcode:
-                                                    extAddress['user_zipcode'],
-                                              ),
-                                              userPhone: 1234567890,
-                                              driverTipCents: 0,
-                                              pickupTipCents: 0,
-                                              userDropoffNotes: notes.text,
-                                              extendedAddress: {
-                                                "latitude": lat,
-                                                "longitude": lng,
-                                                "street_Num": extAddress[
-                                                    "user_street_num"],
-                                                "street_Name": extAddress[
-                                                    "user_street_name"],
-                                                "city": extAddress["user_city"],
-                                                "state":
-                                                    extAddress["user_state"],
-                                                "country":
-                                                    extAddress["user_country"],
-                                                "zipcode":
-                                                    extAddress["user_zipcode"],
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      isDarkColor: true,
-                                      isFillColor: true,
-                                    ),
-                            ],
-                          ),
-                        )
+                                        },
+                                        isDarkColor: true,
+                                        isFillColor: true,
+                                      ),
+                              ],
+                            ),
+                          )
                       ],
                     ),
                   ),

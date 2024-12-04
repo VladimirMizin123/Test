@@ -1419,7 +1419,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                               children: [
                                                                                 Center(
                                                                                   child: Text(
-                                                                                    categoryDataList[index]["title"],
+                                                                                    categoryDataList[index]["title"] ?? "",
                                                                                     // cousinesList!
                                                                                     //     .cousines![index],
                                                                                     style: FontUtils.h18(
@@ -1560,7 +1560,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                                     padding: const EdgeInsets.symmetric(horizontal: 4),
                                                                                                     child: Center(
                                                                                                       child: Text(
-                                                                                                        searchRestaurantList.elementAt(index).weightedRatingValue!.toStringAsFixed(1),
+                                                                                                        searchRestaurantList.elementAt(index).weightedRatingValue?.toStringAsFixed(1) ?? "",
                                                                                                         style: FontUtils.h16(
                                                                                                           fontColor: Colors.black,
                                                                                                           fontWeight: FWT.regular,
@@ -1609,7 +1609,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                         ),
                                                                                         child: Center(
                                                                                           child: Text(
-                                                                                            searchRestaurantList.elementAt(index).cuisines!.isEmpty || searchRestaurantList.elementAt(index).cuisines == [] ? '' : searchRestaurantList.elementAt(index).cuisines![0],
+                                                                                            (searchRestaurantList.elementAt(index).cuisines?.isEmpty ?? true) || searchRestaurantList.elementAt(index).cuisines == [] ? '' : (searchRestaurantList.elementAt(index).cuisines?[0] ?? ""),
                                                                                             style: FontUtils.h14(
                                                                                               fontColor: AppColors.darkGray,
                                                                                               fontWeight: FWT.lightMedium,
@@ -1810,7 +1810,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                                             ),
                                                                                             child: Center(
                                                                                               child: Text(
-                                                                                                restaurantList.elementAt(index).cuisines!.isEmpty || restaurantList.elementAt(index).cuisines == [] ? '' : restaurantList.elementAt(index).cuisines![0],
+                                                                                                (restaurantList.elementAt(index).cuisines?.isEmpty ?? true) || restaurantList.elementAt(index).cuisines == [] ? '' : (restaurantList.elementAt(index).cuisines?[0] ?? ""),
                                                                                                 style: FontUtils.h14(
                                                                                                   fontColor: AppColors.darkGray,
                                                                                                   fontWeight: FWT.lightMedium,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:either_dart/either.dart';
-import 'package:flutter/services.dart';
 import 'package:get/utils.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
@@ -288,9 +287,7 @@ class RestaurantRepository {
       final response = await apiServices
           .post(ApiUrls.getRestaurantMenuList, data, customToast: true);
 
-      // log("------Menu Response :=> $menuId :=> ${{response.body}}");
       log("Copy Response : ===>");
-      Clipboard.setData(ClipboardData(text: response.body));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return Right(
@@ -436,7 +433,14 @@ class RestaurantRepository {
       {required CreateOrderModel createOrderModel}) async {
     Response? response;
     try {
+      Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
       Map<String, dynamic> req = createOrderModel.toJson();
+      if (createOrderModel.pickup != true) {
+        req['user_latitude'] = createOrderModel.userAddress?.latitude;
+        req['user_longitude'] = createOrderModel.userAddress?.longitude;
+        req.addAll(extAddress);
+      }
+
       log(ApiUrls.createOrder);
       log("Req : ${jsonEncode(req)}");
       response = await apiServices.post(ApiUrls.createOrder, req);

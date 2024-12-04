@@ -386,9 +386,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                     ),
                                                     child: Center(
                                                       child: Text(
-                                                        restaurantMenu!
-                                                            .categories![index]
-                                                            .name!,
+                                                        restaurantMenu
+                                                                ?.categories?[
+                                                                    index]
+                                                                .name ??
+                                                            "",
                                                         style: FontUtils.h18(
                                                           fontWeight:
                                                               FWT.medium,
@@ -503,7 +505,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                               .spaceBetween,
                                                       children: [
                                                         Text(
-                                                          mealType[index],
+                                                          mealType[index] ?? "",
                                                           style: FontUtils.h18(
                                                             fontColor: index ==
                                                                             1 &&
@@ -780,7 +782,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     SizedBox(
                       width: 130.w,
                       child: Text(
-                        menuItem.name!,
+                        menuItem.name ?? "",
                         style: FontUtils.h16(
                           fontColor: AppColors.darkGray,
                           fontWeight: FWT.regular,

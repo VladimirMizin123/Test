@@ -16,7 +16,6 @@ class ApiServices {
   Future<dynamic> get(String url,
       {Map<String, dynamic>? body, Map<String, dynamic>? queryParams}) async {
     token = PreferenceUtils.getString(prefToken);
-
     log("token:$token");
     try {
       Map<String, String>? headers;
@@ -106,7 +105,6 @@ class ApiServices {
       }
 
       log("token:$token");
-      print("token:$token");
 
       final jsonBody = jsonEncode(body);
       final response = await http.post(

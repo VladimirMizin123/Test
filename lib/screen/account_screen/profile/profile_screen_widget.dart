@@ -60,6 +60,7 @@ Widget commonTextFormField({
         contentPadding:
             EdgeInsets.symmetric(vertical: vertical!, horizontal: horizontal!),
         hintText: hintText,
+        errorStyle: const TextStyle(color: Colors.red),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -67,9 +68,12 @@ Widget commonTextFormField({
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: enableBorderColor!),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.primaryBlueColor),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color: Colors.red,
+            width: 1.w,
+          ),
         ),
       ),
     ),

@@ -44,13 +44,14 @@ class CreateOrderModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
-    if (userAddress != null) {
-      // data['userAddress'] = userAddress!.toJson();
-      data['userAddress'] = {
-        "latitude": userAddress?.latitude,
-        "longitude": userAddress?.longitude,
-      };
-    }
+
+    // data['userAddress'] = userAddress != null
+    //     ? {
+    //         "latitude": userAddress?.latitude,
+    //         "longitude": userAddress?.longitude,
+    //       }
+    //     : null;
+
     data['pickup'] = pickup;
     if (mealmeItems != null) {
       data['mealmeItems'] = mealmeItems!.map((v) => v.toJson()).toList();
@@ -59,9 +60,7 @@ class CreateOrderModel {
     data['pickup_tip_cents'] = pickupTipCents;
     data['user_dropoff_notes'] = userDropoffNotes;
     data['user_phone'] = userPhone;
-    if (extendedAddress != null) {
-      data["extendedAddress"] = extendedAddress;
-    }
+    // data["extendedAddress"] = extendedAddress;
     return data;
   }
 }

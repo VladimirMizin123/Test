@@ -713,7 +713,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   width: 25.w,
                 ).paddingOnly(left: 12.w),
                 Text(
-                  title.toString(),
+                  title ?? "",
                   style: textTheme?.bodyLarge
                       ?.copyWith(color: AppColors.middleGray),
                 ).paddingOnly(left: 8.w)
@@ -753,7 +753,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       child: Column(
         children: [
           Text(
-            title.toString(),
+            title ?? "",
             style: textTheme?.bodyLarge?.copyWith(color: AppColors.darkGray),
           ),
           SizedBox(height: 5.h),
@@ -818,7 +818,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                title.toString(),
+                title ?? "",
                 style: textTheme?.headlineSmall
                     ?.copyWith(color: AppColors.darkGray),
               ),
@@ -896,7 +896,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           title: Row(
             children: [
               Text(
-                eatTitle.toString(),
+                eatTitle ?? "",
                 style: textTheme?.headlineSmall
                     ?.copyWith(color: AppColors.darkGray),
               ),
@@ -918,7 +918,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             ],
           ),
           subtitle: Text(
-            eatSubTitle.toString(),
+            eatSubTitle ?? "",
             style: textTheme?.bodySmall?.copyWith(
                 color: AppColors.darkGray, fontWeight: FontWeight.w400),
           ),

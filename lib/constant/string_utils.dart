@@ -129,6 +129,7 @@ class StringUtils {
   static const foodPreferences = 'Food Preferences';
   static const grocery = 'Grocery';
   static const dashboard = 'Dashboard';
+  static const cards = 'Cards';
   static const restaurants = 'Restaurants';
   static const journal = 'Journal';
   static const showGroceryList = 'Show Grocery List';
@@ -498,6 +499,8 @@ class StringUtils {
   static const change = 'Change';
   static const restaurantNotAvailable =
       'This restaurant is no longer available.';
+  static const storeNotAvailable = 'Store not available.';
+  static const fetchingYourBestOptions = 'Fetching your best options';
 
   static const calculatingMealCalories = 'Calculating meal calories';
   static const gatheringIngredients = 'Gathering ingredients';
@@ -505,6 +508,7 @@ class StringUtils {
   static const almostThere = 'Almost there...';
   static const fetchingYourDelicious = 'Fetching your delicious options..';
   static const organizingMenuItems = 'Organizing menu items...';
+  static const organizingGroceryItems = 'Optimizing grocery items...';
 
   static const generatingNewMealPlan = 'Generating new meal plan...';
   static const accountingForRestriction =
@@ -512,4 +516,13 @@ class StringUtils {
   static const theOrderNotPlacedDueToSomeIssue =
       'The order was not placed due to some issue.';
   static const orderCreatedSuccessfully = 'Order Created Successfully';
+  static const productAlreadyInCart =
+      'This product is already in the cart and cannot be modified.';
+  static const editCard = 'Edit card';
+  static const addCard = 'Add card';
+  static const theCardIsNotAvailable =
+      "The card is not available. Please add it.";
+  static const areYouSureDoYouWantToDeleteCard =
+      "Are you sure do you want to delete card";
+  static const cardRemovedSuccessfully = "Card removed successfully.";
 }

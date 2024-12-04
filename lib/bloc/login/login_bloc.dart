@@ -66,6 +66,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               final getGender = r.data!.gender;
               await PreferenceUtils.setString(
                   prefUserMobile, r.data?.phoneNumber ?? '');
+              await PreferenceUtils.setString(
+                  prefUserName,
+                  ("${r.data?.firstName ?? ""} ${r.data?.lastName ?? ""}")
+                      .trim());
               Get.toNamed('/RandomLoginScreen',
                   arguments: getGender.toString().capitalizeFirst);
               // } else {

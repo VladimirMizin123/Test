@@ -278,4 +278,17 @@ class ApiUrls {
   static const String checkPaymentStatus =
       '${baseUrl}api/StripePayment/CheckPaymentStatus';
   static const String storeLookup = '${baseUrl}api/MealMe/StoreLookup';
+
+  // * New Card Flow
+  static const String listAllCard = '${baseUrl}api/StripePayment/ListAllCard';
+  static const String getCard =
+      '${baseUrl}api/StripePayment/GetCard/id?id={cardId}';
+  static const String createCard = '${baseUrl}api/StripePayment/createcard';
+  static const String updateCard = '${baseUrl}api/StripePayment/updatecard';
+  static const String removeCard =
+      '${baseUrl}api/StripePayment/RemoveCard?id={cardId}';
+  static const String getDefaultCard =
+      '${baseUrl}api/StripePayment/getdefaultcard';
+  static const String setDefaultCard =
+      '${baseUrl}api/StripePayment/setdefaultcard?id={cardId}';
 }

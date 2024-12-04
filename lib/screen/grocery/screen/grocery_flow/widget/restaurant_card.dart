@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
-import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/widget/box_shadow_widget.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
@@ -56,7 +55,7 @@ class RestaurantCard extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              flex: 4,
+              flex: 5,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,42 +75,42 @@ class RestaurantCard extends StatelessWidget {
                 ],
               ),
             ),
-            5.width,
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  height: 22,
-                  width: 22,
-                  decoration: isLoading
-                      ? null
-                      : BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: AppColors.primaryBlue, width: 2),
-                        ),
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Visibility(
-                              visible: selected,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.primaryBlue),
-                                height: 14.h,
-                                width: 14.w,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-            )
+            // 5.width,
+            // Expanded(
+            //   flex: 1,
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     child: Container(
+            //       height: 22,
+            //       width: 22,
+            //       decoration: isLoading
+            //           ? null
+            //           : BoxDecoration(
+            //               shape: BoxShape.circle,
+            //               border: Border.all(
+            //                   color: AppColors.primaryBlue, width: 2),
+            //             ),
+            //       child: isLoading
+            //           ? const Center(child: CircularProgressIndicator())
+            //           : Column(
+            //               crossAxisAlignment: CrossAxisAlignment.center,
+            //               mainAxisAlignment: MainAxisAlignment.center,
+            //               children: [
+            //                 Visibility(
+            //                   visible: selected,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                         shape: BoxShape.circle,
+            //                         color: AppColors.primaryBlue),
+            //                     height: 14.h,
+            //                     width: 14.w,
+            //                   ),
+            //                 ),
+            //               ],
+            //             ),
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),

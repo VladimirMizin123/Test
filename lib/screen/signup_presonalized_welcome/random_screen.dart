@@ -1,7 +1,7 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_1.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_2.dart';
 import 'package:gymeats_mobile/screen/signup_presonalized_welcome/personalized_welcome_3.dart';
@@ -30,7 +30,9 @@ class _RandomLoadingScreenState extends State<RandomLoadingScreen> {
   Future<void> setupIngredients() async {
     try {
       isLoading.value = true;
-      await api.get(ApiUrls.addIngredientsToUserGroceryList);
+      String id = PreferenceUtils.getString(prefUserData);
+      await api.get(
+          ApiUrls.addIngredientsToUserGroceryList.replaceAll("{userId}", id));
     } catch (e) {
       debugPrint(e.toString());
     } finally {

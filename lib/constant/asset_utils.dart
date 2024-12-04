@@ -159,6 +159,7 @@ class AssetsUtils {
   static const about = '${svgPath}about.svg';
   static const chat = '${svgPath}Chat.svg';
   static const setting = '${svgPath}setting.svg';
+  static const creditCard = '${svgPath}credit_card.svg';
   static const gymEatsImage = '${svgPath}gym_eats.svg';
   static const pencil = '${svgPath}ic_pencil.svg';
   static const globalIcn = '${svgPath}Global.svg';

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_repository.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_state.dart';
@@ -234,8 +235,10 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       } else {
         showToast(isSuccess: false, message: response.right.message);
         try {
-          await _repository.apiServices
-              .get(ApiUrls.addIngredientsToUserGroceryList);
+          String id = PreferenceUtils.getString(prefUserData);
+          await _repository.apiServices.get(ApiUrls
+              .addIngredientsToUserGroceryList
+              .replaceAll("{userId}", id));
         } catch (e) {
           log(e.toString());
         }

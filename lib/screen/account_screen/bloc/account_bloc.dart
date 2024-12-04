@@ -51,9 +51,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
     try {
       try {
-        await _repository.apiServices.get(ApiUrls
-            .addIngredientsToUserGroceryList
-            .replaceAll("{userId}", userId));
+        String id = PreferenceUtils.getString(prefUserData);
+        await _repository.apiServices.get(
+            ApiUrls.addIngredientsToUserGroceryList.replaceAll("{userId}", id));
       } catch (e) {
         log(e.toString());
       }

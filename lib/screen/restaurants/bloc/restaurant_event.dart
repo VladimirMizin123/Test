@@ -150,10 +150,14 @@ class AddRestaurantCartEvent extends RestaurantEvent {
 class CreateOrderEvent extends RestaurantEvent {
   final CreateOrderModel createOrderModel;
   final BuildContext context;
+  final dynamic lat;
+  final dynamic lng;
 
   CreateOrderEvent({
     required this.createOrderModel,
     required this.context,
+    this.lat,
+    this.lng,
   });
 }
 

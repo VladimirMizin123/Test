@@ -19,7 +19,6 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import 'package:gymeats_mobile/widget/extended_address_sheet.dart';
 import 'package:gymeats_mobile/widget/food_menu_address.dart';
 
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
@@ -90,89 +89,39 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
 
       if (value) {
         emit(VerifyRestaurantLoader(id: event.id));
-        final response = await _repository.storeLookup(storeId: event.id ?? "");
-        if (response.isRight) {
-          final store = response.right.data?.store?.quoteIds ?? [];
-          log("Store Id Find : $store");
 
-          if (store.isNotEmpty) {
-            (double?, double?) pos = await Constant.i.position;
-            List<Future<Either<ErrorModel, GetRestaurantMenuListModel>>>
-                futureList = [];
-            for (int i = 0; i < store.length; i++) {
-              futureList.add(
-                _repository.getRestaurantMenuList(
-                  restaurantId: event.id,
-                  pickup: event.pickup,
-                  latitude: event.latitude,
-                  longitude: event.longitude,
-                  mealType: "restaurant",
-                  position: pos,
-                  menuId: store[i],
-                  additionalData: req,
-                  needLeft: true,
-                ),
-              );
-            }
+        (double?, double?) pos = await Constant.i.position;
+        final storeRes = await _repository.getRestaurantMenuList(
+          restaurantId: event.id,
+          pickup: event.pickup,
+          latitude: event.latitude,
+          longitude: event.longitude,
+          mealType: "restaurant",
+          position: pos,
+          additionalData: req,
+          needLeft: true,
+        );
 
-            Stream<Either<ErrorModel, GetRestaurantMenuListModel>>
-                futureStream = Stream.fromFutures(futureList);
-            Either<ErrorModel, GetRestaurantMenuListModel>? storeRes;
-            bool hasError = false;
-
-            await for (Either<ErrorModel, GetRestaurantMenuListModel> result
-                in futureStream) {
-              if (result.isRight &&
-                  (result.right.data?.categories?.isNotEmpty ?? false)) {
-                storeRes = result;
-                hasError = false;
-                break;
-              } else if (result.isLeft) {
-                storeRes = result;
-                hasError = true;
-              }
-            }
-            if (event.id != prevId || storeRes == null || hasError) {
-              if (storeRes == null || hasError) {
-                if (storeRes != null && hasError) {
-                  showToast(
-                      isSuccess: false,
-                      message: storeRes.left.errorMessage != null
-                          ? storeRes.left.errorMessage!
-                          : StringUtils.restaurantNotAvailable);
-                }
-                emit(VerifyRestaurantLoader(id: null));
-                event.notVerify?.call();
-              }
-              return;
-            }
-            emit(VerifyRestaurantLoader(id: null));
-            await Future.delayed(const Duration(milliseconds: 200));
-            if (event.id != prevId) {
-              return;
-            }
-            if (storeRes.isRight) {
-              if (storeRes.right.success ?? false) {
-                event.onVerify
-                    ?.call(storeRes.right.data, storeRes.right.data?.quote);
-              } else {
-                showToast(
-                    isSuccess: false,
-                    message: storeRes.right.errorMessage ?? "");
-                event.notVerify?.call();
-              }
-            } else {
-              showToast(
-                  isSuccess: false,
-                  message: storeRes.left.errorMessage != null
-                      ? storeRes.left.errorMessage!
-                      : StringUtils.restaurantNotAvailable);
-              event.notVerify?.call();
-            }
+        emit(VerifyRestaurantLoader(id: null));
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (event.id != prevId) {
+          return;
+        }
+        if (storeRes.isRight) {
+          if (storeRes.right.success ?? false) {
+            event.onVerify
+                ?.call(storeRes.right.data, storeRes.right.data?.quote);
           } else {
+            showToast(
+                isSuccess: false, message: storeRes.right.errorMessage ?? "");
             event.notVerify?.call();
           }
         } else {
+          showToast(
+              isSuccess: false,
+              message: storeRes.left.errorMessage != null
+                  ? storeRes.left.errorMessage!
+                  : StringUtils.restaurantNotAvailable);
           event.notVerify?.call();
         }
       } else {
@@ -392,58 +341,14 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           .createOrder(createOrderModel: event.createOrderModel)
           .fold((left) async {
         log("Error Json : ${left.toJson()} :${left.statusCode}");
-        if (left.statusCode != 500) {
-          showToast(
-              message: (left.errorMessage?.trim().isNotEmpty ?? false)
-                  ? (left.errorMessage ?? "")
-                  : (left.message ?? ""),
-              isSuccess: false);
-        }
 
-        onFailError(
-            emit: emit,
-            text: (left.errorMessage?.trim().isNotEmpty ?? false)
-                ? (left.errorMessage ?? "")
-                : (left.message ?? ""));
-        if (left.statusCode == 500) {
-          dynamic result = await showModalBottomSheet(
-            context: event.context,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            isScrollControlled: true,
-            builder: (context) => const ExtendedAddress(),
-          );
-          if (result != null) {
-            Map req = result as Map;
-            add(
-              CreateOrderEvent(
-                createOrderModel: event.createOrderModel
-                  ..extendedAddress = req["extendedAddress"],
-                context: event.context,
-              ),
-            );
-          }
-        } else {
-          showToast(isSuccess: false, message: left.errorMessage ?? "");
-        }
+        showToast(isSuccess: false, message: left.errorMessage ?? "");
         emit(CreateOrderErrorState());
       }, (right) {
-        // if (right.data?.orderPlaced ?? false) {
         emit(CreateOrderSuccessState(orderData: right.data));
         showToast(
             isSuccess: true,
             message: right.message ?? StringUtils.orderCreatedSuccessfully);
-        // } else {
-        //   emit(CreateOrderErrorState());
-        //   showToast(
-        //       isSuccess: false,
-        //       message:
-        //           right.message ?? StringUtils.theOrderNotPlacedDueToSomeIssue);
-        // }
       });
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());

@@ -42,9 +42,7 @@ class CreateGroceryOrderModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
-    if (userAddress != null) {
-      data['userAddress'] = userAddress!.toJson();
-    }
+    // data['userAddress'] = userAddress?.toJson();
     data['pickup'] = pickup;
     if (groceryItems != null) {
       data['mealmeItems'] = groceryItems!.map((v) => v.toJson()).toList();
@@ -53,9 +51,7 @@ class CreateGroceryOrderModel {
     data['pickup_tip_cents'] = pickupTipCents;
     data['user_dropoff_notes'] = userDropoffNotes;
     data['user_phone'] = userPhone;
-    if (extendedAddress != null) {
-      data["extendedAddress"] = extendedAddress;
-    }
+    // data["extendedAddress"] = extendedAddress;
     return data;
   }
 }
@@ -95,12 +91,28 @@ class UserAddress {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['latitude'] = latitude;
     data['longitude'] = longitude;
-    data['street_Num'] = streetNum;
-    data['street_Name'] = streetName;
-    data['city'] = city;
-    data['state'] = state;
-    data['country'] = country;
-    data['zipcode'] = zipcode;
+    if (streetNum != null) {
+      data['street_Num'] = streetNum;
+    }
+
+    if (streetName != null) {
+      data['street_Name'] = streetName;
+    }
+
+    if (city != null) {
+      data['city'] = city;
+    }
+
+    if (state != null) {
+      data['state'] = state;
+    }
+    if (country != null) {
+      data['country'] = country;
+    }
+    if (zipcode != null) {
+      data['zipcode'] = zipcode;
+    }
+
     return data;
   }
 }

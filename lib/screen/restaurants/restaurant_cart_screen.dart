@@ -65,8 +65,10 @@ class _RestaurantCartState extends State<RestaurantCart> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Scaffold(
         body: SafeArea(
           child: bloc.BlocConsumer<CartBloc, CartState>(
@@ -527,16 +529,11 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                         );
                                                       }
 
-                                                      Map<String, dynamic>
-                                                          extAddress =
-                                                          PreferenceUtils
-                                                              .getMenuAddress();
-
                                                       double? lat = pos.$1 ??
                                                           widget.userAddress
                                                               ?.latitude ??
                                                           0;
-                                                      double? lng = pos.$1 ??
+                                                      double? lng = pos.$2 ??
                                                           widget.userAddress
                                                               ?.longitude ??
                                                           0;
@@ -544,6 +541,8 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                       restaurantBloc.add(
                                                         CreateOrderEvent(
                                                           context: context,
+                                                          lat: lat,
+                                                          lng: lng,
                                                           createOrderModel:
                                                               CreateOrderModel(
                                                             userId: userId,
@@ -569,24 +568,6 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                             pickupTipCents: 0,
                                                             userDropoffNotes:
                                                                 notes.text,
-                                                            extendedAddress: {
-                                                              "latitude": lat,
-                                                              "longitude": lng,
-                                                              "street_Num":
-                                                                  extAddress[
-                                                                      "user_street_num"],
-                                                              "street_Name":
-                                                                  extAddress[
-                                                                      "user_street_name"],
-                                                              "city": extAddress[
-                                                                  "user_city"],
-                                                              "state": extAddress[
-                                                                  "user_state"],
-                                                              "country": extAddress[
-                                                                  "user_country"],
-                                                              "zipcode": extAddress[
-                                                                  "user_zipcode"],
-                                                            },
                                                           ),
                                                         ),
                                                       );

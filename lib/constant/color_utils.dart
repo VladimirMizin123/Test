@@ -18,6 +18,7 @@ class AppColors {
 
   static ThemeData lightTheme() {
     return ThemeData(
+      useMaterial3: false,
       primaryColor: const Color(0xFF004C63),
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
@@ -124,6 +125,9 @@ class AppColors {
           // Body 2
           fontSize: 12,
           fontWeight: FontWeight.w300,
+        ),
+        titleMedium: TextStyle(
+          color: Color(0xdd000000),
         ),
       ),
     );

@@ -101,283 +101,275 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
           setState(() {});
         },
         builder: (context, state) {
-          return WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-            child: GestureDetector(
-              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              child: Scaffold(
-                body: SafeArea(
-                  child: Column(
-                    children: [
-                      15.height,
-                      Image.asset(
-                        AssetsUtils.gymEatsLogo,
-                        height: 20.h,
-                        color: AppColors.green,
-                      ),
-                      10.height,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          BackButtonWidget(
-                            onTap: () async {
-                              Object state = storeCartBloc.state;
-                              if (state is StoreCheckoutState &&
-                                  state.menuItemList.isNotEmpty) {
-                                dynamic allow = (await showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) => AlertDialog(
-                                        title: Text(
-                                          StringUtils.cart,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black,
-                                            fontFamily: "Avenir",
-                                          ),
+          return GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: Scaffold(
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    15.height,
+                    Image.asset(
+                      AssetsUtils.gymEatsLogo,
+                      height: 20.h,
+                      color: AppColors.green,
+                    ),
+                    10.height,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BackButtonWidget(
+                          onTap: () async {
+                            Object state = storeCartBloc.state;
+                            if (state is StoreCheckoutState &&
+                                state.menuItemList.isNotEmpty) {
+                              dynamic allow = (await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                        StringUtils.cart,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.black,
+                                          fontFamily: "Avenir",
                                         ),
-                                        content: Text(
-                                          StringUtils.cartWillEmptiedIfGoBack,
-                                          style: const TextStyle(
-                                            color: AppColors.black,
-                                            fontFamily: "Avenir",
-                                          ),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.fromLTRB(
-                                                24, 15, 24, 15),
-                                        actions: [
-                                          ElevatedButton(
-                                            child: const Text(
-                                              StringUtils.noTxt,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: "Avenir",
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              Get.back(result: false);
-                                            },
-                                          ),
-                                          ElevatedButton(
-                                            child: const Text(
-                                              StringUtils.yesTxt,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: "Avenir",
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              Get.back(result: true);
-                                            },
-                                          ),
-                                          5.width,
-                                        ],
                                       ),
-                                    ) ??
-                                    false);
-                                if (allow == true) {
-                                  Get.back();
-                                }
-                              } else {
+                                      content: Text(
+                                        StringUtils.cartWillEmptiedIfGoBack,
+                                        style: const TextStyle(
+                                          color: AppColors.black,
+                                          fontFamily: "Avenir",
+                                        ),
+                                      ),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          24, 15, 24, 15),
+                                      actions: [
+                                        ElevatedButton(
+                                          child: const Text(
+                                            StringUtils.noTxt,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Avenir",
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Get.back(result: false);
+                                          },
+                                        ),
+                                        ElevatedButton(
+                                          child: const Text(
+                                            StringUtils.yesTxt,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Avenir",
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Get.back(result: true);
+                                          },
+                                        ),
+                                        5.width,
+                                      ],
+                                    ),
+                                  ) ??
+                                  false);
+                              if (allow == true) {
                                 Get.back();
                               }
+                            } else {
+                              Get.back();
+                            }
+                          },
+                        ),
+                        Text(
+                          'Categories',
+                          style: FontUtils.h22(
+                            fontColor: AppColors.oxFF010101,
+                            fontWeight: FWT.medium,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => showModalBottomSheet(
+                            context: context,
+                            backgroundColor: AppColors.transparentColor,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return CheckListSheet(
+                                groceryDetails: widget.groceryDetails,
+                              );
                             },
+                            isDismissible: false,
                           ),
-                          Text(
-                            'Categories',
-                            style: FontUtils.h22(
-                              fontColor: AppColors.oxFF010101,
-                              fontWeight: FWT.medium,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => showModalBottomSheet(
-                              context: context,
-                              backgroundColor: AppColors.transparentColor,
-                              isScrollControlled: true,
-                              builder: (context) {
-                                return CheckListSheet(
-                                  groceryDetails: widget.groceryDetails,
-                                );
-                              },
-                              isDismissible: false,
-                            ),
-                            child: SvgPicture.asset(AssetsUtils.icList),
-                          ),
-                        ],
-                      ).paddingOnly(left: 14, right: 14),
-                      SizedBox(height: 15.h),
-                      CustomSearchField(
-                        controller: searchController,
-                        onChange: (p0) => setState(() => searchText = p0),
-                      ).paddingOnly(left: 14, right: 14),
-                      Expanded(
-                        child: categoriesList.isEmpty
-                            ? isLoading
-                                ? const AppCenterLoader()
-                                : Center(
-                                    child: Text(
-                                      'Categories not found !',
-                                      style: FontUtils.h16(
-                                          fontColor: AppColors.black),
-                                    ),
-                                  )
-                            : Container(
-                                child: routing.isNotEmpty
-                                    ? Builder(
-                                        builder: (_) {
-                                          Category? category = getSubCategory();
+                          child: SvgPicture.asset(AssetsUtils.icList),
+                        ),
+                      ],
+                    ).paddingOnly(left: 14, right: 14),
+                    SizedBox(height: 15.h),
+                    CustomSearchField(
+                      controller: searchController,
+                      onChange: (p0) => setState(() => searchText = p0),
+                    ).paddingOnly(left: 14, right: 14),
+                    Expanded(
+                      child: categoriesList.isEmpty
+                          ? isLoading
+                              ? const AppCenterLoader()
+                              : Center(
+                                  child: Text(
+                                    'Categories not found !',
+                                    style: FontUtils.h16(
+                                        fontColor: AppColors.black),
+                                  ),
+                                )
+                          : Container(
+                              child: routing.isNotEmpty
+                                  ? Builder(
+                                      builder: (_) {
+                                        Category? category = getSubCategory();
 
-                                          List<
-                                              Category> subcategoryList = (category
-                                                      ?.subcategoryList ??
-                                                  [])
-                                              .where((element) =>
-                                                  element.name
-                                                      ?.toLowerCase()
-                                                      .contains(searchText
-                                                              ?.toLowerCase() ??
-                                                          "") ??
-                                                  false)
-                                              .toList();
+                                        List<
+                                            Category> subcategoryList = (category
+                                                    ?.subcategoryList ??
+                                                [])
+                                            .where((element) =>
+                                                element.name
+                                                    ?.toLowerCase()
+                                                    .contains(searchText
+                                                            ?.toLowerCase() ??
+                                                        "") ??
+                                                false)
+                                            .toList();
 
-                                          return Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () => setState(() {
-                                                      handleBackTap();
-                                                    }),
-                                                    child: SvgPicture.asset(
-                                                      AssetsUtils.icBackArrow,
-                                                      height: 18,
-                                                    ),
+                                        return Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () => setState(() {
+                                                    handleBackTap();
+                                                  }),
+                                                  child: SvgPicture.asset(
+                                                    AssetsUtils.icBackArrow,
+                                                    height: 18,
                                                   ),
-                                                  24.width,
-                                                  Expanded(
-                                                    child: Text(
-                                                      category?.name ??
-                                                          "Sub Category",
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: FontUtils.h16(
-                                                        fontColor: AppColors
-                                                            .oxFF010101,
-                                                        fontWeight:
-                                                            FWT.boldMedium,
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ).paddingOnly(
-                                                  left: 20, right: 20),
-                                              if (subcategoryLoader) ...[
-                                                const Expanded(
-                                                    child: AppCenterLoader()),
-                                              ] else if (subcategoryList
-                                                  .isEmpty) ...[
+                                                ),
+                                                24.width,
                                                 Expanded(
-                                                  child: Center(
-                                                    child: Text(
-                                                      'Categories not found for ${subcategoryList.isEmpty && (category?.subcategoryList?.isEmpty ?? true) ? category?.name : searchText} !',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: FontUtils.h16(
-                                                          fontColor:
-                                                              AppColors.black),
+                                                  child: Text(
+                                                    category?.name ??
+                                                        "Sub Category",
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: FontUtils.h16(
+                                                      fontColor:
+                                                          AppColors.oxFF010101,
+                                                      fontWeight:
+                                                          FWT.boldMedium,
                                                     ),
                                                   ),
                                                 )
-                                              ] else ...[
-                                                Expanded(
-                                                  child: ListView.separated(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 25, 0, 40),
-                                                    itemCount:
-                                                        subcategoryList.length,
-                                                    separatorBuilder:
-                                                        (context, index) =>
-                                                            _separator,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return CategoriesTileWidget(
-                                                              category:
-                                                                  subcategoryList[
-                                                                      index],
-                                                              showIcon: false,
-                                                              onTap: () {
-                                                                int i = category!
-                                                                    .subcategoryList!
-                                                                    .indexWhere((element) =>
-                                                                        element
-                                                                            .name ==
-                                                                        subcategoryList[index]
-                                                                            .name);
-                                                                handleCategoryTap(
-                                                                    subcategoryList[
-                                                                        index],
-                                                                    i);
-                                                                clearSearch();
-                                                              })
-                                                          .paddingOnly(
-                                                              right: 6,
-                                                              left: 6);
-                                                    },
+                                              ],
+                                            ).paddingOnly(left: 20, right: 20),
+                                            if (subcategoryLoader) ...[
+                                              const Expanded(
+                                                  child: AppCenterLoader()),
+                                            ] else if (subcategoryList
+                                                .isEmpty) ...[
+                                              Expanded(
+                                                child: Center(
+                                                  child: Text(
+                                                    'Categories not found for ${subcategoryList.isEmpty && (category?.subcategoryList?.isEmpty ?? true) ? category?.name : searchText} !',
+                                                    textAlign: TextAlign.center,
+                                                    style: FontUtils.h16(
+                                                        fontColor:
+                                                            AppColors.black),
                                                   ),
                                                 ),
-                                              ],
+                                              )
+                                            ] else ...[
+                                              Expanded(
+                                                child: ListView.separated(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 25, 0, 40),
+                                                  itemCount:
+                                                      subcategoryList.length,
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          _separator,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return CategoriesTileWidget(
+                                                            category:
+                                                                subcategoryList[
+                                                                    index],
+                                                            showIcon: false,
+                                                            onTap: () {
+                                                              int i = category!
+                                                                  .subcategoryList!
+                                                                  .indexWhere((element) =>
+                                                                      element
+                                                                          .name ==
+                                                                      subcategoryList[
+                                                                              index]
+                                                                          .name);
+                                                              handleCategoryTap(
+                                                                  subcategoryList[
+                                                                      index],
+                                                                  i);
+                                                              clearSearch();
+                                                            })
+                                                        .paddingOnly(
+                                                            right: 6, left: 6);
+                                                  },
+                                                ),
+                                              ),
                                             ],
-                                          ).paddingOnly(top: 20);
-                                        },
-                                      )
-                                    : Builder(
-                                        builder: (_) {
-                                          List<Category> filterList = List<
-                                                  Category>.from(categoriesList)
-                                              .where((element) =>
-                                                  element.name
-                                                      ?.toLowerCase()
-                                                      .contains(searchText
-                                                              ?.toLowerCase() ??
-                                                          "") ??
-                                                  false)
-                                              .toList();
-                                          return ListView.separated(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 40, top: 20),
-                                            itemCount: filterList.length,
-                                            separatorBuilder:
-                                                (context, index) => _separator,
-                                            itemBuilder: (context, index) {
-                                              return CategoriesTileWidget(
-                                                category: filterList[index],
-                                                onTap: () {
-                                                  int i = categoriesList
-                                                      .indexWhere((element) =>
-                                                          element.name ==
-                                                          filterList[index]
-                                                              .name);
-                                                  handleCategoryTap(
-                                                      filterList[index], i);
-                                                  clearSearch();
-                                                  setState(() {});
-                                                },
-                                              );
-                                            },
-                                          );
-                                        },
-                                      ),
-                              ),
-                      ),
-                    ],
-                  ),
+                                          ],
+                                        ).paddingOnly(top: 20);
+                                      },
+                                    )
+                                  : Builder(
+                                      builder: (_) {
+                                        List<Category> filterList = List<
+                                                Category>.from(categoriesList)
+                                            .where((element) =>
+                                                element.name
+                                                    ?.toLowerCase()
+                                                    .contains(searchText
+                                                            ?.toLowerCase() ??
+                                                        "") ??
+                                                false)
+                                            .toList();
+                                        return ListView.separated(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 40, top: 20),
+                                          itemCount: filterList.length,
+                                          separatorBuilder: (context, index) =>
+                                              _separator,
+                                          itemBuilder: (context, index) {
+                                            return CategoriesTileWidget(
+                                              category: filterList[index],
+                                              onTap: () {
+                                                int i = categoriesList
+                                                    .indexWhere((element) =>
+                                                        element.name ==
+                                                        filterList[index].name);
+                                                handleCategoryTap(
+                                                    filterList[index], i);
+                                                clearSearch();
+                                                setState(() {});
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),

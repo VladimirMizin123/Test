@@ -39,7 +39,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           bloc: getDashboardBloc,
           listener: (context, state) {
             if (state is GetOrderInvoiceSuccessState) {
-              invoiceData = state.invoiceData;
+              invoiceData = state.invoiceData.reversed.toList();
 
               loading = false;
             }

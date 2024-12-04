@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gymeats.app.mobile">
+    package="com.gymeats.app.mobile" xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -17,7 +17,9 @@
         android:label="GYM EATS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true">
+        android:allowBackup="false"
+        android:requestLegacyExternalStorage="true"
+        tools:replace="allowBackup">
         <!-- <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" /> -->
         <!-- Update this value to your google maps api key. -->
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCKoMQs-ZZgHFUNglLpdGlpsXiD2JrXjhE"/>

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_event.dart';
 import 'package:gymeats_mobile/bloc/user_survey/user_survey_state.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
@@ -85,8 +86,9 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
           .put('${ApiUrls.updateProgram}?dietId=${event.dietId}', null);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        await getSurveyRepository.apiServices
-            .get(ApiUrls.addIngredientsToUserGroceryList);
+        String id = PreferenceUtils.getString(prefUserData);
+        await getSurveyRepository.apiServices.get(
+            ApiUrls.addIngredientsToUserGroceryList.replaceAll("{userId}", id));
         showToast(message: "Program updated successfully!", isSuccess: true);
         if (Get.currentRoute.contains("EditDietScreen")) {
           Get.offAll(() => const AppManagerScreen(selectIndex: 2));

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,11 +7,13 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/constant.dart';
 import 'package:gymeats_mobile/screen/account_screen/about/about_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_scrren_widget.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_state.dart';
+import 'package:gymeats_mobile/screen/account_screen/card_screen/view/card_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/profile/profile_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/program/program_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/setting/setting_screen.dart';
@@ -45,8 +49,15 @@ class _AccountScreenState extends State<AccountScreen> {
       "image": AssetsUtils.icMealPlan,
       "title": "Program",
       "subtitle": "Diet",
-      "color": AppColors.transparentColor,
+      "color": AppColors.disable,
       "screen": const ProgramScreen()
+    },
+    {
+      "image": AssetsUtils.creditCard,
+      "title": "Card",
+      "subtitle": "",
+      "color": AppColors.transparentColor,
+      "screen": const CardsScreen()
     },
   ];
 
@@ -111,35 +122,45 @@ class _AccountScreenState extends State<AccountScreen> {
                         child: Column(
                           children: [
                             accountScreenListWidget(
-                                children:
-                                    List.generate(settingList.length, (index) {
-                              var data = settingList[index];
-                              return accountScreenDataWidget(
-                                onTap: () {
-                                  Get.to(data["screen"]);
-                                },
-                                color: data["color"],
-                                leading: SvgImage(image: data["image"]),
-                                title: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        data["title"],
-                                        style: const TextStyle(
-                                            color: Colors.black),
+                              children: List.generate(
+                                settingList.length,
+                                (index) {
+                                  var data = settingList[index];
+                                  bool isLast = index == settingList.length - 1;
+                                  double? size = isLast ? 29 : null;
+                                  return accountScreenDataWidget(
+                                    onTap: () {
+                                      Get.to(data["screen"]);
+                                    },
+                                    color: data["color"],
+                                    leading: SizedBox(
+                                      height: size,
+                                      width: size,
+                                      child: SvgImage(
+                                        image: data["image"],
+                                        color: const Color(0xFF5F5F5F),
                                       ),
                                     ),
-                                    Text(data["subtitle"]),
-                                  ],
-                                ),
-                                trailing: const SvgImage(
-                                  image: AssetsUtils.forwardArrow,
-                                ),
-                              );
-                            })),
-                            SizedBox(
-                              height: 20.h,
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            data["title"],
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        Text(data["subtitle"]),
+                                      ],
+                                    ),
+                                    trailing: const SvgImage(
+                                      image: AssetsUtils.forwardArrow,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
+                            SizedBox(height: 20.h),
                             accountScreenListWidget(
                               children: List.generate(
                                 settingList1.length,
@@ -148,16 +169,19 @@ class _AccountScreenState extends State<AccountScreen> {
                                   return accountScreenDataWidget(
                                     onTap: () {
                                       if (data["title"] == 'Support') {
+                                        log("Email : ${PreferenceUtils.getString(prefUserEmail)}");
+                                        log("User Name : ${PreferenceUtils.getString(prefUserName)}");
                                         Livechat.beginChat(
-                                          '17386518',
-                                          PreferenceUtils.getString(
-                                              prefUserEmail),
-                                          fullName,
-                                          PreferenceUtils.getString(
-                                              prefUserEmail),
-                                          <String, String>{
+                                          Constant.i.chatId,
+                                          visitorEmail:
+                                              PreferenceUtils.getString(
+                                                  prefUserEmail),
+                                          visitorName:
+                                              PreferenceUtils.getString(
+                                                  prefUserName),
+                                          customParams: <String, String>{
                                             'org': PreferenceUtils.getString(
-                                                prefUserData),
+                                                prefUserName),
                                             'position': 'user'
                                           },
                                         );

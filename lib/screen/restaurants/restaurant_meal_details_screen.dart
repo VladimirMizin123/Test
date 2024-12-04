@@ -30,7 +30,7 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.cartCount,
     required this.pickUp,
     this.quote,
-   required this.getUserAddress,
+    required this.getUserAddress,
     this.matchMealStatus,
     this.onCustomizationChange,
   });
@@ -74,454 +74,446 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.matchMealStatus);
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: Scaffold(
-        body: BlocConsumer<GroceryBloc, GroceryState>(
-            bloc: groceryBloc,
-            listener: (context, state) {
-              if (state is GroceryNutritionixGetNxMealInfoByNameSuccessState) {
-                nutritionixGetNxMealInfoByNameModelData =
-                    state.nutritionixGetNxMealInfoByNameModelData;
-              }
-            },
-            builder: (context, state) {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Image.asset(
-                      AssetsUtils.gymEatsLogo,
-                      height: 20.h,
-                      width: 56.w,
-                      color: AppColors.terracotta,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.back(result: widget.data.isAdded);
-                            },
-                            child: const Icon(
-                              Icons.arrow_back_ios,
-                              size: 22,
-                            ),
-                          ),
-                          Text('Restaurant / Meal Details',
-                              style: FontUtils.h24(
-                                  fontColor: AppColors.oxFF010101,
-                                  fontWeight: FWT.semiBold)),
-                          const SizedBox()
-                        ],
-                      ).paddingSymmetric(horizontal: 6, vertical: 5.h),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      body: BlocConsumer<GroceryBloc, GroceryState>(
+          bloc: groceryBloc,
+          listener: (context, state) {
+            if (state is GroceryNutritionixGetNxMealInfoByNameSuccessState) {
+              nutritionixGetNxMealInfoByNameModelData =
+                  state.nutritionixGetNxMealInfoByNameModelData;
+            }
+          },
+          builder: (context, state) {
+            return SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Image.asset(
+                    AssetsUtils.gymEatsLogo,
+                    height: 20.h,
+                    width: 56.w,
+                    color: AppColors.terracotta,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          switch (widget.matchMealStatus) {
-                            0 => "Matches with your Meal Plan",
-                            1 => "Partly matches with your Meal Plan",
-                            _ => "Doesn’t match with your Meal Plan",
+                        GestureDetector(
+                          onTap: () {
+                            Get.back(result: widget.data.isAdded);
                           },
-                          style: const TextStyle(
-                            color: Color(0xff5F5F5F),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            size: 22,
                           ),
                         ),
-                        if (widget.matchMealStatus != null) ...[
-                          const SizedBox(width: 5),
-                          Image.asset(
-                            matchIcon(widget.matchMealStatus!),
-                            width: 25.w,
-                          ),
-                        ],
+                        Text('Restaurant / Meal Details',
+                            style: FontUtils.h24(
+                                fontColor: AppColors.oxFF010101,
+                                fontWeight: FWT.semiBold)),
+                        const SizedBox()
                       ],
-                    ),
-                    Expanded(
-                        child: nutritionixGetNxMealInfoByNameModelData == null
-                            ? state is GroceryNutritionixGetNxMealInfoByNameLoadingState
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : const SizedBox()
-                            : SingleChildScrollView(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 6),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        nutritionixGetNxMealInfoByNameModelData!
-                                                .foodName ??
-                                            widget.data.name ??
-                                            '',
-                                        style: FontUtils.h20(
-                                            fontColor: AppColors.black,
-                                            fontWeight: FWT.semiBold),
+                    ).paddingSymmetric(horizontal: 6, vertical: 5.h),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        switch (widget.matchMealStatus) {
+                          0 => "Matches with your Meal Plan",
+                          1 => "Partly matches with your Meal Plan",
+                          _ => "Doesn’t match with your Meal Plan",
+                        },
+                        style: const TextStyle(
+                          color: Color(0xff5F5F5F),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      if (widget.matchMealStatus != null) ...[
+                        const SizedBox(width: 5),
+                        Image.asset(
+                          matchIcon(widget.matchMealStatus!),
+                          width: 25.w,
+                        ),
+                      ],
+                    ],
+                  ),
+                  Expanded(
+                      child: nutritionixGetNxMealInfoByNameModelData == null
+                          ? state is GroceryNutritionixGetNxMealInfoByNameLoadingState
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : const SizedBox()
+                          : SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 6),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      nutritionixGetNxMealInfoByNameModelData!
+                                              .foodName ??
+                                          widget.data.name ??
+                                          '',
+                                      style: FontUtils.h20(
+                                          fontColor: AppColors.black,
+                                          fontWeight: FWT.semiBold),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      width: 335.w,
+                                      height: 120.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        image: widget.data.image == null ||
+                                                widget.data.image!.isEmpty
+                                            ? const DecorationImage(
+                                                image: AssetImage(
+                                                    AssetsUtils.food3),
+                                                fit: BoxFit.cover)
+                                            : DecorationImage(
+                                                image: NetworkImage(
+                                                    widget.data.image!),
+                                                fit: BoxFit.cover),
                                       ),
-                                      const SizedBox(
-                                        height: 5,
+                                    ),
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
+                                    GridView(
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 2,
+                                        crossAxisSpacing: 6.w,
+                                        mainAxisSpacing: 6.h,
                                       ),
-                                      Container(
-                                        width: 335.w,
-                                        height: 120.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          image: widget.data.image == null ||
-                                                  widget.data.image!.isEmpty
-                                              ? const DecorationImage(
-                                                  image: AssetImage(
-                                                      AssetsUtils.food3),
-                                                  fit: BoxFit.cover)
-                                              : DecorationImage(
-                                                  image: NetworkImage(
-                                                      widget.data.image!),
-                                                  fit: BoxFit.cover),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 15,
-                                      ),
-                                      GridView(
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 2,
-                                          crossAxisSpacing: 6.w,
-                                          mainAxisSpacing: 6.h,
-                                        ),
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        children: [
-                                          myProgressBarCardView(
-                                              'Cal',
-                                              nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfCalories ==
-                                                      null
-                                                  ? 0
-                                                  : double.parse(
-                                                      nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfCalories
-                                                          .toString()),
-                                              PreferenceUtils.getString(
-                                                          totalCalorie)
-                                                      .isEmpty
-                                                  ? 1
-                                                  : double.parse(double.parse(
-                                                          PreferenceUtils
-                                                              .getString(
-                                                                  totalCalorie))
-                                                      .toStringAsFixed(2)),
-                                              AppColors.primaryBlue,
-                                              'cal'),
-                                          myProgressBarCardView(
-                                              'Fat',
-                                              nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalFat ==
-                                                      null
-                                                  ? 0
-                                                  : double.parse(
-                                                      nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalFat
-                                                          .toString()),
-                                              PreferenceUtils.getString(
-                                                          totalFat)
-                                                      .isEmpty
-                                                  ? 1
-                                                  : double.parse(double.parse(
-                                                          PreferenceUtils
-                                                              .getString(
-                                                                  totalFat))
-                                                      .toStringAsFixed(2)),
-                                              AppColors.coral,
-                                              'g'),
-                                          myProgressBarCardView(
-                                              'Carbs',
-                                              nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalCarbohydrate ==
-                                                      null
-                                                  ? 0
-                                                  : double.parse(
-                                                      nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalCarbohydrate
-                                                          .toString()),
-                                              PreferenceUtils.getString(
-                                                          totalCarbs)
-                                                      .isEmpty
-                                                  ? 1
-                                                  : double.parse(double.parse(
-                                                          PreferenceUtils
-                                                              .getString(
-                                                                  totalCarbs))
-                                                      .toStringAsFixed(2)),
-                                              AppColors.mint,
-                                              'g'),
-                                          myProgressBarCardView(
-                                              'Protein',
-                                              nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalFat ==
-                                                      null
-                                                  ? 0
-                                                  : double.parse(
-                                                      nutritionixGetNxMealInfoByNameModelData!
-                                                          .nfTotalFat
-                                                          .toString()),
-                                              PreferenceUtils.getString(
-                                                          totalProtein)
-                                                      .isEmpty
-                                                  ? 1
-                                                  : double.parse(double.parse(
-                                                          PreferenceUtils
-                                                              .getString(
-                                                                  totalProtein))
-                                                      .toStringAsFixed(2)),
-                                              AppColors.skyBlue,
-                                              'g'),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text('Nutritional Information',
-                                              style: FontUtils.h24(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.semiBold))),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Saturated Fat',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Cholesterol',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Sodium',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Dietary Fiber',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Sugar',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Potassium',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                          Text(
-                                              '${(nutritionixGetNxMealInfoByNameModelData?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
-                                              style: FontUtils.h16(
-                                                  fontColor: AppColors.darkGray,
-                                                  fontWeight: FWT.medium)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Divider(
-                                          color: AppColors.disabledColor,
-                                          height: 2.h),
-                                      const SizedBox(height: 15),
-                                      RestaurantMealAddButtonWidget(
-                                        onTap: () {
-                                          // if (addToCart == false) {
-                                          //   setState(() {
-                                          //     selectedItem = 1;
-                                          //     addToCart = true;
-                                          //   });
-                                          // }
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      children: [
+                                        myProgressBarCardView(
+                                            'Cal',
+                                            nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfCalories ==
+                                                    null
+                                                ? 0
+                                                : double.parse(
+                                                    nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfCalories
+                                                        .toString()),
+                                            PreferenceUtils.getString(
+                                                        totalCalorie)
+                                                    .isEmpty
+                                                ? 1
+                                                : double.parse(double.parse(
+                                                        PreferenceUtils
+                                                            .getString(
+                                                                totalCalorie))
+                                                    .toStringAsFixed(2)),
+                                            AppColors.primaryBlue,
+                                            'cal'),
+                                        myProgressBarCardView(
+                                            'Fat',
+                                            nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalFat ==
+                                                    null
+                                                ? 0
+                                                : double.parse(
+                                                    nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalFat
+                                                        .toString()),
+                                            PreferenceUtils.getString(totalFat)
+                                                    .isEmpty
+                                                ? 1
+                                                : double.parse(double.parse(
+                                                        PreferenceUtils
+                                                            .getString(
+                                                                totalFat))
+                                                    .toStringAsFixed(2)),
+                                            AppColors.coral,
+                                            'g'),
+                                        myProgressBarCardView(
+                                            'Carbs',
+                                            nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalCarbohydrate ==
+                                                    null
+                                                ? 0
+                                                : double.parse(
+                                                    nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalCarbohydrate
+                                                        .toString()),
+                                            PreferenceUtils.getString(
+                                                        totalCarbs)
+                                                    .isEmpty
+                                                ? 1
+                                                : double.parse(double.parse(
+                                                        PreferenceUtils
+                                                            .getString(
+                                                                totalCarbs))
+                                                    .toStringAsFixed(2)),
+                                            AppColors.mint,
+                                            'g'),
+                                        myProgressBarCardView(
+                                            'Protein',
+                                            nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalFat ==
+                                                    null
+                                                ? 0
+                                                : double.parse(
+                                                    nutritionixGetNxMealInfoByNameModelData!
+                                                        .nfTotalFat
+                                                        .toString()),
+                                            PreferenceUtils.getString(
+                                                        totalProtein)
+                                                    .isEmpty
+                                                ? 1
+                                                : double.parse(double.parse(
+                                                        PreferenceUtils
+                                                            .getString(
+                                                                totalProtein))
+                                                    .toStringAsFixed(2)),
+                                            AppColors.skyBlue,
+                                            'g'),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text('Nutritional Information',
+                                            style: FontUtils.h24(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.semiBold))),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Saturated Fat',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfSaturatedFat ?? 0.00).toStringAsFixed(2)} g',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Cholesterol',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfCholesterol ?? 0.00).toStringAsFixed(2)} mg',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Sodium',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfSodium ?? 0.00).toStringAsFixed(2)} mg',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Dietary Fiber',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfDietaryFiber ?? 0.00).toStringAsFixed(2)} g',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Sugar',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfSugars ?? 0.00).toStringAsFixed(2)} g',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Potassium',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                        Text(
+                                            '${(nutritionixGetNxMealInfoByNameModelData?.nfPotassium ?? 0.00).toStringAsFixed(2)} mg',
+                                            style: FontUtils.h16(
+                                                fontColor: AppColors.darkGray,
+                                                fontWeight: FWT.medium)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                        color: AppColors.disabledColor,
+                                        height: 2.h),
+                                    const SizedBox(height: 15),
+                                    RestaurantMealAddButtonWidget(
+                                      onTap: () {
+                                        // if (addToCart == false) {
+                                        //   setState(() {
+                                        //     selectedItem = 1;
+                                        //     addToCart = true;
+                                        //   });
+                                        // }
 
-                                          widget.shoppingListData == null
-                                              ? Get.to(
-                                                  () =>
-                                                      RestaurantMenuDetailsScreen(
-                                                    data: widget.data,
-                                                    restaurantId:
-                                                        widget.restaurantId,
-                                                    cartCount: widget.cartCount,
-                                                    pickUp: widget.pickUp,
-                                                    quote: widget.quote,
-                                                    userAddress:
-                                                        widget.getUserAddress,
-                                                    onCustomizationChange:
-                                                        (p0) => widget
-                                                            .onCustomizationChange
-                                                            ?.call(p0),
-                                                  ),
-                                                )
-                                              : Get.to(
-                                                  () =>
-                                                      RestaurantMenuDetailsScreen(
-                                                    data: widget.data,
-                                                    restaurantId:
-                                                        widget.restaurantId,
-                                                    shoppingListData:
-                                                        widget.shoppingListData,
-                                                    cartCount: widget.cartCount,
-                                                    pickUp: widget.pickUp,
-                                                    quote: widget.quote,
-                                                    userAddress:
-                                                        widget.getUserAddress,
-                                                    onCustomizationChange:
-                                                        (p0) => widget
-                                                            .onCustomizationChange
-                                                            ?.call(p0),
-                                                  ),
-                                                );
-                                        },
-                                        buttonLable: 'Add to cart',
-                                        isFillColor: true,
-                                        selectedItemCount: 0,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 10, top: 10),
-                                        child: Center(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                builder: (context) {
-                                                  return LogFoodIntakeBottomSheet(
-                                                    nutritionixGetNxMealInfoByNameModelData:
-                                                        nutritionixGetNxMealInfoByNameModelData,
-                                                    isMainScreen: false,
-                                                    name: widget.data.name,
-                                                  );
-                                                },
-                                                isDismissible: false,
-                                                shape: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(16.r),
-                                                    topRight:
-                                                        Radius.circular(16.r),
-                                                  ),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.transparent,
-                                                  ),
+                                        widget.shoppingListData == null
+                                            ? Get.to(
+                                                () =>
+                                                    RestaurantMenuDetailsScreen(
+                                                  data: widget.data,
+                                                  restaurantId:
+                                                      widget.restaurantId,
+                                                  cartCount: widget.cartCount,
+                                                  pickUp: widget.pickUp,
+                                                  quote: widget.quote,
+                                                  userAddress:
+                                                      widget.getUserAddress,
+                                                  onCustomizationChange: (p0) =>
+                                                      widget
+                                                          .onCustomizationChange
+                                                          ?.call(p0),
+                                                ),
+                                              )
+                                            : Get.to(
+                                                () =>
+                                                    RestaurantMenuDetailsScreen(
+                                                  data: widget.data,
+                                                  restaurantId:
+                                                      widget.restaurantId,
+                                                  shoppingListData:
+                                                      widget.shoppingListData,
+                                                  cartCount: widget.cartCount,
+                                                  pickUp: widget.pickUp,
+                                                  quote: widget.quote,
+                                                  userAddress:
+                                                      widget.getUserAddress,
+                                                  onCustomizationChange: (p0) =>
+                                                      widget
+                                                          .onCustomizationChange
+                                                          ?.call(p0),
                                                 ),
                                               );
-                                            },
-                                            child: Text(
-                                              'Log To My Food Intake',
-                                              style: FontUtils.h18(
-                                                fontColor: AppColors.terracotta,
-                                                fontWeight: FWT.medium,
+                                      },
+                                      buttonLable: 'Add to cart',
+                                      isFillColor: true,
+                                      selectedItemCount: 0,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 10, top: 10),
+                                      child: Center(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (context) {
+                                                return LogFoodIntakeBottomSheet(
+                                                  nutritionixGetNxMealInfoByNameModelData:
+                                                      nutritionixGetNxMealInfoByNameModelData,
+                                                  isMainScreen: false,
+                                                  name: widget.data.name,
+                                                );
+                                              },
+                                              isDismissible: false,
+                                              shape: OutlineInputBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft:
+                                                      Radius.circular(16.r),
+                                                  topRight:
+                                                      Radius.circular(16.r),
+                                                ),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.transparent,
+                                                ),
                                               ),
-                                              textAlign: TextAlign.center,
+                                            );
+                                          },
+                                          child: Text(
+                                            'Log To My Food Intake',
+                                            style: FontUtils.h18(
+                                              fontColor: AppColors.terracotta,
+                                              fontWeight: FWT.medium,
                                             ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              )),
-                  ],
-                ),
-              );
-            }),
-      ),
+                              ),
+                            )),
+                ],
+              ),
+            );
+          }),
     );
   }
 

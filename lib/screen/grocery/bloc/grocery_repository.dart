@@ -602,12 +602,18 @@ class GroceryRepository {
   Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
       {required CreateGroceryOrderModel createOrderModel}) async {
     try {
+      Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
+      Map<String, dynamic> req = createOrderModel.toJson();
+      if (createOrderModel.pickup != true) {
+        req['user_latitude'] = createOrderModel.userAddress?.latitude;
+        req['user_longitude'] = createOrderModel.userAddress?.longitude;
+        req.addAll(extAddress);
+      }
+
       log(ApiUrls.createOrder);
-      log("Request Data : ${jsonEncode(createOrderModel.toJson())}");
-      final response = await apiServices.post(
-        ApiUrls.createOrder,
-        createOrderModel.toJson(),
-      );
+      log("Request Data : ${jsonEncode(req)}");
+
+      final response = await apiServices.post(ApiUrls.createOrder, req);
       log(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return Right(
@@ -688,6 +694,9 @@ class GroceryRepository {
       "sub_categorieId": subCategorieId,
     };
 
+    Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
+    reqData.addAll(extAddress);
+
     log("Api : ${ApiUrls.getMenuList}");
     log("Request Data : ${jsonEncode(reqData)}");
 
@@ -715,6 +724,9 @@ class GroceryRepository {
       "longitude": pos.$2 ?? address?.longitude,
       "pickup": askReceiveOrder != 0,
     };
+
+    Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
+    reqData.addAll(extAddress);
 
     log("Api : ${ApiUrls.getStoreCategorieList}");
     log("Req Data : ${jsonEncode(reqData)}");
