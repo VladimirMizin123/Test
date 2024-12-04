@@ -60,6 +60,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
         );
         break;
       }
+      mealPlanList.sort((a, b) =>
+          (a.date ?? DateTime.now()).compareTo(b.date ?? DateTime.now()));
     } catch (e) {
       log(e.toString());
     }
@@ -85,6 +87,8 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
           listener: (context, state) async {
             if (state is FetchMealPlanSuccessState) {
               mealPlanList = state.mealPlanList;
+              mealPlanList.sort((a, b) => (a.date ?? DateTime.now())
+                  .compareTo(b.date ?? DateTime.now()));
               isLoadingData = false;
               for (var i = 0; i < mealPlanList.length;) {
                 mealPlanBloc.add(GetMealLogByDateEvent(
@@ -116,7 +120,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                   } // TWVhbDoxNTQ2NDM1NzY=
                 }
               }
-
               for (var i = 0; i < mealPlanList.length; i++) {
                 if (mealPlanList[i].date!.year == DateTime.now().year &&
                     mealPlanList[i].date!.month == DateTime.now().month &&
@@ -232,7 +235,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       width: 56.w,
                       color: AppColors.primaryBlue,
                     ),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -274,7 +276,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                       ],
                     ).paddingSymmetric(horizontal: 6, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
-
                     state is ClearGroceryListLoadingState
                         ? Padding(
                             padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -308,30 +309,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                             fontWeight: FWT.medium))
                                     .paddingSymmetric(vertical: 10.h),
                               ),
-
-                    ///
-                    // state is ClearGroceryListLoadingState
-                    //     ? const Center(
-                    //         child: Padding(
-                    //           padding: EdgeInsets.symmetric(vertical: 20),
-                    //           child: CircularProgressIndicator(),
-                    //         ),
-                    //       )
-                    //     : GestureDetector(
-                    //         onTap: () {
-                    //           setState(() {
-                    //             // searchGroceryDetails.clear();
-                    //             // checkbox.clear();
-                    //           });
-                    //           // addNewGroceryItemBloc.add(ClearUserGroceryEvent());
-                    //         },
-                    //         child: Text(StringUtils.regenerateGroceryList,
-                    //                 style: FontUtils.h18(
-                    //                     fontColor: AppColors.primaryBlue,
-                    //                     fontWeight: FWT.medium))
-                    //             .paddingSymmetric(vertical: 10.h),
-                    //       ),
-
                     mealPlanList.isEmpty
                         ? const SizedBox.shrink()
                         : isReadyToShowWidget
@@ -353,35 +330,30 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            if (selectedDayIndex == 0) {
-                                              _pageController.jumpToPage(
-                                                  selectedDayIndex + 1);
-                                            } else {
-                                              _pageController.jumpToPage(
-                                                  selectedDayIndex + 1);
-                                            }
-                                          },
-                                          child: arrowButton(
-                                                  icon: AssetsUtils.arrowBack,
-                                                  isDisable: selectedDayIndex ==
-                                                      mealPlanList.length - 1)
-                                              .paddingOnly(right: 8.w),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            if (selectedDayIndex ==
-                                                mealPlanList.length) {
-                                            } else {
+                                            if (selectedDayIndex != 0) {
                                               _pageController.jumpToPage(
                                                   selectedDayIndex - 1);
                                             }
                                           },
                                           child: arrowButton(
-                                              icon: AssetsUtils.arrowForward,
-                                              isDisable: selectedDayIndex == 0
-                                              // isDisable: selectedDayIndex ==
-                                              //     mealPlanList.length - 1,
-                                              ),
+                                            icon: AssetsUtils.arrowBack,
+                                            isDisable: selectedDayIndex == 0,
+                                          ).paddingOnly(right: 8.w),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (selectedDayIndex ==
+                                                mealPlanList.length - 1) {
+                                            } else {
+                                              _pageController.jumpToPage(
+                                                  selectedDayIndex + 1);
+                                            }
+                                          },
+                                          child: arrowButton(
+                                            icon: AssetsUtils.arrowForward,
+                                            isDisable: selectedDayIndex ==
+                                                mealPlanList.length - 1,
+                                          ),
                                         ),
                                       ],
                                     )
@@ -442,7 +414,6 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                     setState(() {
                                       selectedDayIndex = value ?? 0;
                                     });
-                                    log("-------------Page Change ------------------ :$selectedDayIndex------");
                                     debugPrint('CURRENT PAGE : $value');
                                   },
                                   children: mealPlanList.map((e) {
