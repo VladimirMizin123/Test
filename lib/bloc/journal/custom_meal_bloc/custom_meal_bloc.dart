@@ -47,9 +47,11 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
           ///change bottom bar to select journal screen
           // Get.offAllNamed('/AppManagerScreen');
           // Get.offAllNamed('/AppManagerScreen');
-          Get.offAll(() => const AppManagerScreen(
-                selectIndex: 4,
-              ));
+          if (event.redirectToBack) {
+            Get.back();
+          } else {
+            Get.offAll(() => const AppManagerScreen(selectIndex: 4));
+          }
         },
       );
     } catch (e) {
@@ -82,9 +84,6 @@ class AddNewMealBloc extends Bloc<AddNewMealEvent, AddNewMealState> {
           showToast(isSuccess: true, message: right.message!);
           emit(AddNewMealSuccessfulState(productId: event.id));
 
-          ///change bottom bar to select journal screen
-          // Get.offAllNamed('/AppManagerScreen');
-          // Get.offAllNamed('/AppManagerScreen');
           Get.offAll(() => const AppManagerScreen(
                 selectIndex: 4,
               ));

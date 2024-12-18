@@ -115,9 +115,10 @@ class _AppManagerScreenState extends State<AppManagerScreen>
             showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             onTap: (int value) {
-              setState(() {
-                selectedIndex = value;
-              });
+              selectedIndex = value;
+              if (mounted) {
+                setState(() {});
+              }
             },
             elevation: 10,
           ),
@@ -133,7 +134,9 @@ class _AppManagerScreenState extends State<AppManagerScreen>
               Get.offAllNamed("/PremiumScreen", parameters: {
                 "fromDashboard": 'true',
               });
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             }
           }
 
@@ -144,12 +147,16 @@ class _AppManagerScreenState extends State<AppManagerScreen>
             Get.offAllNamed("/PremiumScreen", parameters: {
               "fromDashboard": 'true',
             });
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           }
 
           if (state is SubStatusLoader) {
             isLoading = state.loader;
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           }
         },
       ),
@@ -169,7 +176,9 @@ class _AppManagerScreenState extends State<AppManagerScreen>
         return RestaurantScreen(
           onBack: () {
             selectedIndex = 2;
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           },
         );
       case 4:

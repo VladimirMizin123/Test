@@ -22,11 +22,13 @@ class LogFoodIntakeBottomSheet extends StatefulWidget {
     super.key,
     this.nutritionixGetNxMealInfoByNameModelData,
     required this.isMainScreen,
+    this.redirectToBack = false,
     this.name,
   });
   final NutritionixGetNxMealInfoByNameModelData?
       nutritionixGetNxMealInfoByNameModelData;
   final bool isMainScreen;
+  final bool redirectToBack;
   final String? name;
   @override
   State<LogFoodIntakeBottomSheet> createState() =>
@@ -216,6 +218,7 @@ class _LogFoodIntakeBottomSheetState extends State<LogFoodIntakeBottomSheet> {
                                             '',
                                     type: option[selectedIndex],
                                     userId: userId,
+                                    redirectToBack: widget.redirectToBack,
                                     quantity: '1',
                                   ),
                                 );

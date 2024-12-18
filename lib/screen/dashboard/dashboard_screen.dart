@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -263,7 +262,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     if (state is LoadMealData) {
                       isDoneLoader = false;
                       trackerDataList = state.trackerDataList;
-                      setState(() {});
+                      if (mounted) {
+                        setState(() {});
+                      }
                       // bloc.add(GetDashboardData());
                       bloc.add(AddIngredientGroceryList());
                     }
@@ -649,9 +650,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 initialPage: currentIndex,
                 viewportFraction: 1.05,
                 onPageChanged: (index, reason) {
-                  setState(() {
-                    currentIndex = index;
-                  });
+                  currentIndex = index;
+                  if (mounted) {
+                    setState(() {});
+                  }
                 },
                 scrollDirection: Axis.horizontal,
               ),

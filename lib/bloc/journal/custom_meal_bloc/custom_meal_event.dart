@@ -10,6 +10,7 @@ class GetSelectedImagePath extends AddNewMealEvent {
 class AddNewMeal extends AddNewMealEvent {
   final String name;
   final File? imageUrl;
+  final bool redirectToBack;
   final String protein;
   final String fat;
   final String carbs;
@@ -23,6 +24,7 @@ class AddNewMeal extends AddNewMealEvent {
   AddNewMeal({
     required this.name,
     this.imageUrl,
+    this.redirectToBack = false,
     required this.protein,
     required this.fat,
     required this.carbs,
@@ -39,6 +41,7 @@ class UpdateNewMealEvent extends AddNewMealEvent {
   final String name;
   final File? imageUrl;
   final String protein;
+
   final String fat;
   final String carbs;
   final String calorie;

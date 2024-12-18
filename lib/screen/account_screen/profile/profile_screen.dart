@@ -548,7 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               inputFormatters: <TextInputFormatter>[
                                                 FilteringTextInputFormatter
                                                     .allow(RegExp(
-                                                        r"^\d+\'?\d{0,2}")),
+                                                        r"^\d+[\'’]?\d{0,2}")),
                                               ],
                                             ),
                                           ),
@@ -722,7 +722,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   targetWeight:
                                       int.parse(targetWeightController.text),
                                   heightInCm: double.parse(heightController.text
-                                      .replaceAll("'", ".")),
+                                      .replaceAll("'", ".")
+                                      .replaceAll("’", ".")),
                                   birthDate: selectedDOB!,
                                   gender: genderController.text,
                                 ),

@@ -7,6 +7,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/subscription/subscription_bloc.dart';
+import 'package:gymeats_mobile/constant/string_utils.dart';
+import 'package:gymeats_mobile/service/toast_service.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -19,6 +21,8 @@ class IapService {
   final InAppPurchase _iap = InAppPurchase.instance;
   late StreamSubscription _subscription;
   List<PurchaseDetails> purchaseList = [];
+
+  bool isRestoreCheck = false;
 
   SubscriptionBloc bloc = SubscriptionBloc();
 
@@ -73,6 +77,11 @@ class IapService {
         fetchStatus();
       }
     }
+
+    if (purchaseList.isEmpty && isRestoreCheck) {
+      isRestoreCheck = false;
+      ToastService.showToast(StringUtils.noPreviousPurchaseFound);
+    }
   }
 
   Future<List<ProductDetails>> getProducts() async {
@@ -122,7 +131,11 @@ class IapService {
   }
 
   Future<void> restorePurchases() async {
-    await InAppPurchase.instance.restorePurchases();
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (e) {
+      ///  Restore Purchase Error !
+    }
   }
 
   static Future<bool> isSubscriptionRunning(

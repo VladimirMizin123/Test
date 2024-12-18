@@ -10,6 +10,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 import 'package:gymeats_mobile/screen/dashboard/order_details_screen.dart';
+import 'package:intl/intl.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -34,12 +35,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: BlocConsumer(
           bloc: getDashboardBloc,
           listener: (context, state) {
             if (state is GetOrderInvoiceSuccessState) {
-              invoiceData = state.invoiceData.reversed.toList();
+              invoiceData = state.invoiceData;
 
               loading = false;
             }
@@ -54,438 +56,230 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: const Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.black,
-                            ),
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black,
                           ),
-                          Text(
-                            StringUtils.orderHistory,
-                            style: Theme.of(context)
-                                .textTheme
-                                .displayMedium
-                                ?.copyWith(color: const Color(0xFF010101)),
-                          ),
-                          const SizedBox()
-                        ],
-                      ),
-                      invoiceData.isEmpty
-                          ? Expanded(
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Currently No Order Found',
-                                  style: FontUtils.h18(
-                                    fontColor: AppColors.darkGray,
-                                    fontWeight: FWT.medium,
-                                  ),
+                        ),
+                        Text(
+                          StringUtils.orderHistory,
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayMedium
+                              ?.copyWith(color: const Color(0xFF010101)),
+                        ),
+                        const SizedBox()
+                      ],
+                    ).paddingSymmetric(horizontal: 15),
+                    invoiceData.isEmpty
+                        ? Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Currently No Order Found',
+                                style: FontUtils.h18(
+                                  fontColor: AppColors.darkGray,
+                                  fontWeight: FWT.medium,
                                 ),
                               ),
-                            )
-                          : Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    /// Pending Orders ------------------------------------------------------------------
-                                    // Text(
-                                    //   StringUtils.orderProgressText,
-                                    //   style: Theme.of(context)
-                                    //       .textTheme
-                                    //       .headlineSmall
-                                    //       ?.copyWith(color: const Color(0xFF010101)),
-                                    // ).paddingOnly(top: 20.h, bottom: 15.h),
+                            ),
+                          )
+                        : Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    StringUtils.recentOrders,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          color: const Color(0xFF010101),
+                                        ),
+                                  ).paddingOnly(top: 10.h, right: 15, left: 15),
+                                  SizedBox(height: 15.0.h),
+                                  ListView.builder(
+                                    itemCount: invoiceData.length,
+                                    shrinkWrap: true,
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      OrderedItem item = invoiceData[index];
 
-                                    ///
-                                    // ListView.builder(
-                                    //     itemCount: 1,
-                                    //     shrinkWrap: true,
-                                    //     physics: const NeverScrollableScrollPhysics(),
-                                    //     itemBuilder: (BuildContext context, int index) {
-                                    //       return Container(
-                                    //         width: double.infinity.w,
-                                    //         // padding: const EdgeInsets.all(12),
-                                    //         decoration: BoxDecoration(
-                                    //           borderRadius: BorderRadius.circular(8.r),
-                                    //           color: Colors.white,
-                                    //           border:
-                                    //               Border.all(color: AppColors.terracotta),
-                                    //           boxShadow: [
-                                    //             BoxShadow(
-                                    //               color: const Color(0xff004C63)
-                                    //                   .withOpacity(0.008),
-                                    //               spreadRadius: 0,
-                                    //               blurRadius: 16,
-                                    //               offset: const Offset(0, 0),
-                                    //             )
-                                    //           ],
-                                    //           /*  border: Border.all(
-                                    //   color: AppColors.terracotta,
-                                    //   width: 1.w,
-                                    //   style: BorderStyle.solid),*/
-                                    //         ),
-                                    //         child: Column(
-                                    //           mainAxisAlignment: MainAxisAlignment.start,
-                                    //           children: [
-                                    //             ListTile(
-                                    //               visualDensity: const VisualDensity(
-                                    //                   horizontal: 0, vertical: 0),
-                                    //               minVerticalPadding: 0,
-                                    //               leading: Image.asset(
-                                    //                 AssetsUtils.storeImage,
-                                    //                 height: 40.h,
-                                    //                 width: 40.w,
-                                    //               ),
-                                    //               title: Text(
-                                    //                 StringUtils.storeText,
-                                    //                 style: Theme.of(context)
-                                    //                     .textTheme
-                                    //                     .headlineSmall
-                                    //                     ?.copyWith(
-                                    //                         color: const Color(0xFF010101)),
-                                    //               ),
-                                    //               subtitle: Text(
-                                    //                 StringUtils.storeAddress,
-                                    //                 style: Theme.of(context)
-                                    //                     .textTheme
-                                    //                     .bodySmall
-                                    //                     ?.copyWith(
-                                    //                         color: const Color(0xFF010101),
-                                    //                         fontWeight: FontWeight.w400),
-                                    //               ),
-                                    //               contentPadding: const EdgeInsets.only(
-                                    //                   left: 15.0,
-                                    //                   right: 15.0,
-                                    //                   bottom: 5.0,
-                                    //                   top: 5.0),
-                                    //               dense: true,
-                                    //             ),
-                                    //             Padding(
-                                    //               padding: const EdgeInsets.only(
-                                    //                 left: 15.0,
-                                    //                 right: 15.0,
-                                    //               ),
-                                    //               child: Divider(
-                                    //                 height: 1.h,
-                                    //                 color: AppColors.darkGray,
-                                    //               ),
-                                    //             ),
-                                    //             SizedBox(
-                                    //               height: 10.h,
-                                    //             ),
-                                    //             Padding(
-                                    //               padding: const EdgeInsets.only(
-                                    //                   left: 15.0,
-                                    //                   right: 15.0,
-                                    //                   bottom: 15.0),
-                                    //               child: Row(
-                                    //                 children: [
-                                    //                   const Expanded(
-                                    //                     child: Column(
-                                    //                       children: [
-                                    //                         Row(
-                                    //                           children: [
-                                    //                             Text(
-                                    //                               StringUtils.orderType,
-                                    //                               style: TextStyle(
-                                    //                                 color:
-                                    //                                     AppColors.darkGray,
-                                    //                                 fontWeight:
-                                    //                                     FontWeight.w800,
-                                    //                                 fontSize: 10,
-                                    //                               ),
-                                    //                             ),
-                                    //                             Text(
-                                    //                               'Delivery',
-                                    //                               style: TextStyle(
-                                    //                                 color: AppColors
-                                    //                                     .oxFF010101,
-                                    //                                 fontWeight:
-                                    //                                     FontWeight.w400,
-                                    //                                 fontSize: 12,
-                                    //                               ),
-                                    //                             ),
-                                    //                           ],
-                                    //                         ),
-                                    //                         Row(
-                                    //                           children: [
-                                    //                             Text(
-                                    //                               StringUtils.deliveryTime,
-                                    //                               style: TextStyle(
-                                    //                                 color:
-                                    //                                     AppColors.darkGray,
-                                    //                                 fontWeight:
-                                    //                                     FontWeight.w800,
-                                    //                                 fontSize: 10,
-                                    //                               ),
-                                    //                             ),
-                                    //                             Text(
-                                    //                               '10:00-10:20',
-                                    //                               style: TextStyle(
-                                    //                                 color: AppColors
-                                    //                                     .oxFF010101,
-                                    //                                 fontWeight:
-                                    //                                     FontWeight.w400,
-                                    //                                 fontSize: 12,
-                                    //                               ),
-                                    //                             ),
-                                    //                           ],
-                                    //                         ),
-                                    //                       ],
-                                    //                     ),
-                                    //                   ),
-                                    //                   GestureDetector(
-                                    //                     onTap: () {
-                                    //                       Get.toNamed(
-                                    //                           '/OrderDetailsScreen');
-                                    //                     },
-                                    //                     child: const Row(
-                                    //                       children: [
-                                    //                         Text(
-                                    //                           StringUtils.details,
-                                    //                           style: TextStyle(
-                                    //                             color: AppColors.terracotta,
-                                    //                             fontWeight: FontWeight.w300,
-                                    //                             fontSize: 14,
-                                    //                           ),
-                                    //                         ),
-                                    //                         Icon(Icons.arrow_forward_ios,
-                                    //                             color:
-                                    //                                 AppColors.terracotta),
-                                    //                       ],
-                                    //                     ),
-                                    //                   ),
-                                    //                 ],
-                                    //               ),
-                                    //             )
-                                    //           ],
-                                    //         ),
-                                    //       ).paddingOnly(bottom: 10);
-                                    //     }),
-                                    Text(
-                                      StringUtils.recentOrders,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(
-                                            color: const Color(0xFF010101),
-                                          ),
-                                    ).paddingOnly(top: 10.h),
-                                    SizedBox(height: 15.0.h),
-                                    ListView.builder(
-                                      itemCount: invoiceData.length,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        OrderedItem item = invoiceData[index];
-
-                                        return Container(
-                                          width: double.infinity.w,
-                                          // padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8.r),
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: const Color(0xff004C63)
-                                                    .withOpacity(0.008),
-                                                spreadRadius: 0,
-                                                blurRadius: 16,
-                                                offset: const Offset(0, 0),
-                                              )
-                                            ],
-                                            /*  border: Border.all(
-                      color: AppColors.terracotta,
-                      width: 1.w,
-                      style: BorderStyle.solid),*/
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              ListTile(
-                                                visualDensity:
-                                                    const VisualDensity(
-                                                        horizontal: 0,
-                                                        vertical: 0),
-                                                minVerticalPadding: 0,
-                                                // leading:
-                                                //     "${invoiceData[index].items?[0].stores?.storeId}"
-                                                //         .storeImg(40),
-                                                title: SizedBox(
-                                                  child: Text(
-                                                    invoiceData[index]
-                                                            .items?[0]
-                                                            .stores
-                                                            ?.storeName ??
-                                                        '',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .headlineSmall
-                                                        ?.copyWith(
-                                                            color: const Color(
-                                                                0xFF010101)),
+                                      return Container(
+                                        width: double.infinity.w,
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 12.5, 10, 17),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(0xff004C63)
+                                                  .withOpacity(0.08),
+                                              spreadRadius: 0,
+                                              blurRadius: 16,
+                                              offset: const Offset(0, 0),
+                                            )
+                                          ],
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              invoiceData[index]
+                                                      .items?[0]
+                                                      .stores
+                                                      ?.storeName ??
+                                                  '',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall
+                                                  ?.copyWith(
+                                                      color: const Color(
+                                                          0xFF010101)),
+                                            ),
+                                            if (item.createdOn != null)
+                                              Text(
+                                                DateFormat(
+                                                        'dd MMM yyyy, hh:mm a')
+                                                    .format(item.createdOn!),
+                                                style: const TextStyle(
+                                                  fontSize: 13,
+                                                  fontFamily: 'Avenir',
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xFF5F5F5F),
+                                                ),
+                                              ),
+                                            const SizedBox(height: 12),
+                                            Divider(
+                                                height: 1.h,
+                                                color: AppColors.disable),
+                                            const SizedBox(height: 15),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Column(
+                                                    children: [
+                                                      itemWidget(
+                                                        title: StringUtils
+                                                            .orderType,
+                                                        value: (item.items
+                                                                    ?.isNotEmpty ??
+                                                                false)
+                                                            ? (item.items?.first
+                                                                        .isPickUp ??
+                                                                    false)
+                                                                ? "Pick up"
+                                                                : 'Delivery'
+                                                            : 'Delivery',
+                                                      ),
+                                                      // if (item.createdOn !=
+                                                      //     null)
+                                                      //   itemWidget(
+                                                      //     title: "Order at",
+                                                      //     value: DateFormat(
+                                                      //             'dd/MM/yyyy')
+                                                      //         .format(item
+                                                      //             .createdOn!),
+                                                      //   ),
+                                                      itemWidget(
+                                                        title: StringUtils
+                                                            .deliveryTime,
+                                                        value: '10:00-10:20',
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                contentPadding:
-                                                    const EdgeInsets.only(
-                                                        left: 15.0,
-                                                        right: 15.0,
-                                                        bottom: 5.0,
-                                                        top: 5.0),
-                                                dense: true,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  left: 15.0,
-                                                  right: 15.0,
-                                                ),
-                                                child: Divider(
-                                                  height: 1.h,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 10.h,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15.0,
-                                                    right: 15.0,
-                                                    bottom: 15.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              const Text(
-                                                                StringUtils
-                                                                    .orderType,
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColors
-                                                                      .darkGray,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w800,
-                                                                  fontSize: 10,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                (item.items?.isNotEmpty ??
-                                                                        false)
-                                                                    ? (item.items?.first.isPickUp ??
-                                                                            false)
-                                                                        ? "Pick up"
-                                                                        : 'Delivery'
-                                                                    : 'Delivery',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  color: AppColors
-                                                                      .oxFF010101,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 12,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const Row(
-                                                            children: [
-                                                              Text(
-                                                                StringUtils
-                                                                    .deliveryTime,
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColors
-                                                                      .darkGray,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w800,
-                                                                  fontSize: 10,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                '10:00-10:20',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColors
-                                                                      .oxFF010101,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 12,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Get.to(() =>
+                                                        OrderDetailsScreen(
+                                                          data: invoiceData[
+                                                              index],
+                                                        ));
+                                                  },
+                                                  child: const Row(
+                                                    children: [
+                                                      Text(
+                                                        StringUtils.details,
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .terracotta,
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 14,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        Get.to(() =>
-                                                            OrderDetailsScreen(
-                                                              data: invoiceData[
-                                                                  index],
-                                                            ));
-                                                      },
-                                                      child: const Row(
-                                                        children: [
-                                                          Text(
-                                                            StringUtils.details,
-                                                            style: TextStyle(
-                                                              color: AppColors
-                                                                  .terracotta,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w300,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                          Icon(
-                                                              Icons
-                                                                  .arrow_forward_ios,
-                                                              color: AppColors
-                                                                  .terracotta),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
+                                                      Icon(
+                                                          Icons
+                                                              .arrow_forward_ios,
+                                                          color: AppColors
+                                                              .terracotta),
+                                                    ],
+                                                  ),
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        ).paddingOnly(bottom: 10);
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ).paddingOnly(bottom: 16);
+                                    },
+                                  ),
+                                ],
                               ),
-                            )
-                    ],
-                  ),
+                            ),
+                          )
+                  ],
                 ),
         ),
       ),
+    );
+  }
+
+  Widget itemWidget({required String title, required String value}) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 70,
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppColors.darkGray,
+              fontWeight: FontWeight.w800,
+              fontSize: 10,
+            ),
+          ),
+        ),
+        Text(
+          ":   $value",
+          style: const TextStyle(
+            color: AppColors.oxFF010101,
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+          ),
+        ),
+      ],
     );
   }
 }

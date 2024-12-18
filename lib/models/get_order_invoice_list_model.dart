@@ -67,17 +67,20 @@ class Data {
 class OrderedItem {
   String? orderId;
   String? trackLink;
+  DateTime? createdOn;
   List<Item>? items;
 
   OrderedItem({
     this.orderId,
     this.trackLink,
+    this.createdOn,
     this.items,
   });
 
   factory OrderedItem.fromJson(Map<String, dynamic> json) => OrderedItem(
         orderId: json["orderId"],
         trackLink: json["trackLink"],
+        createdOn: DateTime.tryParse(json["createdOn"]?.toString() ?? ""),
         items: json["items"] == null
             ? []
             : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
@@ -86,6 +89,7 @@ class OrderedItem {
   Map<String, dynamic> toJson() => {
         "orderId": orderId,
         "trackLink": trackLink,
+        "createdOn": createdOn,
         "items": items == null
             ? []
             : List<dynamic>.from(items!.map((x) => x.toJson())),

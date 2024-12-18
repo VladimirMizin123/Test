@@ -64,10 +64,7 @@ class RestaurantMenuScreen extends StatefulWidget {
 class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   List selectedTabData = [];
 
-  List mealType = [
-    'I can eat',
-    'Price',
-  ];
+  List mealType = ['I can eat', 'Price'];
 
   int select = 0;
   int cartCount = 0;

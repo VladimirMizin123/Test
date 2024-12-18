@@ -65,6 +65,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
   user_address.UserAddress? getUserAddress;
   List<dynamic> edgesDummyList = [];
   int selectedIndex = -1;
+  final GlobalKey _alertKey = GlobalKey();
 
   String? verifyLoaderId;
 
@@ -176,6 +177,85 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
           if (state is VerifyLoader) {
             verifyLoaderId = state.id;
             if (!mounted) return;
+
+            if (verifyLoaderId == null) {
+              if (_alertKey.currentContext != null) {
+                Get.back();
+              }
+            } else {
+              DateTime time = DateTime.now();
+              showGeneralDialog(
+                barrierDismissible: false,
+                context: context,
+                barrierColor: Colors.black54,
+                pageBuilder: (BuildContext context, _, __) {
+                  return Material(
+                    key: _alertKey,
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Container(
+                        width: context.width * 0.8,
+                        constraints: const BoxConstraints(maxWidth: 300),
+                        height: 160,
+                        decoration: BoxDecoration(
+                          color: AppColors.whiteColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const CircularProgressIndicator(
+                                    color: AppColors.primaryBlue),
+                                20.height,
+                                StreamBuilder(
+                                  stream: Stream.periodic(
+                                      const Duration(milliseconds: 500)),
+                                  builder: (_, __) {
+                                    int ml = DateTime.now()
+                                        .difference(time)
+                                        .inMilliseconds;
+                                    return Text(
+                                      ml > 1500
+                                          ? StringUtils.organizingGroceryItems
+                                          : StringUtils.fetchingYourBestOptions,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: AppColors.black,
+                                        fontFamily: 'Avenir',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ).paddingAll(15),
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                  groceryBloc.prevId = null;
+                                  verifyLoaderId = null;
+                                },
+                                icon: const Icon(Icons.close),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
             setState(() {});
           }
         },
@@ -499,39 +579,42 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
   }
 
   void verifyGrocery(String? id, String? storeName) {
-    if (verifyLoaderId == null) {
-      groceryBloc.add(
-        StoreVerifyEvent(
-          getUserAddress: getUserAddress,
-          askReceiveOrder: askOrder,
-          id: id,
-          notVerify: () {
-            storeList.removeWhere((element) => element.id == id);
-            if (searchController.text.trim().isEmpty) {
-              PreferenceUtils.setString(prefKey, jsonEncode(storeList));
-            }
-            if (!mounted) return;
-            setState(() {});
-          },
-          onVerify: (categorie) {
-            if (mounted) {
-              Get.to(
-                () => StoreCategoriesScreen(
-                  storeId: id,
-                  address: getUserAddress,
-                  storeName: storeName,
-                  groceryDetails: groceryDetails,
-                  askOrder: askOrder,
-                  categorie: categorie,
-                ),
-              );
-            } else {
-              return;
-            }
-          },
-        ),
-      );
+    groceryBloc.prevId = id;
+    if (verifyLoaderId != null) {
+      return;
     }
+    groceryBloc.add(
+      StoreVerifyEvent(
+        getUserAddress: getUserAddress,
+        askReceiveOrder: askOrder,
+        context: context,
+        id: id,
+        notVerify: () {
+          storeList.removeWhere((element) => element.id == id);
+          if (searchController.text.trim().isEmpty) {
+            PreferenceUtils.setString(prefKey, jsonEncode(storeList));
+          }
+          if (!mounted) return;
+          setState(() {});
+        },
+        onVerify: (categorie) {
+          if (mounted) {
+            Get.to(
+              () => StoreCategoriesScreen(
+                storeId: id,
+                address: getUserAddress,
+                storeName: storeName,
+                groceryDetails: groceryDetails,
+                askOrder: askOrder,
+                categorie: categorie,
+              ),
+            );
+          } else {
+            return;
+          }
+        },
+      ),
+    );
   }
 
   String getAddress(Address? address) {
