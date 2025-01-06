@@ -13,6 +13,7 @@ import 'package:gymeats_mobile/bloc/dashboard/cart_bloc/cart_bloc.dart';
 import 'package:gymeats_mobile/bloc/journal/get_journal_data/get_user_journal_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/get_meallogby_date_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
@@ -24,7 +25,6 @@ import 'package:gymeats_mobile/screen/journal/exercise/add_exercise_screen.dart'
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_bloc.dart';
 import 'package:gymeats_mobile/screen/meal_plan_home/bloc/meal_plan_event.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
-import 'package:gymeats_mobile/widget/convert_units_widget/water_convert.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:gymeats_mobile/bloc/dashboard/get_dashboard/get_dashboard_bloc.dart';
@@ -186,10 +186,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           width: size.width.w,
           child: Column(
             children: [
+              Image.asset(
+                AssetsUtils.gymEatsLogo,
+                height: 20.h,
+                width: 56.w,
+                color: AppColors.primaryBlue,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
+                  GestureDetector(
                     onTap: () async {
                       await Navigator.push(
                           context,
@@ -197,34 +203,23 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             builder: (context) => const AccountScreen(),
                           ));
                       accountBloc.add(GetUnitInfoEvent());
+                      bloc.add(GetDashboardData());
                     },
-                    child: Image.asset(
-                      AssetsUtils.user,
-                      height: 25.h,
-                      width: 25.w,
+                    child: SvgPicture.asset(
+                      AssetsUtils.userSvg,
                       color: AppColors.darkGray,
                     ),
                   ),
-                  Text(
-                    StringUtils.dashboard,
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayMedium
-                        ?.copyWith(color: const Color(0xFF010101)),
-                  ),
+                  Text(StringUtils.dashboard,
+                      style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
                   InkWell(
                     onTap: () {
                       Get.toNamed('/OrderHistoryScreen');
                     },
-                    child: Image.asset(
-                      AssetsUtils.notification,
-                      height: 25.h,
-                      width: 25.w,
-                      color: AppColors.darkGray,
-                    ),
+                    child: SvgPicture.asset(AssetsUtils.notificationSvg),
                   )
                 ],
-              ).paddingSymmetric(horizontal: 6, vertical: 5.h),
+              ).paddingSymmetric(horizontal: 15, vertical: 5.h),
               Expanded(
                 child: BlocConsumer(
                   bloc: bloc,
@@ -469,11 +464,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       if (waterValue == 1) {
                         var value = (model.data!.dailyWaterGoals! * 0.033814);
 
-                        mydailyWaterGoals = value.toStringAsFixed(2).toString();
+                        mydailyWaterGoals = value.toStringAsFixed(2);
                       } else {
                         mydailyWaterGoals =
                             model.data!.dailyWaterGoals.toString();
                       }
+                      double per = model.data!.totalIntakeWater! /
+                          (double.tryParse(mydailyWaterGoals) ?? 0);
                       return InkWell(
                         onTap: () async {
                           Get.toNamed('/AddWaterScreen',
@@ -489,8 +486,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             margin: EdgeInsets.only(
                                 left: 20.w, top: 15.h, bottom: 5.h),
                             child: waterExerciseDataView(
-                              percentage: model.data!.totalIntakeWater! /
-                                  model.data!.dailyWaterGoals!,
+                              percentage: per.isNaN || per.isInfinite ? 0 : per,
                               title: StringUtils.water,
                               textTheme: Theme.of(context).textTheme,
                               progressColor: AppColors.primaryBlue,
@@ -498,9 +494,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               type: StringUtils.rate,
                               // countValue: model.data!.dailyWaterGoals!.toString(),
                               countValue: mydailyWaterGoals.toString(),
-                              mlCalCount: convertMilliToOz(
-                                  textValue: model.data!.totalIntakeWater!,
-                                  isWatervalue: waterValue),
+                              mlCalCount:
+                                  model.data!.totalIntakeWater.toString(),
                               tag: waterValue == 1
                                   ? StringUtils.oz
                                   : StringUtils.ml,

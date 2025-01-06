@@ -37,9 +37,7 @@ class _ConditionScreenState extends State<ConditionScreen> {
                                 BackButtonWidget(),
                               ],
                             ),
-                            SizedBox(
-                              width: 50.w,
-                            ),
+                            SizedBox(width: 50.w),
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

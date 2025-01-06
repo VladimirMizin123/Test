@@ -68,7 +68,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              AccountTitleWidget(
+              accountTitleWidget(
                 title: "Program",
                 widget: Container(
                   width: double.infinity,

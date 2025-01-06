@@ -16,6 +16,7 @@ class SubscriptionRepository {
   Future<Either<ErrorModel, SubscriptionStatusModel>>
       fetchSubscriptionStatus() async {
     String apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
+    print(apiURL);
     final response = await apiServices.get(apiURL);
     if (response.statusCode == 200 || response.statusCode == 201) {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);

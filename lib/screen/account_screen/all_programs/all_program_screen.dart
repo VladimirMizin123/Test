@@ -258,7 +258,7 @@ class _AllProgramScreenState extends State<AllProgramScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: AccountTitleWidget(
+        child: accountTitleWidget(
           title: "All Programs",
           widget: Expanded(
             child: Container(

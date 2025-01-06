@@ -72,7 +72,8 @@ class SignUpRepository {
       "UserName": model.email ?? "",
       "PhoneNumber": model.phoneNumber ?? "",
       "UserDetail.Age": model.age ?? "",
-      "UserDetail.Height": model.height ?? "",
+      "UserDetail.Height":
+          model.height?.replaceAll("'", ".").replaceAll("’", ".") ?? "",
       "UserDetail.Weight": model.weight ?? "",
       "UserDetail.Gender": model.gender! == StringUtils.male
           ? 'Male'
@@ -156,7 +157,8 @@ class SignUpRepository {
       data.addAll({"UserDetail.SurveyDetails.Medication.Options": ""});
     }
 
-    log("DATA:----------> ${jsonEncode(data)}");
+    log("---------->DATA:----------> ${jsonEncode(data)}---------->");
+    log("----Api Url : ${ApiUrls.authUpdateProfileDetails}");
 
     final response = await apiServices.postMultipart(
         url: ApiUrls.authUpdateProfileDetails, body: data, files: profileImage);
@@ -208,6 +210,8 @@ class SignUpRepository {
 
   Future<Either<ErrorModel, SuccessModel>> addUserRestriction(
       {List<String> restrictionList = const [], String? userid}) async {
+    log("Api : ${'${ApiUrls.addRestrictionAndGetMealPlan}/$userid'}");
+    log("Restriction List : $restrictionList");
     final response = await apiServices.post(
         '${ApiUrls.addRestrictionAndGetMealPlan}/$userid', restrictionList);
 

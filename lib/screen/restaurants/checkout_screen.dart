@@ -48,6 +48,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'bloc/restaurant_event.dart';
 import 'bloc/restaurant_state.dart';
 import 'model/get_user_address_model.dart' as address;
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart'
+    as res_addd;
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({
@@ -58,6 +62,7 @@ class CheckOutScreen extends StatefulWidget {
     required this.isFromGrocery,
     this.hasMultipleStore = false,
     required this.getUserAddress,
+    this.grocAdd,
     this.createMultipleOrder = false,
     this.currentAddress,
     // required this.subtotal,
@@ -65,6 +70,7 @@ class CheckOutScreen extends StatefulWidget {
   });
 
   final address.UserAddress? getUserAddress;
+  final groc_add.Address? grocAdd;
   final bool isFromGrocery;
   final bool hasMultipleStore;
   final bool createMultipleOrder;
@@ -82,19 +88,25 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
+  GoogleMapController? _mapController;
+
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
     (double?, double?) i = await Constant.i.position;
-    getCurrentLocation(
-      latitude: i.$1 ?? (widget.getUserAddress?.latitude ?? 0),
-      longitude: i.$2 ?? widget.getUserAddress?.longitude ?? 0,
-    );
+    double lat = (widget.grocAdd?.latitude) ??
+        (findResAddress?.latitude ??
+            (i.$1 ?? (widget.getUserAddress?.latitude ?? 0)));
+    double lng = (widget.grocAdd?.longitude) ??
+        (findResAddress?.longitude ??
+            (i.$2 ?? widget.getUserAddress?.longitude ?? 0));
+    getCurrentLocation(latitude: lat, longitude: lng);
   }
 
   CameraPosition currentPosition = const CameraPosition(
     target: LatLng(21.2147, 72.8887),
     zoom: 1.20,
   );
+
   GoogleMapController? mapController;
   LatLng? selectedLatLng;
   String? selectedLocationValue;
@@ -172,6 +184,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   // address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
   int selectedIndex = -1;
+  List<String> optionsList = ['Bring me the order', 'I will pick it up myself'];
   // RxBool ;
 
   @override
@@ -179,11 +192,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     restaurantBloc.add(GetUserAddressEvent());
     restaurantBloc.add(GetDeliveryStatusEvent());
 
-    // String card = PreferenceUtils.getString(paymentCard);
-    // if (card.trim().isNotEmpty) {
-    //   cardData = jsonDecode(card);
-    // }
     _cardBloc.add(ListAllCardEvent());
+
     super.initState();
   }
 
@@ -191,6 +201,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void dispose() {
     PreferenceUtils.removePref(paymentCard);
     super.dispose();
+  }
+
+  res_addd.Address? get findResAddress {
+    if (widget.cartData is List<ShoppingListData>) {
+      List<ShoppingListData> data = widget.cartData as List<ShoppingListData>;
+      if (data.isNotEmpty && selectedIndex == 1) {
+        return data.first.resAddress;
+      }
+    }
+    return null;
   }
 
   @override
@@ -250,6 +270,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         totalPrice: productData!.priceId!.totalAmount,
                         mealmeItems: productData!.priceId!.mealmeItems,
                         cardId: selectedCard?.id,
+                        productType:
+                            widget.isFromGrocery ? "Grocery" : "Restaurant",
                       ),
                     ),
                   );
@@ -389,6 +411,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                 if (state is GetDeliveryStatusSuccessState) {
                   selectedIndex = state.data['isPickUp'] == true ? 1 : 0;
+                  if (_mapController != null) {
+                    _onMapCreated(_mapController!);
+                  }
                 }
               },
               builder: (context, state) {
@@ -677,7 +702,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           markers:
                                               Set<Marker>.of(markers ?? []),
                                           onMapCreated: (controller) {
-                                            _onMapCreated(controller);
+                                            if (!selectedIndex.isNegative) {
+                                              _onMapCreated(controller);
+                                            } else {
+                                              _mapController = controller;
+                                            }
                                           },
                                           initialCameraPosition:
                                               currentPosition,
@@ -711,13 +740,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                               SizedBox(
                                                 width: 200.w,
                                                 child: Text(
-                                                  PreferenceUtils
-                                                          .isManualLocation
-                                                      ? (widget.getUserAddress
-                                                              ?.streetName ??
-                                                          'Where?')
-                                                      : widget.currentAddress ??
-                                                          "Current Location",
+                                                  widget.grocAdd?.streetAddr ??
+                                                      (findResAddress
+                                                              ?.streetAddr ??
+                                                          (PreferenceUtils
+                                                                  .isManualLocation
+                                                              ? (widget
+                                                                      .getUserAddress
+                                                                      ?.streetName ??
+                                                                  'Where?')
+                                                              : widget.currentAddress ??
+                                                                  "Current Location")),
                                                   style: const TextStyle(
                                                     color: AppColors.darkGray,
                                                     fontSize: 14,

@@ -30,6 +30,7 @@ import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 import 'model/get_user_address_model.dart' as address;
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
   const RestaurantMenuDetailsScreen({
@@ -37,6 +38,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
     required this.data,
     required this.restaurantId,
     this.shoppingListData,
+    this.resAddress,
     required this.cartCount,
     required this.pickUp,
     this.quote,
@@ -46,6 +48,7 @@ class RestaurantMenuDetailsScreen extends StatefulWidget {
   final MenuItemList data;
   final String restaurantId;
   final ShoppingListData? shoppingListData;
+  final Address? resAddress;
   final int cartCount;
   final bool pickUp;
   final qu.Quote? quote;
@@ -921,6 +924,7 @@ class _RestaurantMenuDetailsScreenState
               brandName: '',
               orderMin: widget.quote?.orderMinimum,
               orderMax: widget.quote?.orderMaximum,
+              resAddress: widget.resAddress,
             ),
           ),
         );

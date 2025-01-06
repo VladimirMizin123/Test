@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.gms:google-services:4.3.15"
     }
@@ -23,6 +23,20 @@ allprojects {
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+
+    afterEvaluate {
+        if (it.hasProperty('android')) {
+            // Check whether the android.namespace property is set.
+            // If not, read the package name from the app's manifest file and set it as the namespace.
+            if (it.android.namespace == null) {
+                def manifest = new XmlSlurper().parse(file(it.android.sourceSets.main.manifest.srcFile))
+                def packageName = manifest.@package.text()
+                println("Setting ${packageName} as android namespace")
+                android.namespace = packageName
+            }
+        }
+    }
+
 }
 subprojects {
     project.evaluationDependsOn(':app')

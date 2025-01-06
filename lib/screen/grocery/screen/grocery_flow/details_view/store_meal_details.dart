@@ -18,6 +18,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class StoreMealDetails extends StatefulWidget {
   const StoreMealDetails({
@@ -26,6 +28,7 @@ class StoreMealDetails extends StatefulWidget {
     required this.data,
     required this.storeId,
     this.shoppingListData,
+    this.grocAdd,
     required this.cartCount,
     required this.pickUp,
     this.fromGrocery = false,
@@ -38,6 +41,7 @@ class StoreMealDetails extends StatefulWidget {
   final String storeId;
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
+  final groc_add.Address? grocAdd;
   final int cartCount;
   final int? matchMealStatus;
   final bool pickUp;
@@ -413,6 +417,7 @@ class _StoreMealDetailsState extends State<StoreMealDetails> {
                                           cartBloc: widget.cartBloc,
                                           restaurantId: widget.storeId,
                                           cartCount: widget.cartCount,
+                                          grocAdd: widget.grocAdd,
                                           pickUp: widget.pickUp,
                                           options: optionSelected,
                                           onAddToCart: (option, qty) {

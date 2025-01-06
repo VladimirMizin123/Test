@@ -62,7 +62,7 @@ class _AddDeliveryAddressScreenState extends State<AddDeliveryAddressScreen> {
                           onTap: () {}),
                       const SizedBox(height: 10),
                       textFieldWidget(
-                          title: 'Apartment number ',
+                          title: 'Apartment or Office Number ',
                           controller: streetController,
                           hintText: '18',
                           onTap: () {}),

@@ -60,6 +60,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
                 "user_state": event.state,
                 "user_country": event.country,
                 "user_zipcode": event.zipcode,
+                "extended_address": event.floor ?? "",
               },
             );
 
@@ -73,6 +74,19 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
             Get.offAll(() => const AppManagerScreen(selectIndex: 2));
           }
           if (event.isFrom == 'isFromProfile') {
+            await PreferenceUtils.setManualLoation(true);
+            Constant.i.removeStore();
+            PreferenceUtils.setFoodMenuAddress(
+              req: {
+                "user_street_num": event.streetNum,
+                "user_street_name": event.streetName,
+                "user_city": event.city,
+                "user_state": event.state,
+                "user_country": event.country,
+                "user_zipcode": event.zipcode,
+                "extended_address": event.floor ?? "",
+              },
+            );
             Get.back(result: true);
           }
           if (event.isFrom == 'isFromGroceryCheckout') {
@@ -108,7 +122,7 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
         (left) {
           onFailError(emit: emit, text: left.errorMessage!);
         },
-        (right) {
+        (right) async {
           // showToast(isSuccess: true, message: right.message!);
           emit(AddAddressSuccessfulState());
 
@@ -127,6 +141,21 @@ class AddAddressBloc extends Bloc<AddressEvent, AddressState> {
             );
           }
           if (event.isFrom == 'isFromProfile') {
+            if (event.isPrimary) {
+              await PreferenceUtils.setManualLoation(true);
+              Constant.i.removeStore();
+              PreferenceUtils.setFoodMenuAddress(
+                req: {
+                  "user_street_num": event.streetNum,
+                  "user_street_name": event.streetName,
+                  "user_city": event.city,
+                  "user_state": event.state,
+                  "user_country": event.country,
+                  "user_zipcode": event.zipcode,
+                  "extended_address": event.floor ?? "",
+                },
+              );
+            }
             Get.back(result: true);
           }
         },

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/constant.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/models/get_order_invoice_list_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
@@ -118,6 +119,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   const SizedBox()
                                 ],
                               ),
+                              20.height,
                               Container(
                                 margin: EdgeInsets.only(top: 15.h),
                                 decoration: BoxDecoration(
@@ -157,7 +159,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 ),
                               )
                             ],
-                          ).paddingOnly(top: 10.h, left: 20.w)
+                          ).paddingOnly(top: 15.h, left: 20.w)
                         ],
                       ),
                       SizedBox(

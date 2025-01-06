@@ -609,7 +609,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                       .length,
                                                   physics:
                                                       const BouncingScrollPhysics(),
-                                                  padding: EdgeInsets.zero,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 20),
                                                   separatorBuilder:
                                                       (context, index) {
                                                     return const SizedBox(
@@ -729,6 +730,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                       pickUp: widget.pickup,
                       matchMealStatus: iCanEat ? status(menuItem) : null,
                       quote: widget.quote,
+                      resAddress: widget.address,
                       getUserAddress: widget.getUserAddress,
                       onCustomizationChange: (p0) {
                         menuItem.customizations = p0;
@@ -744,6 +746,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   cartCount: cartCount,
                   pickUp: widget.pickup,
                   getUserAddress: widget.getUserAddress,
+                  resAddress: widget.address,
                   matchMealStatus: iCanEat ? status(menuItem) : null,
                   quote: widget.quote,
                   onCustomizationChange: (p0) {
@@ -762,41 +765,40 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               horizontal: 20.w,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                menuItem.image == null
-                    ? Image.asset(AssetsUtils.food1, width: 80.w)
-                    : NetworkImageWidget(
-                        url: menuItem.image!,
-                        placeholder: AssetsUtils.icGenericLogo,
-                        width: 80.w,
-                        showLoader: false,
-                      ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 130.w,
-                      child: Text(
-                        menuItem.name ?? "",
-                        style: FontUtils.h16(
-                          fontColor: AppColors.darkGray,
-                          fontWeight: FWT.regular,
+                // if (menuItem.image != null)
+                //   NetworkImageWidget(
+                //     url: menuItem.image!,
+                //     showSizedBox: true,
+                //     width: 80.w,
+                //     showLoader: false,
+                //   ).paddingOnly(right: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        child: Text(
+                          menuItem.name ?? "",
+                          style: FontUtils.h16(
+                            fontColor: AppColors.darkGray,
+                            fontWeight: FWT.boldMedium,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 150.w,
-                      child: Text(
-                        menuItem.description ?? '',
-                        style: FontUtils.h14(
-                          fontColor: const Color(0xffA2A4A7),
-                          fontWeight: FWT.light,
+                      SizedBox(
+                        child: Text(
+                          menuItem.description ?? '',
+                          style: FontUtils.h14(
+                            fontColor: const Color(0xffA2A4A7),
+                            fontWeight: FWT.light,
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ).paddingOnly(right: 10),
                 ),
                 iCanEat
                     ? Image.asset(
@@ -804,10 +806,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                         width: 25.w,
                       )
                     : const SizedBox.shrink(),
-                Builder(builder: (context) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                SizedBox(width: 25),
+                SizedBox(
+                  width: 80.w,
+                  child: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         "${menuItem.price == 0 ? "\$${((menuItem.minPrice ?? 0) / 100).toStringAsFixed(2)}" : menuItem.formattedPrice}",
@@ -816,6 +819,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           fontWeight: FWT.medium,
                         ),
                       ),
+                      if (menuItem.image != null) ...[
+                        NetworkImageWidget(
+                          url: menuItem.image!,
+                          showSizedBox: true,
+                          width: 80.w,
+                          showLoader: false,
+                        ).paddingOnly(bottom: 10),
+                      ],
                       GestureDetector(
                         onTap: () async {
                           for (var element in cartData) {
@@ -851,6 +862,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
                                     quote: widget.quote,
+                                    resAddress: widget.address,
                                     userAddress: widget.getUserAddress,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
@@ -867,6 +879,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                     cartCount: cartCount,
                                     pickUp: widget.pickup,
                                     quote: widget.quote,
+                                    resAddress: widget.address,
                                     userAddress: widget.getUserAddress,
                                     onCustomizationChange: (p0) {
                                       menuItem.customizations = p0;
@@ -878,13 +891,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                         },
                         child: Image.asset(
                           AssetsUtils.icAdd,
-                          height: 22.h,
+                          height: 28,
                           alignment: Alignment.bottomRight,
                         ),
                       ),
                     ],
-                  );
-                })
+                  ),
+                ),
               ],
             ),
           ),

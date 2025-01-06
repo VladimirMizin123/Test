@@ -178,13 +178,21 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Geolocator.requestPermission().then((value) {
         if (mounted) {
-          restaurantBloc.add(GetUserAddressEvent());
-          cartBloc.add(GetCartEvent());
-          restaurantBloc.add(GetDeliveryStatusEvent());
-          PreferenceUtils.setFoodMenuAddress();
+          initLoad();
         }
       });
     });
+  }
+
+  Future<void> initLoad() async {
+    try {
+      restaurantBloc.add(GetUserAddressEvent());
+      cartBloc.add(GetCartEvent());
+      restaurantBloc.add(GetDeliveryStatusEvent());
+      PreferenceUtils.setFoodMenuAddress();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   String? verifyLoaderId;
@@ -567,12 +575,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                   },
                   builder: (context, state) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: 5.h,
-                          ),
+                          SizedBox(height: 5.h),
                           Center(
                             child: Image.asset(
                               AssetsUtils.gymEatsSpoon,
@@ -585,18 +591,21 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             const AccountScreen(),
                                       ));
+                                  String resPref =
+                                      PreferenceUtils.getString(prefKey);
+                                  if (resPref.trim().isEmpty) {
+                                    initLoad();
+                                  }
                                 },
-                                child: Image.asset(
-                                  AssetsUtils.user,
-                                  height: 25.h,
-                                  width: 25.w,
+                                child: SvgPicture.asset(
+                                  AssetsUtils.userSvg,
                                   color: AppColors.darkGray,
                                 ),
                               ),
@@ -611,12 +620,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 onTap: () {
                                   Get.toNamed('/OrderHistoryScreen');
                                 },
-                                child: Image.asset(
-                                  AssetsUtils.notification,
-                                  height: 25.h,
-                                  width: 25.w,
-                                  color: AppColors.darkGray,
-                                ),
+                                child: SvgPicture.asset(
+                                    AssetsUtils.notificationSvg),
                               )
                             ],
                           ),
@@ -1959,6 +1964,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             if (verifyLoaderId != null || !mounted) {
               return;
             }
+
             Get.to(
               () => RestaurantMenuScreen(
                 getUserAddress: getUserAddress,

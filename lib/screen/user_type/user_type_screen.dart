@@ -180,25 +180,27 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     commonUserTypeTextField(
-                                            width: 70.w,
-                                            fontColor: Colors.white,
-                                            valueColor: Colors.white,
-                                            cursorColor: Colors.white,
-                                            controller: ageController,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w900,
-                                            hintText: StringUtils.required,
-                                            textInputType: TextInputType.number,
-                                            context: context,
-                                            onChange: (String value) {
-                                              bloc.add(TextChangeEvent(
-                                                  age: ageController.text,
-                                                  height: heightController.text,
-                                                  weight:
-                                                      weightController.text));
-                                            })
-                                        .paddingOnly(top: 15)
-                                        .marginOnly(left: 70),
+                                      width: 70.w,
+                                      fontColor: Colors.white,
+                                      valueColor: Colors.white,
+                                      cursorColor: Colors.white,
+                                      controller: ageController,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900,
+                                      hintText: StringUtils.required,
+                                      textInputType: TextInputType.number,
+                                      context: context,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp('[0-9]'))
+                                      ],
+                                      onChange: (String value) {
+                                        bloc.add(TextChangeEvent(
+                                            age: ageController.text,
+                                            height: heightController.text,
+                                            weight: weightController.text));
+                                      },
+                                    ).paddingOnly(top: 15).marginOnly(left: 70),
                                     commonUserTypeTextField(
                                             width: 70.w,
                                             fontColor: Colors.white,
@@ -207,16 +209,12 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                             controller: heightController,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w900,
-                                            textInputType: TextInputType.number,
                                             hintText: StringUtils.required,
-                                            inputFormatters: [
+                                            textInputType: TextInputType.multiline,
+                                            inputFormatters: <TextInputFormatter>[
                                               FilteringTextInputFormatter.allow(
-                                                  RegExp('[0-9.]'))
+                                                  RegExp(r"^\d+[\'’]?\d{0,2}")),
                                             ],
-                                            /* inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r"^\d+\'?\d{0,2}")),
-                                            ],*/
                                             context: context,
                                             onChange: (String value) {
                                               bloc.add(TextChangeEvent(
@@ -238,8 +236,14 @@ class _UserTypePageState extends State<UserTypeScreen> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.w900,
                                     hintText: StringUtils.required,
-                                    textInputType: TextInputType.number,
+                                    textInputType:
+                                        const TextInputType.numberWithOptions(
+                                            decimal: true),
                                     isSuffix: true,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp('[0-9.]'))
+                                    ],
                                     context: context,
                                     onChange: (String value) {
                                       bloc.add(TextChangeEvent(

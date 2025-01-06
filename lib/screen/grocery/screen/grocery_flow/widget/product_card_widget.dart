@@ -53,197 +53,196 @@ class ProductCardWidget extends StatelessWidget {
       onTap: () => onTap?.call(),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 20,
-                width: 44,
-                decoration: BoxDecoration(
-                  color: showDiscount ? AppColors.terracotta : null,
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(100),
-                    bottomRight: Radius.circular(100),
-                  ),
-                ),
-                child: showDiscount
-                    ? Text(
-                        "-15%",
-                        textAlign: TextAlign.center,
-                        style: FontUtils.h12(
-                          fontColor: AppColors.whiteColor,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              5.width,
-              if (menuItem?.image != null) ...[
-                NetworkImageWidget(
-                  url: menuItem!.image ?? "",
-                  height: imgSize,
-                  width: 65,
-                ),
-              ] else ...[
-                Container(width: 65),
-              ],
-              25.width,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text.rich(
-                            TextSpan(
-                              text: isGroceryItem ? (" ") : "",
-                              style: FontUtils.h16(
-                                fontColor: AppColors.appColor,
-                                fontWeight: FWT.semiBold,
-                              ).copyWith(
-                                backgroundColor: AppColors.skyBlue,
-                                height: 1.6,
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // if (menuItem?.image != null) ...[
+                //   NetworkImageWidget(
+                //     url: menuItem!.image ?? "",
+                //     height: imgSize,
+                //     width: 65,
+                //   ),
+                // ] else ...[
+                //   Container(width: 65),
+                // ],
+                // 25.width,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text.rich(
+                              TextSpan(
+                                text: isGroceryItem ? (" ") : "",
+                                style: FontUtils.h16(
+                                  fontColor: AppColors.appColor,
+                                  fontWeight: FWT.semiBold,
+                                ).copyWith(
+                                  backgroundColor: AppColors.skyBlue,
+                                  height: 1.6,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        isGroceryItem ? ("$categoryName") : "",
+                                    style: FontUtils.h16(
+                                      fontColor: AppColors.appColor,
+                                      fontWeight: FWT.semiBold,
+                                    ).copyWith(
+                                      backgroundColor: AppColors.skyBlue,
+                                      decoration: TextDecoration.underline,
+                                      height: 1.6,
+                                      wordSpacing: 5,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: isGroceryItem ? (" ") : "",
+                                    style: FontUtils.h16(
+                                      fontColor: AppColors.appColor,
+                                      fontWeight: FWT.semiBold,
+                                    ).copyWith(
+                                      backgroundColor: AppColors.skyBlue,
+                                      height: 1.6,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: (isGroceryItem ? " " : "") +
+                                        (menuItem?.name ?? ""),
+                                    style: FontUtils.h12(
+                                      fontColor: AppColors.darkGray,
+                                    ).copyWith(
+                                      backgroundColor:
+                                          AppColors.transparentColor,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              children: [
-                                TextSpan(
-                                  text: isGroceryItem ? ("$categoryName") : "",
-                                  style: FontUtils.h16(
-                                    fontColor: AppColors.appColor,
-                                    fontWeight: FWT.semiBold,
-                                  ).copyWith(
-                                    backgroundColor: AppColors.skyBlue,
-                                    decoration: TextDecoration.underline,
-                                    height: 1.6,
-                                    wordSpacing: 5,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: isGroceryItem ? (" ") : "",
-                                  style: FontUtils.h16(
-                                    fontColor: AppColors.appColor,
-                                    fontWeight: FWT.semiBold,
-                                  ).copyWith(
-                                    backgroundColor: AppColors.skyBlue,
-                                    height: 1.6,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: (isGroceryItem ? " " : "") +
-                                      (menuItem?.name ?? ""),
-                                  style: FontUtils.h12(
-                                    fontColor: AppColors.darkGray,
-                                  ).copyWith(
-                                    backgroundColor: AppColors.transparentColor,
-                                    decoration: TextDecoration.none,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
-                        ),
-                        if (isGroceryItem) ...[
-                          GestureDetector(
-                            onTap: () => showPopover(
-                              barrierColor: AppColors.transparentColor,
-                              context: context,
-                              bodyBuilder: (context) {
-                                return GestureDetector(
-                                  onTap: () => {
-                                    Navigator.pop(context),
-                                  },
-                                  child: Container(
-                                    height: 50,
-                                    color: Colors.white,
-                                    child: Align(
-                                      child: Text(
-                                        StringUtils.inYourShoppingList,
-                                        style: FontUtils.h12(
-                                          fontColor: AppColors.brown,
+                          if (isGroceryItem) ...[
+                            GestureDetector(
+                              onTap: () => showPopover(
+                                barrierColor: AppColors.transparentColor,
+                                context: context,
+                                bodyBuilder: (context) {
+                                  return GestureDetector(
+                                    onTap: () => {
+                                      Navigator.pop(context),
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      color: Colors.white,
+                                      child: Align(
+                                        child: Text(
+                                          StringUtils.inYourShoppingList,
+                                          style: FontUtils.h12(
+                                            fontColor: AppColors.brown,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                              width: 120,
-                              height: 50,
-                              arrowDxOffset: context.width - 115,
-                              arrowDyOffset: -35,
-                              backgroundColor: Colors.white,
-                              direction: PopoverDirection.right,
-                            ),
-                            child: Container(
-                              height: 24,
-                              width: 24,
-                              decoration: const BoxDecoration(
-                                color: AppColors.skyBlue,
-                                shape: BoxShape.circle,
+                                  );
+                                },
+                                width: 120,
+                                height: 50,
+                                arrowDxOffset: context.width - 115,
+                                arrowDyOffset: -35,
+                                backgroundColor: Colors.white,
+                                direction: PopoverDirection.right,
                               ),
-                              child: Align(
-                                child: SvgPicture.asset(
-                                  AssetsUtils.icList,
-                                  color: AppColors.newDarkBlue,
-                                  height: 13,
+                              child: Container(
+                                height: 24,
+                                width: 24,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.skyBlue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Align(
+                                  child: SvgPicture.asset(
+                                    AssetsUtils.icList,
+                                    color: AppColors.newDarkBlue,
+                                    height: 13,
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                        ],
+                      ),
+                      8.height,
+                      Row(
+                        children: [
+                          const Icon(Icons.info_outline_rounded,
+                              color: AppColors.terracotta, size: 20),
+                          3.width,
+                          Text(
+                            'Available in: ',
+                            style: FontUtils.h12(
+                                fontColor: AppColors.middleGray,
+                                fontWeight: FWT.semiBold),
                           ),
                         ],
-                      ],
-                    ),
-                    8.height,
-                    Row(
-                      children: [
-                        const Icon(Icons.info_outline_rounded,
-                            color: AppColors.terracotta, size: 20),
-                        3.width,
-                        Text(
-                          'Available in: ',
-                          style: FontUtils.h12(
-                              fontColor: AppColors.middleGray,
-                              fontWeight: FWT.semiBold),
+                      ),
+                      10.height,
+                      Text(
+                        storeName ?? "",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: FontUtils.h12(
+                            fontColor: AppColors.black,
+                            fontWeight: FWT.semiBold),
+                      ),
+                      10.height,
+                    ],
+                  ),
+                ),
+                if (!checkoutScreen) ...[
+                  20.width,
+                  Column(
+                    // crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "${menuItem?.price == 0 ? "\$${((menuItem?.minPrice ?? 0) / 100).toStringAsFixed(2)}" : menuItem?.formattedPrice}",
+                        style: FontUtils.h18(
+                          fontColor: Colors.black,
+                          fontWeight: FWT.medium,
+                        ),
+                      ),
+                      if (menuItem?.image != null) ...[
+                        NetworkImageWidget(
+                          url: menuItem!.image ?? "",
+                          height: imgSize,
+                          width: 65,
                         ),
                       ],
-                    ),
-                    10.height,
-                    Text(
-                      storeName ?? "",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: FontUtils.h12(
-                          fontColor: AppColors.black, fontWeight: FWT.semiBold),
-                    ),
-                    10.height,
-                  ],
-                ),
-              ),
-              if (!checkoutScreen) ...[
-                20.width,
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${menuItem?.price == 0 ? "\$${((menuItem?.minPrice ?? 0) / 100).toStringAsFixed(2)}" : menuItem?.formattedPrice}",
-                      style: FontUtils.h18(
-                        fontColor: Colors.black,
-                        fontWeight: FWT.medium,
+                      GestureDetector(
+                        onTap: () => onCartTap.call(),
+                        child: Image.asset(
+                          AssetsUtils.icAdd,
+                          height: 22.h,
+                          alignment: Alignment.bottomRight,
+                        ),
                       ),
-                    ),
-                    10.height,
-                    GestureDetector(
-                      onTap: () => onCartTap.call(),
-                      child: Image.asset(
-                        AssetsUtils.icAdd,
-                        height: 22.h,
-                        alignment: Alignment.bottomRight,
-                      ),
+                      15.height,
+                    ],
+                  ),
+                ] else ...[
+                  if (menuItem?.image != null) ...[
+                    20.width,
+                    NetworkImageWidget(
+                      url: menuItem!.image ?? "",
+                      height: imgSize,
+                      width: 65,
                     ),
                   ],
-                ),
-                20.width,
+                ],
               ],
-            ],
+            ),
           ),
           cartItem == null
               ? const SizedBox()

@@ -69,6 +69,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                           child: const Icon(
                             Icons.arrow_back_ios,
                             color: Colors.black,
+                            size: 18,
                           ),
                         ),
                         Text(
@@ -80,7 +81,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                         ),
                         const SizedBox()
                       ],
-                    ).paddingSymmetric(horizontal: 15),
+                    ).paddingSymmetric(horizontal: 15, vertical: 5.h),
                     invoiceData.isEmpty
                         ? Expanded(
                             child: Align(
@@ -119,6 +120,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       OrderedItem item = invoiceData[index];
+                                      String deliveryTime =
+                                          (item.items?.isNotEmpty ?? false)
+                                              ? item.items?.first
+                                                      .expectedTimeOfArrival ??
+                                                  "00:00 AM"
+                                              : "00:00 AM";
 
                                       return Container(
                                         width: double.infinity.w,
@@ -192,19 +199,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                                                 : 'Delivery'
                                                             : 'Delivery',
                                                       ),
-                                                      // if (item.createdOn !=
-                                                      //     null)
-                                                      //   itemWidget(
-                                                      //     title: "Order at",
-                                                      //     value: DateFormat(
-                                                      //             'dd/MM/yyyy')
-                                                      //         .format(item
-                                                      //             .createdOn!),
-                                                      //   ),
                                                       itemWidget(
                                                         title: StringUtils
                                                             .deliveryTime,
-                                                        value: '10:00-10:20',
+                                                        value: deliveryTime,
                                                       ),
                                                     ],
                                                   ),

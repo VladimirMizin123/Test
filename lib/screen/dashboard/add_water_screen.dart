@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_bloc.dart';
 import 'package:gymeats_mobile/screen/account_screen/bloc/account_event.dart';
@@ -50,259 +51,275 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        body: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: BlocConsumer(
-                  bloc: accountBloc,
-                  builder: (context, state) {
-                    if (state is GetUnitInfoSuccessState) {
-                      waterValue = state.unitData?.waterType == 'Floz' ? 1 : 2;
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: BlocConsumer(
+                    bloc: accountBloc,
+                    builder: (context, state) {
+                      if (state is GetUnitInfoSuccessState) {
+                        waterValue =
+                            state.unitData?.waterType == 'Floz' ? 1 : 2;
 
-                      // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      //   accountBloc.add(GetUnitInfoEvent());
-                      // });
-                    }
-                    return Column(
-                      children: [
-                        SizedBox(
-                          height: size.height.h,
-                          width: size.width.w,
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      Get.back();
-                                    },
-                                    child: Icon(
-                                      Icons.arrow_back_ios,
-                                      size: 25.sp,
-                                      color: AppColors.darkGray,
+                        // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        //   accountBloc.add(GetUnitInfoEvent());
+                        // });
+                      }
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: size.height.h,
+                            width: size.width.w,
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  AssetsUtils.gymEatsLogo,
+                                  height: 20.h,
+                                  width: 56.w,
+                                  color: AppColors.primaryBlue,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.back();
+                                      },
+                                      child: const Icon(
+                                        Icons.arrow_back_ios,
+                                        size: 19,
+                                        color: AppColors.darkGray,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    StringUtils.addWater,
-                                    style: textTheme.displayMedium
-                                        ?.copyWith(color: Colors.black),
-                                  ).paddingOnly(right: 28.w),
-                                  const SizedBox(),
-                                ],
-                              ).paddingOnly(top: 30.h),
-                              Text(
-                                'Your Daily Goal: ${addWaterArguments.dailyGoal} ${waterValue == 1 ? StringUtils.oz : "ml"}',
-                                style: textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.middleGray),
-                              ),
-                              dashBoardCardView(
-                                // height: 240.h,
-                                width: 335.w,
-                                margin: EdgeInsets.symmetric(vertical: 20.h),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 20),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          // commonUserTypeTextField(hintText: '00', controller: waterController, context: context, width: 80.w, fontSize: 16.sp, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
-                                          SizedBox(
-                                            width: 80.w,
-                                            child: TextFormField(
-                                              onChanged: (value) {
-                                                //*
-                                                // if (addWaterArguments
-                                                //         .isWatervalue ==
-                                                //     1) {
-                                                //   num? valueA = num.tryParse(value);
-                                                //   if (valueA != null &&
-                                                //       valueA != 0) {
-                                                //     _debouncer.run(() async {
-                                                //       print("value:$valueA");
-                                                //       if (valueA != 0) {
-                                                //         waterController
-                                                //             .text = convertOzToMilli(
-                                                //                 isWatervalue:
-                                                //                     addWaterArguments
-                                                //                         .isWatervalue,
-                                                //                 textValue:
-                                                //                     int.tryParse(
-                                                //                         value))
-                                                //             .toString();
-                                                //         setState(() {});
-                                                //       }
-                                                //     });
-                                                //   }
-                                                // }
-                                                //*
-                                              },
-                                              controller: waterController,
-                                              cursorColor: AppColors.darkGray,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  color: AppColors.darkGray),
-                                              decoration: InputDecoration(
-                                                hintText: '00',
-                                                hintStyle: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: AppColors.grayColor),
-                                                isDense: true,
-                                                enabledBorder: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: AppColors
-                                                                .primaryBlue)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: AppColors
-                                                                .primaryBlue)),
-                                                disabledBorder: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: AppColors
-                                                                .primaryBlue)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: AppColors
-                                                                .primaryBlue)),
+                                    Text(StringUtils.addWater,
+                                        style: FontUtils.h20(
+                                            fontColor: AppColors.oxFF010101)),
+                                    const SizedBox(),
+                                  ],
+                                ).paddingSymmetric(vertical: 5.h),
+                                Text(
+                                  'Your Daily Goal: ${addWaterArguments.dailyGoal} ${waterValue == 1 ? StringUtils.oz : "ml"}',
+                                  style: textTheme.bodyMedium
+                                      ?.copyWith(color: AppColors.middleGray),
+                                ),
+                                dashBoardCardView(
+                                  // height: 240.h,
+                                  width: 335.w,
+                                  margin: EdgeInsets.symmetric(vertical: 20.h),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // commonUserTypeTextField(hintText: '00', controller: waterController, context: context, width: 80.w, fontSize: 16.sp, fontWeight: FontWeight.w400, isSuffix: false, valueColor: AppColors.darkGray, fontColor: AppColors.darkGray, cursorColor: AppColors.darkGray, textInputType: TextInputType.number, onChange: (value) {}),
+                                            SizedBox(
+                                              width: 80.w,
+                                              child: TextFormField(
+                                                onChanged: (value) {
+                                                  //*
+                                                  // if (addWaterArguments
+                                                  //         .isWatervalue ==
+                                                  //     1) {
+                                                  //   num? valueA = num.tryParse(value);
+                                                  //   if (valueA != null &&
+                                                  //       valueA != 0) {
+                                                  //     _debouncer.run(() async {
+                                                  //       print("value:$valueA");
+                                                  //       if (valueA != 0) {
+                                                  //         waterController
+                                                  //             .text = convertOzToMilli(
+                                                  //                 isWatervalue:
+                                                  //                     addWaterArguments
+                                                  //                         .isWatervalue,
+                                                  //                 textValue:
+                                                  //                     int.tryParse(
+                                                  //                         value))
+                                                  //             .toString();
+                                                  //         setState(() {});
+                                                  //       }
+                                                  //     });
+                                                  //   }
+                                                  // }
+                                                  //*
+                                                },
+                                                controller: waterController,
+                                                cursorColor: AppColors.darkGray,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: AppColors.darkGray),
+                                                decoration: InputDecoration(
+                                                  hintText: '00',
+                                                  hintStyle: const TextStyle(
+                                                      fontSize: 12,
+                                                      color:
+                                                          AppColors.grayColor),
+                                                  isDense: true,
+                                                  enabledBorder: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                              color: AppColors
+                                                                  .primaryBlue)),
+                                                  border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                              color: AppColors
+                                                                  .primaryBlue)),
+                                                  disabledBorder: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                              color: AppColors
+                                                                  .primaryBlue)),
+                                                  focusedBorder: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                              color: AppColors
+                                                                  .primaryBlue)),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(width: 5.w),
-                                          Text(
-                                            waterValue == 1
-                                                ? StringUtils.oz
-                                                : StringUtils.ml,
-                                            style: textTheme.bodyLarge
-                                                ?.copyWith(
-                                                    color: AppColors.darkGray),
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          waterDetailsView(
-                                            height: 76.h,
-                                            waterIcon: AssetsUtils.waterIcon1,
-                                            waterQuantity: convertMilliToOz(
-                                                textValue: 250,
-                                                isWatervalue: waterValue),
-                                            onTap: () {
-                                              // waterController.text = '250';
-                                              waterController
-                                                  .text = convertMilliToOz(
-                                                      isWatervalue: waterValue,
-                                                      textValue: 250)
-                                                  .toString();
-                                            },
-                                          ),
-                                          waterDetailsView(
-                                            height: 83.h,
-                                            waterIcon: AssetsUtils.waterIcon2,
-                                            waterQuantity: convertMilliToOz(
-                                                textValue: 500,
-                                                isWatervalue: waterValue),
-                                            onTap: () {
-                                              // waterController.text = '500';
-                                              waterController
-                                                  .text = convertMilliToOz(
-                                                      isWatervalue: waterValue,
-                                                      textValue: 500)
-                                                  .toString();
-                                            },
-                                          ).paddingOnly(left: 30.w),
-                                          waterDetailsView(
-                                            height: 96.h,
-                                            waterIcon: AssetsUtils.waterIcon3,
-                                            waterQuantity: convertMilliToOz(
-                                                isWatervalue: waterValue,
-                                                textValue: 1000),
-                                            onTap: () {
-                                              // waterController.text = '1000';
-                                              waterController
-                                                  .text = convertMilliToOz(
-                                                      isWatervalue: waterValue,
-                                                      textValue: 1000)
-                                                  .toString();
-                                            },
-                                          ).paddingOnly(left: 30.w),
-                                        ],
-                                      ).paddingOnly(top: 15.h)
-                                    ],
-                                  ).paddingAll(16),
+                                            SizedBox(width: 5.w),
+                                            Text(
+                                              waterValue == 1
+                                                  ? StringUtils.oz
+                                                  : StringUtils.ml,
+                                              style: textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                      color:
+                                                          AppColors.darkGray),
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            waterDetailsView(
+                                              height: 76.h,
+                                              waterIcon: AssetsUtils.waterIcon1,
+                                              waterQuantity: convertMilliToOz(
+                                                  textValue: 250,
+                                                  isWatervalue: waterValue),
+                                              onTap: () {
+                                                // waterController.text = '250';
+                                                waterController.text =
+                                                    convertMilliToOz(
+                                                            isWatervalue:
+                                                                waterValue,
+                                                            textValue: 250)
+                                                        .toString();
+                                              },
+                                            ),
+                                            waterDetailsView(
+                                              height: 83.h,
+                                              waterIcon: AssetsUtils.waterIcon2,
+                                              waterQuantity: convertMilliToOz(
+                                                  textValue: 500,
+                                                  isWatervalue: waterValue),
+                                              onTap: () {
+                                                // waterController.text = '500';
+                                                waterController.text =
+                                                    convertMilliToOz(
+                                                            isWatervalue:
+                                                                waterValue,
+                                                            textValue: 500)
+                                                        .toString();
+                                              },
+                                            ).paddingOnly(left: 30.w),
+                                            waterDetailsView(
+                                              height: 96.h,
+                                              waterIcon: AssetsUtils.waterIcon3,
+                                              waterQuantity: convertMilliToOz(
+                                                  isWatervalue: waterValue,
+                                                  textValue: 1000),
+                                              onTap: () {
+                                                // waterController.text = '1000';
+                                                waterController.text =
+                                                    convertMilliToOz(
+                                                            isWatervalue:
+                                                                waterValue,
+                                                            textValue: 1000)
+                                                        .toString();
+                                              },
+                                            ).paddingOnly(left: 30.w),
+                                          ],
+                                        ).paddingOnly(top: 15.h)
+                                      ],
+                                    ).paddingAll(16),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ).paddingSymmetric(horizontal: 20.w),
-                        ),
-                      ],
-                    );
-                  },
-                  listener: (BuildContext context, Object? state) {},
+                              ],
+                            ).paddingSymmetric(horizontal: 15.w),
+                          ),
+                        ],
+                      );
+                    },
+                    listener: (BuildContext context, Object? state) {},
+                  ),
                 ),
               ),
-            ),
-            BlocBuilder(
-                bloc: bloc,
-                builder: (context, state) {
-                  debugPrint('water state--> $state');
-                  if (state is LoadingState) {
-                    return const AppCenterLoader();
-                  } else {
-                    return buildButton(
-                        context: context,
-                        title: StringUtils.save,
-                        hasImage: false,
-                        textColor: AppColors.skyBlue,
-                        onPressed: () {
-                          setState(() {
-                            bloc.add(
-                              // SaveClickEvent(
-                              //   waterML: waterController.text,
-                              // ),
-                              SaveClickEvent(
-                                  waterML: (waterController.text == "8.45" ||
-                                          waterController.text == "16.91" ||
-                                          waterController.text == "33.81")
-                                      ? waterController.text
-                                      : convertMilliToOz(
-                                              textValue: num.tryParse(
-                                                  waterController.text),
-                                              isWatervalue: waterValue)
-                                          .toString()),
-                            );
-                          });
-                        },
-                        bgColor: AppColors.primaryBlue);
-                  }
-                }).paddingOnly(bottom: 20.h).paddingSymmetric(horizontal: 20.w),
-          ],
+              BlocBuilder(
+                      bloc: bloc,
+                      builder: (context, state) {
+                        debugPrint('water state--> $state');
+                        if (state is LoadingState) {
+                          return const AppCenterLoader();
+                        } else {
+                          return buildButton(
+                              context: context,
+                              title: StringUtils.save,
+                              hasImage: false,
+                              textColor: AppColors.skyBlue,
+                              onPressed: () {
+                                setState(() {
+                                  bloc.add(
+                                    // SaveClickEvent(
+                                    //   waterML: waterController.text,
+                                    // ),
+                                    SaveClickEvent(
+                                        waterML: (waterController.text ==
+                                                    "8.45" ||
+                                                waterController.text ==
+                                                    "16.91" ||
+                                                waterController.text == "33.81")
+                                            ? waterController.text
+                                            : convertMilliToOz(
+                                                    textValue: num.tryParse(
+                                                        waterController.text),
+                                                    isWatervalue: waterValue)
+                                                .toString()),
+                                  );
+                                });
+                              },
+                              bgColor: AppColors.primaryBlue);
+                        }
+                      })
+                  .paddingOnly(bottom: 20.h)
+                  .paddingSymmetric(horizontal: 20.w),
+            ],
+          ),
         ),
       ),
     );

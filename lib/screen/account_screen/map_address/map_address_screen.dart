@@ -10,12 +10,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_state.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/models/find_address_model.dart';
+import 'package:gymeats_mobile/models/find_latlng_model.dart';
+import 'package:gymeats_mobile/models/search_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
+import 'package:gymeats_mobile/screen/account_screen/map_address/map_address_second_step.dart';
+import 'package:gymeats_mobile/screen/account_screen/map_address/search_map_address.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -23,7 +27,6 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import '../../../bloc/google_map/add_address/add_address_event.dart';
 import '../../../constant/asset_utils.dart';
 import '../../../widget/back_button_widget.dart';
-import 'map_address_screen_widget.dart';
 
 class MapAddressScreen extends StatefulWidget {
   final UserAddress? userAddress;
@@ -75,30 +78,37 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   Future getCurrentLocation() async {
     try {
       bool serviceEnabled = await _handleLocationPermission();
-      if (!serviceEnabled) return;
 
       BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
       customIcon = BitmapDescriptor.fromBytes(
           await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
-      Position position =
-          await GeolocatorPlatform.instance.getCurrentPosition();
 
-      selectedLatLng = LatLng(position.latitude, position.longitude);
+      if (serviceEnabled) {
+        Position position =
+            await GeolocatorPlatform.instance.getCurrentPosition();
+
+        selectedLatLng = LatLng(position.latitude, position.longitude);
+      } else {
+        selectedLatLng = LatLng(37.7749, -122.4194);
+      }
+
       findAddressURL(
         lat: selectedLatLng?.latitude.toStringAsFixed(6).toString(),
         lng: selectedLatLng?.longitude.toStringAsFixed(6).toString(),
       );
 
       currentPosition = CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
+        target: LatLng(
+            selectedLatLng?.latitude ?? 0.0, selectedLatLng?.longitude ?? 0.0),
         zoom: 14.4746,
       );
 
       marker = Marker(
         markerId: const MarkerId('0'),
-        position: LatLng(position.latitude, position.longitude),
+        position: LatLng(
+            selectedLatLng?.latitude ?? 0.0, selectedLatLng?.longitude ?? 0.0),
         icon: customIcon,
       );
 
@@ -108,7 +118,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       });
       return true;
     } catch (e) {
-      print(e);
+      print("-------Error :${e.toString()}----------");
       return false;
     }
   }
@@ -125,7 +135,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
   }
 
   appSettingDialogBox() async {
-    bool value = await showDialog(
+    dynamic value = await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
@@ -206,7 +216,79 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       },
     );
 
-    return value;
+    return value == true;
+  }
+
+  Future<void> findLatLng(String value) async {
+    try {
+      //  final placeDetailsUrl =
+      //     'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapApiKey';
+
+      await _googleMapSearchRepository.findLatLng(value).fold((left) {
+        showToast(isSuccess: false, message: left.errorMessage!);
+      }, (right) async {
+        // showToast(isSuccess: true, message: right.message!);
+        FindLatLngResponseModel(
+            result: right.result,
+            status: right.status,
+            htmlAttributions: right.htmlAttributions);
+
+        selectedLatLng = LatLng(right.result?.geometry?.location?.lat ?? 0,
+            right.result?.geometry?.location?.lng ?? 0);
+
+        BitmapDescriptor? customIcon;
+
+        customIcon = BitmapDescriptor.fromBytes(
+            await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
+
+        currentPosition = CameraPosition(
+          target: LatLng(
+              selectedLatLng?.latitude ?? 0, selectedLatLng?.longitude ?? 0),
+          zoom: 14.4746,
+        );
+
+        marker = Marker(
+            markerId: const MarkerId('1'),
+            position: LatLng(
+                selectedLatLng?.latitude ?? 0, selectedLatLng?.longitude ?? 0),
+            icon: customIcon);
+
+        mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+
+        // !  Find Address Data
+        final addressComponents = right.result?.addressComponents ?? [];
+        apartmentNumberController.clear();
+        streetDetailsController.clear();
+        cityField.clear();
+        stateField.clear();
+        countryField.clear();
+        zipCodeController.clear();
+
+        for (final component in addressComponents) {
+          final types = component.types ?? [];
+
+          if (types.contains('street_number') || types.contains('premise')) {
+            apartmentNumberController.text = component.longName ?? "";
+          } else if (types.contains('route') ||
+              types.contains('sublocality_level_2')) {
+            streetDetailsController.text = component.longName ?? "";
+          } else if (types.contains('locality')) {
+            cityField.text = component.longName ?? "";
+          } else if (types.contains('administrative_area_level_1')) {
+            stateField.text = component.shortName ?? "";
+          } else if (types.contains('country')) {
+            countryField.text = component.shortName ?? "";
+          } else if (types.contains('postal_code')) {
+            zipCodeController.text = component.longName ?? "";
+          }
+        }
+
+        setState(() {});
+      });
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   /// Permission Handler for location ---------------------------------------------------------
@@ -221,21 +303,23 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.denied) {
-            Navigator.pop(context);
+          if (permission == LocationPermission.denied ||
+              permission == LocationPermission.deniedForever) {
             showToast(
                 message: 'Location permissions are denied', isSuccess: false);
+            // return await appSettingDialogBox();
             return false;
           }
         }
         if (permission == LocationPermission.deniedForever) {
           permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.deniedForever) {
-            Get.back();
+          if (permission == LocationPermission.deniedForever ||
+              permission == LocationPermission.denied) {
             showToast(
                 message:
                     'Location permissions are permanently denied, we cannot request permissions.',
                 isSuccess: false);
+            // return await appSettingDialogBox();
             return false;
           }
         }
@@ -245,31 +329,22 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          Navigator.pop(context);
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
           showToast(
-              message: 'Location permissions are denied', isSuccess: false);
+              message: permission == LocationPermission.deniedForever
+                  ? 'Location permissions are permanently denied, we cannot request permissions.'
+                  : 'Location permissions are denied',
+              isSuccess: false);
+          // return await appSettingDialogBox();
           return false;
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        await appSettingDialogBox();
+        // await appSettingDialogBox();
 
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.deniedForever) {
-          if (Get.arguments['string'] == 'isFromDashboard') {
-            Get.back();
-            showToast(
-                message:
-                    'Location permissions are permanently denied, we cannot request permissions.',
-                isSuccess: false);
-          } else {
-            Get.offNamed('/PremiumScreen');
-            showToast(
-                message:
-                    'Location permissions are permanently denied, we cannot request permissions.',
-                isSuccess: false);
-          }
           showToast(
               message:
                   'Location permissions are permanently denied, we cannot request permissions.',
@@ -277,15 +352,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
           return false;
         }
         if (permission == LocationPermission.denied) {
-          if (Get.arguments['string'] == 'isFromDashboard') {
-            Get.back();
-            showToast(
-                message: 'Location permissions are denied', isSuccess: false);
-          } else {
-            Get.offNamed('/PremiumScreen');
-            showToast(
-                message: 'Location permissions are denied', isSuccess: false);
-          }
           showToast(
               message: 'Location permissions are denied', isSuccess: false);
           return false;
@@ -320,73 +386,26 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
           results: right.results);
 
       if (right.results?.isNotEmpty ?? false) {
-        right.results?.first.addressComponents?.forEach((element) {
-          ///streetNum
+        final addressComponents = right.results?.first.addressComponents ?? [];
 
-          List<String> streetNumList = element.types
-                  ?.where((element1) => element1 == 'premise')
-                  .toList() ??
-              [];
+        for (final component in addressComponents) {
+          final types = component.types ?? [];
 
-          if (streetNumList.isNotEmpty) {
-            streetNum = element.longName ?? "";
+          if (types.contains('street_number') || types.contains('premise')) {
+            streetNum = component.longName ?? "";
+          } else if (types.contains('route') ||
+              types.contains('sublocality_level_2')) {
+            streetName = component.longName ?? "";
+          } else if (types.contains('locality')) {
+            city = component.longName ?? "";
+          } else if (types.contains('administrative_area_level_1')) {
+            stateData = component.shortName ?? "";
+          } else if (types.contains('country')) {
+            country = component.shortName ?? "";
+          } else if (types.contains('postal_code')) {
+            zipcode = component.longName ?? "";
           }
-
-          ///streetName
-
-          List<String> streetNameList = element.types
-                  ?.where((element1) => element1 == 'sublocality_level_2')
-                  .toList() ??
-              [];
-
-          if (streetNameList.isNotEmpty) {
-            streetName = element.longName ?? "";
-          }
-
-          ///city
-
-          List<String> cityList = element.types
-                  ?.where((element1) => element1 == 'locality')
-                  .toList() ??
-              [];
-
-          if (cityList.isNotEmpty) {
-            city = element.longName ?? "";
-          }
-
-          ///State
-
-          List<String> stateList = element.types
-                  ?.where(
-                      (element1) => element1 == 'administrative_area_level_1')
-                  .toList() ??
-              [];
-
-          if (stateList.isNotEmpty) {
-            stateData = element.shortName ?? "";
-          }
-
-          ///country
-
-          List<String> countryList = element.types
-                  ?.where((element1) => element1 == 'country')
-                  .toList() ??
-              [];
-
-          if (countryList.isNotEmpty) {
-            country = element.shortName ?? "";
-          }
-
-          ///ZIP CODE
-          List<String> pinCodeList = element.types
-                  ?.where((element1) => element1 == 'postal_code')
-                  .toList() ??
-              [];
-
-          if (pinCodeList.isNotEmpty) {
-            zipcode = element.longName ?? "";
-          }
-        });
+        }
       }
 
       streetDetailsController.text = streetName;
@@ -416,9 +435,6 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
       addressNameController.text = widget.userAddress?.addressType ?? "";
       streetName = widget.userAddress?.streetName ?? '';
       streetDetailsController.text = streetName.isNotEmpty ? streetName : '';
-      // streetDetailsController.text =
-      //     '${streetName.isNotEmpty ? '$streetName, ' : ''}${widget.userAddress?.city?.isNotEmpty ?? false ? '${widget.userAddress?.city}, ' : ''}${widget.userAddress?.state?.isNotEmpty ?? false ? '${widget.userAddress?.state}, ' : ''}${widget.userAddress?.country?.isNotEmpty ?? false ? '${widget.userAddress?.country}. ' : ''}';
-      // '$streetName, ${widget.userAddress?.city ?? ''}, ${widget.userAddress?.state ?? ''}, ${widget.userAddress?.country ?? ''}';
       apartmentNumberController.text = widget.userAddress?.streetNum ?? '';
       floorNumberController.text =
           widget.userAddress?.extendedAddress?.toString() ?? "";
@@ -443,13 +459,22 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
             widget.userAddress!.latitude!, widget.userAddress!.longitude!),
         icon: customIcon,
       );
+      List<String> addressList = [
+        apartmentNumberController.text,
+        streetName,
+        cityField.text,
+        stateField.text,
+        countryField.text
+      ];
+      addressList.removeWhere((element) => element.isEmpty);
+      selectedLocationValue = addressList.join(", ");
 
       setState(() {
         mapController
             ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
       });
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
   }
 
@@ -484,7 +509,7 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                 return Column(
                   children: [
                     Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: Stack(
                         children: [
                           GoogleMap(
@@ -520,6 +545,9 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
 
                                 selectedLatLng = LatLng(
                                     argument.latitude, argument.longitude);
+                                print(
+                                    "Lat : ${argument.latitude} , Lng : ${argument.longitude}  ");
+
                                 currentPosition = CameraPosition(
                                   target: LatLng(
                                       argument.latitude, argument.longitude),
@@ -549,167 +577,101 @@ class _MapAddressScreenState extends State<MapAddressScreen> {
                       ),
                     ),
                     Expanded(
-                      flex: 3,
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        child: Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              mapDetailWidget(
-                                title: "Address Type",
-                                textEditingController: addressNameController,
-                                readOnly: false,
-                                suffixIcon: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                ),
-                              ),
-                              mapDetailWidget(
-                                title: "Street",
-                                textEditingController: streetDetailsController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please Enter Street details';
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                              ),
-                              mapDetailWidget(
-                                title: "Street Number",
-                                textEditingController:
-                                    apartmentNumberController,
-                                validator: (p0) {
-                                  if (p0?.trim().isEmpty ?? true) {
-                                    return 'Please Enter Street Number';
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                              ),
-                              mapDetailWidget(
-                                title: "Extended Address",
-                                textEditingController: floorNumberController,
-                              ),
-                              mapDetailWidget(
-                                title: "Country",
-                                textEditingController: countryField,
-                                hintText: "Country (e.g., US)",
-                                inputFormatters: [
-                                  s.LengthLimitingTextInputFormatter(2),
+                      flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Trouble locating your address?\nTry using search instead",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Avenir',
+                            ),
+                          ),
+                          15.height,
+                          GestureDetector(
+                            onTap: () async {
+                              var result =
+                                  await Get.to(() => const SearchMapAddress());
+                              if (result != null && result is Prediction) {
+                                selectedLocationValue = result.description;
+
+                                findLatLng(result.placeId ?? '');
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              margin: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: const Color(0xff004C63)
+                                          .withOpacity(0.08),
+                                      offset: const Offset(0, 0),
+                                      spreadRadius: 0,
+                                      blurRadius: 16)
                                 ],
-                                validator: (p0) {
-                                  if (p0?.trim().isEmpty ?? true) {
-                                    return 'Please Enter Country Name';
-                                  } else {
-                                    return null;
-                                  }
-                                },
                               ),
-                              mapDetailWidget(
-                                title: "State",
-                                hintText: "State (e.g., NY)",
-                                textEditingController: stateField,
-                                inputFormatters: [
-                                  s.LengthLimitingTextInputFormatter(2),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10.w),
+                                    child: Image.asset(
+                                      AssetsUtils.searchIcon,
+                                      height: 20.h,
+                                      width: 20.w,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      selectedLocationValue ??
+                                          'Search street, city ,district...',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: const Color(0xff5F5F5F),
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                  )
                                 ],
-                                validator: (p0) {
-                                  if (p0?.trim().isEmpty ?? true) {
-                                    return 'Please Enter State Name';
-                                  } else {
-                                    return null;
-                                  }
-                                },
                               ),
-                              mapDetailWidget(
-                                title: "City",
-                                textEditingController: cityField,
-                                validator: (p0) {
-                                  if (p0?.trim().isEmpty ?? true) {
-                                    return 'Please Enter City Name';
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                              ),
-                              mapDetailWidget(
-                                title: "Zip",
-                                textEditingController: zipCodeController,
-                                validator: (p0) {
-                                  if (p0?.trim().isEmpty ?? true) {
-                                    return 'Please Enter ZipCode';
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                              ),
-                            ],
-                          ).paddingOnly(left: 22.w, right: 22.w, top: 8.h),
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     buildButton(
-                            context: context,
-                            title: "Save",
-                            onPressed: () {
-                              if (!formKey.currentState!.validate()) {
-                                return;
-                              }
-
-                              if (widget.userAddress != null) {
-                                print('------>>>>DDDDD');
-
-                                /// Update existing address
-
-                                bloc.add(
-                                  UpdateClickEvent(
-                                    latitude: selectedLatLng!.latitude,
-                                    longitude: selectedLatLng!.longitude,
-                                    streetNum: apartmentNumberController.text,
-                                    streetName: streetDetailsController.text,
-                                    city: cityField.text,
-                                    state: stateField.text,
-                                    country: countryField.text,
-                                    addressType: addressNameController.text,
-                                    zipcode: zipCodeController.text,
-                                    isPrimary:
-                                        widget.userAddress?.isPrimary ?? false,
-                                    userId:
-                                        PreferenceUtils.getString(prefUserData),
-                                    isFrom: 'isFromProfile',
-                                    addressId: widget.userAddress?.id ?? '',
-                                    floor: floorNumberController.text,
-                                  ),
-                                );
-                              } else {
-                                ///ADD NEW ADDRESS
-                                bloc.add(
-                                  SaveClickEvent(
-                                    latitude: selectedLatLng!.latitude,
-                                    longitude: selectedLatLng!.longitude,
-                                    streetNum: apartmentNumberController.text,
-                                    streetName: streetDetailsController.text,
-                                    city: city,
-                                    state: stateData,
-                                    country: country,
-                                    addressType: addressNameController.text,
-                                    zipcode: zipCodeController.text,
-                                    isPrimary: true,
-                                    userId:
-                                        PreferenceUtils.getString(prefUserData),
-                                    isFrom: 'isFromProfile',
-                                    floor: floorNumberController.text,
-                                  ),
-                                );
-
-                                // '${streetName.isNotEmpty ? '$streetName, ' : ''}Floor no. ${floorNumberController.text}'
-                              }
-                            },
-                            textColor: AppColors.whiteColor,
-                            bgColor: AppColors.primaryBlueColor)
-                        .paddingOnly(
-                            left: 22.w, right: 22.w, top: 12.h, bottom: 10.h),
+                      context: context,
+                      title: "Next",
+                      onPressed: () async {
+                        final result = await Get.to(
+                          () => MapAddressSecondStep(
+                            userAddress: widget.userAddress,
+                            selectedLatLng: selectedLatLng,
+                            addressNameController: addressNameController,
+                            cityField: cityField,
+                            apartmentNumberController:
+                                apartmentNumberController,
+                            stateField: stateField,
+                            countryField: countryField,
+                            floorNumberController: floorNumberController,
+                            streetDetailsController: streetDetailsController,
+                            zipCodeController: zipCodeController,
+                          ),
+                        );
+                        if (result == true) {
+                          Get.back(result: result);
+                        }
+                      },
+                      textColor: AppColors.whiteColor,
+                      bgColor: AppColors.primaryBlueColor,
+                    ).paddingOnly(
+                        left: 22.w, right: 22.w, top: 12.h, bottom: 10.h),
                     if (widget.userAddress != null)
                       InkWell(
                         onTap: () {

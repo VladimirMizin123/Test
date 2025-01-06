@@ -12,6 +12,8 @@ import 'package:gymeats_mobile/bloc/subscription/subscription_bloc.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
+import 'package:gymeats_mobile/screen/account_screen/about/pivacy/privacy_policy_screen.dart';
+import 'package:gymeats_mobile/screen/account_screen/about/terms_conditions_screen/terms_conditions_screens.dart';
 import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 import 'package:gymeats_mobile/screen/premiums/puchase_options_widget.dart';
 import 'package:gymeats_mobile/service/in_app_purchase_service.dart';
@@ -39,7 +41,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   Future<void> _initialize() async {
     productList = await IapService.i.getProducts();
-    IapService.i.fetchStatus();
+    // IapService.i.fetchStatus();
     selectedIndex = productList.length - 1;
     if (mounted) {
       setState(() {});
@@ -63,7 +65,27 @@ class _PremiumScreenState extends State<PremiumScreen> {
       bloc: IapService.i.bloc,
       listener: (context, state) {
         if (state is SubscriptionStatusErrorState) {
-          showToast(message: state.message, isSuccess: false);
+          if (state.message.isNotEmpty) {
+            showToast(message: state.message, isSuccess: false);
+          }
+          if (IapService.i.isRestoreCheck) {
+            IapService.i.isRestoreCheck = false;
+          }
+        }
+
+        if (state is SubscriptionStatusState) {
+          if (state.status?.data == "Active" && IapService.i.isRestoreCheck) {
+            IapService.i.isRestoreCheck = false;
+            showToast(message: "Item Restore Successfully !", isSuccess: true);
+            if (!fromDashboard) {
+              if (Get.currentRoute.contains("/PremiumScreen")) {
+                Get.toNamed('/BuildMyProfileScreen',
+                    arguments: userSignUpDataModel);
+              }
+            } else {
+              Get.offAll(() => const AppManagerScreen(selectIndex: 2));
+            }
+          }
         }
 
         if (state is ReceiptDetailsLoadingState) {
@@ -73,8 +95,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
         if (state is ReceiptDetailsSuccessState) {
           showToast(message: "Item Purchased Successfully !", isSuccess: true);
           if (!fromDashboard) {
-            Get.toNamed('/BuildMyProfileScreen',
-                arguments: userSignUpDataModel);
+            if (Get.currentRoute.contains("/PremiumScreen")) {
+              Get.toNamed('/BuildMyProfileScreen',
+                  arguments: userSignUpDataModel);
+            }
           } else {
             Get.offAll(() => const AppManagerScreen(selectIndex: 2));
           }
@@ -262,7 +286,12 @@ class _PremiumScreenState extends State<PremiumScreen> {
                             fontWeight: FontWeight.w800),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            // Single tapped.
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PolicyScreen(),
+                              ),
+                            );
                           },
                       ),
                       TextSpan(
@@ -272,9 +301,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w800),
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            // Single tapped.
-                            IapService.i.restorePurchases();
+                          ..onTap = () async {
+                            IapService.i.isRestoreCheck = true;
+                            await IapService.i.restorePurchases();
                           },
                       ),
                       TextSpan(
@@ -285,7 +314,12 @@ class _PremiumScreenState extends State<PremiumScreen> {
                             fontWeight: FontWeight.w800),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            // Single tapped.
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ConditionScreen(),
+                              ),
+                            );
                           },
                       ),
                     ],

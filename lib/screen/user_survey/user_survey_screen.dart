@@ -81,6 +81,8 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
     Colors.limeAccent.withOpacity(0.8),
   ];
 
+  RxBool nextLoader = false.obs;
+
   @override
   void initState() {
     super.initState();
@@ -135,22 +137,40 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
               return const AppCenterLoader();
             },
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is LoadSurveyData) {
                 getSurveyData = state.surveyData;
 
-                bool isSelected = getSurveyData?.options
-                        ?.any((element) => element.isSelect) ??
-                    false;
-                if (!isSelected) {
-                  int index = getSurveyData?.options
-                          ?.indexWhere((element) => element.label == "None") ??
-                      -1;
-                  if (!index.isNegative) {
-                    getSurveyData?.options?[index].isSelect = true;
-                    noneSelected = true;
+                if (pageIndex == 1) {
+                  for (var ele in searchEdgesRestrictionList) {
+                    if (restrictionIDList.contains(ele.node.id)) {
+                      ele.node.isRestricted = true;
+                    } else {
+                      ele.node.isRestricted = false;
+                    }
                   }
                 }
+
+                bool isSelected = getSurveyData?.options?.any((element) =>
+                        element.isSelect && element.label != "None") ??
+                    false;
+                bool isSelected2 = pageIndex == 1
+                    ? searchEdgesRestrictionList
+                        .any((element) => element.node.isRestricted)
+                    : false;
+
+                int index = getSurveyData?.options
+                        ?.indexWhere((element) => element.label == "None") ??
+                    -1;
+
+                // print(!isSelected && !isSelected2);
+
+                if (!index.isNegative) {
+                  getSurveyData?.options?[index].isSelect =
+                      !isSelected && !isSelected2;
+                  noneSelected = !isSelected && !isSelected2;
+                }
+
                 noneSelected = getSurveyData?.options?.any((element) =>
                         element.isSelect && element.label == "None") ??
                     false;
@@ -198,16 +218,28 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                 );
 
                 if (widget.isProfile == true) {
-                  AccountRepository().updateDietProgram(
-                      req: userSignUpDataModel.surveyReq ?? {});
-                  SignUpRepository().addUserRestriction(
-                    userid: PreferenceUtils.getString(prefUserData),
-                    restrictionList: restrictionIDList,
-                  );
-                  Future.delayed(const Duration(seconds: 2), () {
-                    Get.back();
-                  });
-                  // Get.off(() => const ProgramScreen());
+                  try {
+                    nextLoader.value = true;
+                    await Future.wait(
+                      [
+                        AccountRepository().updateDietProgram(
+                            req: userSignUpDataModel.surveyReq ?? {}),
+                        SignUpRepository().addUserRestriction(
+                          userid: PreferenceUtils.getString(prefUserData),
+                          restrictionList: restrictionIDList,
+                        ),
+                      ],
+                    );
+                    nextLoader.value = false;
+                    if (Get.currentRoute.contains('UserSurveyScreen')) {
+                      Get.back();
+                      // Get.off(() => const ProgramScreen());
+                    }
+                  } catch (e) {
+                    log(e.toString());
+                  } finally {
+                    nextLoader.value = false;
+                  }
                 } else {
                   Get.toNamed(
                     '/UserPhotoSelectionScreen',
@@ -228,11 +260,13 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
               if (state is GetAllRestrictionSuccessState) {
                 edgesRestrictionList = state.edgesRestrictionList ?? [];
 
-                searchEdgesRestrictionList = edgesRestrictionList
-                    .where((item) => item.node.name
-                        .toLowerCase()
-                        .contains(searchController.text.toLowerCase()))
-                    .toList();
+                searchEdgesRestrictionList = pageIndex == 1
+                    ? edgesRestrictionList
+                        .where((item) => item.node.name
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()))
+                        .toList()
+                    : edgesRestrictionList;
 
                 for (var ele in searchEdgesRestrictionList) {
                   if (restrictionIDList.contains(ele.node.id)) {
@@ -369,39 +403,43 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
 
                 if (value!.isNotEmpty) {
                   isSearchOn = true;
-                  if (isPreference == true) {
-                    searchEdgesRestrictionList = edgesRestrictionList
-                        .where((item) => item.node.name
-                            .toLowerCase()
-                            .contains(searchController.text.toLowerCase()))
-                        .toList();
+                  // if (isPreference == true) {
+                  searchEdgesRestrictionList = pageIndex == 1
+                      ? edgesRestrictionList
+                          .where((item) => item.node.name
+                              .toLowerCase()
+                              .contains(searchController.text.toLowerCase()))
+                          .toList()
+                      : edgesRestrictionList;
 
-                    for (var ele in searchEdgesRestrictionList) {
-                      if (restrictionIDList.contains(ele.node.id)) {
-                        ele.node.isRestricted = true;
-                      } else {
-                        ele.node.isRestricted = false;
-                      }
+                  for (var ele in searchEdgesRestrictionList) {
+                    if (restrictionIDList.contains(ele.node.id)) {
+                      ele.node.isRestricted = true;
+                    } else {
+                      ele.node.isRestricted = false;
                     }
-                  } else {
-                    log("SINGLE SEARCH");
-                    for (var element in dietList) {
-                      log(element.dietName ?? '', name: "DIET NAME");
-                    }
-                    searchDietList = dietList
-                        .where((item) => item.dietName
-                            .toString()
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
                   }
+                  // } else {
+                  //   log("SINGLE SEARCH");
+                  //   for (var element in dietList) {
+                  //     log(element.dietName ?? '', name: "DIET NAME");
+                  //   }
+                  //   searchDietList = dietList
+                  //       .where((item) => item.dietName
+                  //           .toString()
+                  //           .toLowerCase()
+                  //           .contains(value.toLowerCase()))
+                  //       .toList();
+                  // }
                 } else {
                   isSearchOn = false;
-                  searchEdgesRestrictionList = edgesRestrictionList
-                      .where((item) => item.node.name
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase()))
-                      .toList();
+                  searchEdgesRestrictionList = pageIndex == 1
+                      ? edgesRestrictionList
+                          .where((item) => item.node.name
+                              .toLowerCase()
+                              .contains(searchController.text.toLowerCase()))
+                          .toList()
+                      : edgesRestrictionList;
 
                   for (var ele in searchEdgesRestrictionList) {
                     if (restrictionIDList.contains(ele.node.id)) {
@@ -424,11 +462,13 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   searchController.clear();
                   isSearchOn = false;
                   FocusScope.of(context).unfocus();
-                  searchEdgesRestrictionList = edgesRestrictionList
-                      .where((item) => item.node.name
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase()))
-                      .toList();
+                  searchEdgesRestrictionList = pageIndex == 1
+                      ? edgesRestrictionList
+                          .where((item) => item.node.name
+                              .toLowerCase()
+                              .contains(searchController.text.toLowerCase()))
+                          .toList()
+                      : edgesRestrictionList;
 
                   for (var ele in searchEdgesRestrictionList) {
                     if (restrictionIDList.contains(ele.node.id)) {
@@ -477,177 +517,142 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                           physics: const BouncingScrollPhysics(),
                           child: Column(
                             children: [
-                              ListView(
-                                padding: const EdgeInsets.only(top: 20),
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: List<Widget>.generate(
-                                  sOptions.length,
-                                  (index) {
-                                    return Builder(builder: (context) {
-                                      if (sOptions[index].optionType ==
-                                          "preferences") {
-                                        sOptions[index].isSelect = false;
+                              if (pageIndex != 1) ...[
+                                ListView(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: List<Widget>.generate(
+                                    sOptions.length,
+                                    (index) {
+                                      return Builder(builder: (context) {
+                                        if (sOptions[index].optionType ==
+                                            "preferences") {
+                                          sOptions[index].isSelect = false;
 
-                                        for (var element in listOptions) {
-                                          if (sOptions[index].label != "None") {
-                                            if (element.optionName
-                                                    .replaceAll("Diet", "")
-                                                    .trim()
-                                                    .toLowerCase() ==
-                                                sOptions[index]
-                                                    .label
-                                                    ?.replaceAll("Diet", "")
-                                                    .trim()
-                                                    .toLowerCase()) {
-                                              sOptions[index].isSelect = true;
-                                            } else {
-                                              sOptions[index].isSelect = false;
-                                            }
-                                          } else {}
-                                        }
-
-                                        if (dietId != '' &&
-                                            dietId ==
-                                                sOptions[index]
-                                                    .restrictionId!) {
-                                          sOptions[index].isSelect = true;
-                                        }
-                                      }
-                                      return UserSurveyItems(
-                                        data: sOptions[index],
-                                        onClick: () {
-                                          if (noneSelected == true &&
-                                              (sOptions[index].label ?? '') !=
-                                                  "None") {
-                                            // int i = sOptions.indexWhere(
-                                            //     (element) =>
-                                            //         element.label == "None");
-                                            int i = getSurveyData?.options
-                                                    ?.indexWhere((element) =>
-                                                        element.label ==
-                                                        "None") ??
-                                                -1;
-                                            if (i.isNegative) {
-                                              return null;
-                                            }
-                                            getSurveyData
-                                                ?.options?[i].isSelect = false;
-                                            noneSelected = false;
+                                          for (var element in listOptions) {
+                                            if (sOptions[index].label !=
+                                                "None") {
+                                              if (element.optionName
+                                                      .replaceAll("Diet", "")
+                                                      .trim()
+                                                      .toLowerCase() ==
+                                                  sOptions[index]
+                                                      .label
+                                                      ?.replaceAll("Diet", "")
+                                                      .trim()
+                                                      .toLowerCase()) {
+                                                sOptions[index].isSelect = true;
+                                              } else {
+                                                sOptions[index].isSelect =
+                                                    false;
+                                              }
+                                            } else {}
                                           }
 
-                                          if ((sOptions[index].label ?? '') ==
-                                              "None") {
-                                            sOptions[index].isSelect =
-                                                !sOptions[index].isSelect;
-
-                                            for (var element
-                                                in searchEdgesRestrictionList) {
-                                              element.node.isRestricted = false;
-                                              restrictionIDList.removeWhere(
-                                                  (el) =>
-                                                      element.node.id == el);
-                                            }
-
-                                            noneSelected =
-                                                sOptions[index].isSelect;
-
-                                            for (int i = 0;
-                                                i < sOptions.length;
-                                                i++) {
-                                              if (i != 0) {
-                                                sOptions[i].isSelect = false;
+                                          if (dietId != '' &&
+                                              dietId ==
+                                                  sOptions[index]
+                                                      .restrictionId!) {
+                                            sOptions[index].isSelect = true;
+                                          }
+                                        }
+                                        return UserSurveyItems(
+                                          data: sOptions[index],
+                                          onClick: () {
+                                            if (noneSelected == true &&
+                                                (sOptions[index].label ?? '') !=
+                                                    "None") {
+                                              // int i = sOptions.indexWhere(
+                                              //     (element) =>
+                                              //         element.label == "None");
+                                              int i = getSurveyData?.options
+                                                      ?.indexWhere((element) =>
+                                                          element.label ==
+                                                          "None") ??
+                                                  -1;
+                                              if (i.isNegative) {
+                                                return null;
                                               }
+                                              getSurveyData?.options?[i]
+                                                  .isSelect = false;
+                                              noneSelected = false;
                                             }
 
-                                            for (int surveyIndex = 0;
-                                                surveyIndex <
-                                                    (getSurveyData
-                                                            ?.options?.length ??
-                                                        0);
-                                                surveyIndex++) {
-                                              for (int indexL = 0;
-                                                  indexL < listOptions.length;
-                                                  indexL++) {
-                                                if (listOptions[indexL]
-                                                        .optionName ==
-                                                    getSurveyData
-                                                        ?.options?[surveyIndex]
-                                                        .label) {
-                                                  listOptions.removeAt(indexL);
+                                            if ((sOptions[index].label ?? '') ==
+                                                "None") {
+                                              sOptions[index].isSelect =
+                                                  !sOptions[index].isSelect;
+
+                                              // for (var element
+                                              //     in searchEdgesRestrictionList) {
+                                              //   element.node.isRestricted =
+                                              //       false;
+                                              //   restrictionIDList.removeWhere(
+                                              //       (el) =>
+                                              //           element.node.id == el);
+                                              // }
+
+                                              noneSelected =
+                                                  sOptions[index].isSelect;
+
+                                              for (int i = 0;
+                                                  i < sOptions.length;
+                                                  i++) {
+                                                if (i != 0) {
+                                                  sOptions[i].isSelect = false;
                                                 }
                                               }
-                                            }
 
-                                            for (int i = 0;
-                                                i < sOptions.length;
-                                                i++) {
-                                              for (int ind = 0;
-                                                  ind <
-                                                      restrictionIDList.length;
-                                                  ind++) {
-                                                if (sOptions[i].restrictionId ==
-                                                    restrictionIDList[ind]) {
-                                                  restrictionIDList
-                                                      .removeAt(ind);
-                                                }
-                                              }
-                                            }
-
-                                            setState(() {});
-                                          } else {
-                                            noneSelected = false;
-                                            restrictionName = '';
-
-                                            optionIndex = index;
-                                            if (sOptions[index].optionType ==
-                                                "preferences") {
-                                              if (listOptions.isEmpty) {
-                                                sOptions[index].isSelect = true;
-                                                listOptions.add(CustomOptions(
-                                                    optionColor: sOptions[index]
-                                                            .color ??
-                                                        AppColors.primaryBlue,
-                                                    optionName:
-                                                        sOptions[index].label ??
-                                                            ''));
-                                                bloc.add(CheckSurveyData(
-                                                    index: index));
-                                              } else {
-                                                if (sOptions[index].isSelect) {
-                                                  dietId = "";
-                                                  sOptions[index].isSelect =
-                                                      false;
-                                                  setState(() {});
-                                                  listOptions.removeWhere(
-                                                      (element) =>
-                                                          sOptions[index]
-                                                              .label ==
-                                                          element.optionName);
-                                                } else {
-                                                  dietId = sOptions[index]
-                                                      .restrictionId!;
-
-                                                  getSurveyData!.options![index]
-                                                      .isSelect = true;
-
-                                                  for (var element
-                                                      in getSurveyData
-                                                              ?.options ??
-                                                          []) {
-                                                    for (int loIndex = 0;
-                                                        loIndex <
-                                                            listOptions.length;
-                                                        loIndex++) {
-                                                      if (element.label ==
-                                                          listOptions[loIndex]
-                                                              .optionName) {
-                                                        listOptions
-                                                            .removeAt(loIndex);
-                                                      }
-                                                    }
+                                              for (int surveyIndex = 0;
+                                                  surveyIndex <
+                                                      (getSurveyData?.options
+                                                              ?.length ??
+                                                          0);
+                                                  surveyIndex++) {
+                                                for (int indexL = 0;
+                                                    indexL < listOptions.length;
+                                                    indexL++) {
+                                                  if (listOptions[indexL]
+                                                          .optionName ==
+                                                      getSurveyData
+                                                          ?.options?[
+                                                              surveyIndex]
+                                                          .label) {
+                                                    listOptions
+                                                        .removeAt(indexL);
                                                   }
+                                                }
+                                              }
 
+                                              // for (int i = 0;
+                                              //     i < sOptions.length;
+                                              //     i++) {
+                                              //   for (int ind = 0;
+                                              //       ind <
+                                              //           restrictionIDList
+                                              //               .length;
+                                              //       ind++) {
+                                              //     if (sOptions[i]
+                                              //             .restrictionId ==
+                                              //         restrictionIDList[ind]) {
+                                              //       restrictionIDList
+                                              //           .removeAt(ind);
+                                              //     }
+                                              //   }
+                                              // }
+
+                                              setState(() {});
+                                            } else {
+                                              noneSelected = false;
+                                              restrictionName = '';
+
+                                              optionIndex = index;
+                                              if (sOptions[index].optionType ==
+                                                  "preferences") {
+                                                if (listOptions.isEmpty) {
+                                                  sOptions[index].isSelect =
+                                                      true;
                                                   listOptions.add(CustomOptions(
                                                       optionColor:
                                                           sOptions[index]
@@ -658,68 +663,210 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                           sOptions[index]
                                                                   .label ??
                                                               ''));
-
                                                   bloc.add(CheckSurveyData(
                                                       index: index));
-                                                }
-                                              }
-
-                                              setState(() {});
-                                            } else {
-                                              if (sOptions[index].isSelect) {
-                                                listOptions.removeWhere(
-                                                    (element) =>
-                                                        element.optionName ==
-                                                        sOptions[index].label);
-                                              } else {
-                                                listOptions.add(CustomOptions(
-                                                    optionColor: sOptions[index]
-                                                            .color ??
-                                                        AppColors.primaryBlue,
-                                                    optionName:
-                                                        sOptions[index].label ??
-                                                            ''));
-                                              }
-
-                                              /// ID
-                                              int sIndex = getSurveyData
-                                                      ?.options
-                                                      ?.indexWhere((element) =>
-                                                          sOptions[index].id ==
-                                                          element.id) ??
-                                                  -1;
-
-                                              bloc.add(CheckSurveyData(
-                                                  index: sIndex));
-                                              setState(() {
-                                                if (sOptions[index]
-                                                        .restrictionId !=
-                                                    null) {
-                                                  if (restrictionIDList
-                                                      .contains(sOptions[index]
-                                                          .restrictionId)) {
-                                                    restrictionIDList.remove(
-                                                        sOptions[index]
-                                                            .restrictionId);
+                                                } else {
+                                                  if (sOptions[index]
+                                                      .isSelect) {
+                                                    dietId = "";
+                                                    sOptions[index].isSelect =
+                                                        false;
+                                                    setState(() {});
+                                                    listOptions.removeWhere(
+                                                        (element) =>
+                                                            sOptions[index]
+                                                                .label ==
+                                                            element.optionName);
                                                   } else {
-                                                    restrictionIDList.add(
-                                                        sOptions[index]
-                                                            .restrictionId!);
-                                                    log("Restriction Call $restrictionIDList");
+                                                    dietId = sOptions[index]
+                                                        .restrictionId!;
+
+                                                    getSurveyData!
+                                                        .options![index]
+                                                        .isSelect = true;
+
+                                                    for (var element
+                                                        in getSurveyData
+                                                                ?.options ??
+                                                            []) {
+                                                      for (int loIndex = 0;
+                                                          loIndex <
+                                                              listOptions
+                                                                  .length;
+                                                          loIndex++) {
+                                                        if (element.label ==
+                                                            listOptions[loIndex]
+                                                                .optionName) {
+                                                          listOptions.removeAt(
+                                                              loIndex);
+                                                        }
+                                                      }
+                                                    }
+
+                                                    listOptions.add(CustomOptions(
+                                                        optionColor: sOptions[
+                                                                    index]
+                                                                .color ??
+                                                            AppColors
+                                                                .primaryBlue,
+                                                        optionName:
+                                                            sOptions[index]
+                                                                    .label ??
+                                                                ''));
+
+                                                    bloc.add(CheckSurveyData(
+                                                        index: index));
                                                   }
                                                 }
-                                              });
+
+                                                setState(() {});
+                                              } else {
+                                                if (sOptions[index].isSelect) {
+                                                  listOptions.removeWhere(
+                                                      (element) =>
+                                                          element.optionName ==
+                                                          sOptions[index]
+                                                              .label);
+                                                } else {
+                                                  listOptions.add(CustomOptions(
+                                                      optionColor:
+                                                          sOptions[index]
+                                                                  .color ??
+                                                              AppColors
+                                                                  .primaryBlue,
+                                                      optionName:
+                                                          sOptions[index]
+                                                                  .label ??
+                                                              ''));
+                                                }
+
+                                                /// ID
+                                                int sIndex = getSurveyData
+                                                        ?.options
+                                                        ?.indexWhere(
+                                                            (element) =>
+                                                                sOptions[index]
+                                                                    .id ==
+                                                                element.id) ??
+                                                    -1;
+
+                                                bloc.add(CheckSurveyData(
+                                                    index: sIndex));
+                                                // setState(() {
+                                                //   if (sOptions[index]
+                                                //           .restrictionId !=
+                                                //       null) {
+                                                //     if (restrictionIDList
+                                                //         .contains(sOptions[
+                                                //                 index]
+                                                //             .restrictionId)) {
+                                                //       restrictionIDList.remove(
+                                                //           sOptions[index]
+                                                //               .restrictionId);
+                                                //     } else {
+                                                //       restrictionIDList.add(
+                                                //           sOptions[index]
+                                                //               .restrictionId!);
+                                                //       log("Restriction Call $restrictionIDList");
+                                                //     }
+                                                //   }
+                                                // });
+                                              }
                                             }
-                                          }
-                                        },
-                                      );
-                                    });
+                                          },
+                                        );
+                                      });
+                                    },
+                                  ).addBetweenItems(
+                                      const SizedBox(height: 5.0)),
+                                ),
+                              ] else ...[
+                                Builder(
+                                  builder: (_) {
+                                    int index = sOptions.indexWhere(
+                                        (element) => element.label == "None");
+                                    return !index.isNegative
+                                        ? UserSurveyItems(
+                                            data: sOptions[index],
+                                            onClick: () {
+                                              sOptions[index].isSelect =
+                                                  !sOptions[index].isSelect;
+
+                                              for (var element
+                                                  in searchEdgesRestrictionList) {
+                                                element.node.isRestricted =
+                                                    false;
+                                                restrictionIDList.removeWhere(
+                                                    (el) =>
+                                                        element.node.id == el);
+                                              }
+
+                                              noneSelected =
+                                                  sOptions[index].isSelect;
+
+                                              for (int i = 0;
+                                                  i < sOptions.length;
+                                                  i++) {
+                                                if (i != 0) {
+                                                  sOptions[i].isSelect = false;
+                                                }
+                                              }
+
+                                              for (int surveyIndex = 0;
+                                                  surveyIndex <
+                                                      (getSurveyData?.options
+                                                              ?.length ??
+                                                          0);
+                                                  surveyIndex++) {
+                                                for (int indexL = 0;
+                                                    indexL < listOptions.length;
+                                                    indexL++) {
+                                                  if (listOptions[indexL]
+                                                          .optionName ==
+                                                      getSurveyData
+                                                          ?.options?[
+                                                              surveyIndex]
+                                                          .label) {
+                                                    listOptions
+                                                        .removeAt(indexL);
+                                                  }
+                                                }
+                                              }
+
+                                              for (int i = 0;
+                                                  i < sOptions.length;
+                                                  i++) {
+                                                for (int ind = 0;
+                                                    ind <
+                                                        restrictionIDList
+                                                            .length;
+                                                    ind++) {
+                                                  if (sOptions[i]
+                                                          .restrictionId ==
+                                                      restrictionIDList[ind]) {
+                                                    restrictionIDList
+                                                        .removeAt(ind);
+                                                  }
+                                                }
+                                              }
+
+                                              listOptions.removeWhere((e) =>
+                                                  edgesRestrictionList.any(
+                                                      (element) =>
+                                                          element.node.name ==
+                                                          e.optionName));
+
+                                              restrictionIDList.clear();
+                                              setState(() {});
+                                            },
+                                          ).paddingOnly(top: 20)
+                                        : const SizedBox.shrink();
                                   },
-                                ).addBetweenItems(const SizedBox(height: 5.0)),
-                              ),
+                                )
+                              ],
                               // ! Extra Data
                               if (pageIndex == 1) ...[
-                                const SizedBox(height: 8),
+                                // const SizedBox(height: 8),
                                 Builder(builder: (_) {
                                   searchEdgesRestrictionList.sort((a, b) => a
                                       .node.name
@@ -750,74 +897,105 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                                                   .isSelect = false;
                                               noneSelected = false;
                                             }
-                                            if (isPreference == false) {
-                                              for (var element
-                                                  in searchDietList) {
-                                                element.select = false;
-                                              }
+                                            // if (isPreference == false) {
+                                            //   for (var element
+                                            //       in searchDietList) {
+                                            //     element.select = false;
+                                            //   }
 
-                                              searchDietList[index].select =
-                                                  !searchDietList[index].select;
+                                            //   searchDietList[index].select =
+                                            //       !searchDietList[index].select;
 
-                                              bloc.add(CheckSurveyData(
-                                                  index: index));
+                                            //   bloc.add(CheckSurveyData(
+                                            //       index: index));
 
-                                              searchDietId =
-                                                  searchDietList[index].id!;
-                                              setState(() {});
-                                            } else {
-                                              setState(() {
-                                                searchEdgesRestrictionList[
-                                                            index]
-                                                        .node
-                                                        .isRestricted =
-                                                    !searchEdgesRestrictionList[
-                                                            index]
-                                                        .node
-                                                        .isRestricted;
+                                            //   searchDietId =
+                                            //       searchDietList[index].id!;
+                                            //   setState(() {});
+                                            // } else {
+                                            setState(() {
+                                              searchEdgesRestrictionList[index]
+                                                      .node
+                                                      .isRestricted =
+                                                  !searchEdgesRestrictionList[
+                                                          index]
+                                                      .node
+                                                      .isRestricted;
 
-                                                if (restrictionIDList.contains(
+                                              if (restrictionIDList.contains(
+                                                  searchEdgesRestrictionList[
+                                                          index]
+                                                      .node
+                                                      .id)) {
+                                                restrictionIDList.remove(
                                                     searchEdgesRestrictionList[
                                                             index]
                                                         .node
-                                                        .id)) {
-                                                  restrictionIDList.remove(
+                                                        .id);
+
+                                                for (int i = 0;
+                                                    i < listOptions.length;
+                                                    i++) {
+                                                  if (listOptions[i]
+                                                          .optionName ==
                                                       searchEdgesRestrictionList[
                                                               index]
                                                           .node
-                                                          .id);
-
-                                                  for (int i = 0;
-                                                      i < listOptions.length;
-                                                      i++) {
-                                                    if (listOptions[i]
-                                                            .optionName ==
+                                                          .name) {
+                                                    listOptions.removeAt(i);
+                                                  }
+                                                }
+                                                setState(() {});
+                                              } else {
+                                                restrictionIDList.add(
+                                                    searchEdgesRestrictionList[
+                                                            index]
+                                                        .node
+                                                        .id);
+                                                listOptions.add(CustomOptions(
+                                                    optionColor: colorList[
+                                                        index %
+                                                            colorList.length],
+                                                    optionName:
                                                         searchEdgesRestrictionList[
                                                                 index]
                                                             .node
-                                                            .name) {
-                                                      listOptions.removeAt(i);
-                                                    }
-                                                  }
-                                                  setState(() {});
-                                                } else {
-                                                  restrictionIDList.add(
-                                                      searchEdgesRestrictionList[
-                                                              index]
-                                                          .node
-                                                          .id);
-                                                  listOptions.add(CustomOptions(
-                                                      optionColor: colorList[
-                                                          index %
-                                                              colorList.length],
-                                                      optionName:
-                                                          searchEdgesRestrictionList[
-                                                                  index]
-                                                              .node
-                                                              .name));
-                                                }
-                                              });
+                                                            .name));
+                                              }
+                                            });
+                                            // }
+
+                                            bool isSelected = getSurveyData
+                                                    ?.options
+                                                    ?.any((element) =>
+                                                        element.isSelect) ??
+                                                false;
+                                            bool isSelected2 =
+                                                searchEdgesRestrictionList.any(
+                                                    (element) => element
+                                                        .node.isRestricted);
+
+                                            if (!isSelected && !isSelected2) {
+                                              int index = getSurveyData?.options
+                                                      ?.indexWhere((element) =>
+                                                          element.label ==
+                                                          "None") ??
+                                                  -1;
+                                              if (!index.isNegative) {
+                                                getSurveyData?.options?[index]
+                                                    .isSelect = true;
+                                                noneSelected = true;
+                                              }
                                             }
+                                            noneSelected = getSurveyData
+                                                    ?.options
+                                                    ?.any((element) =>
+                                                        element.isSelect &&
+                                                        element.label ==
+                                                            "None") ??
+                                                false;
+
+                                            setState(() {});
 
                                             int indexAt = getSurveyData!
                                                 .options!
@@ -853,6 +1031,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                     child: buildBorderButton(
                             context: context,
                             onPressed: () {
+                              if (nextLoader.value) return;
                               // if (listIndex.isNotEmpty) {
                               //   optionIndex = listIndex[listIndex.length - 1];
                               //   listIndex.removeLast();
@@ -897,47 +1076,64 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   ),
                   SizedBox(width: 10.w),
                   Expanded(
-                    child: buildButton(
-                            context: context,
-                            onPressed: () {
-                              resetSearchField();
-                              getSurveyReq();
-                              optionIndex = getSurveyData!.options!
-                                  .indexWhere((value) => value.isSelect);
-                              listIndex.add(optionIndex);
-                              bool isSurveySelected = getSurveyData?.options
-                                      ?.any((element) => element.isSelect) ??
-                                  false;
+                    child: Obx(() {
+                      return buildButton(
+                        context: context,
+                        showLoader: nextLoader.value,
+                        onPressed: () {
+                          if (nextLoader.value) return;
+                          resetSearchField();
+                          if (pageIndex == 1) {
+                            searchEdgesRestrictionList = edgesRestrictionList;
 
-                              bool isRestricted = searchEdgesRestrictionList
-                                  .any((element) => element.node.isRestricted);
-
-                              bloc.add(
-                                NextPrevSurveyClick(
-                                  index: optionIndex,
-                                  isNext: true,
-                                  searchEdgesRestrictionList:
-                                      searchEdgesRestrictionList,
-                                  pageIndex: pageIndex,
-                                ),
-                              );
-
-                              if ((isSurveySelected ||
-                                      (isRestricted && pageIndex == 1)) &&
-                                  pageIndex < 3) {
-                                pageIndex = pageIndex + 1;
+                            for (var ele in searchEdgesRestrictionList) {
+                              if (restrictionIDList.contains(ele.node.id)) {
+                                ele.node.isRestricted = true;
+                              } else {
+                                ele.node.isRestricted = false;
                               }
+                            }
+                          }
 
-                              if (isPreference == false) {
-                                isPreference = true;
-                              }
-                              noneSelected = false;
-                              setState(() {});
-                            },
-                            textColor: Colors.white,
-                            bgColor: setColor(gender: model.gender ?? ''),
-                            title: StringUtils.next)
-                        .paddingOnly(top: 10.h),
+                          getSurveyReq();
+                          optionIndex = getSurveyData!.options!
+                              .indexWhere((value) => value.isSelect);
+                          listIndex.add(optionIndex);
+                          bool isSurveySelected = getSurveyData?.options
+                                  ?.any((element) => element.isSelect) ??
+                              false;
+
+                          bool isRestricted = searchEdgesRestrictionList
+                              .any((element) => element.node.isRestricted);
+
+                          bloc.add(
+                            NextPrevSurveyClick(
+                              index: optionIndex,
+                              isNext: true,
+                              searchEdgesRestrictionList:
+                                  searchEdgesRestrictionList,
+                              pageIndex: pageIndex,
+                            ),
+                          );
+
+                          if ((isSurveySelected ||
+                                  (isRestricted && pageIndex == 1)) &&
+                              pageIndex < 3) {
+                            pageIndex = pageIndex + 1;
+                            noneSelected = false;
+                          }
+
+                          if (isPreference == false) {
+                            isPreference = true;
+                          }
+
+                          setState(() {});
+                        },
+                        textColor: Colors.white,
+                        bgColor: setColor(gender: model.gender ?? ''),
+                        title: StringUtils.next,
+                      ).paddingOnly(top: 10.h);
+                    }),
                   ),
                 ],
               ),

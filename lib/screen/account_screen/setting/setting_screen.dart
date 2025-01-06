@@ -64,7 +64,7 @@ class _SettingScreenState extends State<SettingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AccountTitleWidget(
+              accountTitleWidget(
                 title: "Settings",
                 widget: accountScreenListWidget(
                   children: List.generate(

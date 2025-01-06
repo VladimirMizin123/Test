@@ -63,13 +63,34 @@ class _GetUserAddressState extends State<GetUserAddress>
   Future getCurrentLocation() async {
     try {
       bool serviceEnabled = await _handleLocationPermission();
-      if (!serviceEnabled) return;
-
       BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
       customIcon = BitmapDescriptor.fromBytes(
           await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
+
+      if (!serviceEnabled) {
+        LatLng defaultLatLng = LatLng(37.7749, -122.4194);
+        currentPosition = CameraPosition(
+          target: LatLng(defaultLatLng.latitude, defaultLatLng.longitude),
+          zoom: 14.4746,
+        );
+
+        markers = [
+          Marker(
+            markerId: const MarkerId('0'),
+            position: LatLng(defaultLatLng.latitude, defaultLatLng.longitude),
+            icon: customIcon,
+          )
+        ];
+
+        setState(() {
+          mapController
+              ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
+        });
+        return;
+      }
+
       Position position =
           await GeolocatorPlatform.instance.getCurrentPosition();
 
@@ -126,7 +147,8 @@ class _GetUserAddressState extends State<GetUserAddress>
               permission == LocationPermission.deniedForever) {
             showToast(
                 message: 'Location permissions are denied', isSuccess: false);
-            return await appSettingDialogBox();
+            // return await appSettingDialogBox();
+            return false;
           }
         }
         if (permission == LocationPermission.deniedForever) {
@@ -137,7 +159,8 @@ class _GetUserAddressState extends State<GetUserAddress>
                 message:
                     'Location permissions are permanently denied, we cannot request permissions.',
                 isSuccess: false);
-            return await appSettingDialogBox();
+            // return await appSettingDialogBox();
+            return false;
           }
         }
       });
@@ -153,11 +176,12 @@ class _GetUserAddressState extends State<GetUserAddress>
                   ? 'Location permissions are permanently denied, we cannot request permissions.'
                   : 'Location permissions are denied',
               isSuccess: false);
-          return await appSettingDialogBox();
+          // return await appSettingDialogBox();
+          return false;
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        await appSettingDialogBox();
+        // await appSettingDialogBox();
 
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.deniedForever) {
@@ -392,73 +416,27 @@ class _GetUserAddressState extends State<GetUserAddress>
             results: right.results);
 
         if (right.results?.isNotEmpty ?? false) {
-          right.results?.first.addressComponents?.forEach((element) {
-            ///streetNum
+          final addressComponents =
+              right.results?.first.addressComponents ?? [];
 
-            List<String> streetNumList = element.types
-                    ?.where((element1) => element1 == 'premise')
-                    .toList() ??
-                [];
+          for (final component in addressComponents) {
+            final types = component.types ?? [];
 
-            if (streetNumList.isNotEmpty) {
-              streetNum = element.longName ?? "";
+            if (types.contains('street_number') || types.contains('premise')) {
+              streetNum = component.longName ?? "";
+            } else if (types.contains('route') ||
+                types.contains('sublocality_level_2')) {
+              streetName = component.longName ?? "";
+            } else if (types.contains('locality')) {
+              city = component.longName ?? "";
+            } else if (types.contains('administrative_area_level_1')) {
+              stateName = component.shortName ?? "";
+            } else if (types.contains('country')) {
+              country = component.shortName ?? "";
+            } else if (types.contains('postal_code')) {
+              zipcode = component.longName ?? "";
             }
-
-            ///streetName
-
-            List<String> streetNameList = element.types
-                    ?.where((element1) => element1 == 'sublocality_level_2')
-                    .toList() ??
-                [];
-
-            if (streetNameList.isNotEmpty) {
-              streetName = element.longName ?? "";
-            }
-
-            ///city
-
-            List<String> cityList = element.types
-                    ?.where((element1) => element1 == 'locality')
-                    .toList() ??
-                [];
-
-            if (cityList.isNotEmpty) {
-              city = element.longName ?? "";
-            }
-
-            ///State
-
-            List<String> stateList = element.types
-                    ?.where(
-                        (element1) => element1 == 'administrative_area_level_1')
-                    .toList() ??
-                [];
-
-            if (stateList.isNotEmpty) {
-              stateName = element.shortName ?? "";
-            }
-
-            ///country
-
-            List<String> countryList = element.types
-                    ?.where((element1) => element1 == 'country')
-                    .toList() ??
-                [];
-
-            if (countryList.isNotEmpty) {
-              country = element.shortName ?? "";
-            }
-
-            ///ZIP CODE
-            List<String> pinCodeList = element.types
-                    ?.where((element1) => element1 == 'postal_code')
-                    .toList() ??
-                [];
-
-            if (pinCodeList.isNotEmpty) {
-              zipcode = element.longName ?? "";
-            }
-          });
+          }
         }
 
         searchTextController.text = (right.results?.first.formattedAddress) ??
@@ -488,14 +466,8 @@ class _GetUserAddressState extends State<GetUserAddress>
         BitmapDescriptor? customIcon;
 
 // make sure to initialize before map loading
-        await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(
-            size: Size(0, 0),
-          ),
-          AssetsUtils.locationMarker,
-        ).then((d) {
-          customIcon = d;
-        });
+        customIcon = BitmapDescriptor.fromBytes(
+            await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
 
         currentPosition = CameraPosition(
           target: LatLng(
@@ -511,12 +483,34 @@ class _GetUserAddressState extends State<GetUserAddress>
               markerId: const MarkerId('1'),
               position: LatLng(selectedLatLng?.latitude ?? 0,
                   selectedLatLng?.longitude ?? 0),
-              icon: customIcon ?? BitmapDescriptor.defaultMarker),
+              icon: customIcon),
         );
 
         mapController
             ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
         searchList.clear();
+
+        // !  Find Address Data
+        final addressComponents = right.result?.addressComponents ?? [];
+
+        for (final component in addressComponents) {
+          final types = component.types ?? [];
+
+          if (types.contains('street_number') || types.contains('premise')) {
+            streetNum = component.longName ?? "";
+          } else if (types.contains('route') ||
+              types.contains('sublocality_level_2')) {
+            streetName = component.longName ?? "";
+          } else if (types.contains('locality')) {
+            city = component.longName ?? "";
+          } else if (types.contains('administrative_area_level_1')) {
+            stateName = component.shortName ?? "";
+          } else if (types.contains('country')) {
+            country = component.shortName ?? "";
+          } else if (types.contains('postal_code')) {
+            zipcode = component.longName ?? "";
+          }
+        }
         setState(() {});
       });
     } catch (e) {
@@ -809,6 +803,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                                                             add.country ?? "",
                                                         "user_zipcode":
                                                             add.zipcode ?? "",
+                                                        "extended_address":
+                                                            add.extendedAddress ??
+                                                                "",
                                                       },
                                                     );
                                                   },
@@ -930,24 +927,20 @@ class _GetUserAddressState extends State<GetUserAddress>
                     onTap: () async {
                       bool isFromRegister =
                           argumentsValue?['string'] == 'isFromRegister';
-                      if (!isFromRegister) {
+
+                      if (!isFromRegister && selectedLatLng == null) {
                         LocationPermission permission =
                             await Geolocator.checkPermission();
                         if (permission == LocationPermission.denied ||
                             permission == LocationPermission.deniedForever) {
-                          await appSettingDialogBox();
-                          if (!(await isPermissionGranted())) {
-                            return;
-                          } else {
-                            showToast(
-                                message: "Wait Fetching Address",
-                                isSuccess: false);
-                            Position position = await GeolocatorPlatform
-                                .instance
-                                .getCurrentPosition();
-                            selectedLatLng =
-                                LatLng(position.latitude, position.longitude);
+                          var result =
+                              await Get.to(() => const SearchLocation());
+                          if (result != null) {
+                            selectedLocationValue = result.description;
+
+                            findLatLng(result.placeId ?? '');
                           }
+                          return;
                         }
                       }
 
@@ -980,12 +973,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                         'isPrimary': true,
                       };
 
-                      if (selectedLatLng != null ||
-                          zipcode != "" ||
-                          city != "" ||
-                          stateName != "" ||
-                          country != "" ||
-                          argumentsValue?['string'] == 'isFromRegister') {
+                      if (selectedLatLng != null) {
                         Get.to(
                           () => AddressConfirmation(
                             locationData: addressData,
@@ -993,8 +981,12 @@ class _GetUserAddressState extends State<GetUserAddress>
                           ),
                         );
                       } else {
-                        showToast(
-                            message: "Wait Fetching Address", isSuccess: false);
+                        var result = await Get.to(() => const SearchLocation());
+                        if (result != null) {
+                          selectedLocationValue = result.description;
+
+                          findLatLng(result.placeId ?? '');
+                        }
                       }
                     },
                     child: Container(

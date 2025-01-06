@@ -73,9 +73,8 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                       bgColor: AppColors.primaryBlue,
                       onPressed: () {
                         if (isReady) {
-                          Get.toNamed('/AppManagerScreen',
-                              arguments: finalGetGender,
-                              preventDuplicates: false);
+                          Get.offAllNamed('/AppManagerScreen',
+                              arguments: finalGetGender);
                         }
                       },
                       textColor: AppColors.skyBlue,
@@ -121,9 +120,8 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                         bgColor: AppColors.terracotta,
                         onPressed: () {
                           if (isReady) {
-                            Get.toNamed('/AppManagerScreen',
-                                arguments: finalGetGender,
-                                preventDuplicates: false);
+                            Get.offAllNamed('/AppManagerScreen',
+                                arguments: finalGetGender);
                           }
                         },
                         textColor: AppColors.coral,
@@ -164,9 +162,8 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                             bgColor: AppColors.green,
                             onPressed: () {
                               if (isReady) {
-                                Get.toNamed('/AppManagerScreen',
-                                    arguments: finalGetGender,
-                                    preventDuplicates: false);
+                                Get.offAllNamed('/AppManagerScreen',
+                                    arguments: finalGetGender);
                               }
                             },
                             textColor: AppColors.mint,
@@ -207,9 +204,8 @@ class FourthPersonalizedWelcomeScreen extends StatelessWidget {
                             bgColor: AppColors.green,
                             onPressed: () {
                               if (isReady) {
-                                Get.toNamed('/AppManagerScreen',
-                                    arguments: finalGetGender,
-                                    preventDuplicates: false);
+                                Get.offAllNamed('/AppManagerScreen',
+                                    arguments: finalGetGender);
                               }
                             },
                             textColor: AppColors.mint,

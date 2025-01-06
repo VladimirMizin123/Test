@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/search_address_model.dart';
 import 'package:gymeats_mobile/repository/google_map_searching.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
@@ -48,9 +51,6 @@ class _SearchLocationState extends State<SearchLocation> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 5.h,
-            ),
             Center(
               child: Image.asset(
                 AssetsUtils.gymEatsSpoon,
@@ -59,22 +59,14 @@ class _SearchLocationState extends State<SearchLocation> {
               ),
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const BackButtonWidget(),
-                SizedBox(
-                  width: 20.w,
-                ),
-                Text(
-                  'Search delivery address',
-                  style: TextStyle(
-                    color: const Color(0xff010101),
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Avenir',
-                  ),
-                ),
+                Text('Search delivery address',
+                    style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                const SizedBox.shrink(),
               ],
-            ),
+            ).paddingSymmetric(horizontal: 15, vertical: 5.h),
 
             ///SearchBar==========================================
 

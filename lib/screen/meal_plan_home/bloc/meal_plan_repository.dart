@@ -188,6 +188,7 @@ class MealPlanRepository {
     String? recipeId,
     String? mealId,
   }) async {
+    log("${'${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId'}");
     final response = await apiServices.get(
         '${ApiUrls.addSwapMeal}/$userID?recipeId=$recipeId&mealId=$mealId');
     log("add swap meal:${response.body}");

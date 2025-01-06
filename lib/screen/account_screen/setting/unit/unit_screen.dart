@@ -65,7 +65,7 @@ class _UnitScreenState extends State<UnitScreen> {
             }
           },
           builder: (context, state) {
-            return AccountTitleWidget(
+            return accountTitleWidget(
               title: "Units",
               widget: Expanded(
                 child: isLoader

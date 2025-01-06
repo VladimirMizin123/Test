@@ -79,6 +79,7 @@ class UserSignUpInfoBloc
             message: (response.left.message?.isNotEmpty ?? false)
                 ? response.left.message!
                 : (response.left.title ?? ""));
+        event.onComplete?.call();
         emit(SignUpErrorState());
       } else {
         showToast(isSuccess: true, message: response.right.message!);

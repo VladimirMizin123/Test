@@ -22,6 +22,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class StoreMenuDetailsScreen extends StatefulWidget {
   const StoreMenuDetailsScreen({
@@ -31,6 +33,7 @@ class StoreMenuDetailsScreen extends StatefulWidget {
     required this.restaurantId,
     this.shoppingListData,
     required this.cartCount,
+    this.grocAdd,
     required this.pickUp,
     this.onCustomizationChange,
     this.options,
@@ -41,6 +44,7 @@ class StoreMenuDetailsScreen extends StatefulWidget {
   final String restaurantId;
   final ShoppingListData? shoppingListData;
   final int cartCount;
+  final groc_add.Address? grocAdd;
   final bool pickUp;
   final List<Map<String, dynamic>>? options;
   final Function(List<Customization>)? onCustomizationChange;

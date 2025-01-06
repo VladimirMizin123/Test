@@ -171,19 +171,23 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: isFlashlightOn
-                          ? () async {
-                              await TorchLight.disableTorch();
-                              setState(() {
-                                isFlashlightOn = false; // Update the state
-                              });
-                            }
-                          : () async {
-                              await TorchLight.enableTorch();
-                              setState(() {
-                                isFlashlightOn = true; // Update the state
-                              });
-                            },
+                      onTap: () async {
+                        try {
+                          if (isFlashlightOn) {
+                            await TorchLight.disableTorch();
+                            setState(() {
+                              isFlashlightOn = false;
+                            });
+                          } else {
+                            await TorchLight.enableTorch();
+                            setState(() {
+                              isFlashlightOn = true;
+                            });
+                          }
+                        } catch (e) {
+                          log("Torch Not Available On This Device");
+                        }
+                      },
                       child: Image.asset(
                         isFlashlightOn
                             ? AssetsUtils.flashOn

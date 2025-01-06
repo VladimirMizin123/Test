@@ -35,11 +35,14 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.d
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user_address;
 import 'package:gymeats_mobile/widget/food_menu_address.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class StoreCheckOutScreen extends StatefulWidget {
   final String? storeName;
   final StoreCartBloc storeCartBloc;
   final user_address.UserAddress? address;
+  final groc_add.Address? grocAdd;
   final List<GroceryDetails>? groceryDetails;
   final AskReceiveOrder? askOrder;
 
@@ -48,6 +51,7 @@ class StoreCheckOutScreen extends StatefulWidget {
     this.storeName,
     required this.storeCartBloc,
     this.address,
+    this.grocAdd,
     this.groceryDetails,
     this.askOrder,
   });
@@ -116,6 +120,9 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                   orderData: state.orderData,
                   getUserAddress: widget.address,
                   groceryList: [],
+                  grocAdd: widget.askOrder == AskReceiveOrder.pickMySelf
+                      ? widget.grocAdd
+                      : null,
                   hasMultipleStore: false,
                   createMultipleOrder: false,
                   currentAddress: streetDetailsController.text,

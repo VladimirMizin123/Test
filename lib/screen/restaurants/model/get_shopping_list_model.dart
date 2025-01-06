@@ -3,6 +3,7 @@
 //     final getShoppingListData = getShoppingListDataFromJson(jsonString);
 
 import 'dart:convert';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 
 GetShoppingListData getShoppingListDataFromJson(String str) =>
     GetShoppingListData.fromJson(json.decode(str));
@@ -49,6 +50,7 @@ class ShoppingListData {
   String? userId;
   String? productId;
   String? productName;
+  Address? resAddress;
   int? quantity;
   int? price;
   int? originalPrice;
@@ -70,6 +72,7 @@ class ShoppingListData {
     this.userId,
     this.productId,
     this.productName,
+    this.resAddress,
     this.quantity,
     this.price,
     this.originalPrice,
@@ -96,6 +99,9 @@ class ShoppingListData {
         quantity: json["quantity"],
         price: json["price"],
         originalPrice: json["originalPrice"],
+        resAddress: json["resAddress"] != null
+            ? Address.fromJson(json["resAddress"] ?? {})
+            : null,
         unitSize: json["unitSize"],
         unitOfMeasurement: json["unitOfMeasurement"],
         recipeId: json["recipeId"],
@@ -120,6 +126,7 @@ class ShoppingListData {
         "quantity": quantity,
         "price": price,
         "originalPrice": originalPrice,
+        "resAddress": resAddress?.toJson(),
         "unitSize": unitSize,
         "unitOfMeasurement": unitOfMeasurement,
         "recipeId": recipeId,

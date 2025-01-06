@@ -28,6 +28,7 @@ class GetUserJournalDataRepository {
 
   Future<Either<ErrorModel, GetMealLogByDate>> getMealLogByDate(
       String date) async {
+    log("Api : '${ApiUrls.getMealLogByDate}/$userId?date=$date'");
     final response =
         await apiServices.get('${ApiUrls.getMealLogByDate}/$userId?date=$date');
 

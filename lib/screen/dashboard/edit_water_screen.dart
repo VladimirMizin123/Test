@@ -36,7 +36,8 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
   @override
   void initState() {
     super.initState();
-    waterController.text = editWaterArguments.addedWater!;
+    waterController.text = editWaterArguments.addedWater ?? "";
+    print(waterController.text);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       accountBloc.add(GetUnitInfoEvent());
     });
@@ -241,9 +242,9 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                         setState(() {
                           bloc.add(
                             UpdateWaterEvent(
-                                waterML: (waterController.text == "16.91" ||
-                                        waterController.text == "33.81" ||
-                                        waterController.text == "67.63")
+                                waterML: (waterController.text == "8.45" ||
+                                        waterController.text == "16.91" ||
+                                        waterController.text == "33.81")
                                     ? waterController.text
                                     : convertMilliToOz(
                                             textValue: num.tryParse(
@@ -251,8 +252,6 @@ class _EditWaterScreenState extends State<EditWaterScreen> {
                                             isWatervalue: waterValue)
                                         .toString()),
                           );
-                          // bloc.add(
-                          //     SaveClickEvent(waterML: waterController.text));
                         });
                       },
                       bgColor: AppColors.primaryBlue);

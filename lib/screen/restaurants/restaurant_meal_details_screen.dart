@@ -20,6 +20,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'bottomsheet/food_intake_bottomsheet_screen.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 import 'model/get_user_address_model.dart' as address;
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 
 class RestaurantMealDetails extends StatefulWidget {
   const RestaurantMealDetails({
@@ -28,6 +29,7 @@ class RestaurantMealDetails extends StatefulWidget {
     required this.restaurantId,
     this.shoppingListData,
     required this.cartCount,
+    this.resAddress,
     required this.pickUp,
     this.quote,
     required this.getUserAddress,
@@ -39,6 +41,7 @@ class RestaurantMealDetails extends StatefulWidget {
   final MenuItemList data;
   final ShoppingListData? shoppingListData;
   final int cartCount;
+  final Address? resAddress;
   final int? matchMealStatus;
   final bool pickUp;
   final qu.Quote? quote;
@@ -87,12 +90,10 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
             return SafeArea(
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  // const SizedBox(height: 5),
                   Image.asset(
                     AssetsUtils.gymEatsLogo,
-                    height: 20.h,
+                    height: 22.h,
                     width: 56.w,
                     color: AppColors.terracotta,
                   ),
@@ -478,6 +479,7 @@ class _RestaurantMealDetailsState extends State<RestaurantMealDetails> {
                                                   nutritionixGetNxMealInfoByNameModelData:
                                                       nutritionixGetNxMealInfoByNameModelData,
                                                   isMainScreen: false,
+                                                  redirectToBack: true,
                                                   name: widget.data.name,
                                                 );
                                               },

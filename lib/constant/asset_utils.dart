@@ -205,14 +205,15 @@ class AssetsUtils {
 
   /// Icons
 
-  static const user = 'assets/icon/User.png';
+  static const userSvg = 'assets/icon/User.svg';
   static const icGenericLogo = 'assets/icon/ic_generic_logo.png';
   static const filter = 'assets/icon/filters.png';
+  static const filterSvg = 'assets/icon/filters.svg';
   static const gymEatsLogo = "assets/icon/GymEatsLogo.png";
   static const arrowBack = "assets/icon/arrow_back.png";
   static const arrowForward = "assets/icon/arrow_forward.png";
   static const disableArrowBack = "assets/icon/disable_arrow_back.png";
-  static const notification = 'assets/icon/notifications.png';
+  static const notificationSvg = 'assets/icon/notifications.svg';
   static const breakFastIcon = "assets/icon/foodIcon.png";
   static const lunchIcon = "assets/icon/lunchIcon.png";
   static const dinnerIcon = "assets/icon/dinnerIcon.png";

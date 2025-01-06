@@ -108,6 +108,8 @@ class AccountRepository {
 
   Future<Either<ErrorModel, UpdateDietProgramResponseModel>> updateDietProgram(
       {required Map<String, dynamic> req}) async {
+    log("------Request Data : ${jsonEncode(req)}");
+    log("---Api Url : ${ApiUrls.updateDietProgramByProgramId}");
     final response =
         await apiServices.put(ApiUrls.updateDietProgramByProgramId, req);
 
@@ -252,7 +254,10 @@ class AccountRepository {
       "email": email
     };
 
+    log("Api : ${ApiUrls.changePassword}");
+    log("Request Data : ${jsonEncode(data)}");
     final response = await apiServices.post(ApiUrls.changePassword, data);
+    log("Response : ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(changePasswordResponseModelFromJson(response.body));

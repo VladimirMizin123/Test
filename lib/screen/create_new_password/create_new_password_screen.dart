@@ -116,13 +116,15 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                             color: Color(0xFF010101),
                           ),
                         ),
-                        Text(
-                          StringUtils.validatePassLength,
-                          style: textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w400,
-                              height: 1.5,
-                              fontSize: 11.5.sp,
-                              color: AppColors.darkGray),
+                        Expanded(
+                          child: Text(
+                            StringUtils.validatePassLength,
+                            style: textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w400,
+                                height: 1.5,
+                                fontSize: 11.5.sp,
+                                color: AppColors.darkGray),
+                          ),
                         )
                       ],
                     ).paddingOnly(top: 5.h),

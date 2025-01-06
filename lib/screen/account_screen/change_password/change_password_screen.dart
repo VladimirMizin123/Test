@@ -48,7 +48,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: AccountTitleWidget(
+                      child: accountTitleWidget(
                         title: "Change Password",
                         widget: Expanded(
                           child: Container(
@@ -133,7 +133,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                         } else if (!RegExp(
                                                 r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
                                             .hasMatch(value)) {
-                                          return 'Enter valid password';
+                                          return 'Password must be 8+ chars, include uppercase, lowercase, number & special char.';
                                         } else {
                                           return null;
                                         }
@@ -182,13 +182,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   ),
                                   commonTextFormField(
                                       validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Please Enter Confirm Password';
-                                        } else if (!RegExp(
-                                                r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
-                                            .hasMatch(value)) {
-                                          return 'Enter valid password';
-                                        } else if (newPasswordController.text !=
+                                        if (newPasswordController.text !=
                                             value) {
                                           return 'Confirm password doesn\'t match new password ';
                                         } else {
@@ -241,28 +235,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           right: 16.w, left: 16.w, top: 16.h, bottom: 16.h)
                     else
                       buildButton(
-                          context: context,
-                          bgColor: AppColors.primaryBlueColor,
-                          textColor: AppColors.whiteColor,
-                          title: "Update",
-                          onPressed: () {
-                            String email =
-                                PreferenceUtils.getString(prefUserEmail);
-                            print('=email===>$email');
+                              context: context,
+                              bgColor: AppColors.primaryBlueColor,
+                              textColor: AppColors.whiteColor,
+                              title: "Update",
+                              onPressed: () {
+                                String email =
+                                    PreferenceUtils.getString(prefUserEmail);
+                                print('=email===>$email');
 
-                            if (!formKey.currentState!.validate()) {
-                              return;
-                            }
+                                if (!formKey.currentState!.validate()) {
+                                  return;
+                                }
 
-                            accountBloc.add(
-                              ChangeProfilePasswordEvent(
-                                  currentPassword: oldPasswordController.text,
-                                  newPassword: newPasswordController.text,
-                                  confirmPassword:
-                                      confirmPasswordController.text,
-                                  email: email),
-                            );
-                          }).paddingOnly(left: 22.w, right: 22.w, top: 20.h),
+                                accountBloc.add(
+                                  ChangeProfilePasswordEvent(
+                                      currentPassword:
+                                          oldPasswordController.text,
+                                      newPassword: newPasswordController.text,
+                                      confirmPassword:
+                                          confirmPasswordController.text,
+                                      email: email),
+                                );
+                              })
+                          .paddingOnly(
+                              left: 22.w, right: 22.w, top: 20.h, bottom: 20.h),
                   ],
                 ),
               );

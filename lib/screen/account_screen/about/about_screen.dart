@@ -37,7 +37,7 @@ class _AboutScreenState extends State<AboutScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              AccountTitleWidget(
+              accountTitleWidget(
                 title: "About",
                 widget: accountScreenListWidget(
                     children: List.generate(aboutDataList.length, (index) {

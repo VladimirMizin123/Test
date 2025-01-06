@@ -233,7 +233,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
         onFailError(emit: emit, text: response.left.errorMessage ?? "");
         emit(AddRestrictionErrorState());
       } else {
-        showToast(isSuccess: false, message: response.right.message);
+        showToast(isSuccess: true, message: response.right.message);
         try {
           String id = PreferenceUtils.getString(prefUserData);
           await _repository.apiServices.get(ApiUrls

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 String apiKey = "AIzaSyAcB_GmcECnoEZ5dg373aOezNEVZCxUn98"; //from google json
 String appId = '1:1041946139722:android:4ab099b1807f65c6555ab3'; //from firebase
 String messagingSenderId = '1041946139722';
@@ -11,14 +10,15 @@ String projectId = 'gymeats-44b7a'; // from google json
 
 Future<void> initDynamicLinks() async {
   final PendingDynamicLinkData? initialLink =
-      await FirebaseDynamicLinks.instance.getInitialLink();
+      await FirebaseDynamicLinksPlatform.instance.getInitialLink();
   debugPrint('initialLink uri: $initialLink');
   handleDeepLink(initialLink);
 
-  FirebaseDynamicLinks.instance.onLink
-      .listen((PendingDynamicLinkData? linkData) {
-    handleDeepLink(linkData);
-  });
+  FirebaseDynamicLinksPlatform.instance.onLink.listen(
+    (event) {
+      handleDeepLink(event);
+    },
+  );
 }
 
 void handleDeepLink(PendingDynamicLinkData? initialLink) {

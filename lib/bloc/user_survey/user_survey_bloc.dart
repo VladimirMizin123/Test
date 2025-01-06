@@ -106,8 +106,11 @@ class UserSurveyBloc extends Bloc<UserSurveyEvent, UserSurveyState> {
 
   _onSurveyCheck(CheckSurveyData event, Emitter<UserSurveyState> emit) {
     try {
-      getNewSurvey!.options![event.index].isSelect =
-          !getNewSurvey!.options![event.index].isSelect;
+      if (!event.index.isNegative) {
+        getNewSurvey!.options![event.index].isSelect =
+            !getNewSurvey!.options![event.index].isSelect;
+      }
+
       emit(LoadSurveyData(surveyData: getNewSurvey!));
     } catch (e) {
       log(e.toString());

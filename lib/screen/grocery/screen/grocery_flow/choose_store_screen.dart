@@ -42,6 +42,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
     as address;
 
 import 'package:get/get.dart' as gt;
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class ChooseGroceryStore extends StatefulWidget {
   const ChooseGroceryStore({super.key});
@@ -540,6 +542,8 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                                                   .id,
                                                               filterStore[index]
                                                                   .name,
+                                                              filterStore[index]
+                                                                  .address,
                                                             );
                                                           },
                                                         );
@@ -578,7 +582,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
         });
   }
 
-  void verifyGrocery(String? id, String? storeName) {
+  void verifyGrocery(String? id, String? storeName, groc_add.Address? grocAdd) {
     groceryBloc.prevId = id;
     if (verifyLoaderId != null) {
       return;
@@ -605,6 +609,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                 address: getUserAddress,
                 storeName: storeName,
                 groceryDetails: groceryDetails,
+                grocAdd: grocAdd,
                 askOrder: askOrder,
                 categorie: categorie,
               ),

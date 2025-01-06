@@ -62,8 +62,8 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
 
   _onUpdateExercise(
       UpdateExerciseEvent event, Emitter<AddWaterState> emit) async {
-    emit(UpdateLoadingState());
     try {
+      emit(UpdateLoadingState(isLoading: true));
       await _repository
           .updateExercise(
         exerciseId: event.id!,
@@ -84,6 +84,8 @@ class AddExerciseBloc extends Bloc<AddWaterEvent, AddWaterState> {
     } catch (e) {
       showToast(isSuccess: false, message: e.toString());
       emit(ErrorState());
+    } finally {
+      emit(UpdateLoadingState(isLoading: false));
     }
   }
 

@@ -155,111 +155,61 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     image: userInfoImage,
                                   ),
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(model.age ?? "",
-                                                style: AppTextStyle.gymEatsStyle
-                                                    .copyWith(
-                                                        color: Colors.white,
-                                                        fontSize: 31.sp,
-                                                        fontWeight:
-                                                            FontWeight.w800))
-                                            .paddingOnly(top: 5)
-                                            .marginOnly(left: 90),
-                                        Text(
-                                                (model.height ?? "")
-                                                    .replaceAll(".", "'"),
-                                                style: AppTextStyle.gymEatsStyle
-                                                    .copyWith(
-                                                        color: Colors.white,
-                                                        fontSize: 31.sp,
-                                                        fontWeight:
-                                                            FontWeight.w800))
-                                            .paddingOnly(top: 5)
-                                            .marginOnly(right: 105),
-                                      ],
+                                Positioned(
+                                  top: 70,
+                                  left: 25,
+                                  child: SizedBox(
+                                    width: 100,
+                                    child: Align(
+                                      child: Text(
+                                        model.age ?? "",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyle.gymEatsStyle
+                                            .copyWith(
+                                                color: Colors.white,
+                                                fontSize: 31,
+                                                fontWeight: FontWeight.w800),
+                                      ),
                                     ),
-                                    Text(model.weight ?? "",
-                                            style: AppTextStyle.gymEatsStyle
-                                                .copyWith(
-                                                    color: Colors.white,
-                                                    fontSize: 31.sp,
-                                                    fontWeight:
-                                                        FontWeight.w800))
-                                        .marginOnly(top: 60, right: 10),
-                                  ],
-                                )
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 70,
+                                  right: 40,
+                                  child: SizedBox(
+                                    width: 100,
+                                    child: Align(
+                                      child: Text(
+                                        (model.height ?? "")
+                                            .replaceAll(".", "'"),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyle.gymEatsStyle
+                                            .copyWith(
+                                                color: Colors.white,
+                                                fontSize: 31,
+                                                fontWeight: FontWeight.w800),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 55,
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text(
+                                      model.weight ?? "",
+                                      style: AppTextStyle.gymEatsStyle.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 31,
+                                          fontWeight: FontWeight.w800),
+                                    ).marginOnly(top: 60, right: 10),
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 50),
-                            // Align(
-                            //   alignment: Alignment.bottomLeft,
-                            //   child: SizedBox(
-                            //     height: 100,
-                            //     child: PageView.builder(
-                            //       scrollDirection: Axis.horizontal,
-                            //       controller: pageController,
-                            //       itemCount:
-                            //           (stringList.length / itemsPerPage).ceil(),
-                            //       onPageChanged: (int page) {
-                            //         setState(() {
-                            //           currentPage = page;
-                            //         });
-                            //       },
-                            //       itemBuilder:
-                            //           (BuildContext context, int index) {
-                            //         final startIndex = index * itemsPerPage;
-                            //         final endIndex =
-                            //             (index + 1) * itemsPerPage <
-                            //                     stringList.length
-                            //                 ? (index + 1) * itemsPerPage
-                            //                 : stringList.length;
-                            //         final pageData = stringList.sublist(
-                            //             startIndex, endIndex);
-
-                            //         return Row(
-                            //           crossAxisAlignment:
-                            //               CrossAxisAlignment.stretch,
-                            //           mainAxisAlignment: pageData.length > 3
-                            //               ? MainAxisAlignment.spaceEvenly
-                            //               : MainAxisAlignment.start,
-                            //           children: List.generate(pageData.length,
-                            //               (index) {
-                            //             return Container(
-                            //               height: 70.h,
-                            //               width: 70.w,
-                            //               padding: const EdgeInsets.all(18),
-                            //               margin: EdgeInsets.only(
-                            //                   right:
-                            //                       index == (pageData.length - 1)
-                            //                           ? 0
-                            //                           : 2.5,
-                            //                   left: index == 0 ? 0 : 2.5),
-                            //               alignment: Alignment.center,
-                            //               decoration: BoxDecoration(
-                            //                   shape: BoxShape.circle,
-                            //                   color:
-                            //                       pageData[index].optionColor),
-                            //               child: Text(
-                            //                 pageData[index].optionName,
-                            //                 textAlign: TextAlign.center,
-                            //                 style: const TextStyle(
-                            //                     fontSize: 12.0,
-                            //                     color: Colors.white,
-                            //                     fontWeight: FontWeight.w400),
-                            //               ),
-                            //             );
-                            //           }),
-                            //         );
-                            //       },
-                            //     ),
-                            //   ),
-                            // ),
                             // const SizedBox(height: 12),
                             // _buildPageIndicator(stringList),
                             ListView.builder(

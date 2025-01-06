@@ -40,11 +40,10 @@ class OrderHistoryHintScreen extends StatelessWidget {
                       Get.toNamed('/OrderHistoryScreen');
                     },
                     child: Center(
-                      child: Image.asset(
-                        AssetsUtils.notification,
+                      child: SvgPicture.asset(
+                        AssetsUtils.notificationSvg,
                         height: 25.h,
                         width: 25.w,
-                        color: AppColors.darkGray,
                       ).paddingOnly(bottom: 5),
                     ),
                   ),

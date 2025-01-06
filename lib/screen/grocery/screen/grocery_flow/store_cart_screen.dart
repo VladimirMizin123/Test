@@ -29,6 +29,8 @@ import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user_address;
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class StoreCartScreen extends StatefulWidget {
   final List<MenuItemList>? menuItemList;
@@ -38,6 +40,7 @@ class StoreCartScreen extends StatefulWidget {
   final String? storeName;
   final String? storeId;
   final user_address.UserAddress? address;
+  final groc_add.Address? grocAdd;
   final List<GroceryDetails>? groceryDetails;
   final AskReceiveOrder? askOrder;
 
@@ -50,6 +53,7 @@ class StoreCartScreen extends StatefulWidget {
     this.storeName,
     this.storeId,
     this.address,
+    this.grocAdd,
     this.groceryDetails,
     this.askOrder,
   });
@@ -308,6 +312,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                           storeId: widget.storeId ?? "",
                                           shoppingListData: null,
                                           cartCount: item.cartQuantity ?? 0,
+                                          grocAdd: widget.grocAdd,
                                           pickUp: widget.askOrder ==
                                               AskReceiveOrder.pickMySelf,
                                           matchMealStatus: null,
@@ -346,6 +351,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                           cartCount: item.cartQuantity ?? 0,
                                           pickUp: widget.askOrder ==
                                               AskReceiveOrder.pickMySelf,
+                                          grocAdd: widget.grocAdd,
                                           options: item.selectedOptions
                                                   ?.map((e) => e.toJson())
                                                   .toList() ??
@@ -395,6 +401,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                 storeName: widget.storeName,
                                 groceryDetails: widget.groceryDetails,
                                 askOrder: widget.askOrder,
+                                grocAdd: widget.grocAdd,
                               ),
                             );
                           } else {

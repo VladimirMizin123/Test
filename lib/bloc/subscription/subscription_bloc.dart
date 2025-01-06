@@ -26,6 +26,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
           await _repo.fetchSubscriptionStatus();
 
       if (status.isRight) {
+        log("Response ${status.right.data}");
         emit(SubscriptionStatusState(status: status.right));
       } else {
         emit(SubscriptionStatusErrorState(
@@ -33,6 +34,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
       }
     } catch (e) {
       log(e.toString());
+      emit(SubscriptionStatusErrorState(message: ""));
     } finally {
       emit(SubStatusLoader(loader: false));
     }

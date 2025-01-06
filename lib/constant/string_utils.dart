@@ -42,7 +42,7 @@ class StringUtils {
   static const writePassword = 'Write your new password';
   static const writeConfirmPassword = 'Write your confirm new password';
   static const validatePassLength =
-      'At least 8 characters, 1 Upper case letter , 1 special character\nand 1 number';
+      'At least 8 characters, 1 Upper case letter , 1 special character and 1 number';
   static const skipText = 'Skip, I’ll do it later';
   static const checkSubMail =
       'We have sent a password recover instructions to your email.';
@@ -238,8 +238,8 @@ class StringUtils {
   static const addToGroceryList = 'Add to Grocery List';
   static const remove = 'Remove';
   static const details = 'Details';
-  static const deliveryTime = 'Delivery time: ';
-  static const orderType = 'Order type: ';
+  static const deliveryTime = 'Delivery time';
+  static const orderType = 'Order type';
   static const basedMeal = 'Based on your Meal Plan';
   static const writeNewPassword = 'Write your new Password';
   static const policyDate = 'Effective Date: October 2024';
@@ -525,4 +525,10 @@ class StringUtils {
   static const areYouSureDoYouWantToDeleteCard =
       "Are you sure do you want to delete card";
   static const cardRemovedSuccessfully = "Card removed successfully.";
+
+  static String get restorePurchase => "Restore Purchase";
+  static String youHaveAlreadyPurchaseAnyItems =
+      "You have already purchase any items?";
+  static String noPreviousPurchaseFound =
+      "No previous purchases found, please contact Support";
 }

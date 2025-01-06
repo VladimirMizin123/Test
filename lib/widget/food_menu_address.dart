@@ -32,6 +32,7 @@ class _FoodMenuAddressState extends State<FoodMenuAddress> {
   TextEditingController state = TextEditingController();
   TextEditingController country = TextEditingController();
   TextEditingController zipCode = TextEditingController();
+  TextEditingController floorNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -46,6 +47,8 @@ class _FoodMenuAddressState extends State<FoodMenuAddress> {
     state.text = widget.request["user_state"]?.toString() ?? "";
     country.text = widget.request["user_country"]?.toString() ?? "";
     zipCode.text = widget.request["user_zipcode"]?.toString() ?? "";
+    floorNumberController.text =
+        widget.request["extended_address"]?.toString() ?? "";
   }
 
   @override
@@ -108,6 +111,17 @@ class _FoodMenuAddressState extends State<FoodMenuAddress> {
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please Enter Street Number';
+                  } else {
+                    return null;
+                  }
+                },
+              ),
+              mapDetailWidget(
+                title: "Apartment or Office Number",
+                textEditingController: floorNumberController,
+                validator: (p0) {
+                  if (p0?.trim().isEmpty ?? true) {
+                    return 'Please enter apartment or office number';
                   } else {
                     return null;
                   }
@@ -184,6 +198,7 @@ class _FoodMenuAddressState extends State<FoodMenuAddress> {
                         "user_street_name": sName.text,
                         "user_street_num": sNumber.text,
                         "user_city": city.text,
+                        "extended_address": floorNumberController.text,
                       };
                       await PreferenceUtils.setString(
                           foodMenuAddress, jsonEncode(req));

@@ -15,6 +15,7 @@ class NetworkImageWidget extends StatelessWidget {
     this.width,
     this.showLoader = true,
     this.fit,
+    this.showSizedBox = false,
   });
   final String url;
   final String? placeholder;
@@ -22,6 +23,7 @@ class NetworkImageWidget extends StatelessWidget {
   final double? width;
   final bool showLoader;
   final BoxFit? fit;
+  final bool showSizedBox;
 
   @override
   Widget build(BuildContext context) {
@@ -31,21 +33,23 @@ class NetworkImageWidget extends StatelessWidget {
       width: width,
       fit: fit ?? BoxFit.contain,
       cacheKey: url,
-      errorWidget: (context, url, error) => placeholder != null
-          ? placeholder!.contains("svg")
-              ? SvgPicture.asset(
-                  placeholder!,
+      errorWidget: (context, url, error) => showSizedBox
+          ? SizedBox.shrink()
+          : placeholder != null
+              ? placeholder!.contains("svg")
+                  ? SvgPicture.asset(
+                      placeholder!,
+                      color: AppColors.green,
+                    )
+                  : Image.asset(
+                      placeholder!,
+                      height: height,
+                      width: width,
+                    )
+              : SvgPicture.asset(
+                  AssetsUtils.gymEatsLogoRound,
                   color: AppColors.green,
-                )
-              : Image.asset(
-                  placeholder!,
-                  height: height,
-                  width: width,
-                )
-          : SvgPicture.asset(
-              AssetsUtils.gymEatsLogoRound,
-              color: AppColors.green,
-            ),
+                ),
       placeholder: (context, url) => showLoader
           ? const Center(
               child: CircularProgressIndicator(

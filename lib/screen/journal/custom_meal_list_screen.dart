@@ -372,22 +372,26 @@ class _CustomMealListState extends State<CustomMealList> {
                                             child: GestureDetector(
                                               onTap: () {
                                                 Get.to(
-                                                    () => AddNewItemScreen(
-                                                        id: details.id,
-                                                        name: details.name,
-                                                        cal: details.calorie
-                                                            .toString(),
-                                                        carbs: details.carbs
-                                                            .toString(),
-                                                        fat: details.fat
-                                                            .toString(),
-                                                        protein: details.protein
-                                                            .toString(),
-                                                        weight: details.quantity
-                                                            .toString(),
-                                                        imageUrl:
-                                                            details.imageUrl),
-                                                    arguments: widget.type);
+                                                  () => AddNewItemScreen(
+                                                      id: details.id,
+                                                      name: details.name,
+                                                      cal: details.calorie
+                                                          .toString(),
+                                                      carbs: details.carbs
+                                                          .toString(),
+                                                      fat: details.fat
+                                                          .toString(),
+                                                      protein: details.protein
+                                                          .toString(),
+                                                      weight: details.quantity
+                                                          .toString(),
+                                                      imageUrl:
+                                                          details.imageUrl),
+                                                  arguments: {
+                                                    "title": widget.type,
+                                                    "date": widget.dateTime,
+                                                  },
+                                                );
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -463,23 +467,23 @@ class _CustomMealListState extends State<CustomMealList> {
                                         child: GestureDetector(
                                           onTap: () {
                                             Get.to(
-                                                () => AddNewItemScreen(
-                                                      id: details.id,
-                                                      name: details.name,
-                                                      cal: details.calorie
-                                                          .toString(),
-                                                      carbs: details.carbs
-                                                          .toString(),
-                                                      fat: details.fat
-                                                          .toString(),
-                                                      protein: details.protein
-                                                          .toString(),
-                                                      weight: details.quantity
-                                                          .toString(),
-                                                      imageUrl:
-                                                          details.imageUrl,
-                                                    ),
-                                                arguments: widget.type);
+                                              () => AddNewItemScreen(
+                                                id: details.id,
+                                                name: details.name,
+                                                cal: details.calorie.toString(),
+                                                carbs: details.carbs.toString(),
+                                                fat: details.fat.toString(),
+                                                protein:
+                                                    details.protein.toString(),
+                                                weight:
+                                                    details.quantity.toString(),
+                                                imageUrl: details.imageUrl,
+                                              ),
+                                              arguments: {
+                                                "title": widget.type,
+                                                "date": widget.dateTime,
+                                              },
+                                            );
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(

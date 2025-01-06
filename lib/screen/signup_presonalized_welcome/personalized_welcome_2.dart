@@ -73,8 +73,7 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                     bgColor: AppColors.primaryBlue,
                     onPressed: () {
                       if (isReady) {
-                        Get.toNamed('/AppManagerScreen',
-                            arguments: gender, preventDuplicates: false);
+                        Get.offAllNamed('/AppManagerScreen', arguments: gender);
                       }
                     },
                     textColor: AppColors.skyBlue,
@@ -118,8 +117,8 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                           bgColor: AppColors.terracotta,
                           onPressed: () {
                             if (isReady) {
-                              Get.toNamed('/AppManagerScreen',
-                                  arguments: gender, preventDuplicates: false);
+                              Get.offAllNamed('/AppManagerScreen',
+                                  arguments: gender);
                             }
                           },
                           textColor: AppColors.coral,
@@ -170,9 +169,8 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                               bgColor: AppColors.green,
                               onPressed: () {
                                 if (isReady) {
-                                  Get.toNamed('/AppManagerScreen',
-                                      arguments: gender,
-                                      preventDuplicates: false);
+                                  Get.offAllNamed('/AppManagerScreen',
+                                      arguments: gender);
                                 }
                               },
                               textColor: AppColors.mint,
@@ -225,9 +223,8 @@ class SecondPersonalizedWelcomeScreen extends StatelessWidget {
                               bgColor: AppColors.green,
                               onPressed: () {
                                 if (isReady) {
-                                  Get.toNamed('/AppManagerScreen',
-                                      arguments: gender,
-                                      preventDuplicates: false);
+                                  Get.offAllNamed('/AppManagerScreen',
+                                      arguments: gender);
                                 }
                               },
                               textColor: AppColors.mint,

@@ -210,8 +210,10 @@ Widget commonUserTypeTextField({
             },
             readOnly: isReadOnly,
             inputFormatters: inputFormatters,
+            textAlign: TextAlign.center,
             decoration: InputDecoration(
               filled: false,
+              isCollapsed: true,
               hintText: hintText,
               hintStyle: TextStyle(
                   fontSize: fontSize.sp,

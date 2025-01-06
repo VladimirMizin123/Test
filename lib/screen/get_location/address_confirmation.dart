@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/google_map/add_address/add_address_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
+import 'package:gymeats_mobile/constant/color_utils.dart';
+import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/models/add_address_data_navigate_model.dart';
 import 'package:gymeats_mobile/models/sign_up_data_navigate_model.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
@@ -49,43 +51,31 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        body: BlocConsumer(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: BlocConsumer(
           bloc: bloc,
           listener: (context, state) {},
           builder: (context, state) => Column(
             children: [
-              SizedBox(height: 8.h),
               Center(
                 child: Image.asset(
                   AssetsUtils.gymEatsSpoon,
-                  height: 22.h,
+                  height: 20.h,
                   width: 56.w,
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w, top: 8.h),
-                child: Row(
-                  children: [
-                    const BackButtonWidget(),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Text(
-                      'Add delivery address',
-                      style: TextStyle(
-                        color: const Color(0xff010101),
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Avenir',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const BackButtonWidget(),
+                  Text('Add delivery address',
+                      style: FontUtils.h20(fontColor: AppColors.oxFF010101)),
+                  const SizedBox.shrink(),
+                ],
+              ).paddingSymmetric(horizontal: 15, vertical: 5.h),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -140,13 +130,22 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
-                          child: Text('Extended Address',
+                          child: Text('Apartment or Office Number',
                               style: TextStyle(
                                   color: const Color(0xff373737),
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w300)),
                         ),
-                        commonTextField(controller: floor),
+                        commonTextField(
+                          controller: floor,
+                          validator: (p0) {
+                            if (p0?.trim().isEmpty ?? true) {
+                              return 'Please enter apartment or office number';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
                         // if (widget.arguments['string'] == 'isFromRegister') ...[
                         Padding(
                           padding: EdgeInsets.only(bottom: 5.h, top: 10.h),
@@ -251,9 +250,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                       addAddressModel.streetNum = apartmentName.text;
                       addAddressModel.streetName = streetName.text;
                       addAddressModel.city = city.text;
-                      addAddressModel.state =
-                          widget.locationData['state'].toString();
-                      addAddressModel.country = widget.locationData['country'];
+                      addAddressModel.state = stateField.text;
+                      addAddressModel.country = country.text;
                       addAddressModel.addressType = addressType.text;
                       addAddressModel.zipcode = zipName.text;
                       addAddressModel.isPrimary = true;

@@ -25,6 +25,8 @@ import 'package:gymeats_mobile/screen/restaurants/model/categorie_model.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
+    as groc_add;
 
 class StoreCategoriesScreen extends StatefulWidget {
   const StoreCategoriesScreen({
@@ -32,6 +34,7 @@ class StoreCategoriesScreen extends StatefulWidget {
     required this.storeId,
     this.storeName,
     this.address,
+    this.grocAdd,
     this.groceryDetails,
     this.askOrder,
     this.categorie,
@@ -39,6 +42,7 @@ class StoreCategoriesScreen extends StatefulWidget {
   final String? storeId;
   final String? storeName;
   final UserAddress? address;
+  final groc_add.Address? grocAdd;
   final List<GroceryDetails>? groceryDetails;
   final AskReceiveOrder? askOrder;
   final CategorieModel? categorie;
@@ -398,6 +402,7 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
           storeName: widget.storeName,
           storeId: widget.storeId,
           address: widget.address,
+          grocAdd: widget.grocAdd,
           groceryDetails: widget.groceryDetails,
           cartBloc: storeCartBloc,
           askOrder: widget.askOrder,

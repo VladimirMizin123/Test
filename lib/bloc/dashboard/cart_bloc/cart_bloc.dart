@@ -96,8 +96,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             ((shoppingList[index].price! / qty) * (qty + 1)).toInt();
         shoppingList[index].quantity = qty + 1;
         break;
-      default:
-        break;
     }
 
     PreferenceUtils.updateResCart(shoppingList);

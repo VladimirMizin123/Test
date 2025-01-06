@@ -148,6 +148,7 @@ class _EditDietScreenState extends State<EditDietScreen> {
                 setState(() {});
               },
               onClear: () {
+                searchController.clear();
                 setState(() {});
               },
             ),

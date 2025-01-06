@@ -296,6 +296,8 @@ class PreferenceUtils {
             req["user_zipcode"] = element.longName;
           }
         });
+
+        req["extended_address"] = "";
       }
       return req;
     } catch (e) {

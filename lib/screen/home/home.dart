@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appLinks = AppLinks();
-      appLinks.allUriLinkStream.listen((uri) async {
+      appLinks.uriLinkStream.listen((uri) async {
         if (uri.path == '/auth/setNewPassword') {
           final token = PreferenceUtils.getString(forgetPassToken);
           if (token != '') {
@@ -60,9 +60,10 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox(
+          Container(
             height: context.height,
             width: context.width,
+            color: Colors.red,
             child: Video(
               controller: controller,
               fit: BoxFit.cover,

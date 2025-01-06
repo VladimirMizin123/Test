@@ -72,8 +72,6 @@ class StoreCartBloc extends Bloc<StoreCartEvent, StoreCartState> {
               ((shoppingList[index].totalPrice! / qty) * (qty + 1)).toInt();
           shoppingList[index].cartQuantity = qty + 1;
           break;
-        default:
-          break;
       }
       emit(StoreCheckoutState(menuItemList: shoppingList));
     }

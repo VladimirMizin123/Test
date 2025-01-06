@@ -42,7 +42,9 @@ class AddAddressRepository {
       "userId": userId,
       "extendedAddress": floor,
     };
-    log('data---------->>>>>> $data');
+
+    log("Add new address --------->>>> ${ApiUrls.addNewAddress}");
+    log('data---------->>>>>> ${jsonEncode(data)}');
 
     final response = await apiServices.post(ApiUrls.addNewAddress, data);
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -80,6 +82,8 @@ class AddAddressRepository {
       "isPrimary": isPrimary,
     };
 
+    log("Api :----->>>> ${'${ApiUrls.updateAddress}?addressId=$addressId'}");
+    log("Request Data : ${jsonEncode(data)}");
     final response = await apiServices.put(
         '${ApiUrls.updateAddress}?addressId=$addressId', data);
     if (response.statusCode == 200 || response.statusCode == 201) {

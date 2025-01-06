@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bugfender/flutter_bugfender.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -180,33 +181,41 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final appLinks = AppLinks();
-      appLinks.allUriLinkStream.listen((uri) {
-        log("Global Path Find--------${uri.path}------");
-        if (uri.path == '/auth/setNewPassword') {
-          final token = PreferenceUtils.getString(forgetPassToken);
-          if (token != '') {
-            // navigate to password reset screen
-
-            Get.offAllNamed(
-              '/setNewPassword',
-            );
-          } else {
-            showToast(message: 'Link has Expired.', isSuccess: false);
-          }
-        } else {
-          Get.offAllNamed('/LoginScreen');
-        }
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Uri? link = await appLinks.getInitialLink();
+      // if (link != null) {
+      //   print("call 2");
+      //   handleInitialLink(link);
+      // }
     });
     // bloc.add(LatLogEvent());
     _dbTest();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _postFrameInitialization();
+      final appLinks = AppLinks();
+
+      appLinks.uriLinkStream.listen((uri) {
+        handleInitialLink(uri);
+      });
     });
 
     super.initState();
+  }
+
+  Future<void> handleInitialLink(Uri uri) async {
+    print("Global Path Find--------${uri.path}------");
+    if (uri.path == '/auth/setNewPassword') {
+      final token = PreferenceUtils.getString(forgetPassToken);
+      if (token != '') {
+        // navigate to password reset screen
+
+        Get.offAllNamed('/setNewPassword');
+      } else {
+        showToast(message: 'Link has Expired.', isSuccess: false);
+      }
+    } else {
+      Get.offAllNamed('/LoginScreen');
+    }
   }
 
   Future<void> _postFrameInitialization() async {
@@ -288,16 +297,20 @@ class _MyAppState extends State<MyApp> {
           title: 'Gym Eats',
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme(),
-          home: child,
           navigatorKey: navigatorKey,
           builder: FToastBuilder(),
+          // opaqueRoute: false,
           initialRoute: PreferenceUtils.getBool(prefIsLogin) &&
                   PreferenceUtils.getBool(prefIsConfirmEmail)
               ? '/AppManagerScreen'
               : PreferenceUtils.getBool("ignoreIntro")
                   ? "/LoginScreen"
-                  : '/',
+                  : '/IntroScreen',
           // initialRoute: 'SignUpScreen',
+          unknownRoute: GetPage(
+            name: '/',
+            page: () => CreateNewPasswordScreen(),
+          ),
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
             SentryNavigatorObserver(),
@@ -320,7 +333,7 @@ class _MyAppState extends State<MyApp> {
               page: () => const ResetPasswordScreen(),
             ),
             GetPage(
-              name: '/',
+              name: '/IntroScreen',
               page: () => const Home(),
             ),
             GetPage(
@@ -618,7 +631,6 @@ class _MyAppState extends State<MyApp> {
           ],
         );
       },
-      child: const Home(),
     );
   }
 }

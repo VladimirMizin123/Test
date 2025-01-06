@@ -189,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Column(
                 children: [
                   Expanded(
-                    child: AccountTitleWidget(
+                    child: accountTitleWidget(
                       title: "Profile",
                       widget: Expanded(
                         child: Container(

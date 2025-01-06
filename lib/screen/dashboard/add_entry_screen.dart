@@ -15,6 +15,7 @@ import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/all_exercise_screen.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/custom_header.dart';
 import '../../app/sharedPrefrence.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_bloc.dart';
 import '../../bloc/dashboard/add_exercise/add_exercise_event.dart';
@@ -79,268 +80,280 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     });
   }
 
+  RxBool isUpdateLoader = false.obs;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SizedBox(
-        height: size.height.h,
-        width: size.width.w,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    size: 25.sp,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                Text(
-                  addEntryArguments.isFromHistory
-                      ? 'Exercise'
-                      : StringUtils.addEntry,
-                  style: textTheme.displayMedium?.copyWith(color: Colors.black),
-                ).paddingOnly(right: 28.w),
-                const SizedBox(),
-              ],
-            ).paddingOnly(top: 30.h),
-            dashBoardCardView(
-              width: 335.w,
-              margin: EdgeInsets.symmetric(vertical: 20.h),
-              child: Column(
-                children: [
-                  commonUserTypeTextField(
-                    hintText: 'Exercise name',
-                    controller: entryController,
-                    context: context,
-                    width: double.infinity.w,
-                    fontSize: 16.sp,
-                    isReadOnly: true,
-                    borderColor: AppColors.primaryBlue,
-                    fontWeight: FontWeight.w400,
-                    isSuffix: false,
-                    valueColor: AppColors.darkGray,
-                    fontColor: AppColors.darkGray,
-                    cursorColor: AppColors.darkGray,
-                    textInputType: TextInputType.text,
-                    onChange: (value) {},
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'minutes',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
-                      ),
-                      commonUserTypeTextField(
-                        hintText: '00',
-                        controller: minutesController,
-                        context: context,
-                        width: 80.w,
-                        fontSize: 16.sp,
-                        borderColor: AppColors.primaryBlue,
-                        fontWeight: FontWeight.w400,
-                        isSuffix: false,
-                        valueColor: AppColors.darkGray,
-                        fontColor: AppColors.darkGray,
-                        cursorColor: AppColors.darkGray,
-                        textInputType: TextInputType.number,
-                        onChange: (value) {
-                          if (value.isNotEmpty) {
-                            isButtonEnable = true;
-                            if (addEntryArguments.isFromHistory) {
-                              double perMin = addEntryArguments
-                                      .exerciseLogList!.caloriesBurned! /
-                                  addEntryArguments
-                                      .exerciseLogList!.workoutTime!;
-                              caloriesTextBurnedController.text =
-                                  (int.parse(minutesController.text) * perMin)
-                                      .toStringAsFixed(0);
-                            } else {
-                              caloriesTextBurnedController.text =
-                                  (int.parse(minutesController.text) *
-                                          addEntryArguments.allExerciseData!
-                                              .calorieBurnedPerMinute)
-                                      .toString();
-                            }
-                          } else {
-                            isButtonEnable = false;
-                            caloriesTextBurnedController.text = '0';
-                          }
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ).paddingOnly(top: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Calories Burned',
-                        style: textTheme.bodyLarge
-                            ?.copyWith(color: AppColors.darkGray),
-                      ),
-                      commonUserTypeTextField(
-                        hintText: '00cal',
-                        isReadOnly: true,
-                        controller: caloriesTextBurnedController,
-                        context: context,
-                        width: 80.w,
-                        fontSize: 16.sp,
-                        borderColor: AppColors.primaryBlue,
-                        fontWeight: FontWeight.w400,
-                        isSuffix: false,
-                        valueColor: AppColors.darkGray,
-                        fontColor: AppColors.darkGray,
-                        cursorColor: AppColors.darkGray,
-                        textInputType: TextInputType.number,
-                        onChange: (value) {},
-                      ),
-                    ],
-                  ).paddingOnly(top: 8.h),
-                ],
-              ).paddingAll(16),
-            ),
-            const Spacer(),
-            BlocBuilder(
-                bloc: bloc,
-                builder: (context, state) {
-                  debugPrint('water state--> $state');
-                  if (state is DeleteLoadingSuccessState) {
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      Get.back();
-                    });
-                  }
-                  if (state is LoadingState) {
-                    return const AppCenterLoader();
-                  } else {
-                    return addEntryArguments.isFromHistory
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: state is DeleteLoadingState
-                                    ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : simpleTextBorderButton(
-                                        height: 48.h,
-                                        context: context,
-                                        buttonLable: 'Delete',
-                                        onTap: () {
-                                          bloc.add(DeleteExerciseEvent(
-                                              exerciseName:
-                                                  entryController.text));
-                                        },
-                                        isDarkColor: true,
-                                      ),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                flex: 1,
-                                child: simpleTextBorderButton(
-                                  height: 48.h,
-                                  context: context,
-                                  buttonLable: 'Update',
-                                  onTap: () async {
-                                    log('UPDATE');
-                                    if (allExerciseList.isEmpty) {
-                                      final GetExerciseDetailsRepository
-                                          getExerciseDetailsRepository =
-                                          GetExerciseDetailsRepository();
-
-                                      await getExerciseDetailsRepository
-                                          .getAllExerciseDetails()
-                                          .fold((left) {}, (right) {
-                                        allExerciseList = right.data;
-                                      });
-                                    }
-
-                                    /*int index = allExerciseList.indexWhere(
-                                      (element) =>
-                                          element.exerciseName ==
-                                          addEntryArguments
-                                              .exerciseLogList?.exerciseName,
-                                    );
-                                    if (index >= 0) {}
-                                    String exeId = allExerciseList[index].id;*/
-                                    String exeId = addEntryArguments
-                                        .exerciseLogList!.exerciseId!;
-                                    print(":-----> ${exeId}");
-                                    print(":-----> ${userId}");
-                                    bloc.add(
-                                      UpdateExerciseEvent(
-                                        id: exeId,
-                                        workOutTime:
-                                            int.parse(minutesController.text),
-                                        calorieBurned: int.parse(
-                                            caloriesTextBurnedController.text),
-                                        userId: userId,
-                                        exerciseName: entryController.text,
-                                      ),
-                                    );
-                                    if (addEntryArguments.dateTime != null) {
-                                      journalPlanBloc.add(GetExerciseDetails(
-                                          date: addEntryArguments.dateTime!
-                                              .toString()));
-                                    }
-
-                                    ///call exercise history api
-                                  },
-                                  isDarkColor: true,
-                                  isFillColor: true,
-                                ),
-                              ),
-                            ],
-                          )
-                        : buildButton(
-                            context: context,
-                            title: StringUtils.save,
-                            hasImage: false,
-                            textColor: AppColors.skyBlue,
-                            onPressed: () {
-                              if (minutesController.text == '0' ||
-                                  minutesController.text.isEmpty) {
-                                showToast(
-                                  message: 'Minutes can\'t be 0',
-                                  isSuccess: false,
-                                  color: AppColors.black,
-                                );
-                              } else if (caloriesTextBurnedController.text ==
-                                      '0' ||
-                                  caloriesTextBurnedController.text.isEmpty) {
-                                showToast(
-                                  message: 'Minutes can\'t be 0',
-                                  isSuccess: false,
-                                  color: AppColors.black,
-                                );
+      body: SafeArea(
+        child: SizedBox(
+          height: size.height.h,
+          width: size.width.w,
+          child: Column(
+            children: [
+              CustomTopHeader(
+                title: addEntryArguments.isFromHistory
+                    ? 'Exercise'
+                    : StringUtils.addEntry,
+                ignoreHPadding: true,
+              ),
+              dashBoardCardView(
+                width: 335.w,
+                margin: EdgeInsets.symmetric(vertical: 20.h),
+                child: Column(
+                  children: [
+                    commonUserTypeTextField(
+                      hintText: 'Exercise name',
+                      controller: entryController,
+                      context: context,
+                      width: double.infinity.w,
+                      fontSize: 16.sp,
+                      isReadOnly: true,
+                      borderColor: AppColors.primaryBlue,
+                      fontWeight: FontWeight.w400,
+                      isSuffix: false,
+                      valueColor: AppColors.darkGray,
+                      fontColor: AppColors.darkGray,
+                      cursorColor: AppColors.darkGray,
+                      textInputType: TextInputType.text,
+                      onChange: (value) {},
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'minutes',
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.darkGray),
+                        ),
+                        commonUserTypeTextField(
+                          hintText: '00',
+                          controller: minutesController,
+                          context: context,
+                          width: 80.w,
+                          fontSize: 16.sp,
+                          borderColor: AppColors.primaryBlue,
+                          fontWeight: FontWeight.w400,
+                          isSuffix: false,
+                          valueColor: AppColors.darkGray,
+                          fontColor: AppColors.darkGray,
+                          cursorColor: AppColors.darkGray,
+                          textInputType: TextInputType.number,
+                          onChange: (value) {
+                            if (value.isNotEmpty) {
+                              isButtonEnable = true;
+                              if (addEntryArguments.isFromHistory) {
+                                double perMin = addEntryArguments
+                                        .exerciseLogList!.caloriesBurned! /
+                                    addEntryArguments
+                                        .exerciseLogList!.workoutTime!;
+                                caloriesTextBurnedController.text =
+                                    (int.parse(minutesController.text) * perMin)
+                                        .toStringAsFixed(0);
                               } else {
-                                FocusScope.of(context).unfocus();
-                                bloc.add(SaveClickEvent(
-                                    userId: userId,
-                                    workoutTime: minutesController.text,
-                                    exerciseName: entryController.text,
-                                    caloriesBurned:
-                                        caloriesTextBurnedController.text,
-                                    createdBy: ''));
+                                caloriesTextBurnedController.text =
+                                    (int.parse(minutesController.text) *
+                                            addEntryArguments.allExerciseData!
+                                                .calorieBurnedPerMinute)
+                                        .toString();
                               }
-                            },
-                            bgColor: isButtonEnable
-                                ? AppColors.primaryBlue
-                                : AppColors.gray,
-                          ).paddingOnly(bottom: 20.h);
-                  }
-                }).paddingOnly(bottom: 20.h),
-          ],
-        ).paddingSymmetric(horizontal: 20.w),
+                            } else {
+                              isButtonEnable = false;
+                              caloriesTextBurnedController.text = '0';
+                            }
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ).paddingOnly(top: 8.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Calories Burned',
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.darkGray),
+                        ),
+                        commonUserTypeTextField(
+                          hintText: '00cal',
+                          isReadOnly: true,
+                          controller: caloriesTextBurnedController,
+                          context: context,
+                          width: 80.w,
+                          fontSize: 16.sp,
+                          borderColor: AppColors.primaryBlue,
+                          fontWeight: FontWeight.w400,
+                          isSuffix: false,
+                          valueColor: AppColors.darkGray,
+                          fontColor: AppColors.darkGray,
+                          cursorColor: AppColors.darkGray,
+                          textInputType: TextInputType.number,
+                          onChange: (value) {},
+                        ),
+                      ],
+                    ).paddingOnly(top: 8.h),
+                  ],
+                ).paddingAll(16),
+              ),
+              const Spacer(),
+              BlocConsumer(
+                  bloc: bloc,
+                  listener: (context, state) {
+                    if (state is DeleteLoadingSuccessState) {
+                      if (Get.currentRoute.contains('AddEntryScreen')) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Get.back();
+                        });
+                      }
+                    }
+                    if (state is UpdateLoadingState) {
+                      isUpdateLoader.value = state.isLoading;
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is LoadingState) {
+                      return const AppCenterLoader();
+                    } else {
+                      return addEntryArguments.isFromHistory
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: state is DeleteLoadingState
+                                      ? const Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : simpleTextBorderButton(
+                                          height: 48.h,
+                                          context: context,
+                                          buttonLable: 'Delete',
+                                          onTap: () {
+                                            if (isUpdateLoader.value) return;
+                                            FocusManager.instance.primaryFocus
+                                                ?.unfocus();
+                                            bloc.add(DeleteExerciseEvent(
+                                                exerciseName:
+                                                    entryController.text));
+                                          },
+                                          isDarkColor: true,
+                                        ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  flex: 1,
+                                  child: Obx(
+                                    () => simpleTextBorderButton(
+                                      height: 48.h,
+                                      context: context,
+                                      buttonLable: 'Update',
+                                      isLoadingWidget: isUpdateLoader.value,
+                                      onTap: () async {
+                                        if (isUpdateLoader.value ||
+                                            state is DeleteLoadingState) {
+                                          return;
+                                        }
+
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                        if (allExerciseList.isEmpty) {
+                                          final GetExerciseDetailsRepository
+                                              getExerciseDetailsRepository =
+                                              GetExerciseDetailsRepository();
+
+                                          await getExerciseDetailsRepository
+                                              .getAllExerciseDetails()
+                                              .fold((left) {}, (right) {
+                                            allExerciseList = right.data;
+                                          });
+                                        }
+
+                                        /*int index = allExerciseList.indexWhere(
+                                        (element) =>
+                                            element.exerciseName ==
+                                            addEntryArguments
+                                                .exerciseLogList?.exerciseName,
+                                      );
+                                      if (index >= 0) {}
+                                      String exeId = allExerciseList[index].id;*/
+                                        String exeId = addEntryArguments
+                                            .exerciseLogList!.exerciseId!;
+                                        print(":-----> ${exeId}");
+                                        print(":-----> ${userId}");
+                                        bloc.add(
+                                          UpdateExerciseEvent(
+                                            id: exeId,
+                                            workOutTime: int.parse(
+                                                minutesController.text),
+                                            calorieBurned: int.parse(
+                                                caloriesTextBurnedController
+                                                    .text),
+                                            userId: userId,
+                                            exerciseName: entryController.text,
+                                          ),
+                                        );
+                                        if (addEntryArguments.dateTime !=
+                                            null) {
+                                          journalPlanBloc.add(
+                                              GetExerciseDetails(
+                                                  date: addEntryArguments
+                                                      .dateTime!
+                                                      .toString()));
+                                        }
+
+                                        ///call exercise history api
+                                      },
+                                      isDarkColor: true,
+                                      isFillColor: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : buildButton(
+                              context: context,
+                              title: StringUtils.save,
+                              hasImage: false,
+                              textColor: AppColors.skyBlue,
+                              onPressed: () {
+                                if (minutesController.text == '0' ||
+                                    minutesController.text.isEmpty) {
+                                  showToast(
+                                    message: 'Minutes can\'t be 0',
+                                    isSuccess: false,
+                                    color: AppColors.black,
+                                  );
+                                } else if (caloriesTextBurnedController.text ==
+                                        '0' ||
+                                    caloriesTextBurnedController.text.isEmpty) {
+                                  showToast(
+                                    message: 'Minutes can\'t be 0',
+                                    isSuccess: false,
+                                    color: AppColors.black,
+                                  );
+                                } else {
+                                  FocusScope.of(context).unfocus();
+                                  bloc.add(SaveClickEvent(
+                                      userId: userId,
+                                      workoutTime: minutesController.text,
+                                      exerciseName: entryController.text,
+                                      caloriesBurned:
+                                          caloriesTextBurnedController.text,
+                                      createdBy: ''));
+                                }
+                              },
+                              bgColor: isButtonEnable
+                                  ? AppColors.primaryBlue
+                                  : AppColors.gray,
+                            ).paddingOnly(bottom: 20.h);
+                    }
+                  }).paddingOnly(bottom: 20.h),
+            ],
+          ).paddingSymmetric(horizontal: 15),
+        ),
       ),
     );
   }

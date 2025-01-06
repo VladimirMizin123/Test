@@ -1,70 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/extention/ext_on_number.dart';
 
 import '../../../constant/asset_utils.dart';
 import '../../../constant/color_utils.dart';
 import '../../../widget/back_button_widget.dart';
 
-Widget AccountTitleWidget({Widget? widget, String? title}) {
-  return Container(
-    // color: Colors.grey,
-    // height: 328.h,
-    // height: height,
-    child: Stack(
-      children: [
-        Container(
-          height: 220.h,
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage(AssetsUtils.lightBlueBackGroundImage),
-                fit: BoxFit.fill),
+Widget accountTitleWidget({Widget? widget, String? title}) {
+  return Stack(
+    children: [
+      Container(
+        height: 220.h,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(AssetsUtils.lightBlueBackGroundImage),
+            fit: BoxFit.fill,
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 40.w,
-                    child: const BackButtonWidget(),
+        ),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Positioned.fill(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40.w,
+                        alignment: Alignment.centerLeft,
+                        child: const BackButtonWidget(),
+                      ),
+                    ],
                   ),
-                  Text(
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
                     title!,
                     style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500),
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  SizedBox(
-                    width: 40.w,
-                  ),
-                ],
+                ),
+              ],
+            ),
+            23.h.height,
+            Container(
+              height: 35.h,
+              width: 95.h,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(AssetsUtils.gymEatsSpoon),
+                  fit: BoxFit.fill,
+                ),
               ),
-              SizedBox(
-                height: 23.h,
-              ),
-              Container(
-                height: 35.h,
-                width: 95.h,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(AssetsUtils.gymEatsSpoon),
-                        fit: BoxFit.fill)),
-              ),
-            ],
-          ).paddingOnly(top: 25.h, left: 20.w, right: 20.w, bottom: 10.h),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            // Positioned(top: 20, child: widget!),
-            widget!,
+            ),
           ],
-        )
-      ],
-    ),
+        ).paddingOnly(top: 15.h, left: 15, right: 15, bottom: 10.h),
+      ),
+      Column(mainAxisSize: MainAxisSize.max, children: [widget!])
+    ],
   );
 }
 

@@ -130,6 +130,8 @@ class AddNewMealRepository {
       'UserId': userId.toString(),
     };
 
+    log("Api Url :${ApiUrls.updateMeal}");
+    log("Req Data :${jsonEncode(data)}");
     final response = await apiServices.putMultipart(
         url: ApiUrls.updateMeal, body: data, files: mealItemImage);
     print("updateMeal code:${response.statusCode}");

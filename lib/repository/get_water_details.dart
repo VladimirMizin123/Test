@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:either_dart/either.dart';
 import 'package:gymeats_mobile/app/sharedPrefrence.dart';
@@ -11,12 +12,14 @@ import '../service/apis.dart';
 class GetWaterDetailsRepository {
   final ApiServices apiServices = ApiServices();
 
-  Future<Either<ErrorModel , WaterLogDetailsModel>> getWaterDetails({required String date}) async {
+  Future<Either<ErrorModel, WaterLogDetailsModel>> getWaterDetails(
+      {required String date}) async {
+    log('${ApiUrls.getWaterLogDetails}/$userId?date=$date');
     final response = await apiServices.get(
       '${ApiUrls.getWaterLogDetails}/$userId?date=$date',
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(WaterLogDetailsModel.fromJson(jsonDecode(response.body)) );
+      return Right(WaterLogDetailsModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }

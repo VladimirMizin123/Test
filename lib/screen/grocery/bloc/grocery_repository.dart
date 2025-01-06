@@ -210,6 +210,9 @@ class GroceryRepository {
       "max_Miles": PreferenceUtils.getGroceryRadius(),
     };
 
+    log("Api :====> $apiURL");
+    log("Json :====> ${jsonEncode(data)}");
+
     final response = await apiServices.post(apiURL, data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {

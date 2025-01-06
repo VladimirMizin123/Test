@@ -740,9 +740,7 @@ class _AddNewItemScreenState extends State<AddNewItemScreen> {
                                         fat: fatController.text,
                                         carbs: carbsController.text,
                                         calorie: calController.text,
-                                        type: nameController.text
-                                            .toString()
-                                            .removeAllWhitespace,
+                                        type: arguments["title"] ?? "",
                                         userId: userId,
                                         quantity: weightController.text),
                                   )
