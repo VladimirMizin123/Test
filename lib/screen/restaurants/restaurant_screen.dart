@@ -18,6 +18,7 @@ import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/extention/ext_on_list.dart';
 import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/models/get_dashboard_model.dart';
 import 'package:gymeats_mobile/screen/account_screen/account/account_screen.dart';
 import 'package:gymeats_mobile/screen/dashboard/dashboard_screen.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
@@ -35,6 +36,7 @@ import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
+import 'package:gymeats_mobile/widget/calorie_details_dialog.dart';
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -171,6 +173,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   int selectedIndex = -1;
   final _debouncer = Debouncer();
 
+  GetDashboardModel dashboardModel = GetDashboardModel();
+
   @override
   void initState() {
     super.initState();
@@ -182,6 +186,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         }
       });
     });
+    dashboardModel = GetDashboardModel.fromJson(
+        jsonDecode(PreferenceUtils.getString(dashboardModelPref)));
   }
 
   Future<void> initLoad() async {
@@ -1516,7 +1522,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                               GestureDetector(
                                                                         onTap:
                                                                             () {
-                                                                          verifyRestaurant(
+                                                                          onRestaurantTap(
                                                                               res: searchRestaurantList.elementAt(index));
                                                                         },
                                                                         child:
@@ -1729,7 +1735,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                               GestureDetector(
                                                                             onTap:
                                                                                 () {
-                                                                              verifyRestaurant(res: restaurantList.elementAt(index));
+                                                                              onRestaurantTap(res: restaurantList.elementAt(index));
                                                                             },
                                                                             child:
                                                                                 Container(
@@ -1945,7 +1951,28 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     );
   }
 
-  void verifyRestaurant({required RestaurantList res}) async {
+  void onRestaurantTap({required RestaurantList res}) async {
+    try {
+      if ((dashboardModel.data?.totalIntakeFood?.round() ?? 0) >=
+          (dashboardModel.data?.totalCalorie?.round() ?? 0)) {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: AppColors.transparentColor,
+          isScrollControlled: true,
+          builder: (context) => CalorieDetailsDialog(
+            dashboardModel: dashboardModel,
+            onContinueTap: () => verifyRestaurant(res: res),
+          ),
+        );
+      } else {
+        verifyRestaurant(res: res);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  void verifyRestaurant({required RestaurantList res}) {
     try {
       restaurantBloc.prevId = res.id;
       if (verifyLoaderId != null) {

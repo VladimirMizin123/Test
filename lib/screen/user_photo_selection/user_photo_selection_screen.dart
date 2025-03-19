@@ -229,6 +229,7 @@ class _UserPhotoSelectionScreenState extends State<UserPhotoSelectionScreen> {
                                     addAddressModel: model.addAddressModel,
                                     userId: model.userId,
                                     surveyReq: model.surveyReq,
+                                    referralCode: model.referralCode,
                                   );
                                   Get.toNamed('/UserSignUpInfoScreen',
                                       arguments: userSignUpDataModel);

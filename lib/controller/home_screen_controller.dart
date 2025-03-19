@@ -15,6 +15,7 @@ class HomeScreenController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final referralCode = TextEditingController();
 
   List<bool> selectedItems = [];
 
@@ -101,6 +102,7 @@ class HomeScreenController extends GetxController {
       confirmPassword: Get.arguments?["password"],
       phoneNumber: phoneNumberController.text,
       userId: Get.arguments?["userId"],
+      referralCode: referralCode.text,
     );
 
     await Get.toNamed('/GoogleMapScreen', arguments: {

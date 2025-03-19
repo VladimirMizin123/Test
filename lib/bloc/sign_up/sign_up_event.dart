@@ -8,6 +8,7 @@ class CheckEmailEvent extends SignUpEvent {
   final String confirmPassword;
   final String userName;
   final String phoneNumber;
+  final String referralCode;
 
   CheckEmailEvent({
     required this.email,
@@ -17,5 +18,6 @@ class CheckEmailEvent extends SignUpEvent {
     this.confirmPassword = '',
     this.userName = '',
     this.phoneNumber = '',
+    this.referralCode = '',
   });
 }

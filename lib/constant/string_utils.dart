@@ -3,6 +3,7 @@ class StringUtils {
   static const fName = 'First Name';
   static const lName = 'Last Name';
   static const email = 'Email address';
+  static const referralCode = 'Referral Code (Optional)';
   static const phone = 'Phone Number';
   static const password = 'Password';
   static const letsEat = 'Let\'s Eat!';
@@ -531,4 +532,9 @@ class StringUtils {
       "You have already purchase any items?";
   static String noPreviousPurchaseFound =
       "No previous purchases found, please contact Support";
+  static String notification = "Notification";
+  static String thisIsGentleNotification =
+      "This is a gentle notification that you have already reached your daily caloric intake in accordance with your goals.";
+  static String doYouStillWantToSearch =
+      "Do you still want to search for something to eat?";
 }

@@ -264,6 +264,7 @@ class _UserTypePageState extends State<UserTypeScreen> {
                               FocusScope.of(context).unfocus();
                               UserSignUpDataModel userSignUpDataModel =
                                   UserSignUpDataModel(
+                                referralCode: model.referralCode,
                                 firstName: model.firstName,
                                 lastName: model.lastName,
                                 email: model.email,

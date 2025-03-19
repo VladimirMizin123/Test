@@ -47,9 +47,9 @@ class _HomeState extends State<Home> {
             showToast(message: 'Link has Expired', isSuccess: false);
           }
         } else {
-          player.pause();
-          await Get.offAllNamed('/LoginScreen');
-          player.play();
+          // player.pause();
+          // await Get.offAllNamed('/LoginScreen');
+          // player.play();
         }
       });
     });

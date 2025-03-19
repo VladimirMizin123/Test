@@ -45,7 +45,7 @@ class _AddressScreenState extends State<AddressScreen> {
         child: Column(
           children: [
             Expanded(
-              child: AccountTitleWidget(
+              child: accountTitleWidget(
                 title: "My Address",
                 widget: Expanded(
                   child: Container(
@@ -75,7 +75,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AccountTitleWidget(
+                                  accountTitleWidget(
                                     title: "My Address",
                                     widget: Container(
                                       decoration: BoxDecoration(
@@ -300,6 +300,8 @@ class _AddressScreenState extends State<AddressScreen> {
                                                             "user_zipcode":
                                                                 add.zipcode ??
                                                                     "",
+                                                            "extended_address":
+                                                                add.extendedAddress,
                                                           },
                                                         );
                                                       },

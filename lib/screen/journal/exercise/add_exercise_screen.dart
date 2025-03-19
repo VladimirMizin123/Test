@@ -8,6 +8,7 @@ import 'package:gymeats_mobile/models/exercise_log_details_model.dart';
 import 'package:gymeats_mobile/models/get_all_exercise_modal.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/all_exercise_screen.dart';
 import 'package:gymeats_mobile/screen/journal/exercise/history_exercise_screen.dart';
+import 'package:gymeats_mobile/widget/custom_header.dart';
 
 import '../../../widget/app_widget.dart';
 
@@ -54,28 +55,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen>
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: AppColors.darkGray,
-            ),
-            onPressed: () => Get.back(),
-          ),
-          title: Text(
-            StringUtils.addExercise,
-            style: textTheme.displayMedium?.copyWith(color: Colors.black),
-          ),
-          centerTitle: true,
-        ),
         body: SafeArea(
           child: SizedBox(
             height: size.height.h,
             width: size.width.w,
             child: Column(
               children: [
+                const CustomTopHeader(title: StringUtils.addExercise),
                 commonSearchTextField(
                   fontColor: AppColors.middleGray,
                   controller: searchExerciseController,

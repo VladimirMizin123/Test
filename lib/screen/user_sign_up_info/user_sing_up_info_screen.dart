@@ -310,6 +310,7 @@ class _UserSignUpInfoScreenState extends State<UserSignUpInfoScreen> {
                                     addAddressModel: model.addAddressModel,
                                     userId: model.userId,
                                     surveyReq: model.surveyReq,
+                                    referralCode: model.referralCode,
                                   );
                                   bloc.add(
                                     SignUpApiEvent(

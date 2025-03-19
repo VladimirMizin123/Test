@@ -267,6 +267,7 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                             widget.arguments['userData'].confirmPassword,
                         phoneNumber: widget.arguments['userData'].phoneNumber,
                         userId: widget.arguments['userData'].userId,
+                        referralCode: widget.arguments["userData"].referralCode,
                         addAddressModel: addAddressModel,
                       );
 

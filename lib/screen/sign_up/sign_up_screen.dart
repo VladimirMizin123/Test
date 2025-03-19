@@ -130,6 +130,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 homeController.confirmPasswordController,
                             hintText: StringUtils.confirmPassword)
                         .paddingOnly(top: 16),
+                    commonTextField(
+                      context: context,
+                      controller: homeController.referralCode,
+                      hintText: StringUtils.referralCode,
+                    ).paddingOnly(top: 16),
                   ],
                   BlocConsumer<SignUpBloc, SignUpState>(
                       bloc: bloc,
@@ -168,6 +173,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       "${homeController.fNameController.text}${homeController.lastNameController.text}",
                                   phoneNumber:
                                       homeController.phoneNumberController.text,
+                                  referralCode:
+                                      homeController.referralCode.text,
                                 ),
                               );
                             } else {

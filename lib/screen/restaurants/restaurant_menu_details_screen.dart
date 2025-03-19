@@ -413,7 +413,7 @@ class _RestaurantMenuDetailsScreenState
                                           : RestaurantMealAddButtonWidget(
                                               onTap: () {
                                                 if (!alreadyInCart) {
-                                                  addIntoTheCart();
+                                                  addIntoCart();
                                                 } else {
                                                   Get.to(
                                                     () => RestaurantCart(
@@ -894,7 +894,7 @@ class _RestaurantMenuDetailsScreenState
     price = price * item;
   }
 
-  void addIntoTheCart() {
+  void addIntoCart() {
     if (item > 0) {
       bool valid = isFormValid(customizationList);
       if (valid) {

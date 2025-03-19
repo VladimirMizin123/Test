@@ -215,6 +215,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                   addAddressModel: model.addAddressModel,
                   userId: model.userId,
                   surveyReq: getSurveyReq(),
+                  referralCode: model.referralCode,
                 );
 
                 if (widget.isProfile == true) {
@@ -335,6 +336,7 @@ class _UserSurveyScreenState extends State<UserSurveyScreen> {
                           addAddressModel: model.addAddressModel,
                           userId: model.userId,
                           surveyReq: getSurveyReq(),
+                          referralCode: model.referralCode,
                         );
 
                         Get.toNamed('/UserPhotoSelectionScreen',

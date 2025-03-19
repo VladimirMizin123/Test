@@ -25,6 +25,7 @@ class UserSignUpDataModel {
   List<String> restrictionID;
   AddAddressModel? addAddressModel;
   Map<String, dynamic>? surveyReq;
+  String? referralCode;
 
   UserSignUpDataModel({
     this.gender = "",
@@ -48,6 +49,7 @@ class UserSignUpDataModel {
     this.options,
     this.addAddressModel,
     this.surveyReq,
+    this.referralCode,
   });
 }
 

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
@@ -246,17 +247,15 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                                   builder: (context) => const AccountScreen(),
                                 ));
                           },
-                          child: Image.asset(
-                            AssetsUtils.user,
-                            height: 25.h,
-                            width: 25.w,
+                          child: SvgPicture.asset(
+                            AssetsUtils.userSvg,
                             color: AppColors.darkGray,
                           ),
                         ),
                         Text(StringUtils.mealPlan,
                             style:
                                 FontUtils.h20(fontColor: AppColors.oxFF010101)),
-                        GestureDetector(
+                        InkWell(
                           onTap: () {
                             // Get.toNamed('/FoodPreferencesScreen');
                             Navigator.push(context,
@@ -266,15 +265,10 @@ class _MealPlanHomeScreenState extends State<MealPlanHomeScreen> {
                               mealPlanBloc.add(MealPlanFetchEvent());
                             });
                           },
-                          child: Image.asset(
-                            AssetsUtils.filter,
-                            height: 20.h,
-                            width: 20.w,
-                            color: AppColors.darkGray,
-                          ),
+                          child: SvgPicture.asset(AssetsUtils.filterSvg),
                         )
                       ],
-                    ).paddingSymmetric(horizontal: 6, vertical: 5.h),
+                    ).paddingSymmetric(horizontal: 15, vertical: 5.h),
                     Divider(color: AppColors.darkGray, height: 3.h),
                     state is ClearGroceryListLoadingState
                         ? Padding(

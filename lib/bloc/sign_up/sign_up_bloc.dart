@@ -40,6 +40,7 @@ class SignUpBloc extends Bloc<CheckEmailEvent, SignUpState> {
             confirmPassword: event.confirmPassword,
             phoneNumber: event.phoneNumber,
             userId: right.data?.userId,
+            referralCode: event.referralCode,
           );
           await PreferenceUtils.setString(prefUserEmail, event.email.trim());
           await PreferenceUtils.setString(prefUserName, event.userName);

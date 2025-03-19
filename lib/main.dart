@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -207,14 +208,13 @@ class _MyAppState extends State<MyApp> {
     if (uri.path == '/auth/setNewPassword') {
       final token = PreferenceUtils.getString(forgetPassToken);
       if (token != '') {
-        // navigate to password reset screen
-
+        await Future.delayed(Duration(seconds: 1));
         Get.offAllNamed('/setNewPassword');
       } else {
         showToast(message: 'Link has Expired.', isSuccess: false);
       }
     } else {
-      Get.offAllNamed('/LoginScreen');
+      // Get.offAllNamed('/LoginScreen');
     }
   }
 
@@ -296,6 +296,7 @@ class _MyAppState extends State<MyApp> {
         return GetMaterialApp(
           title: 'Gym Eats',
           debugShowCheckedModeBanner: false,
+
           theme: AppColors.lightTheme(),
           navigatorKey: navigatorKey,
           builder: FToastBuilder(),
@@ -307,10 +308,12 @@ class _MyAppState extends State<MyApp> {
                   ? "/LoginScreen"
                   : '/IntroScreen',
           // initialRoute: 'SignUpScreen',
-          unknownRoute: GetPage(
-            name: '/',
-            page: () => CreateNewPasswordScreen(),
-          ),
+          unknownRoute: !Platform.isIOS
+              ? GetPage(
+                  name: '/',
+                  page: () => LoginScreen(),
+                )
+              : null,
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
             SentryNavigatorObserver(),

@@ -110,7 +110,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     }
                   },
                   builder: (context, state) {
-                    return AccountTitleWidget(
+                    return accountTitleWidget(
                       title: "Account",
                       widget: Container(
                         decoration: BoxDecoration(

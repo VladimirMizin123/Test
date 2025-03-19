@@ -24,6 +24,7 @@ Widget buildButton({
   bool? hasImage = false,
   String? imagePath,
   bool showLoader = false,
+  double borderRadius = 8,
 }) {
   return SizedBox(
     width: double.infinity.w,
@@ -33,7 +34,7 @@ Widget buildButton({
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
       child: showLoader

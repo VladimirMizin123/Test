@@ -71,6 +71,7 @@ class SignUpRepository {
       "Email": model.email ?? "",
       "UserName": model.email ?? "",
       "PhoneNumber": model.phoneNumber ?? "",
+      "ReferalCode": model.referralCode ?? "",
       "UserDetail.Age": model.age ?? "",
       "UserDetail.Height":
           model.height?.replaceAll("'", ".").replaceAll("’", ".") ?? "",

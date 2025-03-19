@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -6,11 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get.dart' as get_route;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
 import 'package:gymeats_mobile/constant/font_utils.dart';
 import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/extention/ext_on_number.dart';
+import 'package:gymeats_mobile/models/get_dashboard_model.dart';
 import 'package:gymeats_mobile/screen/get_location/get_location.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/delivery_order_option_bottomsheet.dart';
 import 'package:gymeats_mobile/screen/restaurants/bottomsheet/food_intake_bottomsheet_screen.dart';
@@ -18,6 +21,7 @@ import 'package:gymeats_mobile/screen/restaurants/res_category_data_service/res_
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
+import 'package:gymeats_mobile/widget/calorie_details_dialog.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../restaurants/bloc/restaurant_event.dart';
 import '../../restaurants/bloc/restaurant_state.dart';
@@ -47,9 +51,13 @@ class _BestMatchRestaurantsScreenState
   int deliveryType = 0;
   final PanelController _controller = PanelController();
 
+  GetDashboardModel dashboardModel = GetDashboardModel();
+
   @override
   void initState() {
     super.initState();
+    dashboardModel = GetDashboardModel.fromJson(
+        jsonDecode(PreferenceUtils.getString(dashboardModelPref)));
     restaurantBloc.add(GetUserAddressEvent());
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       showLogIntakeBottomSheet();
@@ -367,7 +375,7 @@ class _BestMatchRestaurantsScreenState
                                   itemBuilder: (context, index) =>
                                       GestureDetector(
                                     onTap: () {
-                                      verifyRestaurant(
+                                      onRestaurantTap(
                                           res: restaurantList.elementAt(index));
                                     },
                                     child: Container(
@@ -596,6 +604,27 @@ class _BestMatchRestaurantsScreenState
         );
       },
     );
+  }
+
+  void onRestaurantTap({required RestaurantList res}) async {
+    try {
+      if ((dashboardModel.data?.totalIntakeFood?.round() ?? 0) >=
+          (dashboardModel.data?.totalCalorie?.round() ?? 0)) {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: AppColors.transparentColor,
+          isScrollControlled: true,
+          builder: (context) => CalorieDetailsDialog(
+            dashboardModel: dashboardModel,
+            onContinueTap: () => verifyRestaurant(res: res),
+          ),
+        );
+      } else {
+        verifyRestaurant(res: res);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   void verifyRestaurant({required RestaurantList res}) async {
