@@ -12,6 +12,8 @@ import 'package:gymeats_mobile/extention/ext_on_number.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
 import 'package:popover/popover.dart';
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductCardWidget extends StatelessWidget {
   const ProductCardWidget({
@@ -27,6 +29,9 @@ class ProductCardWidget extends StatelessWidget {
     this.checkoutScreen = false,
     this.isGroceryItem = false,
     this.onTap,
+    this.showQuantity = true,
+    this.isIncrementing = false,
+    this.isDecrementing = false,
     required this.onCartTap,
     required this.onRemove,
     required this.onAdd,
@@ -39,8 +44,11 @@ class ProductCardWidget extends StatelessWidget {
   final bool showDiscount;
   final String? storeName;
   final bool add;
+  final bool isIncrementing;
+  final bool isDecrementing;
   final bool checkoutScreen;
   final bool isGroceryItem;
+  final bool showQuantity;
   final Function()? onTap;
   final Function() onCartTap;
   final Function() onRemove;
@@ -207,7 +215,7 @@ class ProductCardWidget extends StatelessWidget {
                     // crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "${menuItem?.price == 0 ? "\$${((menuItem?.minPrice ?? 0) / 100).toStringAsFixed(2)}" : menuItem?.formattedPrice}",
+                        "${menuItem?.formattedPrice}",
                         style: FontUtils.h18(
                           fontColor: Colors.black,
                           fontWeight: FWT.medium,
@@ -246,7 +254,9 @@ class ProductCardWidget extends StatelessWidget {
           ),
           cartItem == null
               ? const SizedBox()
-              : Builder(
+              : 
+              showQuantity == true ?
+              Builder(
                   builder: (context) {
                     return Container(
                       width: MediaQuery.of(context).size.width,
@@ -273,7 +283,13 @@ class ProductCardWidget extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               GestureDetector(
-                                onTap: () => onAdd.call(),
+                                onTap: () async {
+                                  final signalR = SignalRService();
+                                  if (menuItem?.itemUrl != null) {
+                                    await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'decrement');
+                                  }
+                                  onAdd.call();
+                                },
                                 child: Container(
                                   height: context.height * 0.060,
                                   width: context.height * 0.060,
@@ -312,7 +328,13 @@ class ProductCardWidget extends StatelessWidget {
                               ),
                               SizedBox(width: 8.w),
                               GestureDetector(
-                                onTap: () => onRemove.call(),
+                                onTap: () async {
+                                  final signalR = SignalRService();
+                                  if (menuItem?.itemUrl != null) {
+                                    await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'increment');
+                                  }
+                                  onRemove.call();
+                                },
                                 child: Container(
                                   height: context.height * 0.060,
                                   width: context.height * 0.060,
@@ -335,7 +357,8 @@ class ProductCardWidget extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                )
+                : const SizedBox()
         ],
       ),
     );

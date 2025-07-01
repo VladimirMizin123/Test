@@ -47,6 +47,7 @@ class RestaurantMenu {
   double? snackCalorie;
   double? dinnerCalorie;
   List<Category>? categories;
+  bool hasShopRestaurant;
 
   RestaurantMenu({
     this.quote,
@@ -56,6 +57,7 @@ class RestaurantMenu {
     this.lunchCalorie,
     this.snackCalorie,
     this.dinnerCalorie,
+    this.hasShopRestaurant = false,
   });
 
   factory RestaurantMenu.fromJson(Map<String, dynamic> json) => RestaurantMenu(
@@ -76,6 +78,7 @@ class RestaurantMenu {
             ? []
             : List<Category>.from(
                 json["categories"]!.map((x) => Category.fromJson(x))),
+        hasShopRestaurant: json["hasShopRestaurant"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -87,6 +90,7 @@ class RestaurantMenu {
         "categories": categories == null
             ? []
             : List<dynamic>.from(categories!.map((x) => x.toJson())),
+        "hasShopRestaurant": hasShopRestaurant,
       };
 }
 
@@ -94,11 +98,13 @@ class Category {
   String? name;
   String? subcategoryId;
   List<MenuItemList>? menuItemList;
+  List<Category>? subcategories;
 
   Category({
     this.name,
     this.subcategoryId,
     this.menuItemList,
+    this.subcategories,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
@@ -108,6 +114,14 @@ class Category {
             ? []
             : List<MenuItemList>.from(
                 json["menu_item_list"]!.map((x) => MenuItemList.fromJson(x))),
+        subcategories: json["subcategories"] == null
+            ? []
+            : List<Category>.from(
+                json["subcategories"]!.map((x) {
+                  final subcategory = Category.fromJson(x);
+                  subcategory.subcategoryId = null;
+                  return subcategory;
+                })),
       );
 
   Map<String, dynamic> toJson() => {
@@ -116,6 +130,13 @@ class Category {
         "menu_item_list": menuItemList == null
             ? []
             : List<dynamic>.from(menuItemList!.map((x) => x.toJson())),
+        "subcategories": subcategories == null
+            ? []
+            : List<dynamic>.from(subcategories!.map((x) {
+                final sub = x.toJson();
+                sub.remove("subcategory_id");
+                return sub;
+              })),
       };
 }
 
@@ -147,6 +168,7 @@ class MenuItemList {
   NutritionixGetNxMealInfoByNameModelData? mealInfoData;
   List<SelectedOptions>? selectedOptions;
   bool? eatableType;
+  String? itemUrl;
 
   MenuItemList({
     this.name,
@@ -176,6 +198,7 @@ class MenuItemList {
     this.mealInfoData,
     this.selectedOptions,
     this.eatableType,
+    this.itemUrl,
   });
 
   factory MenuItemList.fromJson(Map<String, dynamic> json) => MenuItemList(
@@ -210,6 +233,7 @@ class MenuItemList {
                 [])
             : [],
         eatableType: json["eatableType"],
+        itemUrl: json["item_url"],
       );
 
   Map<String, dynamic> toJson() {
@@ -241,6 +265,7 @@ class MenuItemList {
       "cartQuantity": cartQuantity,
       "selectedOptions": selectedOptions?.map((e) => e.toJson()).toList(),
       "eatableType": eatableType,
+      "item_url": itemUrl,
     };
   }
 }
@@ -251,6 +276,7 @@ class Customization {
   int? maxChoiceOptions;
   List<Option>? options;
   String? customizationId;
+  int level;
 
   Customization({
     this.name,
@@ -258,6 +284,7 @@ class Customization {
     this.maxChoiceOptions,
     this.options,
     this.customizationId,
+    this.level = 1,
   });
 
   factory Customization.fromJson(Map<String, dynamic> json) => Customization(
@@ -269,6 +296,7 @@ class Customization {
             : List<Option>.from(
                 json["options"]!.map((x) => Option.fromJson(x))),
         customizationId: json["customization_id"],
+        level: json["level"] ?? 1,
       );
 
   Map<String, dynamic> toJson() => {
@@ -279,6 +307,7 @@ class Customization {
             ? []
             : List<dynamic>.from(options!.map((x) => x.toJson())),
         "customization_id": customizationId,
+        "level": level,
       };
 }
 
@@ -292,6 +321,8 @@ class Option {
   int? defaultQty;
   String? optionId;
   List<Customization>? customizations;
+  bool isNestedSelection;
+  bool hasQuantityControl;
 
   Option({
     this.name,
@@ -303,21 +334,25 @@ class Option {
     this.defaultQty,
     this.optionId,
     this.customizations,
+    this.isNestedSelection = false,
+    this.hasQuantityControl = false,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(
-      name: json["name"],
-      price: json["price"],
-      minQty: json["min_qty"],
-      maxQty: json["max_qty"],
-      isRequired: json["is_required"],
-      formattedPrice: json["formatted_price"],
-      defaultQty: json["default_qty"],
-      optionId: json["option_id"],
-      customizations: json["customizations"] != null
-          ? List<Customization>.from(
-              json["customizations"]!.map((x) => Customization.fromJson(x)))
-          : null);
+        name: json["name"],
+        price: json["price"],
+        minQty: json["min_qty"],
+        maxQty: json["max_qty"],
+        isRequired: json["is_required"],
+        formattedPrice: json["formatted_price"],
+        defaultQty: json["default_qty"],
+        optionId: json["option_id"],
+        isNestedSelection: json["is_nested_selection"] ?? false,
+        hasQuantityControl: json["has_quantity_control"] ?? false,
+        customizations: json["customizations"] != null
+            ? List<Customization>.from(json["customizations"]!.map((x) => Customization.fromJson(x)))
+            : null,
+      );
 
   Map<String, dynamic> toJson() => {
         "name": name,
@@ -328,6 +363,8 @@ class Option {
         "formatted_price": formattedPrice,
         "default_qty": defaultQty,
         "option_id": optionId,
+        "is_nested_selection": isNestedSelection,
+        "has_quantity_control": hasQuantityControl,
         "customizations": customizations?.map((e) => e.toJson()).toList(),
       };
 }

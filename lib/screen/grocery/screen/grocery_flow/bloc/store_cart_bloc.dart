@@ -41,7 +41,7 @@ class StoreCartBloc extends Bloc<StoreCartEvent, StoreCartState> {
     try {
       Object s = state;
       if (s is StoreCheckoutState) {
-        emit(StoreCheckoutState(menuItemList: s.menuItemList));
+        // emit(StoreCheckoutState(menuItemList: s.menuItemList));
       }
     } catch (e) {
       log(e.toString());
@@ -49,30 +49,33 @@ class StoreCartBloc extends Bloc<StoreCartEvent, StoreCartState> {
   }
 
   _onChangeQty(ChangeGroceryQty event, Emitter<StoreCartState> emit) {
-    Object s = state;
+    final s = state;
     if (s is StoreCheckoutState) {
-      List<MenuItemList> shoppingList = s.menuItemList;
-      int index = shoppingList
-          .indexWhere((element) => element.productId == event.productID);
-      if (index.isNegative) return;
-      int qty = shoppingList[index].cartQuantity ?? 0;
+      final List<MenuItemList> shoppingList = List.from(s.menuItemList);
+
+      final index = shoppingList.indexWhere((e) => e.productId == event.productID);
+      if (index == -1) return;
+
+      final qty = shoppingList[index].cartQuantity ?? 0;
+
       switch (event.type) {
         case ModifyType.decrement:
           if (qty <= 1) {
             shoppingList.removeAt(index);
-            break;
           } else {
-            shoppingList[index].totalPrice =
-                ((shoppingList[index].totalPrice! / qty) * (qty - 1)).toInt();
+            final unitPrice = shoppingList[index].totalPrice! / qty;
             shoppingList[index].cartQuantity = qty - 1;
+            shoppingList[index].totalPrice = (unitPrice * (qty - 1)).toInt();
           }
           break;
+
         case ModifyType.increment:
-          shoppingList[index].totalPrice =
-              ((shoppingList[index].totalPrice! / qty) * (qty + 1)).toInt();
+          final unitPrice = shoppingList[index].totalPrice! / qty;
           shoppingList[index].cartQuantity = qty + 1;
+          shoppingList[index].totalPrice = (unitPrice * (qty + 1)).toInt();
           break;
       }
+
       emit(StoreCheckoutState(menuItemList: shoppingList));
     }
   }

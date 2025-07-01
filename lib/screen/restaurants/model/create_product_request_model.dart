@@ -1,31 +1,24 @@
 class CreateProductRequestModel {
-  String? userId;
-  List<ProductMealmeItems>? mealmeItems;
   String? orderId;
+  String? productType;
   int? totalAmount;
 
-  CreateProductRequestModel(
-      {this.userId, this.mealmeItems, this.orderId, this.totalAmount});
+  CreateProductRequestModel({
+    this.orderId,
+    this.productType,
+    this.totalAmount,
+  });
 
   CreateProductRequestModel.fromJson(Map<String, dynamic> json) {
-    userId = json['userId'];
-    if (json['mealmeItems'] != null) {
-      mealmeItems = <ProductMealmeItems>[];
-      json['mealmeItems'].forEach((v) {
-        mealmeItems!.add(ProductMealmeItems.fromJson(v));
-      });
-    }
     orderId = json['orderId'];
+    productType = json['productType'];
     totalAmount = json['totalAmount'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['userId'] = userId;
-    if (mealmeItems != null) {
-      data['mealmeItems'] = mealmeItems!.map((v) => v.toJson()).toList();
-    }
     data['orderId'] = orderId;
+    data['productType'] = productType;
     data['totalAmount'] = totalAmount;
     return data;
   }

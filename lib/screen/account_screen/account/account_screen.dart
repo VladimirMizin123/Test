@@ -19,6 +19,7 @@ import 'package:gymeats_mobile/screen/account_screen/program/program_screen.dart
 import 'package:gymeats_mobile/screen/account_screen/setting/setting_screen.dart';
 import 'package:gymeats_mobile/widget/svg_image.dart';
 import 'package:livechatt/livechatt.dart';
+import 'package:gymeats_mobile/service/signalr_service.dart';
 
 import '../address/address_screen.dart';
 
@@ -203,6 +204,36 @@ class _AccountScreenState extends State<AccountScreen> {
                                 },
                               ),
                             ),
+                            SizedBox(height: 20.h),
+                            // accountScreenListWidget(
+                            //   children: [
+                            //     accountScreenDataWidget(
+                            //       onTap: () async {
+                            //         final token = PreferenceUtils.getString(prefToken);
+                            //         final url =
+                            //             'https://gymeats.azurewebsites.net/manage-subscription?access_token=$token';
+
+                            //         // if (await canLaunchUrl(Uri.parse(url))) {
+                            //         //   await launchUrl(
+                            //         //     Uri.parse(url),
+                            //         //     mode: LaunchMode.externalApplication,
+                            //         //   );
+                            //         // } else {
+                            //         //   showToast(isSuccess: false, message: 'Could not open subscription portal');
+                            //         // }
+                            //       },
+                            //       color: AppColors.terracotta,
+                            //       leading: const Icon(Icons.subscriptions, color: Colors.black),
+                            //       title: const Text(
+                            //         'Manage Subscription',
+                            //         style: TextStyle(color: Colors.black),
+                            //       ),
+                            //       trailing: const SvgImage(
+                            //         image: AssetsUtils.forwardArrow,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),
@@ -210,7 +241,9 @@ class _AccountScreenState extends State<AccountScreen> {
                   }),
               SizedBox(height: 100.h),
               InkWell(
-                onTap: () {
+                onTap: () async {
+                  final signalR = SignalRService();
+                  await signalR.releaseDriverByUserId();
                   PreferenceUtils.clearPrefs();
                   PreferenceUtils.setBool("ignoreIntro", true);
                   Get.offAllNamed('LoginScreen');

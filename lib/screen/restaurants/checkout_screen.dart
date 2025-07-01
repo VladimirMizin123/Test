@@ -52,6 +52,9 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_mode
     as res_addd;
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'dart:convert';
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({
@@ -68,7 +71,7 @@ class CheckOutScreen extends StatefulWidget {
     // required this.subtotal,
     // required this.pickup,
   });
-
+  
   final address.UserAddress? getUserAddress;
   final groc_add.Address? grocAdd;
   final bool isFromGrocery;
@@ -89,6 +92,51 @@ class CheckOutScreen extends StatefulWidget {
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
   GoogleMapController? _mapController;
+  String orderId = '';
+  bool _isGoingBack = false;
+  bool isCheckoutLoading = false;
+
+  Future<void> getCheckout() async {
+    setState(() {
+      isCheckoutLoading = true;
+    });
+    final signalR = SignalRService();
+    final data = await signalR.goToCheckout();
+
+    final fareItems = data['FareBreakdownItems'] as List<dynamic>?;
+
+    if (fareItems == null) {
+      return;
+    }
+
+    int? subtotal = _getAmountByLabel(fareItems, 'Subtotal');
+    int? deliveryFee = _getAmountByLabel(fareItems, 'Delivery Fee');
+    int? serviceFee = _getAmountByLabel(fareItems, 'Fees');
+    int? taxesAndFees = _getAmountByLabel(fareItems, 'Taxes & Other Fees');
+
+    setState(() {
+      widget.orderData?.finalQuote?.quote?.subtotal = (subtotal ?? 0);
+      widget.orderData?.finalQuote?.quote?.deliveryFeeCents = (deliveryFee ?? 0);
+      widget.orderData?.finalQuote?.quote?.serviceFeeCents = (serviceFee ?? 0);
+      widget.orderData?.finalQuote?.quote?.salesTaxCents = (taxesAndFees ?? 0);
+      isCheckoutLoading = false;
+    });
+  }
+
+  int _getAmountByLabel(List<dynamic> items, String label) {
+    final item = items.firstWhere(
+      (e) => e['Label'] == label,
+      orElse: () => null,
+    );
+
+    if (item != null) {
+      final amount = item['Amount'] as num;
+      return (amount * 100).round(); 
+    }
+
+    return 0;
+  }
+
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
@@ -183,8 +231,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   // address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
-  int selectedIndex = -1;
-  List<String> optionsList = ['Bring me the order', 'I will pick it up myself'];
+  int selectedIndex = 0;
+  // List<String> optionsList = ['Bring me the order', 'I will pick it up myself'];
+    List<String> optionsList = ['Bring me the order'];
+
   // RxBool ;
 
   @override
@@ -193,7 +243,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     restaurantBloc.add(GetDeliveryStatusEvent());
 
     _cardBloc.add(ListAllCardEvent());
-
+    getCheckout();
     super.initState();
   }
 
@@ -257,6 +307,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 }
                 if (state is CreateProductSuccessState) {
                   productData = state.productData;
+                  print('CREATE PRODUCT SUCCESS');
+                  print(selectedCard?.id);
 
                   restaurantBloc.add(
                     CreateCheckoutEvent(
@@ -264,11 +316,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           checkout.CreateCheckOutRequestModel(
                         userId: userId,
                         isPickUp: selectedIndex == 1,
-                        phoneNumber: productData!.priceId!.userPhone,
-                        mealmeOrderId: productData!.priceId!.mealmeOrderId,
-                        priceId: productData!.priceId!.priceId,
-                        totalPrice: productData!.priceId!.totalAmount,
-                        mealmeItems: productData!.priceId!.mealmeItems,
+                        phoneNumber: 0,
+                        mealmeOrderId: orderId,
+                        priceId: 'string',
+                        totalPrice: 100,
                         cardId: selectedCard?.id,
                         productType:
                             widget.isFromGrocery ? "Grocery" : "Restaurant",
@@ -285,119 +336,144 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 if (state is CreateCheckoutErrorState) {
                   loadCreateOrder = false;
                 }
+                if (state is CreateOrderSuccessState) {
+                  print('ORDER SUCCESS STATE');
+                  final orderId = state.orderData?.orderId;
+
+                  if (orderId != null) {
+                    setState(() {
+                      this.orderId = orderId;
+                    });
+
+                    final productType = widget.isFromGrocery ? 'Grocery' : 'Restaurant';
+
+                    final requestModel = product.CreateProductRequestModel(
+                      orderId: orderId,
+                      productType: productType,
+                      totalAmount: 1,
+                    );
+
+                    restaurantBloc.add(
+                      CreateProductEvent(
+                        createProductRequestModel: requestModel,
+                      ),
+                    );
+                  }
+                }
                 if (state is CreateCheckoutSuccessState) {
                   loadCreateOrder = false;
-
+                  print('Create checkout success!');
                   if (state.data?['confirmUrl'] != null) {
-                    webViewOpen = true;
-                    controller
-                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                      ..setBackgroundColor(const Color(0x00000000))
-                      ..setNavigationDelegate(
-                        NavigationDelegate(
-                          onProgress: (int progress) {
-                            const Center(child: CircularProgressIndicator());
-                          },
-                          onPageStarted: (String url) {},
-                          onPageFinished: (String url) {},
-                          onWebResourceError: (WebResourceError error) {},
-                          onNavigationRequest:
-                              (NavigationRequest request) async {
-                            log("Request Url After Payment Completed ${request.url}");
-                            log(widget.orderData?.orderId.toString() ?? "");
+                    print('Confirm URL');
+                    // webViewOpen = true;
+                    // controller
+                    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    //   ..setBackgroundColor(const Color(0x00000000))
+                    //   ..setNavigationDelegate(
+                    //     NavigationDelegate(
+                    //       onProgress: (int progress) {
+                    //         const Center(child: CircularProgressIndicator());
+                    //       },
+                    //       onPageStarted: (String url) {},
+                    //       onPageFinished: (String url) {},
+                    //       onWebResourceError: (WebResourceError error) {},
+                    //       onNavigationRequest:
+                    //           (NavigationRequest request) async {
+                    //         log("Request Url After Payment Completed ${request.url}");
+                    //         log(widget.orderData?.orderId.toString() ?? "");
 
-                            if (request.url.startsWith(
-                                'https://gymeats.azurewebsites.net/')) {
-                              // Check
-                              webViewOpen = false;
-                              paymentStatusLoader = true;
-                              setState(() {});
-                              int currentAttempt = 1;
-                              await Future.delayed(const Duration(seconds: 5));
-                              // ! Start Lopping
-                              for (int i = currentAttempt;
-                                  i <= maxAttempt;
-                                  currentAttempt++) {
-                                log("Status Attempt : $i");
-                                Either<ErrorModel, PaymentStatusModel> res =
-                                    await RestaurantRepository()
-                                        .checkPaymentStatus(
-                                  orderId: widget.orderData?.orderId,
-                                  userId: userId,
-                                );
-                                if (res.isRight) {
-                                  paymentStatusLoader = false;
-                                  log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
-                                  if (res.right.data?.status == "Success") {
-                                    if (widget.isFromGrocery) {
-                                      if (!widget.hasMultipleStore) {
-                                        PreferenceUtils.removePref(paymentCard);
-                                        Get.offAll(
-                                          () => PaymentSuccessScreen(
-                                            createMultipleOrder:
-                                                widget.createMultipleOrder,
-                                          ),
-                                        );
-                                      } else {
-                                        Get.back(result: true);
-                                      }
+                    //         if (request.url.startsWith(
+                    //             'https://gymeats.azurewebsites.net/')) {
+                    //           // Check
+                    //           webViewOpen = false;
+                    //           paymentStatusLoader = true;
+                    //           setState(() {});
+                    //           int currentAttempt = 1;
+                    //           await Future.delayed(const Duration(seconds: 5));
+                    //           // ! Start Lopping
+                    //           for (int i = currentAttempt;
+                    //               i <= maxAttempt;
+                    //               currentAttempt++) {
+                    //             log("Status Attempt : $i");
+                    //             Either<ErrorModel, PaymentStatusModel> res =
+                    //                 await RestaurantRepository()
+                    //                     .checkPaymentStatus(
+                    //               orderId: widget.orderData?.orderId,
+                    //               userId: userId,
+                    //             );
+                    //             if (res.isRight) {
+                    //               paymentStatusLoader = false;
+                    //               log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
+                    //               if (res.right.data?.status == "Success") {
+                    //                 if (widget.isFromGrocery) {
+                    //                   if (!widget.hasMultipleStore) {
+                    //                     PreferenceUtils.removePref(paymentCard);
+                    //                     Get.offAll(
+                    //                       () => PaymentSuccessScreen(
+                    //                         createMultipleOrder:
+                    //                             widget.createMultipleOrder,
+                    //                       ),
+                    //                     );
+                    //                   } else {
+                    //                     Get.back(result: true);
+                    //                   }
 
-                                      if (widget.groceryList?.isNotEmpty ??
-                                          false) {
-                                        widget.groceryList?.forEach((element) {
-                                          AddNewGroceryItemBloc().add(
-                                            RemoveGroceryItemEvent(
-                                              userGroceryListId: element.id,
-                                              showToast: false,
-                                            ),
-                                          );
-                                        });
-                                      }
-                                    } else {
-                                      cartBloc.add(RemoveCart());
-                                      PreferenceUtils.removePref(paymentCard);
-                                      Get.offAll(
-                                          () => const PaymentSuccessScreen());
-                                    }
-                                  } else {
-                                    showToast(
-                                      message:
-                                          StringUtils.paymentWasUnsuccessfull,
-                                      isSuccess: false,
-                                      timeInSecForIosWeb: 4,
-                                    );
+                    //                   if (widget.groceryList?.isNotEmpty ??
+                    //                       false) {
+                    //                     widget.groceryList?.forEach((element) {
+                    //                       AddNewGroceryItemBloc().add(
+                    //                         RemoveGroceryItemEvent(
+                    //                           userGroceryListId: element.id,
+                    //                           showToast: false,
+                    //                         ),
+                    //                       );
+                    //                     });
+                    //                   }
+                    //                 } else {
+                    //                   cartBloc.add(RemoveCart());
+                    //                   PreferenceUtils.removePref(paymentCard);
+                    //                   Get.offAll(
+                    //                       () => const PaymentSuccessScreen());
+                    //                 }
+                    //               } else {
+                    //                 showToast(
+                    //                   message:
+                    //                       StringUtils.paymentWasUnsuccessfull,
+                    //                   isSuccess: false,
+                    //                   timeInSecForIosWeb: 4,
+                    //                 );
 
-                                    setState(() {});
-                                  }
-                                  break;
-                                } else {
-                                  if (i >= maxAttempt) {
-                                    paymentStatusLoader = false;
-                                    showToast(
-                                      message: "Order not found please wait",
-                                      isSuccess: false,
-                                      timeInSecForIosWeb: 4,
-                                    );
-                                    setState(() {});
-                                  } else {
-                                    await Future.delayed(
-                                        const Duration(seconds: 1));
-                                    continue;
-                                  }
-                                }
-                              }
-                              // ! Close looping
+                    //                 setState(() {});
+                    //               }
+                    //               break;
+                    //             } else {
+                    //               if (i >= maxAttempt) {
+                    //                 paymentStatusLoader = false;
+                    //                 showToast(
+                    //                   message: "Order not found please wait",
+                    //                   isSuccess: false,
+                    //                   timeInSecForIosWeb: 4,
+                    //                 );
+                    //                 setState(() {});
+                    //               } else {
+                    //                 await Future.delayed(
+                    //                     const Duration(seconds: 1));
+                    //                 continue;
+                    //               }
+                    //             }
+                    //           }
+                    //           // ! Close looping
 
-                              return NavigationDecision.prevent;
-                            } else {
-                              return NavigationDecision.navigate;
-                            }
-                          },
-                        ),
-                      )
-                      ..loadRequest(
-                        Uri.parse(state.data?['confirmUrl'] ?? ""),
-                      );
+                    //           return NavigationDecision.prevent;
+                    //         } else {
+                    //           return NavigationDecision.navigate;
+                    //         }
+                    //       },
+                    //     ),
+                    //   )
+                    //   ..loadRequest(
+                    //     Uri.parse(state.data?['confirmUrl'] ?? ""),
+                    //   );
                   } else {
                     showToast(
                       message: "Payment url not received",
@@ -443,15 +519,35 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                PreferenceUtils.removePref(paymentCard);
-                                Get.back();
-                              },
-                              child: const Icon(
-                                Icons.arrow_back_ios,
-                              ),
-                            ),
+                            _isGoingBack
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                )
+                              : GestureDetector(
+                                  onTap: () async {
+                                    if (_isGoingBack) return;
+
+                                    setState(() => _isGoingBack = true);
+
+                                    final signalR = SignalRService();
+
+                                    try {
+                                      PreferenceUtils.removePref(paymentCard);
+                                      await signalR.goBack();
+
+                                      if (mounted) Get.back(result: true);
+                                    } catch (e) {
+                                      print("Error going back: $e");
+                                    } finally {
+                                      if (mounted) setState(() => _isGoingBack = false);
+                                    }
+                                  },
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                  ),
+                                ),
                             const Text(
                               'Checkout',
                               style: TextStyle(
@@ -528,56 +624,55 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                 ),
 
-                                /// Order Notes--------------------------------------------------------------------
-                                // Padding(
-                                //   padding: EdgeInsets.only(bottom: 16.h),
-                                //   child: Text(
-                                //     ' Order Notes',
-                                //     style: FontUtils.h18(
-                                //       fontColor: const Color(0xff000000),
-                                //       fontWeight: FWT.semiBold,
-                                //     ),
-                                //   ),
-                                // ),
-                                // Container(
-                                //   padding: const EdgeInsets.symmetric(
-                                //       horizontal: 16, vertical: 0),
-                                //   width: MediaQuery.of(context).size.width,
-                                //   decoration: BoxDecoration(
-                                //     color: Colors.white,
-                                //     borderRadius: BorderRadius.circular(8),
-                                //     boxShadow: [
-                                //       BoxShadow(
-                                //         color: const Color(0xff004C63)
-                                //             .withOpacity(0.08),
-                                //         offset: const Offset(0, 0),
-                                //         blurRadius: 16,
-                                //       )
-                                //     ],
-                                //   ),
-                                //   child: TextFormField(
-                                //     style: const TextStyle(color: Colors.black),
-                                //     controller: notes,
-                                //     decoration: InputDecoration(
-                                //       enabledBorder: OutlineInputBorder(
-                                //         borderRadius: BorderRadius.circular(8),
-                                //         borderSide: BorderSide.none,
-                                //       ),
-                                //       focusedBorder: OutlineInputBorder(
-                                //         borderRadius: BorderRadius.circular(8),
-                                //         borderSide: BorderSide.none,
-                                //       ),
-                                //       border: OutlineInputBorder(
-                                //         borderRadius: BorderRadius.circular(8),
-                                //         borderSide: BorderSide.none,
-                                //       ),
-                                //       contentPadding: const EdgeInsets.all(0),
-                                //       hintText: 'Add order Notes.....',
-                                //     ),
-                                //   ),
-                                // ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 16.h),
+                                  child: Text(
+                                    ' Order Notes',
+                                    style: FontUtils.h18(
+                                      fontColor: const Color(0xff000000),
+                                      fontWeight: FWT.semiBold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 0),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff004C63)
+                                            .withOpacity(0.08),
+                                        offset: const Offset(0, 0),
+                                        blurRadius: 16,
+                                      )
+                                    ],
+                                  ),
+                                  child: TextFormField(
+                                    style: const TextStyle(color: Colors.black),
+                                    controller: notes,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.all(0),
+                                      hintText: 'Add order Notes.....',
+                                    ),
+                                  ),
+                                ),
 
-                                // SizedBox(height: 16.h),
+                                SizedBox(height: 16.h),
 
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -602,9 +697,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         width: 15,
                                       ),
                                       Text(
-                                        selectedIndex == 0
-                                            ? 'Bring me the order'
-                                            : 'I will pick it up myself',
+                                        // selectedIndex == 0
+                                        //     ? 'Bring me the order'
+                                        //     : 'I will pick it up myself',
+                                        'Bring me the order',
                                         style: const TextStyle(
                                           color: Color(0xff010101),
                                           fontSize: 16,
@@ -612,68 +708,68 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                       ),
                                       const Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return DeliverOrderBottomSheet(
-                                                isFrom: 'isFromCheckout',
-                                                selectedIndex: selectedIndex,
-                                              );
-                                            },
-                                            isDismissible: true,
-                                            enableDrag: true,
-                                            showDragHandle: false,
-                                            isScrollControlled: true,
-                                            shape: OutlineInputBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(16.r),
-                                                topRight: Radius.circular(16.r),
-                                              ),
-                                              borderSide: const BorderSide(
-                                                color: Colors.transparent,
-                                              ),
-                                            ),
-                                          ).then((value) {
-                                            setState(() {
-                                              List<String> options = [
-                                                'Bring me the order',
-                                                'I will pick it up myself'
-                                              ];
-                                              result = value ??
-                                                  options[selectedIndex];
-                                              int sIndex =
-                                                  result == 'Bring me the order'
-                                                      ? 0
-                                                      : 1;
+                                      // GestureDetector(
+                                      //   onTap: () {
+                                      //     showModalBottomSheet(
+                                      //       context: context,
+                                      //       builder: (context) {
+                                      //         return DeliverOrderBottomSheet(
+                                      //           isFrom: 'isFromCheckout',
+                                      //           selectedIndex: selectedIndex,
+                                      //         );
+                                      //       },
+                                      //       isDismissible: true,
+                                      //       enableDrag: true,
+                                      //       showDragHandle: false,
+                                      //       isScrollControlled: true,
+                                      //       shape: OutlineInputBorder(
+                                      //         borderRadius: BorderRadius.only(
+                                      //           topLeft: Radius.circular(16.r),
+                                      //           topRight: Radius.circular(16.r),
+                                      //         ),
+                                      //         borderSide: const BorderSide(
+                                      //           color: Colors.transparent,
+                                      //         ),
+                                      //       ),
+                                      //     ).then((value) {
+                                      //       setState(() {
+                                      //         List<String> options = [
+                                      //           'Bring me the order',
+                                      //           'I will pick it up myself'
+                                      //         ];
+                                      //         result = value ??
+                                      //             options[selectedIndex];
+                                      //         int sIndex =
+                                      //             result == 'Bring me the order'
+                                      //                 ? 0
+                                      //                 : 1;
 
-                                              if (selectedIndex != sIndex) {
-                                                Get.offAll(AppManagerScreen(
-                                                    selectIndex:
-                                                        widget.isFromGrocery
-                                                            ? 1
-                                                            : 3));
-                                              }
-                                            });
-                                          });
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Edit',
-                                              style: FontUtils.h14(
-                                                fontColor: AppColors.terracotta,
-                                                fontWeight: FWT.lightMedium,
-                                              ),
-                                            ),
-                                            const Icon(
-                                              Icons.keyboard_arrow_right_sharp,
-                                              color: AppColors.terracotta,
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                      //         if (selectedIndex != sIndex) {
+                                      //           Get.offAll(AppManagerScreen(
+                                      //               selectIndex:
+                                      //                   widget.isFromGrocery
+                                      //                       ? 1
+                                      //                       : 3));
+                                      //         }
+                                      //       });
+                                      //     });
+                                      //   },
+                                      //   child: Row(
+                                      //     children: [
+                                      //       Text(
+                                      //         'Edit',
+                                      //         style: FontUtils.h14(
+                                      //           fontColor: AppColors.terracotta,
+                                      //           fontWeight: FWT.lightMedium,
+                                      //         ),
+                                      //       ),
+                                      //       const Icon(
+                                      //         Icons.keyboard_arrow_right_sharp,
+                                      //         color: AppColors.terracotta,
+                                      //       )
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -716,58 +812,58 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           onTap: (argument) async {},
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 16),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Get.to(() => const GetUserAddress(),
-                                                transition: Transition.fadeIn,
-                                                arguments: {
-                                                  "string": 'isFromCheckout',
-                                                  "userData": ''
-                                                });
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SvgPicture.asset(
-                                                  AssetsUtils.icHome),
-                                              const SizedBox(
-                                                width: 15,
-                                              ),
-                                              SizedBox(
-                                                width: 200.w,
-                                                child: Text(
-                                                  widget.grocAdd?.streetAddr ??
-                                                      (findResAddress
-                                                              ?.streetAddr ??
-                                                          (PreferenceUtils
-                                                                  .isManualLocation
-                                                              ? (widget
-                                                                      .getUserAddress
-                                                                      ?.streetName ??
-                                                                  'Where?')
-                                                              : widget.currentAddress ??
-                                                                  "Current Location")),
-                                                  style: const TextStyle(
-                                                    color: AppColors.darkGray,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              const Icon(
-                                                Icons
-                                                    .keyboard_arrow_right_sharp,
-                                                color: AppColors.darkGray,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                      // Padding(
+                                      //   padding: const EdgeInsets.symmetric(
+                                      //       horizontal: 12, vertical: 16),
+                                      //   child: GestureDetector(
+                                      //     onTap: () {
+                                      //       Get.to(() => const GetUserAddress(),
+                                      //           transition: Transition.fadeIn,
+                                      //           arguments: {
+                                      //             "string": 'isFromCheckout',
+                                      //             "userData": ''
+                                      //           });
+                                      //     },
+                                      //     child: Row(
+                                      //       mainAxisAlignment:
+                                      //           MainAxisAlignment.center,
+                                      //       children: [
+                                      //         SvgPicture.asset(
+                                      //             AssetsUtils.icHome),
+                                      //         const SizedBox(
+                                      //           width: 15,
+                                      //         ),
+                                      //         SizedBox(
+                                      //           width: 200.w,
+                                      //           child: Text(
+                                      //             widget.grocAdd?.streetAddr ??
+                                      //                 (findResAddress
+                                      //                         ?.streetAddr ??
+                                      //                     (PreferenceUtils
+                                      //                             .isManualLocation
+                                      //                         ? (widget
+                                      //                                 .getUserAddress
+                                      //                                 ?.streetName ??
+                                      //                             'Where?')
+                                      //                         : widget.currentAddress ??
+                                      //                             "Current Location")),
+                                      //             style: const TextStyle(
+                                      //               color: AppColors.darkGray,
+                                      //               fontSize: 14,
+                                      //               fontWeight: FontWeight.w300,
+                                      //             ),
+                                      //           ),
+                                      //         ),
+                                      //         const Spacer(),
+                                      //         const Icon(
+                                      //           Icons
+                                      //               .keyboard_arrow_right_sharp,
+                                      //           color: AppColors.darkGray,
+                                      //         )
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -891,6 +987,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              isCheckoutLoading == true ?  
+                              const Center(
+                                child:
+                                    CircularProgressIndicator())
+                              :
                               Column(
                                 children: [
                                   Row(
@@ -1008,11 +1109,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 10),
-                                child: loadCreateOrder == true
-                                    ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : simpleTextBorderButton(
+                                child: 
+                                // loadCreateOrder == true
+                                //     ? const Center(
+                                //         child: CircularProgressIndicator(),
+                                //       )
+                                //     : 
+                                    simpleTextBorderButton(
                                         color: AppColors.terracotta,
                                         width:
                                             MediaQuery.of(context).size.width,
@@ -1090,7 +1193,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           //   } else {
                                           /// Create Product / Create Checkout Api
 
-                                          if (selectedCard == null) {
+                                          if (selectedCard != null) {
                                             showToast(
                                               message:
                                                   'Please Select Card For Payment',
@@ -1098,46 +1201,73 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                               color: AppColors.black,
                                             );
                                           } else {
-                                            productMealMeData.clear();
-                                            for (var element in widget
-                                                .orderData!
-                                                .finalQuote!
-                                                .items!) {
-                                              productMealMeData.add(
-                                                product.ProductMealmeItems(
-                                                  name: element.name,
-                                                  markedPrice:
-                                                      element.markedPrice ?? 0,
-                                                  quantity:
-                                                      element.quantity ?? 0,
-                                                  productType:
-                                                      widget.isFromGrocery
-                                                          ? '2'
-                                                          : '1',
-                                                  productId: element.productId,
-                                                  image: element.image,
-                                                  basePrice:
-                                                      element.basePrice ?? 0,
+                                              productMealMeData.clear();
+
+                                              List<CreateOrderMealmeItems> data = [];
+                                              for (var element in widget.orderData!.finalQuote!.items!) {
+                                                data.add(
+                                                  CreateOrderMealmeItems(
+                                                    productId: element.productId,
+                                                    name: element.name,
+                                                    image: element.image,
+                                                    productType: int.tryParse(
+                                                      widget.isFromGrocery ? 'Grocery' : 'Restaurant',
+                                                    ),
+                                                    quantity: element.quantity ?? 0,
+                                                    notes: '',
+                                                    productMarkedPrice: element.markedPrice ?? 0,
+                                                    selectedOptions: [],
+                                                  ),
+                                                );
+                                              }
+
+                                              final productType = widget.isFromGrocery ? 'Grocery' : 'Restaurant';
+
+                                              final userMobile = PreferenceUtils.getString(prefUserMobile);
+                                              final userPhone = int.tryParse(userMobile.isNotEmpty ? userMobile : '1234567890') ?? 1234567890;
+
+                                              final orderModel = CreateOrderModel(
+                                                userId: userId,
+                                                pickup: false,
+                                                mealmeItems: data,
+                                                userAddress: UserAddress(latitude: 0.0, longitude: 0.0),
+                                                userPhone: userPhone,
+                                                driverTipCents: 0,
+                                                pickupTipCents: 0,
+                                                userDropoffNotes: notes.text,
+                                                productType: productType,
+                                                totalAmount: widget.orderData?.totalPrice?.toDouble() ?? 0,
+                                                subtotal: widget.orderData?.totalPrice?.toDouble() ?? 0,
+                                                deliveryFee: 0,
+                                                taxesOtherFee: 0,
+                                                store: OrderStoreModel(
+                                                  storeId: widget.orderData?.finalQuote?.storeId ?? 'store123',
+                                                  storeName: widget.orderData?.finalQuote?.store ?? 'Test Store',
+                                                  storeLogo: 'https://dummyimage.com/100x100/000/fff&text=Logo',
                                                 ),
                                               );
-                                            }
 
-                                            restaurantBloc.add(
-                                              CreateProductEvent(
-                                                createProductRequestModel: product
-                                                    .CreateProductRequestModel(
-                                                  userId: userId,
-                                                  orderId:
-                                                      widget.orderData?.orderId,
-                                                  totalAmount: widget.orderData
-                                                          ?.totalPrice ??
-                                                      0,
-                                                  mealmeItems:
-                                                      productMealMeData,
+                                              restaurantBloc.add(
+                                                CreateOrderEvent(
+                                                  context: context,
+                                                  lat: 0.0,
+                                                  lng: 0.0,
+                                                  createOrderModel: orderModel,
+                                                  isMock: false,
                                                 ),
-                                              ),
-                                            );
-                                          }
+                                              );
+
+                                              // restaurantBloc.add(
+                                              //   CreateProductEvent(
+                                              //     createProductRequestModel: product.CreateProductRequestModel(
+                                              //       userId: userId,
+                                              //       orderId: widget.orderData?.orderId,
+                                              //       totalAmount: widget.orderData?.totalPrice ?? 0,
+                                              //       mealmeItems: productMealMeData,
+                                              //     ),
+                                              //   ),
+                                              // );
+                                            }
                                           // }
                                         },
                                         context: context,

@@ -63,13 +63,13 @@ class Constant {
   }
 
   List<String> get requiredAddressField => [
-        "user_zipcode",
-        "user_country",
-        "user_state",
-        "user_street_name",
-        "user_street_num",
-        "user_city",
-        "extended_address",
+        // "user_zipcode",
+        // "user_country",
+        // "user_state",
+        // "user_street_name",
+        // "user_street_num",
+        // "user_city",
+        // "extended_address",
       ];
 
   Future<dynamic> showAlertDialog({
@@ -145,22 +145,8 @@ class Constant {
   }
 
   void handleStoreCache() async {
-    GroceryBloc gBloc = GroceryBloc();
     RestaurantBloc bloc = RestaurantBloc();
-    await Future.delayed(const Duration(milliseconds: 10));
-    gBloc.add(
-      StoreNearByEvent(
-          getUserAddress: null, askReceiveOrder: AskReceiveOrder.bringTheOrder),
-    );
-    await Future.delayed(const Duration(milliseconds: 10));
-    gBloc.add(
-      StoreNearByEvent(
-          getUserAddress: null, askReceiveOrder: AskReceiveOrder.pickMySelf),
-    );
-    await Future.delayed(const Duration(milliseconds: 20));
-    bloc.add(res_event.GetRestaurantListEvent(null, null, false, []));
-    await Future.delayed(const Duration(milliseconds: 30));
-    bloc.add(res_event.GetRestaurantListEvent(null, null, true, []));
+    bloc.add(res_event.InitializeRestaurantsWindowsEvent());
   }
 
   void storeCurrentLocation() async {

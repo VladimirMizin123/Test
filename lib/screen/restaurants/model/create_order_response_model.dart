@@ -62,13 +62,13 @@ class CreateOrderData {
 
   factory CreateOrderData.fromJson(Map<String, dynamic> json) =>
       CreateOrderData(
-        orderPlaced: json["order_placed"],
-        finalQuote: json["final_quote"] == null
+        orderPlaced: json["orderPlaced"],
+        finalQuote: json["finalQuote"] == null
             ? null
-            : FinalQuote.fromJson(json["final_quote"]),
-        orderId: json["order_id"],
-        userId: json["user_id"],
-        totalPrice: json["total_price"],
+            : FinalQuote.fromJson(json["finalQuote"]),
+        orderId: json["orderId"],
+        userId: json["userId"],
+        totalPrice: json["totalPrice"],
         phoneNumber: json["phoneNumber"],
         userAddress: json["userAddress"] == null
             ? null
@@ -76,11 +76,11 @@ class CreateOrderData {
       );
 
   Map<String, dynamic> toJson() => {
-        "order_placed": orderPlaced,
-        "final_quote": finalQuote?.toJson(),
-        "order_id": orderId,
-        "user_id": userId,
-        "total_price": totalPrice,
+        "orderPlaced": orderPlaced,
+        "finalQuote": finalQuote?.toJson(),
+        "orderId": orderId,
+        "userId": userId,
+        "totalPrice": totalPrice,
         "phoneNumber": phoneNumber,
         "userAddress": userAddress?.toJson(),
       };

@@ -101,6 +101,7 @@ class StoreVerifyEvent extends GroceryEvent {
   final Function(CategorieModel? categories)? onVerify;
   final BuildContext context;
   final Function()? notVerify;
+  final String? name;
 
   StoreVerifyEvent({
     this.id,
@@ -109,6 +110,7 @@ class StoreVerifyEvent extends GroceryEvent {
     this.onVerify,
     required this.context,
     this.notVerify,
+    this.name
   });
 }
 

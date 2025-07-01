@@ -10,10 +10,10 @@ import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/repository/get_address.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/create_order_response_model.dart' as cor;
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/create_product_response_model.dart';
-import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart';
+import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart' as gms;
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_search_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_shopping_modal.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/nutritionix_get_nx_meal_info_by_name_modal.dart';
@@ -25,25 +25,24 @@ import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
 import 'package:gymeats_mobile/service/hive_singleton.dart';
-
+import 'package:get/utils.dart';
+import 'package:gymeats_mobile/service/signalr_service.dart';
 import '../../restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart'
     as user_address;
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart' as gtm;
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class GroceryRepository {
   final ApiServices apiServices = ApiServices();
 
   String userID = PreferenceUtils.getString(prefUserData);
 
-  // String userID = '2b85411b-3c0c-424b-98e0-6534a5216726';
-
   Future<Either<ErrorModel, GetGroceryShoppingListModel>>
       fetchGroceryShoppingList() async {
-    // String apiURL = '${ApiUrls.getAllItemFromShoppingList}?userId=$userID';
     String apiURL = '${ApiUrls.getShoppingList}/$userID';
-    // log(apiURL, name: 'API URL :');
     final response = await apiServices.get(apiURL);
-    // log(response.body, name: 'API RESPONSE :');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Right(
           GetGroceryShoppingListModel.fromJson(jsonDecode(response.body)));
@@ -107,7 +106,7 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, GroceryMultiSearchModel>> grocerySearch(
+  Future<Either<ErrorModel, gms.GroceryMultiSearchModel>> grocerySearch(
       {required String latitude,
       required String longitude,
       required List<GrocerySearchModel> grocerySearchModal,
@@ -164,8 +163,8 @@ class GroceryRepository {
     log("code:${response.statusCode}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      GroceryMultiSearchModel searchModel =
-          GroceryMultiSearchModel.fromJson(jsonDecode(response.body));
+      gms.GroceryMultiSearchModel searchModel =
+          gms.GroceryMultiSearchModel.fromJson(jsonDecode(response.body));
       for (int i = 0; i < (searchModel.data?.carts?.length ?? 0); i++) {
         if (searchModel.data?.carts?[i].store?.logoPhotos?.isNotEmpty ??
             false) {
@@ -180,55 +179,102 @@ class GroceryRepository {
     }
   }
 
-  Future<Either<ErrorModel, NearByStoreModel>> nearByStoreSearch(
-      {required user_address.UserAddress? getUserAddress,
-      AskReceiveOrder? askReceiveOrder}) async {
-    String apiURL = ApiUrls.getStoreNearBy;
-    user_address.UserAddress? address = getUserAddress;
-    (double?, double?) pos = await Constant.i.position;
+  Future<String> getCurrentAddress() async {
+    final prefs = await SharedPreferences.getInstance();
 
-    if (address == null && pos.$1 == null && pos.$2 == null) {
-      Either<ErrorModel, GetUserAddressModel> res =
-          await GetAddressRepository().getUserAddressData();
-      if (res.isRight) {
-        res.right.data?.forEach((element) async {
-          if (element.isPrimary == true) {
-            address = element;
-          }
-        });
-        if ((res.right.data?.isNotEmpty ?? false) &&
-            !res.right.data!.any((element) => (element.isPrimary ?? false))) {
-          address = res.right.data?.first;
+    final cachedAddress = prefs.getString('currentUserAddress');
+    final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
+
+    if (cachedAddress != null && !addressUpdated) {
+      return cachedAddress.trim();
+    }
+
+    final addressResult = await getUserAddressData();
+
+    if (addressResult.isRight) {
+      var add = addressResult.right.data
+          ?.firstWhereOrNull((element) => element.isPrimary ?? false);
+      add ??= addressResult.right.data?.first;
+
+      if (add != null) {
+        final parts = [
+          add.streetNum,
+          add.streetName,
+          add.city,
+          add.country
+        ]
+            .where((e) => e != null && e.trim().isNotEmpty)
+            .cast<String>()
+            .toList();
+
+        final address = parts.join(", ").trim();
+
+        if (address.isNotEmpty) {
+          await prefs.setString('currentUserAddress', address);
+          await prefs.setBool('AddressUpdated', false);
+          return address;
         }
       }
     }
 
-    Map<String, dynamic> data = {
-      "latitude": pos.$1?.toString() ?? address?.latitude?.toStringAsFixed(6),
-      "longitude": pos.$2?.toString() ?? address?.longitude?.toStringAsFixed(6),
-      "pickup": askReceiveOrder?.index == 1,
-      "max_Miles": PreferenceUtils.getGroceryRadius(),
-    };
+    return '';
+  }
 
-    log("Api :====> $apiURL");
-    log("Json :====> ${jsonEncode(data)}");
+  Future<Either<ErrorModel, NearByStoreModel>> nearByStoreSearch({
+    required user_address.UserAddress? getUserAddress,
+    AskReceiveOrder? askReceiveOrder,
+  }) async {
+    final String apiURL = ApiUrls.getStoreNearBy;
+    final user_address.UserAddress? address = getUserAddress;
+    final String currentAddress = await getCurrentAddress();
 
-    final response = await apiServices.post(apiURL, data);
+    final signalR = SignalRService();
+    await signalR.connect();
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      NearByStoreModel searchModel =
-          NearByStoreModel.fromJson(jsonDecode(response.body));
-      for (int i = 0; i < (searchModel.data?.length ?? 0); i++) {
-        if (searchModel.data?[i].logoPhotos?.isNotEmpty ?? false) {
-          PreferenceUtils.setString("${searchModel.data?[i].id}_img",
-              searchModel.data?[i].logoPhotos?[0] ?? "");
-        }
-      }
+    final bool pickup = askReceiveOrder?.index == 1;
+    final Map<String, dynamic> filters = { "CategoryName": "Grocery" };
 
-      return Right(searchModel);
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-    }
+    final rawData = await signalR.getFilteredRestaurants(
+      address: currentAddress,
+      userId: userID,
+      pageIndex: 1,
+      pageSize: 20,
+      filters: filters,
+    );
+
+    final restaurantsJson = rawData["Restaurants"] is String
+        ? jsonDecode(rawData["Restaurants"])["Restaurants"] as List<dynamic>
+        : (rawData["Restaurants"]["Restaurants"] as List<dynamic>);
+
+    final List<gms.Store> storeList = restaurantsJson.map<gms.Store>((r) {
+      return gms.Store(
+        id: r["_id"] as String?,
+        name: r["name"] as String?,
+        weightedRatingValue: (r["weighted_rating_value"] as num?)?.toDouble(),
+        logoPhotos: r["ImageSrc"] != null ? [r["ImageSrc"] as String] : <String>[],
+        phoneNumber: null,
+        address: null,
+        type: null,
+        description: null,
+        localHours: null,
+        dollarSigns: null,
+        pickupEnabled: null,
+        deliveryEnabled: true,
+        isOpen: null,
+        offersFirstPartyDelivery: null,
+        offersThirdPartyDelivery: null,
+        miles: null,
+        aggregatedRatingCount: null,
+        isSelected: false,
+      );
+    }).toList();
+
+    return Right(NearByStoreModel(
+      success: true,
+      message: "Fetched via SignalR",
+      errorMessage: null,
+      data: storeList,
+    ));
   }
 
   Future<Either<ErrorModel, NearByStoreModel>> getStoreByName({
@@ -602,32 +648,51 @@ class GroceryRepository {
 
   /// Create Order ====================================================================
 
-  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
-      {required CreateGroceryOrderModel createOrderModel}) async {
+  Future<Either<ErrorModel, cor.CreateOrderResponseModel>> createOrder({
+    required CreateGroceryOrderModel createOrderModel,
+  }) async {
     try {
-      Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
-      Map<String, dynamic> req = createOrderModel.toJson();
-      if (createOrderModel.pickup != true) {
-        req['user_latitude'] = createOrderModel.userAddress?.latitude;
-        req['user_longitude'] = createOrderModel.userAddress?.longitude;
-        req.addAll(extAddress);
-      }
+      print(' Mock createOrder called');
 
-      log(ApiUrls.createOrder);
-      log("Request Data : ${jsonEncode(req)}");
+      final mockResponse = cor.CreateOrderResponseModel(
+        success: true,
+        errorMessage: null,
+        data: cor.CreateOrderData(
+          orderPlaced: true,
+          orderId: "",
+          userId: "",
+          totalPrice: 0,
+          phoneNumber: 1234567890,
+          finalQuote: cor.FinalQuote(
+            store: "",
+            storeAddress: "",
+            storeId: "",
+            quoteId: "",
+            tip: 0,
+            totalWithTip: 10499,
+            markedTotalWithTip: 10499,
+            miscFees: [],
+            items: [],
+            quote: cor.Quote(
+              subtotal: 0,
+              deliveryFeeCents: 0,
+              serviceFeeCents: 0,
+              salesTaxCents: 0,
+            ),
+          ),
+        ),
+      );
 
-      final response = await apiServices.post(ApiUrls.createOrder, req);
-      log(response.body);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Right(
-            CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
-      } else {
-        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
-      }
+      await Future.delayed(Duration(milliseconds: 300));
+
+      return Right(mockResponse);
     } catch (e) {
+      print(' Exception in mock createOrder: $e');
       return Left(
-        ErrorModel(message: e.toString(), errorMessage: e.toString())
-          ..statusCode = 500,
+        ErrorModel(
+          message: e.toString(),
+          errorMessage: e.toString(),
+        )..statusCode = 500,
       );
     }
   }
@@ -719,29 +784,56 @@ class GroceryRepository {
     int? askReceiveOrder,
     String? storeId, {
     (double?, double?)? position,
+    String? name,
   }) async {
-    (double?, double?) pos = position ?? await Constant.i.position;
-    Map<String, dynamic> reqData = {
-      "storeId": storeId,
-      "latitude": pos.$1 ?? address?.latitude,
-      "longitude": pos.$2 ?? address?.longitude,
-      "pickup": askReceiveOrder != 0,
-    };
+    try {
+      if (name == null || name.trim().isEmpty) {
+        return Left(ErrorModel(errorMessage: "Название ресторана отсутствует"));
+      }
 
-    Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
-    reqData.addAll(extAddress);
+      final signalR = SignalRService();
+      Map<String, dynamic>? signalRResult;
+      try {
+        signalRResult = await signalR.selectRestaurant(name, onlyCategories: true);
+      } catch (e) {
+        return Left(ErrorModel(errorMessage: "Grocery shop is not available"));
+      }
 
-    log("Api : ${ApiUrls.getStoreCategorieList}");
-    log("Req Data : ${jsonEncode(reqData)}");
-    final response =
-        await apiServices.post(ApiUrls.getStoreCategorieList, reqData);
+      if (signalRResult == null) {
+        return Left(ErrorModel(errorMessage: "Grocery shop is not available"));
+      }
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(CategorieModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      final List<dynamic> categoryList = signalRResult['categories'] ?? [];
+      final bool hasShopRestaurant = signalRResult['hasShopRestaurant'] == true;
+
+      final List<Category> categories = List<Category>.generate(
+        categoryList.length,
+        (index) {
+          final String categoryName = categoryList[index];
+          return Category(
+            name: categoryName,
+            subcategoryId: null,
+            subcategoryList: [],
+            menuItemList: [],
+            hasShopRestaurant: hasShopRestaurant,
+          );
+        },
+      );
+
+      final categorieModel = CategorieModel(
+        success: true,
+        message: null,
+        errorMessage: null,
+        data: Data(
+          menuId: null,
+          categories: categories,
+          quote: null,
+        ),
+      );
+
+      return Right(categorieModel);
+    } catch (e) {
+      return Left(ErrorModel(errorMessage: e.toString()));
     }
   }
 }

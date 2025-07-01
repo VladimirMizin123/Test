@@ -44,6 +44,9 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 import 'package:get/get.dart' as gt;
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gymeats_mobile/repository/get_address.dart';    
 
 class ChooseGroceryStore extends StatefulWidget {
   const ChooseGroceryStore({super.key});
@@ -54,6 +57,9 @@ class ChooseGroceryStore extends StatefulWidget {
 
 class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
   List<Store> storeList = [];
+  bool isLoadingMore = false;
+  int currentPage = 2;
+  final ScrollController _scrollController = ScrollController();
   bool pageLoader = false;
   RestaurantBloc restaurantBloc = RestaurantBloc();
   GroceryBloc groceryBloc = GroceryBloc();
@@ -87,55 +93,67 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
   void initState() {
     super.initState();
     kmRadius.value = PreferenceUtils.getGroceryRadius();
+     
+    prefKey = groceryBring;
+    
+    getCacheResponse();
+    restaurantBloc.add(re.GetUserAddressEvent());
+    addNewGroceryItemBloc.add(GetGroceryItemEvent());
 
-    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
-      try {
-        Geolocator.requestPermission().then((value) {
-          if (!mounted) return;
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return DeliverOrderBottomSheet(
-                selectedIndex: selectedIndex,
-                isFrom: 'isFromRestaurant',
-              );
-            },
-            isDismissible: false,
-            enableDrag: false,
-            shape: OutlineInputBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.r),
-                topRight: Radius.circular(16.r),
-              ),
-              borderSide: const BorderSide(
-                color: Colors.transparent,
-              ),
-            ),
-          ).then((value) {
-            if (!mounted) return;
-            selectedIndex = value == 'Bring me the order' ? 0 : 1;
-            if (selectedIndex == 0) {
-              prefKey = groceryBring;
-            } else {
-              prefKey = groceryPickup;
-            }
-            getCacheResponse();
-            restaurantBloc.add(re.GetUserAddressEvent());
-            addNewGroceryItemBloc.add(GetGroceryItemEvent());
-          });
-          PreferenceUtils.setFoodMenuAddress();
-        });
-      } catch (e) {
-        log(e.toString());
+   _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100) {
+        fetchNewGroceries();
       }
     });
+
+    // WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
+    //   try {
+    //     Geolocator.requestPermission().then((value) {
+    //       if (!mounted) return;
+    //       showModalBottomSheet(
+    //         context: context,
+    //         isScrollControlled: true,
+    //         builder: (context) {
+    //           return DeliverOrderBottomSheet(
+    //             selectedIndex: selectedIndex,
+    //             isFrom: 'isFromRestaurant',
+    //           );
+    //         },
+    //         isDismissible: false,
+    //         enableDrag: false,
+    //         shape: OutlineInputBorder(
+    //           borderRadius: BorderRadius.only(
+    //             topLeft: Radius.circular(16.r),
+    //             topRight: Radius.circular(16.r),
+    //           ),
+    //           borderSide: const BorderSide(
+    //             color: Colors.transparent,
+    //           ),
+    //         ),
+    //       ).then((value) {
+    //         if (!mounted) return;
+    //         selectedIndex = value == 'Bring me the order' ? 0 : 1;
+    //         if (selectedIndex == 0) {
+    //           prefKey = groceryBring;
+    //         } else {
+    //           prefKey = groceryPickup;
+    //         }
+    //         getCacheResponse();
+    //         restaurantBloc.add(re.GetUserAddressEvent());
+    //         addNewGroceryItemBloc.add(GetGroceryItemEvent());
+    //       });
+    //       PreferenceUtils.setFoodMenuAddress();
+    //     });
+    //   } catch (e) {
+    //     log(e.toString());
+    //   }
+    // });
   }
 
   void getCacheResponse() {
     String value = PreferenceUtils.getString(prefKey);
     if (value.trim().isNotEmpty) {
-      alreadyCache = true;
       storeList = storeListFromJson(value);
       if (!mounted) return;
       setState(() {});
@@ -159,6 +177,57 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
     groceryBloc.close();
     super.dispose();
   }
+
+  Future<void> fetchNewGroceries() async {
+    if (isLoadingMore) return;
+
+    setState(() => isLoadingMore = true);
+
+    try {
+      final signalR = SignalRService();
+      final prefs = await SharedPreferences.getInstance();
+
+      final String currentAddress = prefs.getString('currentUserAddress') ?? '';
+
+      final Map<String, dynamic> filters = {"CategoryName": "Grocery"};
+
+      final rawData = await signalR.getFilteredRestaurants(
+        address: currentAddress,
+        userId: userId,
+        pageIndex: currentPage,
+        pageSize: 20,
+        filters: filters,
+      );
+
+      final restaurantsJson = rawData["Restaurants"] is String
+          ? jsonDecode(rawData["Restaurants"])["Restaurants"] as List<dynamic>
+          : (rawData["Restaurants"]["Restaurants"] as List<dynamic>);
+
+      final List<Store> newStores = restaurantsJson.map<Store>((r) {
+        return Store(
+          id: r["_id"] as String?,
+          name: r["name"] as String?,
+          logoPhotos: r["ImageSrc"] != null ? [r["ImageSrc"] as String] : <String>[],
+        );
+      }).toList();
+
+      final ids = storeList.map((e) => e.id).toSet();
+      final filteredNew = newStores.where((store) => !ids.contains(store.id)).toList();
+
+      setState(() {
+        storeList.addAll(filteredNew);
+        currentPage++;
+      });
+
+      print('Loaded ${filteredNew.length} new stores on page $currentPage');
+    } catch (e, st) {
+      print('Error fetching groceries: $e');
+      print(st);
+    } finally {
+      setState(() => isLoadingMore = false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -238,18 +307,18 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                 ),
                               ],
                             ).paddingAll(15),
-                            Positioned(
-                              right: 2,
-                              top: 2,
-                              child: IconButton(
-                                onPressed: () {
-                                  Get.back();
-                                  groceryBloc.prevId = null;
-                                  verifyLoaderId = null;
-                                },
-                                icon: const Icon(Icons.close),
-                              ),
-                            ),
+                            // Positioned(
+                            //   right: 2,
+                            //   top: 2,
+                            //   child: IconButton(
+                            //     onPressed: () {
+                            //       Get.back();
+                            //       groceryBloc.prevId = null;
+                            //       verifyLoaderId = null;
+                            //     },
+                            //     icon: const Icon(Icons.close),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -320,110 +389,110 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                             ),
                           ),
                           SizedBox(height: 15.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomSearchField(
-                                  controller: searchController,
-                                  onChange: (p0) {
-                                    _debouncer.run(() {
-                                      storeList = [];
-                                      if (!mounted) return;
-                                      setState(() {});
-                                      groceryBloc.add(
-                                        StoreByNameEvent(
-                                          getUserAddress: getUserAddress,
-                                          askReceiveOrder: askOrder,
-                                          name: p0,
-                                        ),
-                                      );
-                                      if (p0?.trim().isEmpty ?? true) {
-                                        getNearByStore();
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
-                              10.width,
-                              GestureDetector(
-                                onTap: () async {
-                                  showRadiusSlider.toggle();
-                                },
-                                child: Image.asset(
-                                  AssetsUtils.icRadius,
-                                  height: 25,
-                                  color: const Color.fromRGBO(20, 27, 52, 1),
-                                ).paddingOnly(right: 10, bottom: 4),
-                              )
-                            ],
-                          ),
-                          Obx(
-                            () => showRadiusSlider.value
-                                ? Column(
-                                    children: [
-                                      15.height,
-                                      Text(
-                                        "Delivery Radius",
-                                        style:
-                                            textTheme.displayMedium?.copyWith(
-                                          color: const Color(0xFF000000),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SliderTheme(
-                                        data: const SliderThemeData(
-                                          trackShape: CustomSliderTrackShape(),
-                                          showValueIndicator:
-                                              ShowValueIndicator.always,
-                                          valueIndicatorColor:
-                                              AppColors.appColor,
-                                          valueIndicatorTextStyle: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColors.whiteColor,
-                                            fontFamily: 'Avenir',
-                                          ),
-                                        ),
-                                        child: Slider(
-                                          value: kmRadius.value,
-                                          min: 3,
-                                          max: 10,
-                                          label:
-                                              "${kmRadius.value.round()} Mile",
-                                          onChanged: (value) {
-                                            kmRadius.value = value;
-                                          },
-                                          onChangeEnd: (value) async {
-                                            kmRadius.value = value;
-                                            showRadiusSlider.toggle();
-                                            if (PreferenceUtils
-                                                        .getGroceryRadius()
-                                                    .round() !=
-                                                kmRadius.value.round()) {
-                                              PreferenceUtils.setGroceryRadius(
-                                                  kmRadius.value
-                                                      .roundToDouble());
-                                              await Constant.i.removeStore();
-                                              Constant.i.handleStoreCache();
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: CustomSearchField(
+                          //         controller: searchController,
+                          //         onChange: (p0) {
+                          //           _debouncer.run(() {
+                          //             storeList = [];
+                          //             if (!mounted) return;
+                          //             setState(() {});
+                          //             groceryBloc.add(
+                          //               StoreByNameEvent(
+                          //                 getUserAddress: getUserAddress,
+                          //                 askReceiveOrder: askOrder,
+                          //                 name: p0,
+                          //               ),
+                          //             );
+                          //             if (p0?.trim().isEmpty ?? true) {
+                          //               getNearByStore();
+                          //             }
+                          //           });
+                          //         },
+                          //       ),
+                          //     ),
+                          //     10.width,
+                          //     GestureDetector(
+                          //       onTap: () async {
+                          //         showRadiusSlider.toggle();
+                          //       },
+                          //       child: Image.asset(
+                          //         AssetsUtils.icRadius,
+                          //         height: 25,
+                          //         color: const Color.fromRGBO(20, 27, 52, 1),
+                          //       ).paddingOnly(right: 10, bottom: 4),
+                          //     )
+                          //   ],
+                          // ),
+                          // Obx(
+                          //   () => showRadiusSlider.value
+                          //       ? Column(
+                          //           children: [
+                          //             15.height,
+                          //             Text(
+                          //               "Delivery Radius",
+                          //               style:
+                          //                   textTheme.displayMedium?.copyWith(
+                          //                 color: const Color(0xFF000000),
+                          //                 fontWeight: FontWeight.w500,
+                          //                 fontSize: 16,
+                          //               ),
+                          //             ),
+                          //             SliderTheme(
+                          //               data: const SliderThemeData(
+                          //                 trackShape: CustomSliderTrackShape(),
+                          //                 showValueIndicator:
+                          //                     ShowValueIndicator.always,
+                          //                 valueIndicatorColor:
+                          //                     AppColors.appColor,
+                          //                 valueIndicatorTextStyle: TextStyle(
+                          //                   fontSize: 14,
+                          //                   color: AppColors.whiteColor,
+                          //                   fontFamily: 'Avenir',
+                          //                 ),
+                          //               ),
+                          //               child: Slider(
+                          //                 value: kmRadius.value,
+                          //                 min: 3,
+                          //                 max: 10,
+                          //                 label:
+                          //                     "${kmRadius.value.round()} Mile",
+                          //                 onChanged: (value) {
+                          //                   kmRadius.value = value;
+                          //                 },
+                          //                 onChangeEnd: (value) async {
+                          //                   kmRadius.value = value;
+                          //                   showRadiusSlider.toggle();
+                          //                   if (PreferenceUtils
+                          //                               .getGroceryRadius()
+                          //                           .round() !=
+                          //                       kmRadius.value.round()) {
+                          //                     PreferenceUtils.setGroceryRadius(
+                          //                         kmRadius.value
+                          //                             .roundToDouble());
+                          //                     await Constant.i.removeStore();
+                          //                     Constant.i.handleStoreCache();
 
-                                              if (searchController.text
-                                                  .trim()
-                                                  .isEmpty) {
-                                                alreadyCache = false;
-                                                storeList = [];
-                                                getNearByStore();
-                                              }
-                                            }
-                                          },
-                                        ),
-                                      ).paddingOnly(right: 10, left: 10),
-                                    ],
-                                  ).animate().scale(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                    )
-                                : const SizedBox(),
-                          ),
+                          //                     if (searchController.text
+                          //                         .trim()
+                          //                         .isEmpty) {
+                          //                       alreadyCache = false;
+                          //                       storeList = [];
+                          //                       getNearByStore();
+                          //                     }
+                          //                   }
+                          //                 },
+                          //               ),
+                          //             ).paddingOnly(right: 10, left: 10),
+                          //           ],
+                          //         ).animate().scale(
+                          //             duration:
+                          //                 const Duration(milliseconds: 200),
+                          //           )
+                          //       : const SizedBox(),
+                          // ),
                           const SizedBox(height: 15),
                           Expanded(
                             child: Container(
@@ -496,62 +565,57 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                                               AppColors.black),
                                                     ),
                                                   )
-                                            : SingleChildScrollView(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 20),
-                                                child: Builder(
-                                                  builder: (context) {
-                                                    List<Store> filterStore = storeList
-                                                        .where((e) =>
-                                                            e.name
-                                                                ?.toLowerCase()
-                                                                .contains(searchText
-                                                                        ?.toLowerCase() ??
-                                                                    "") ??
-                                                            false)
-                                                        .toList();
-                                                    return ListView.separated(
-                                                      itemCount:
-                                                          filterStore.length,
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          const NeverScrollableScrollPhysics(),
-                                                      separatorBuilder:
-                                                          (context, index) =>
-                                                              16.height,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return RestaurantCard(
-                                                          index: index,
-                                                          selectedIndex:
-                                                              selectedStore,
-                                                          store: filterStore[
-                                                              index],
-                                                          logoPhotos: filterStore[
-                                                                      index]
-                                                                  .logoPhotos ??
-                                                              [],
-                                                          isLoading:
-                                                              verifyLoaderId ==
-                                                                  filterStore[
-                                                                          index]
-                                                                      .id,
-                                                          onTap: () {
-                                                            verifyGrocery(
-                                                              filterStore[index]
-                                                                  .id,
-                                                              filterStore[index]
-                                                                  .name,
-                                                              filterStore[index]
-                                                                  .address,
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-                                                  },
+                                            : NotificationListener<ScrollNotification>(
+                                                onNotification: (ScrollNotification scrollInfo) {
+                                                  if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 100 &&
+                                                      !isLoadingMore) {
+                                                    fetchNewGroceries();
+                                                  }
+                                                  return false;
+                                                },
+                                                child: SingleChildScrollView(
+                                                  padding: const EdgeInsets.only(bottom: 20),
+                                                  child: Builder(
+                                                    builder: (context) {
+                                                      List<Store> filterStore = storeList
+                                                          .where((e) => e.name?.toLowerCase().contains(searchText?.toLowerCase() ?? '') ?? false)
+                                                          .toList();
+
+                                                      return Column(
+                                                        children: [
+                                                          ListView.separated(
+                                                            itemCount: filterStore.length,
+                                                            shrinkWrap: true,
+                                                            physics: const NeverScrollableScrollPhysics(),
+                                                            separatorBuilder: (context, index) => 16.height,
+                                                            itemBuilder: (context, index) {
+                                                              return RestaurantCard(
+                                                                index: index,
+                                                                selectedIndex: selectedStore,
+                                                                store: filterStore[index],
+                                                                logoPhotos: filterStore[index].logoPhotos ?? [],
+                                                                isLoading: verifyLoaderId == filterStore[index].id,
+                                                                onTap: () {
+                                                                  verifyGrocery(
+                                                                    filterStore[index].id,
+                                                                    filterStore[index].name,
+                                                                    filterStore[index].address,
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                          if (isLoadingMore)
+                                                            const Padding(
+                                                              padding: EdgeInsets.symmetric(vertical: 16),
+                                                              child: CircularProgressIndicator(),
+                                                            ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
+                                              )
                                       ),
                                     ],
                                   ),
@@ -593,6 +657,7 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
         askReceiveOrder: askOrder,
         context: context,
         id: id,
+        name: storeName,
         notVerify: () {
           storeList.removeWhere((element) => element.id == id);
           if (searchController.text.trim().isEmpty) {

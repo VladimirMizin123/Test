@@ -172,19 +172,32 @@ class SelectedOptions {
   int? quantity;
   int? markedPrice;
 
-  SelectedOptions({this.optionId, this.quantity, this.markedPrice});
+  String? optionName;
+
+  SelectedOptions({
+    this.optionId,
+    this.quantity,
+    this.markedPrice,
+    this.optionName,
+  });
 
   SelectedOptions.fromJson(Map<String, dynamic> json) {
     optionId = json['option_id'];
     quantity = json['quantity'];
     markedPrice = json['marked_price'];
+
+    optionName = json['optionName'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['option_id'] = optionId;
-    data['quantity'] = quantity;
-    data['marked_price'] = markedPrice;
-    return data;
+    return {
+      'option_id': optionId,
+      'quantity': quantity,
+      'marked_price': markedPrice,
+
+      'optionName': optionName ?? '',
+      'optionId': optionId ?? '',
+      'optionPrice': markedPrice ?? 0,
+    };
   }
 }

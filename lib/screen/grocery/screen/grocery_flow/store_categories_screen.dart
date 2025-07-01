@@ -27,6 +27,8 @@ import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart' as gtm;
 
 class StoreCategoriesScreen extends StatefulWidget {
   const StoreCategoriesScreen({
@@ -60,6 +62,7 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
   TextEditingController searchController = TextEditingController();
   bool isLoading = false;
   bool subcategoryLoader = false;
+  bool isGoingBack = false;
 
   List<int> routing = [];
 
@@ -120,7 +123,16 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                     10.height,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: [isGoingBack
+                        ? const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : 
                         BackButtonWidget(
                           onTap: () async {
                             Object state = storeCartBloc.state;
@@ -170,7 +182,9 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                                               fontSize: 16,
                                             ),
                                           ),
-                                          onPressed: () {
+                                          onPressed: () async {
+                                            final signalR = SignalRService();
+                                            await signalR.clearRestaurantCartItems();
                                             Get.back(result: true);
                                           },
                                         ),
@@ -180,10 +194,18 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                                   ) ??
                                   false);
                               if (allow == true) {
-                                Get.back();
+                                 setState(() => isGoingBack = true);
+                                  final signalR = SignalRService();
+                                  await signalR.redirectToHomePage();
+                                  setState(() => isGoingBack = false);
+                                  Get.back();
                               }
                             } else {
-                              Get.back();
+                                setState(() => isGoingBack = true);
+                                final signalR = SignalRService();
+                                await signalR.redirectToHomePage();
+                                setState(() => isGoingBack = false);
+                                Get.back();
                             }
                           },
                         ),
@@ -216,10 +238,10 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                       onChange: (p0) => setState(() => searchText = p0),
                     ).paddingOnly(left: 14, right: 14),
                     Expanded(
-                      child: categoriesList.isEmpty
-                          ? isLoading
-                              ? const AppCenterLoader()
-                              : Center(
+                      child: isLoading ? const AppCenterLoader() : categoriesList.isEmpty
+                          ? 
+                              
+                             Center(
                                   child: Text(
                                     'Categories not found !',
                                     style: FontUtils.h16(
@@ -320,9 +342,10 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                                                                               index]
                                                                           .name);
                                                               handleCategoryTap(
-                                                                  subcategoryList[
-                                                                      index],
-                                                                  i);
+                                                                category,
+                                                                i,
+                                                                subCategory: subcategoryList[index],
+                                                              );
                                                               clearSearch();
                                                             })
                                                         .paddingOnly(
@@ -381,42 +404,139 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
         });
   }
 
-  void handleCategoryTap(Category? category, int index) async {
-    if (category?.menuItemList?.isEmpty ?? true) {
-      log("Store Id  :${widget.storeId}");
-      log("Subcategory Id  :${category?.subcategoryId}");
-      groceryBloc.add(StoreSubCategorieEvent(
-        address: widget.address,
-        storeId: widget.storeId,
-        askReceiveOrder: 0,
-        subcategoryId: category?.subcategoryId,
-      ));
-      routing.add(index);
-      setState(() {});
-    } else {
-      dynamic result = await Get.to(
-        () => StoreCartScreen(
-          groceryBloc: groceryBloc,
-          menuItemList: category?.menuItemList ?? [],
-          categoryName: category?.name,
-          storeName: widget.storeName,
-          storeId: widget.storeId,
-          address: widget.address,
-          grocAdd: widget.grocAdd,
-          groceryDetails: widget.groceryDetails,
-          cartBloc: storeCartBloc,
-          askOrder: widget.askOrder,
-        ),
-      );
-      if (result == "category") {
-        routing = [];
+  void handleCategoryTap(Category? category, int index, {Category? subCategory}) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    if (category == null) return;
+
+    final signalR = SignalRService();
+
+    try {
+      if (category.hasShopRestaurant == true && subCategory == null) {
+        final List<String> subcategoryNames =
+            await signalR.getRestaurantSubcategories(category.name ?? '');
+
+        if (subcategoryNames.isEmpty) {
+          final signalRResult = await signalR.getMenuItems(category.name ?? '');
+
+          final menuItems = signalRResult.map<gtm.MenuItemList>((item) {
+            final priceString = item['Price']?.replaceAll('\$', '').trim();
+            final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+            return gtm.MenuItemList(
+              name: item['Name'] ?? '',
+              image: item['ImageUrl'],
+              formattedPrice: item['Price'],
+              cartPrice: priceDouble,
+              isAvailable: true,
+              description: item['Calories'],
+              itemUrl: item['ItemUrl'],
+            );
+          }).toList();
+
+          category.menuItemList = menuItems;
+        } else {
+          final firstSub = subcategoryNames.first;
+          final signalRResult = await signalR.getMenuItems(category.name ?? '', firstSub);
+
+          final firstMenuItems = signalRResult.map<gtm.MenuItemList>((item) {
+            final priceString = item['Price']?.replaceAll('\$', '').trim();
+            final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+            return gtm.MenuItemList(
+              name: item['Name'] ?? '',
+              image: item['ImageUrl'],
+              formattedPrice: item['Price'],
+              cartPrice: priceDouble,
+              isAvailable: true,
+              description: item['Calories'],
+              itemUrl: item['ItemUrl'],
+            );
+          }).toList();
+
+          category.subcategoryList = List<Category>.generate(
+            subcategoryNames.length,
+            (subIndex) => Category(
+              name: subcategoryNames[subIndex],
+              subcategoryId: null,
+              menuItemList: subIndex == 0 ? firstMenuItems : [],
+            ),
+          );
+          setState(() {});
+        }
+
+        routing.add(index);
+      } else {
+        late final List<dynamic> signalRResult;
+
+        if (subCategory != null) {
+          signalRResult = await signalR.getMenuItems(category.name ?? '', subCategory.name);
+        } else {
+          signalRResult = await signalR.getMenuItems(category.name ?? '');
+        }
+
+        final menuItems = signalRResult.map<gtm.MenuItemList>((item) {
+          final priceString = item['Price']?.replaceAll('\$', '').trim();
+          final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+          return gtm.MenuItemList(
+            name: item['Name'] ?? '',
+            image: item['ImageUrl'],
+            formattedPrice: item['Price'],
+            cartPrice: priceDouble,
+            isAvailable: true,
+            description: item['Calories'],
+            itemUrl: item['ItemUrl'],
+          );
+        }).toList();
+
+        if (subCategory != null) {
+          subCategory.menuItemList = menuItems;
+        } else {
+          category.menuItemList = menuItems;
+        }
+
         setState(() {});
+
+        dynamic result = await Get.to(
+          () => StoreCartScreen(
+            groceryBloc: groceryBloc,
+            menuItemList: subCategory?.menuItemList ?? category.menuItemList ?? [],
+            categoryName: subCategory?.name ?? category.name,
+            storeName: widget.storeName,
+            storeId: widget.storeId,
+            address: widget.address,
+            grocAdd: widget.grocAdd,
+            groceryDetails: widget.groceryDetails,
+            cartBloc: storeCartBloc,
+            askOrder: widget.askOrder,
+          ),
+        );
+
+        if (result == "category") {
+          routing = [];
+          setState(() {});
+        }
       }
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
     }
   }
 
-  void handleBackTap() {
+
+  void handleBackTap() async {
     try {
+      // final signalR = SignalRService();
+      // await signalR.goBack();
       getSubCategory()?.subcategoryList?.clear();
       routing.removeLast();
       clearSearch();

@@ -31,6 +31,7 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
 
 class StoreCartScreen extends StatefulWidget {
   final List<MenuItemList>? menuItemList;
@@ -43,7 +44,7 @@ class StoreCartScreen extends StatefulWidget {
   final groc_add.Address? grocAdd;
   final List<GroceryDetails>? groceryDetails;
   final AskReceiveOrder? askOrder;
-
+  
   const StoreCartScreen({
     super.key,
     required this.cartBloc,
@@ -67,6 +68,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   List<Product> filterResult = [];
   List<MenuItemList> menuItemList = [];
   List<MenuItemList> cartMenuList = [];
+  bool _isGoingBack = false;
 
   List<Product> groceryTempResult = [];
   bool isProductSelect = false;
@@ -159,18 +161,36 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                     ],
                   ).paddingOnly(left: 14, right: 14),
                   16.height,
-                  CustomSearchField(
-                    onChange: (p0) => setState(() => searchText = p0),
-                    controller: searchController,
-                  ).paddingOnly(left: 14, right: 14),
+                  // CustomSearchField(
+                  //   onChange: (p0) => setState(() => searchText = p0),
+                  //   controller: searchController,
+                  // ).paddingOnly(left: 14, right: 14),
                   16.height,
                   Row(
                     children: [
-                      myFilterView(
+                      _isGoingBack
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : myFilterView(
                         AssetsUtils.icListIcon,
                         'Category',
                         () async {
-                          Get.back(result: "category");
+                          if (_isGoingBack) return;
+                          setState(() => _isGoingBack = true);
+
+                          final signalR = SignalRService();
+                          try {
+                            await signalR.goBack();
+                            Get.back(result: "category");
+                          } catch (e) {
+                          } finally {
+                            if (mounted) setState(() => _isGoingBack = false);
+                          }
                         },
                       ),
                       const SizedBox(width: 10),
@@ -304,6 +324,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                     storeName: widget.storeName,
                                     qty: item.cartQuantity,
                                     isGroceryItem: !i.isNegative,
+                                    showQuantity: false,
                                     onTap: () async {
                                       Get.to(
                                         () => StoreMealDetails(
@@ -331,6 +352,8 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                             setState(() {});
                                             widget.cartBloc.add(ModifyCart(
                                                 menuItemList: filterItem));
+                                                final signalR = SignalRService();
+                                                signalR.goBack();
                                             Get.back();
                                           },
                                           fromGrocery: true,
@@ -383,40 +406,32 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: simpleTextBorderButton(
-                      context: context,
-                      color: AppColors.green,
-                      buttonLable: 'Checkout',
-                      height: context.height * 0.065,
-                      width: context.width,
-                      isLoadingWidget: false,
-                      onTap: () async {
-                        Object state = cartBloc.state;
-                        if (state is StoreCheckoutState) {
-                          if (state.menuItemList.isNotEmpty) {
-                            await Get.to(
-                              () => StoreCheckOutScreen(
-                                storeCartBloc: widget.cartBloc,
-                                address: widget.address,
-                                storeName: widget.storeName,
-                                groceryDetails: widget.groceryDetails,
-                                askOrder: widget.askOrder,
-                                grocAdd: widget.grocAdd,
-                              ),
-                            );
-                          } else {
-                            showToast(
-                              message: 'Please, select the product!',
-                              isSuccess: false,
-                              color: AppColors.black,
-                            );
-                          }
-                        }
-                        setState(() {});
-                      },
-                      isDarkColor: true,
-                      isFillColor: true,
-                    ),
+                    child: (cartBloc.state is StoreCheckoutState &&
+                            (cartBloc.state as StoreCheckoutState).menuItemList.isNotEmpty)
+                        ? simpleTextBorderButton(
+                            context: context,
+                            color: AppColors.green,
+                            buttonLable: 'View Cart',
+                            height: context.height * 0.065,
+                            width: context.width,
+                            isLoadingWidget: false,
+                            onTap: () async {
+                              await Get.to(
+                                () => StoreCheckOutScreen(
+                                  storeCartBloc: widget.cartBloc,
+                                  address: widget.address,
+                                  storeName: widget.storeName,
+                                  groceryDetails: widget.groceryDetails,
+                                  askOrder: widget.askOrder,
+                                  grocAdd: widget.grocAdd,
+                                ),
+                              );
+                              setState(() {});
+                            },
+                            isDarkColor: true,
+                            isFillColor: true,
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 20),
                 ],

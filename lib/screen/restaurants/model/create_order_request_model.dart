@@ -11,6 +11,12 @@ class CreateOrderModel {
   int? userPhone;
   Map<String, dynamic>? extendedAddress;
 
+  String? productType;
+  double? totalAmount;
+  double? subtotal;
+  double? deliveryFee;
+  double? taxesOtherFee;
+  OrderStoreModel? store;
   CreateOrderModel({
     this.userId,
     this.userAddress,
@@ -21,6 +27,12 @@ class CreateOrderModel {
     this.userDropoffNotes,
     this.userPhone,
     this.extendedAddress,
+    this.productType,
+    this.totalAmount,
+    this.subtotal,
+    this.deliveryFee,
+    this.taxesOtherFee,
+    this.store,
   });
 
   CreateOrderModel.fromJson(Map<String, dynamic> json) {
@@ -29,39 +41,74 @@ class CreateOrderModel {
         ? UserAddress.fromJson(json['userAddress'])
         : null;
     pickup = json['pickup'];
+    driverTipCents = json['driver_tip_cents'];
+    pickupTipCents = json['pickup_tip_cents'];
+    userDropoffNotes = json['user_dropoff_notes'];
+    userPhone = json['user_phone'];
+
+    productType = json['productType'];
+    totalAmount = (json['totalAmount'] ?? 0).toDouble();
+    subtotal = (json['subtotal'] ?? 0).toDouble();
+    deliveryFee = (json['deliveryFee'] ?? 0).toDouble();
+    taxesOtherFee = (json['taxesOtherFee'] ?? 0).toDouble();
+
+    store = json['store'] != null ? OrderStoreModel.fromJson(json['store']) : null;
+
     if (json['mealmeItems'] != null) {
       mealmeItems = <CreateOrderMealmeItems>[];
       json['mealmeItems'].forEach((v) {
         mealmeItems!.add(CreateOrderMealmeItems.fromJson(v));
       });
     }
-    driverTipCents = json['driver_tip_cents'];
-    pickupTipCents = json['pickup_tip_cents'];
-    userDropoffNotes = json['user_dropoff_notes'];
-    userPhone = json['user_phone'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['userId'] = userId;
+    return {
+      "productType": productType ?? "default",
+      "totalAmount": totalAmount ?? 0,
+      "subtotal": subtotal ?? 0,
+      "deliveryFee": deliveryFee ?? 0,
+      "taxesOtherFee": taxesOtherFee ?? 0,
+      "isPickUp": pickup ?? false,
+      "store": store?.toJson() ?? {},
+      "items": mealmeItems?.map((v) => v.toJson()).toList() ?? [],
 
-    // data['userAddress'] = userAddress != null
-    //     ? {
-    //         "latitude": userAddress?.latitude,
-    //         "longitude": userAddress?.longitude,
-    //       }
-    //     : null;
+      'userId': userId,
+      'pickup': pickup,
+      'Items': mealmeItems?.map((v) => v.toJson()).toList(),
+      'driver_tip_cents': driverTipCents,
+      'pickup_tip_cents': pickupTipCents,
+      'user_dropoff_notes': userDropoffNotes,
+      'user_phone': userPhone,
+    };
+  }
+}
 
-    data['pickup'] = pickup;
-    if (mealmeItems != null) {
-      data['mealmeItems'] = mealmeItems!.map((v) => v.toJson()).toList();
-    }
-    data['driver_tip_cents'] = driverTipCents;
-    data['pickup_tip_cents'] = pickupTipCents;
-    data['user_dropoff_notes'] = userDropoffNotes;
-    data['user_phone'] = userPhone;
-    // data["extendedAddress"] = extendedAddress;
-    return data;
+class OrderStoreModel {
+  final String? storeId;
+  final String? storeName;
+  final String? storeLogo;
+
+  OrderStoreModel({
+    this.storeId,
+    this.storeName,
+    this.storeLogo,
+  });
+
+  factory OrderStoreModel.fromJson(Map<String, dynamic> json) {
+    return OrderStoreModel(
+      storeId: json['storeId'],
+      storeName: json['storeName'],
+      storeLogo: json['storeLogo'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "storeId": storeId ?? '',
+      "storeName": storeName ?? '',
+      "storeLogo": storeLogo ?? '',
+    };
   }
 }
 
@@ -117,40 +164,57 @@ class CreateOrderMealmeItems {
   dynamic productMarkedPrice;
   List<SelectedOptions>? selectedOptions;
   int? productType;
+  String? name;
+  String? image;
+  Map<String, dynamic>? store;
 
-  CreateOrderMealmeItems(
-      {this.productId,
-      this.notes,
-      this.quantity,
-      this.productMarkedPrice,
-      this.selectedOptions,
-      this.productType});
+  CreateOrderMealmeItems({
+    this.productId,
+    this.notes,
+    this.quantity,
+    this.productMarkedPrice,
+    this.selectedOptions,
+    this.productType,
+    this.name,
+    this.image,
+    this.store,
+  });
 
   CreateOrderMealmeItems.fromJson(Map<String, dynamic> json) {
     productId = json['product_id'];
     notes = json['notes'];
     quantity = json['quantity'];
     productMarkedPrice = json['product_marked_price'];
-    if (json['selected_options'] != null) {
+    productType = json['productType'];
+    name = json['name'];
+    image = json['image'];
+
+    if (json['SelectedOptions'] != null) {
       selectedOptions = <SelectedOptions>[];
-      json['selected_options'].forEach((v) {
+      json['SelectedOptions'].forEach((v) {
         selectedOptions!.add(SelectedOptions.fromJson(v));
       });
+    } else {
+      selectedOptions = <SelectedOptions>[];
     }
-    productType = json['productType'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['product_id'] = productId;
-    data['notes'] = notes;
-    data['quantity'] = quantity;
-    data['product_marked_price'] = productMarkedPrice;
-    if (selectedOptions != null) {
-      data['selected_options'] =
-          selectedOptions!.map((v) => v.toJson()).toList();
-    }
-    data['productType'] = productType;
-    return data;
+    return {
+      'product_id': productId,
+      'notes': notes,
+      'quantity': quantity,
+      'product_marked_price': productMarkedPrice,
+      'SelectedOptions': selectedOptions?.map((v) => v.toJson()).toList() ?? [],
+      'productType': productType,
+      'name': name,
+      'image': image,
+
+      'name': name ?? '',
+      'basePrice': productMarkedPrice ?? 0,
+      'quantity': quantity ?? 1,
+      'image': image ?? '',
+      'selectedOptions': selectedOptions?.map((v) => v.toJson()).toList() ?? [],
+    };
   }
 }

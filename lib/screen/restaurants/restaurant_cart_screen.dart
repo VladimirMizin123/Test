@@ -25,6 +25,8 @@ import 'model/get_user_address_model.dart' as address;
 import 'model/create_order_response_model.dart' as order;
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart'
     as u_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantCart extends StatefulWidget {
   const RestaurantCart({
@@ -45,6 +47,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
   RestaurantBloc restaurantBloc = RestaurantBloc();
   dynamic price = 0;
   bool loadCreateOrder = false;
+  bool _isGoingBack = false;
 
   order.CreateOrderData? orderData;
   final formKey = GlobalKey<FormState>();
@@ -61,6 +64,91 @@ class _RestaurantCartState extends State<RestaurantCart> {
   void initState() {
     super.initState();
     cartBloc.add(GetCartEvent());
+    this.syncCartWithServer();
+  }
+
+  Future<void> syncCartWithServer({bool? isOpened}) async {
+    print('SYNC CART');
+    print(isOpened);
+    final signalR = SignalRService();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final address = prefs.getString('currentUserAddress') ?? '';
+      final isCartOpened = prefs.getBool('cart-opened') ?? false;
+
+      List<Map<String, dynamic>> serverResult;
+
+      if (isOpened == null) {
+        print('Cart already opened, calling getCartInformation');
+        await signalR.openRestaurantCart();
+        serverResult = await signalR.getCartInformation();
+      } else {
+        print('Cart not opened yet, calling openRestaurantCart');
+        serverResult = await signalR.getCartInformation();
+        await prefs.setBool('cart-opened', true);
+      }
+
+      print('RESULT FROM SIGNAL R');
+      mergeCartDataFromServer(serverResult);
+
+    } catch (e) {
+      print('Error syncing cart: $e');
+    }
+  }
+
+  void mergeCartDataFromServer(List<dynamic> serverCartItems) {
+    print('mergeCartDataFromServer');
+
+    final Map<String, List<dynamic>> groupedByName = {};
+
+    for (var item in serverCartItems) {
+      final itemName = item['Name'] as String?;
+      if (itemName == null) continue;
+
+      groupedByName.putIfAbsent(itemName, () => []).add(item);
+    }
+
+    for (var entry in groupedByName.entries) {
+      final name = entry.key;
+      final serverItemsForName = entry.value;
+
+      final existingItems = cartData.where((e) => e.productName == name).toList();
+
+      for (int i = 0; i < serverItemsForName.length; i++) {
+        final serverItem = serverItemsForName[i];
+        final itemPriceStr = serverItem['Price'] as String?;
+        final itemUrl = serverItem['ItemUrl'] as String?;
+        final itemQuantity = int.tryParse(serverItem['Quantity']?.toString() ?? '0');
+
+        if (itemPriceStr == null) continue;
+
+        final parsedPrice = (double.tryParse(itemPriceStr.replaceAll('\$', '').trim()) ?? 0.0) * 100;
+        final int newPrice = parsedPrice.toInt();
+
+        if (i < existingItems.length) {
+          existingItems[i].price = newPrice;
+          existingItems[i].quantity = itemQuantity;
+        } else {
+          cartData.add(
+            ShoppingListData(
+              productName: name,
+              price: newPrice,
+              quantity: itemQuantity,
+              mealmeStoreId: itemUrl,
+              image: itemUrl
+            ),
+          );
+        }
+      }
+    }
+
+    price = 0;
+    for (var element in cartData) {
+      price += element.price ?? 0;
+    }
+
+    setState(() {});
   }
 
   @override
@@ -96,7 +184,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                   if (state is CreateOrderSuccessState) {
                     orderData = state.orderData;
                     if (orderData != null) {
-                      Get.to(
+                      final result = await Get.to(
                         () => CheckOutScreen(
                           isFromGrocery: false,
                           cartData: cartData,
@@ -106,6 +194,10 @@ class _RestaurantCartState extends State<RestaurantCart> {
                         ),
                         transition: Transition.fadeIn,
                       );
+
+                      if (result == true) {
+                        syncCartWithServer();
+                      }
                     }
 
                     loadCreateOrder = false;
@@ -134,14 +226,36 @@ class _RestaurantCartState extends State<RestaurantCart> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Get.back(result: true);
-                              },
-                              child: const Icon(
-                                Icons.arrow_back_ios,
-                              ),
-                            ),
+                            _isGoingBack
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                )
+                              : GestureDetector(
+                                  onTap: () async {
+                                    if (_isGoingBack) return;
+
+                                    setState(() => _isGoingBack = true);
+
+                                    final signalR = SignalRService();
+                                    final prefs = await SharedPreferences.getInstance();
+
+                                    try {
+                                      await signalR.CloseViewCart();
+                                      await prefs.setBool('cart-opened', false);
+
+                                      if (mounted) Get.back(result: true);
+                                    } catch (e) {
+                                      print("Error closing cart: $e");
+                                    } finally {
+                                      if (mounted) setState(() => _isGoingBack = false);
+                                    }
+                                  },
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                  ),
+                                ),
                             const Text(
                               'Restaurant / Cart',
                               style: TextStyle(
@@ -242,15 +356,17 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                                 .spaceBetween,
                                                         children: [
                                                           GestureDetector(
-                                                            onTap: () {
-                                                              cartBloc.add(
-                                                                  ChangeQty(
-                                                                productID: cartData[
-                                                                        index]
-                                                                    .productId,
-                                                                type: ModifyType
-                                                                    .decrement,
-                                                              ));
+                                                           onTap: ()  async{
+                                                              print('11');
+                                                              final signalR = SignalRService();
+                                                              await signalR.adjustCartItemQuantity(cartData[index].mealmeStoreId!, 'decrement');
+                                                              await  syncCartWithServer(isOpened: true);
+                                                              // cartBloc.add(ChangeQty(
+                                                              //     productID: cartData[
+                                                              //             index]
+                                                              //         .productId,
+                                                              //     type: ModifyType
+                                                              //         .decrement));
                                                             },
                                                             child: cartData[index]
                                                                         .isRemoveUpdated ==
@@ -285,13 +401,16 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                                       ),
                                                           ),
                                                           GestureDetector(
-                                                            onTap: () {
-                                                              cartBloc.add(ChangeQty(
-                                                                  productID: cartData[
-                                                                          index]
-                                                                      .productId,
-                                                                  type: ModifyType
-                                                                      .increment));
+                                                            onTap: ()  async{
+                                                              final signalR = SignalRService();
+                                                              await signalR.adjustCartItemQuantity(cartData[index].mealmeStoreId!, 'increment');
+                                                              await  syncCartWithServer(isOpened: true);
+                                                              // cartBloc.add(ChangeQty(
+                                                              //     productID: cartData[
+                                                              //             index]
+                                                              //         .productId,
+                                                              //     type: ModifyType
+                                                              //         .increment));
                                                             },
                                                             child: cartData[index]
                                                                         .isAddUpdated ==
@@ -345,75 +464,75 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          if (!loadCreateOrder) ...[
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(bottom: 16.h),
-                                              child: Text(
-                                                ' Order Notes',
-                                                style: FontUtils.h18(
-                                                  fontColor:
-                                                      const Color(0xff000000),
-                                                  fontWeight: FWT.semiBold,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                      vertical: 0),
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color:
-                                                        const Color(0xff004C63)
-                                                            .withOpacity(0.08),
-                                                    offset: const Offset(0, 0),
-                                                    blurRadius: 16,
-                                                  )
-                                                ],
-                                              ),
-                                              child: TextFormField(
-                                                style: const TextStyle(
-                                                    color: Colors.black),
-                                                controller: notes,
-                                                decoration: InputDecoration(
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide: BorderSide.none,
-                                                  ),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide: BorderSide.none,
-                                                  ),
-                                                  border: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    borderSide: BorderSide.none,
-                                                  ),
-                                                  contentPadding:
-                                                      const EdgeInsets.all(0),
-                                                  hintText:
-                                                      'Add order Notes.....',
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 16.h),
-                                          ],
+                                          // if (!loadCreateOrder) ...[
+                                          //   Padding(
+                                          //     padding:
+                                          //         EdgeInsets.only(bottom: 16.h),
+                                          //     child: Text(
+                                          //       ' Order Notes',
+                                          //       style: FontUtils.h18(
+                                          //         fontColor:
+                                          //             const Color(0xff000000),
+                                          //         fontWeight: FWT.semiBold,
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          //   Container(
+                                          //     padding:
+                                          //         const EdgeInsets.symmetric(
+                                          //             horizontal: 16,
+                                          //             vertical: 0),
+                                          //     width: MediaQuery.of(context)
+                                          //         .size
+                                          //         .width,
+                                          //     decoration: BoxDecoration(
+                                          //       color: Colors.white,
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(8),
+                                          //       boxShadow: [
+                                          //         BoxShadow(
+                                          //           color:
+                                          //               const Color(0xff004C63)
+                                          //                   .withOpacity(0.08),
+                                          //           offset: const Offset(0, 0),
+                                          //           blurRadius: 16,
+                                          //         )
+                                          //       ],
+                                          //     ),
+                                          //     child: TextFormField(
+                                          //       style: const TextStyle(
+                                          //           color: Colors.black),
+                                          //       controller: notes,
+                                          //       decoration: InputDecoration(
+                                          //         enabledBorder:
+                                          //             OutlineInputBorder(
+                                          //           borderRadius:
+                                          //               BorderRadius.circular(
+                                          //                   8),
+                                          //           borderSide: BorderSide.none,
+                                          //         ),
+                                          //         focusedBorder:
+                                          //             OutlineInputBorder(
+                                          //           borderRadius:
+                                          //               BorderRadius.circular(
+                                          //                   8),
+                                          //           borderSide: BorderSide.none,
+                                          //         ),
+                                          //         border: OutlineInputBorder(
+                                          //           borderRadius:
+                                          //               BorderRadius.circular(
+                                          //                   8),
+                                          //           borderSide: BorderSide.none,
+                                          //         ),
+                                          //         contentPadding:
+                                          //             const EdgeInsets.all(0),
+                                          //         hintText:
+                                          //             'Add order Notes.....',
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          //   SizedBox(height: 16.h),
+                                          // ],
                                           Padding(
                                             padding: EdgeInsets.only(top: 8.h),
                                             child: Row(
@@ -458,119 +577,45 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                     buttonLable: 'Checkout ',
                                                     lableColor: Colors.white,
                                                     onTap: () async {
-                                                      (double?, double?) pos =
-                                                          await Constant
-                                                              .i.position;
-                                                      if (cartData
-                                                          .any((element) {
-                                                        int pr =
-                                                            element.price ?? 0;
-                                                        return element
-                                                                    .orderMax !=
-                                                                null &&
-                                                            (pr <
-                                                                    element
-                                                                        .orderMin! ||
-                                                                pr >
-                                                                    element
-                                                                        .orderMax!);
-                                                      })) {
-                                                        showToast(
-                                                            message:
-                                                                "Your order amount not should be greater than \$${(cartData.first.orderMax ?? 0) / 100}",
-                                                            isSuccess: false);
-                                                        return;
-                                                      }
-
-                                                      List<CreateOrderMealmeItems>
-                                                          data = [];
-
-                                                      for (var element
-                                                          in cartData) {
-                                                        List<SelectedOptions>
-                                                            optionList = [];
-                                                        for (var element1
-                                                            in element
-                                                                .options!) {
-                                                          optionList.add(
-                                                            SelectedOptions(
-                                                              quantity: element1
-                                                                  .quantity,
-                                                              markedPrice: element1
-                                                                  .markedPrice,
-                                                              optionId: element1
-                                                                  .optionId,
-                                                            ),
-                                                          );
+                                                        String userMobile = PreferenceUtils.getString(prefUserMobile);
+                                                        if (userMobile.isEmpty) {
+                                                          print('⚠️ User mobile is empty, defaulting to 1234567890');
+                                                          userMobile = '1234567890';
                                                         }
-                                                        double
-                                                            productMarkedPrice =
-                                                            element.originalPrice
-                                                                    ?.toDouble() ??
-                                                                0;
-                                                        data.add(
-                                                          CreateOrderMealmeItems(
-                                                            productId: element
-                                                                .productId,
-                                                            productType: 1,
-                                                            quantity: element
-                                                                .quantity,
-                                                            notes: '',
-                                                            productMarkedPrice: productMarkedPrice
-                                                                        .isNaN ||
-                                                                    productMarkedPrice
-                                                                        .isInfinite
-                                                                ? 0
-                                                                : productMarkedPrice
-                                                                    .toInt(),
-                                                            selectedOptions:
-                                                                optionList,
+                                                        int userPhone = int.tryParse(userMobile) ?? 1234567890;
+
+                                                        final orderModel = CreateOrderModel(
+                                                          userId: userId,
+                                                          pickup: widget.pickUp,
+                                                          mealmeItems: [],
+                                                          userAddress: u_add.UserAddress(latitude: 0.0, longitude: 0.0),
+                                                          userPhone: userPhone,
+                                                          driverTipCents: 0,
+                                                          pickupTipCents: 0,
+                                                          userDropoffNotes: notes.text,
+
+                                                          productType: 'food',
+                                                          totalAmount: 0,
+                                                          subtotal: 0,
+                                                          deliveryFee: 0,
+                                                          taxesOtherFee: 0,
+                                                          store: OrderStoreModel(
+                                                            storeId: '123',
+                                                            storeName: 'Test Store',
+                                                            storeLogo: 'https://dummyimage.com/100x100/000/fff&text=Logo',
                                                           ),
                                                         );
-                                                      }
 
-                                                      double? lat = pos.$1 ??
-                                                          widget.userAddress
-                                                              ?.latitude ??
-                                                          0;
-                                                      double? lng = pos.$2 ??
-                                                          widget.userAddress
-                                                              ?.longitude ??
-                                                          0;
-
+                                                    
                                                       restaurantBloc.add(
-                                                        CreateOrderEvent(
-                                                          context: context,
-                                                          lat: lat,
-                                                          lng: lng,
-                                                          createOrderModel:
-                                                              CreateOrderModel(
-                                                            userId: userId,
-                                                            pickup:
-                                                                widget.pickUp,
-                                                            mealmeItems: data,
-                                                            userAddress: u_add
-                                                                .UserAddress(
-                                                              latitude: lat,
-                                                              longitude: lng,
-                                                            ),
-                                                            userPhone:
-                                                                int.parse(
-                                                              PreferenceUtils.getString(
-                                                                          prefUserMobile)
-                                                                      .isNotEmpty
-                                                                  ? PreferenceUtils
-                                                                      .getString(
-                                                                          prefUserMobile)
-                                                                  : '1234567890',
-                                                            ),
-                                                            driverTipCents: 0,
-                                                            pickupTipCents: 0,
-                                                            userDropoffNotes:
-                                                                notes.text,
-                                                          ),
-                                                        ),
-                                                      );
+                                                      CreateOrderEvent(
+                                                        context: context,
+                                                        lat: 0.0,
+                                                        lng: 0.0,
+                                                        createOrderModel: orderModel,
+                                                        isMock: true,
+                                                      ),
+                                                    );
                                                     },
                                                     context: context,
                                                     isDarkColor: false,

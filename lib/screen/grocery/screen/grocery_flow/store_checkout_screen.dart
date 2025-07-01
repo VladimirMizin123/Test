@@ -37,6 +37,9 @@ import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.d
 import 'package:gymeats_mobile/widget/food_menu_address.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gymeats_mobile/widget/app_center_loader.dart';
 
 class StoreCheckOutScreen extends StatefulWidget {
   final String? storeName;
@@ -63,9 +66,9 @@ class StoreCheckOutScreen extends StatefulWidget {
 class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
   TextEditingController search = TextEditingController();
   String? searchText;
-  // List<MenuItemList> cartMenuList = [];
   List<MenuItemList> cartMenuList = [];
   bool orderLoader = false;
+  bool isLoading = false;
   GroceryBloc groceryBloc = GroceryBloc();
   late StoreCartBloc bloc;
 
@@ -79,11 +82,69 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
   TextEditingController floorNumberController = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
-
+  bool _isGoingBack = false;
   @override
   void initState() {
     widget.storeCartBloc.add(GetGroceryCartList());
     super.initState();
+    this.syncCartWithServer();
+  }
+
+  Future<void> syncCartWithServer() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final signalR = SignalRService();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isCartOpened = prefs.getBool('cart-opened') ?? false;
+
+      List<Map<String, dynamic>> serverResult;
+
+      await signalR.openRestaurantCart();
+      await prefs.setBool('cart-opened', true);
+
+      serverResult = await signalR.getCartInformation();
+
+      mergeMenuItemCartData(serverResult);
+      widget.storeCartBloc.add(ModifyCart(menuItemList: cartMenuList));
+    } catch (e) {
+      print('Sync cart server');
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void mergeMenuItemCartData(List<dynamic> serverCartItems) {
+    cartMenuList.clear();
+
+    for (var serverItem in serverCartItems) {
+      final name = serverItem['Name'] as String?;
+      final priceStr = serverItem['Price'] as String?;
+      final itemUrl = serverItem['ItemUrl'] as String?;
+      final imageUrl = serverItem['ImageUrl'] as String?;
+      final quantity = int.tryParse(serverItem['Quantity']?.toString() ?? '0');
+
+      if (name == null || priceStr == null || quantity == null) continue;
+
+      final parsedPrice = (double.tryParse(priceStr.replaceAll('\$', '').trim()) ?? 0.0) * 100;
+      final int finalPrice = parsedPrice.toInt();
+
+      cartMenuList.add(
+        MenuItemList()
+          ..name = name
+          ..totalPrice = finalPrice
+          ..price = finalPrice
+          ..cartQuantity = quantity
+          ..itemUrl = itemUrl
+          ..image = imageUrl
+          ..productId = itemUrl,
+      );
+    }
   }
 
   int price = 0;
@@ -95,7 +156,6 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
       listener: (context, state) {
         if (state is StoreCheckoutState) {
           cartMenuList = state.menuItemList;
-          setState(() {});
 
           price = 0;
           for (var element in cartMenuList) {
@@ -105,15 +165,16 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
         }
       },
       builder: (context, state) {
+        
         return BlocConsumer<GroceryBloc, GroceryState>(
           bloc: groceryBloc,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is CreateOrderLoadingState) {
               orderLoader = state.isLoading;
               setState(() {});
             }
             if (state is CreateOrderSuccessState) {
-              Get.to(
+              final result = await Get.to(
                 () => CheckOutScreen(
                   isFromGrocery: true,
                   cartData: cartMenuList,
@@ -128,9 +189,13 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                   currentAddress: streetDetailsController.text,
                 ),
               );
+              if (result == true) {
+                syncCartWithServer();
+              }
             }
           },
           builder: (context, state) {
+            
             return GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
               child: Scaffold(
@@ -154,7 +219,36 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const BackButtonWidget(),
+                            _isGoingBack
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                )
+                              : GestureDetector(
+                                  onTap: () async {
+                                    if (_isGoingBack) return;
+
+                                    setState(() => _isGoingBack = true);
+
+                                    final signalR = SignalRService();
+                                    final prefs = await SharedPreferences.getInstance();
+
+                                    try {
+                                      await signalR.CloseViewCart();
+                                      await prefs.setBool('cart-opened', false);
+
+                                      if (mounted) Get.back(result: true);
+                                    } catch (e) {
+                                      print(" Error closing cart: $e");
+                                    } finally {
+                                      if (mounted) setState(() => _isGoingBack = false);
+                                    }
+                                  },
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                  ),
+                                ),
                             Text(
                               'Cart',
                               style: FontUtils.h22(
@@ -216,13 +310,14 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                           ),
                         ),
                         16.height,
-                        CustomSearchField(
-                          hintText: "Search for item",
-                          controller: search,
-                          readOnly: false,
-                          onChange: (p0) => setState(() => searchText = p0),
-                        ).paddingOnly(left: 14, right: 14),
+                        // CustomSearchField(
+                        //   hintText: "Search for item",
+                        //   controller: search,
+                        //   readOnly: false,
+                        //   onChange: (p0) => setState(() => searchText = p0),
+                        // ).paddingOnly(left: 14, right: 14),
                         12.height,
+                        if (isLoading == false)
                         Text(
                           "${cartMenuList.length} items",
                           style: FontUtils.h16(
@@ -233,6 +328,9 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                         Expanded(
                           child: Builder(
                             builder: (context) {
+                              if (isLoading == true) {
+                                return const AppCenterLoader();
+                              }
                               List<MenuItemList> filterList = cartMenuList
                                   .where((element) =>
                                       element.name?.toLowerCase().contains(
@@ -278,13 +376,14 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                                 storeName: widget.storeName,
                                                 add: true,
                                                 onCartTap: () {},
-                                                onAdd: () =>
-                                                    widget.storeCartBloc.add(
-                                                  ChangeGroceryQty(
-                                                    productID: item.productId,
-                                                    type: ModifyType.decrement,
-                                                  ),
-                                                ),
+                                                onAdd: () {
+                                                  widget.storeCartBloc.add(
+                                                    ChangeGroceryQty(
+                                                      productID: item.productId,
+                                                      type: ModifyType.decrement,
+                                                    ),
+                                                  );
+                                                },
                                                 onRemove: () =>
                                                     widget.storeCartBloc.add(
                                                   ChangeGroceryQty(
@@ -292,6 +391,7 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                                     type: ModifyType.increment,
                                                   ),
                                                 ),
+                                                
                                               );
                                             },
                                           ),
@@ -312,59 +412,59 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (!orderLoader) ...[
-                                  Padding(
-                                    padding: EdgeInsets.only(bottom: 16.h),
-                                    child: Text(
-                                      ' Order Notes',
-                                      style: FontUtils.h18(
-                                        fontColor: const Color(0xff000000),
-                                        fontWeight: FWT.semiBold,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 0),
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xff004C63)
-                                              .withOpacity(0.08),
-                                          offset: const Offset(0, 0),
-                                          blurRadius: 16,
-                                        )
-                                      ],
-                                    ),
-                                    child: TextFormField(
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      controller: notes,
-                                      decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        contentPadding: const EdgeInsets.all(0),
-                                        hintText: 'Add order Notes.....',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                // if (!orderLoader) ...[
+                                //   Padding(
+                                //     padding: EdgeInsets.only(bottom: 16.h),
+                                //     child: Text(
+                                //       ' Order Notes',
+                                //       style: FontUtils.h18(
+                                //         fontColor: const Color(0xff000000),
+                                //         fontWeight: FWT.semiBold,
+                                //       ),
+                                //     ),
+                                //   ),
+                                //   Container(
+                                //     padding: const EdgeInsets.symmetric(
+                                //         horizontal: 16, vertical: 0),
+                                //     width: MediaQuery.of(context).size.width,
+                                //     decoration: BoxDecoration(
+                                //       color: Colors.white,
+                                //       borderRadius: BorderRadius.circular(8),
+                                //       boxShadow: [
+                                //         BoxShadow(
+                                //           color: const Color(0xff004C63)
+                                //               .withOpacity(0.08),
+                                //           offset: const Offset(0, 0),
+                                //           blurRadius: 16,
+                                //         )
+                                //       ],
+                                //     ),
+                                //     child: TextFormField(
+                                //       style:
+                                //           const TextStyle(color: Colors.black),
+                                //       controller: notes,
+                                //       decoration: InputDecoration(
+                                //         enabledBorder: OutlineInputBorder(
+                                //           borderRadius:
+                                //               BorderRadius.circular(8),
+                                //           borderSide: BorderSide.none,
+                                //         ),
+                                //         focusedBorder: OutlineInputBorder(
+                                //           borderRadius:
+                                //               BorderRadius.circular(8),
+                                //           borderSide: BorderSide.none,
+                                //         ),
+                                //         border: OutlineInputBorder(
+                                //           borderRadius:
+                                //               BorderRadius.circular(8),
+                                //           borderSide: BorderSide.none,
+                                //         ),
+                                //         contentPadding: const EdgeInsets.all(0),
+                                //         hintText: 'Add order Notes.....',
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ],
                                 12.height,
                                 Row(
                                   mainAxisAlignment:

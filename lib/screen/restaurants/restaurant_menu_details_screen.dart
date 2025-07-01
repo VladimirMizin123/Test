@@ -18,12 +18,12 @@ import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_bloc.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_event.dart';
 import 'package:gymeats_mobile/screen/restaurants/bloc/restaurant_state.dart';
 import 'package:gymeats_mobile/screen/restaurants/customization_header.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart'  hide Option;
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_menu_list.dart'
     as opt;
 import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart'
-    as s_opt;
-import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart';
+    as s_opt   hide Option;
+import 'package:gymeats_mobile/screen/restaurants/model/get_shopping_list_model.dart'  hide Option;
 import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_meal_Add_button.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
@@ -31,6 +31,9 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/models/check_store_model.dart' as qu;
 import 'model/get_user_address_model.dart' as address;
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
+import 'dart:convert';
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantMenuDetailsScreen extends StatefulWidget {
   const RestaurantMenuDetailsScreen({
@@ -65,6 +68,7 @@ class _RestaurantMenuDetailsScreenState
   int item = 1;
   dynamic price = 0;
   int cartCount = 0;
+  bool _isGoingBack = false;
   bool selectFirst = false;
   bool selectSecond = false;
   bool isAddUpdate = false;
@@ -81,7 +85,7 @@ class _RestaurantMenuDetailsScreenState
   RxList<opt.Option> routingList = RxList<opt.Option>();
   // Rxn<opt.Option> routing = Rxn<opt.Option>(null);
   ScrollController controller = ScrollController();
-
+  bool _isLoadingCustomization = false;
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
   bool isAdding = false;
@@ -105,20 +109,94 @@ class _RestaurantMenuDetailsScreenState
     item = widget.data.cartQuantity != 0 ? widget.data.cartQuantity ?? 1 : 1;
   }
 
-  void _handleCustomization() {
-    if (customizationList.isEmpty &&
-        (widget.data.shouldFetchCustomizations ?? false)) {
-      restaurantBloc.add(FetchCustomizationEvent(
-        productId: widget.data.productId ?? "",
-        pickUp: widget.pickUp,
-        callback: (menu) {
-          customizationList = menu.customizations ?? [];
-          widget.onCustomizationChange?.call(customizationList);
+  Future<void> _handleCustomization() async {
+    final signalR = SignalRService();
+    final prefs = await SharedPreferences.getInstance();
 
-          getData();
-          setState(() {});
-        },
-      ));
+    final isCartOpened = prefs.getBool('cart-opened') ?? false;
+
+    if (isCartOpened) {
+      await signalR.CloseViewCart();
+      await prefs.setBool('cart-opened', false);
+    }
+
+    final signalRItem = {
+      "Name": widget.data.name,
+      "ImageUrl": widget.data.image,
+      "Price": widget.data.formattedPrice,
+      "Calories": widget.data.description,
+      "ItemUrl": widget.data.itemUrl,
+    };
+
+    final jsonString = jsonEncode(signalRItem);
+
+    List<dynamic>? signalRResult;
+    setState(() {
+      _isLoadingCustomization = true;
+    });
+
+    try {
+      signalRResult = await signalR.getCustomization(jsonString);
+    } catch (e) {
+      setState(() {
+        _isLoadingCustomization = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingCustomization = false;
+    });
+
+    if (signalRResult != null && signalRResult.isNotEmpty) {
+      List<Customization> parsedCustomizations = [];
+
+      try {
+        parsedCustomizations = signalRResult.map<Customization>((item) {
+          final String? header = item['Header'];
+          final bool isRequired = item['IsRequired'] ?? false;
+          final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
+
+          List<opt.Option> options = (item['Items'] as List).map<opt.Option>((optItem) {
+            try {
+              String name = optItem['Name'] ?? '';
+              String priceString = optItem['Price'] ?? '';
+              int? price = 0;
+
+              return opt.Option(
+                name: name,
+                formattedPrice: priceString,
+                price: price,
+                minQty: 0,
+                maxQty: isManySelectionAllowed ? 99 : 1,
+                isRequired: isRequired,
+                defaultQty: 0,
+                optionId: name,
+                isNestedSelection: optItem['IsNestedSelection'],
+              );
+            } catch (e) {
+              rethrow;
+            }
+          }).toList();
+
+          return Customization(
+            name: header,
+            minChoiceOptions: isRequired ? 1 : 0,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            options: options,
+            customizationId: header,
+            level: 1,
+          );
+        }).toList();
+      } catch (e) {
+        return;
+      }
+
+      setState(() {
+        widget.data.customizations = parsedCustomizations;
+        customizationList = parsedCustomizations;
+        widget.onCustomizationChange?.call(customizationList);
+      });
     }
   }
 
@@ -195,15 +273,37 @@ class _RestaurantMenuDetailsScreenState
                               alignment: Alignment.topLeft,
                               child: Padding(
                                 padding: EdgeInsets.only(top: 30.h, left: 15.w),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Get.back(result: addToCart);
-                                  },
-                                  child: const Icon(
-                                    Icons.arrow_back_ios,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                                child: _isGoingBack
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () async {
+                                          if (_isGoingBack) return;
+
+                                          
+
+                                          final prefs = await SharedPreferences.getInstance();
+                                          final itemAdded = prefs.getBool('cart-opened') ?? false;
+                                          final signalR = SignalRService();
+
+                                          if (itemAdded) {
+                                            Get.back();
+                                          } else {
+                                            setState(() => _isGoingBack = true);
+                                            await signalR.goBack();
+                                            if (mounted) Get.back();
+                                          }
+
+                                          if (mounted) setState(() => _isGoingBack = false);
+                                        },
+                                        child: const Icon(
+                                          Icons.arrow_back_ios,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -265,9 +365,28 @@ class _RestaurantMenuDetailsScreenState
                                           : const SizedBox.shrink();
                                     },
                                   ),
-                                  customizationList.isEmpty
-                                      ? const SizedBox()
-                                      : nestedItemView(),
+                                  _isLoadingCustomization
+                            ? const Center(
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              )
+                            : customizationList.isEmpty
+                                ? const SizedBox.shrink()
+                                : FutureBuilder<Widget>(
+                                    future: nestedItemView(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return const Text('');
+                                      } else {
+                                        return snapshot.data!;
+                                      }
+                                    },
+                                  ),
                                   15.height,
                                   Column(
                                     children: [
@@ -279,7 +398,8 @@ class _RestaurantMenuDetailsScreenState
                                               MainAxisAlignment.center,
                                           children: [
                                             GestureDetector(
-                                              onTap: () {
+                                              onTap: () async {
+                                                print('TAP');
                                                 if (alreadyInCart) {
                                                   cartBloc.add(
                                                     ChangeQty(
@@ -289,14 +409,22 @@ class _RestaurantMenuDetailsScreenState
                                                           ModifyType.decrement,
                                                     ),
                                                   );
+                                                  print(widget.data
+                                                                  .cartQuantity);
                                                 } else {
                                                   if (item > 0) {
                                                     item--;
                                                   }
+                                                  print(widget.data
+                                                                  .cartQuantity);
                                                 }
                                                 setState(() {
                                                   addToCart = true;
                                                 });
+                                                if (item != 0) {
+                                                  final signalR = SignalRService();
+                                                  await signalR.selectQuantity(item);
+                                                }
                                               },
                                               child: Container(
                                                 height: size.height * 0.060,
@@ -359,7 +487,7 @@ class _RestaurantMenuDetailsScreenState
                                             ),
                                             SizedBox(width: 8.w),
                                             GestureDetector(
-                                              onTap: () {
+                                              onTap: () async {
                                                 if (alreadyInCart) {
                                                   cartBloc.add(
                                                     ChangeQty(
@@ -369,10 +497,18 @@ class _RestaurantMenuDetailsScreenState
                                                           ModifyType.increment,
                                                     ),
                                                   );
+                                                
+                                                  print(item);
                                                 } else {
                                                   item++;
                                                   setState(() {});
+                                                  print(item);
                                                 }
+                                                if (item != 0) {
+                                                  final signalR = SignalRService();
+                                                  await signalR.selectQuantity(item);
+                                                }
+                                                
                                               },
                                               child: Container(
                                                 height: size.height * 0.060,
@@ -411,20 +547,23 @@ class _RestaurantMenuDetailsScreenState
                                               child:
                                                   CircularProgressIndicator())
                                           : RestaurantMealAddButtonWidget(
-                                              onTap: () {
-                                                if (!alreadyInCart) {
-                                                  addIntoCart();
-                                                } else {
-                                                  Get.to(
-                                                    () => RestaurantCart(
-                                                      pickUp: widget.pickUp,
-                                                      userAddress:
-                                                          widget.userAddress,
-                                                    ),
-                                                    transition:
-                                                        Transition.fadeIn,
-                                                  );
-                                                }
+                                              onTap: ()  async {
+                                                // if (!alreadyInCart) {
+                                                  final success = await addIntoCart();
+                                                  if (success) {
+                                                    Get.back();
+                                                  }
+                                                // } else {
+                                                //   Get.to(
+                                                //     () => RestaurantCart(
+                                                //       pickUp: widget.pickUp,
+                                                //       userAddress:
+                                                //           widget.userAddress,
+                                                //     ),
+                                                //     transition:
+                                                //         Transition.fadeIn,
+                                                //   );
+                                                // }
                                               },
                                               buttonLable: alreadyInCart
                                                   ? 'View Cart'
@@ -459,11 +598,16 @@ class _RestaurantMenuDetailsScreenState
     );
   }
 
-  Widget nestedItemView() {
+  Future<Widget> nestedItemView() async {
+    print('nestedItemView');
+    final signalR = SignalRService();
+    List<dynamic>? signalRResult;
+    print(routingList.isEmpty);
     return Obx(
       () => routingList.isEmpty
           ? Column(
-              children: List.generate(
+              children: 
+              List.generate(
                 customizationList.length,
                 (index) {
                   return Container(
@@ -499,9 +643,10 @@ class _RestaurantMenuDetailsScreenState
                               customization: routeCs[index],
                               setBackButton: index == 0 ? true : false,
                               parentTitle: routing.name,
-                              onBack: () {
+                              onBack: () async {
+                                final signalR = new SignalRService();
+                                await signalR.SaveNestedSelectionOption();
                                 routingList.removeLast();
-                                // routing.value = null;
                               },
                             ),
                             16.h.height,
@@ -520,7 +665,6 @@ class _RestaurantMenuDetailsScreenState
   Widget expandableTile(Customization customization,
       {required Customization parent}) {
     List<opt.Option> options = customization.options ?? [];
-
     return Column(
       children: List<Widget>.generate(
         options.length,
@@ -528,6 +672,7 @@ class _RestaurantMenuDetailsScreenState
           opt.Option currentOpt = options[index1];
           List<Customization> csList = currentOpt.customizations ?? [];
           bool isLastRecord = index1 < options.length - 1;
+          
           return csList.isNotEmpty
               ? Container(
                   margin: EdgeInsets.only(bottom: 16.h),
@@ -674,6 +819,7 @@ class _RestaurantMenuDetailsScreenState
         children: [
           GestureDetector(
             onTap: () {
+              print('onTap2');
               if (!alreadyInCart) {
                 onTileTap(cs, option, parent: parent, setRouting: setRouting);
               } else {
@@ -730,20 +876,79 @@ class _RestaurantMenuDetailsScreenState
     );
   }
 
-  void onTileTap(Customization cs, opt.Option option,
-      {required Customization parent, bool setRouting = true}) {
+  Future<void> onTileTap(Customization cs, opt.Option option,
+    {required Customization parent, bool setRouting = true}) async {
+    final signalR = SignalRService();
+    final header = cs.name ?? '';
+    final selectedName = option.name ?? '';
+
+    if (option.isNestedSelection == true &&
+        (option.customizations == null || option.customizations!.isEmpty)) {
+      try {
+        final signalRResult = await signalR.getNestedSelection(header, selectedName);
+
+        final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
+          final String? nestedHeader = item['header'] ?? item['Header'];
+          final bool isRequired = item['isRequired'] ?? item['IsRequired'] ?? false;
+          final bool isManySelectionAllowed =
+              item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;
+
+          final optionsList = item['items'] ?? item['Items'] ?? [];
+
+          List<opt.Option> options = (optionsList as List).map<opt.Option>((optItem) {
+            try {
+              final name = optItem['name'] ?? optItem['Name'] ?? '';
+              final priceString = optItem['price']?.toString() ??
+                  optItem['Price']?.toString() ?? '';
+              final isNested =
+                  optItem['isNestedSelection'] ?? optItem['IsNestedSelection'] ?? false;
+
+              return opt.Option(
+                name: name,
+                formattedPrice: priceString,
+                price: 0,
+                minQty: 0,
+                maxQty: isManySelectionAllowed ? 99 : 1,
+                isRequired: isRequired,
+                defaultQty: 0,
+                optionId: name,
+                isNestedSelection: isNested,
+              );
+            } catch (e) {
+              rethrow;
+            }
+          }).toList();
+
+          return Customization(
+            name: nestedHeader,
+            minChoiceOptions: isRequired ? 1 : 0,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            options: options,
+            customizationId: nestedHeader,
+            level: cs.level + 1,
+          );
+        }).toList();
+
+        option.customizations = parsedNestedCustomizations;
+      } catch (e) {}
+    } else {
+      try {
+        await signalR.selectCustomizationItem(header, selectedName);
+      } catch (e) {}
+    }
+
     setState(() {
-      if (nestedOptionList
-          .any((element) => element["option_id"] == option.optionId)) {
-        nestedOptionList
-            .removeWhere((element) => element["option_id"] == option.optionId);
+      if (nestedOptionList.any((element) => element["option_id"] == option.optionId)) {
+        nestedOptionList.removeWhere((element) => element["option_id"] == option.optionId);
         removeOptions(option);
         return;
       }
+
       if (setRouting && (option.customizations?.isNotEmpty ?? false)) {
         routingList.add(option);
         _animateToTop();
       }
+
       findOptionPath(parent, option);
       removeIfNotValidate(cs);
 
@@ -761,48 +966,58 @@ class _RestaurantMenuDetailsScreenState
   }
 
   bool isFormValid(List<Customization> cList) {
-    for (var i = 0; i < cList.length; i++) {
-      int count = nestedOptionList
-          .where((e) => cList.any((element) =>
-              cList[i].options?.any((k) => k.optionId == e["option_id"]) ??
-              false))
-          .toList()
-          .length;
+    print(" Checking form validity for ${cList.length} customizations");
 
-      List<opt.Option> requiredOptions = cList[i]
-              .options
+    for (var i = 0; i < cList.length; i++) {
+      final customization = cList[i];
+      print(" Customization: ${customization.name}");
+
+      int count = nestedOptionList
+          .where((e) => customization.options?.any((k) => k.optionId == e["option_id"]) ?? false)
+          .length;
+      print(" Selected options count: $count (original min required: ${customization.minChoiceOptions ?? "null"})");
+
+      List<opt.Option> requiredOptions = customization.options
               ?.where((element) => element.isRequired ?? false)
-              .toList() ??
-          [];
+              .toList() ?? [];
 
       if (requiredOptions.isNotEmpty) {
-        log("${cList[i].name}:-------Required Option---------${requiredOptions.map((e) => e.name).toList()}");
+        print("⚠️ Required options for ${customization.name}: ${requiredOptions.map((e) => e.name).join(", ")}");
       }
 
-      bool requiredOptionNotSelected = requiredOptions.isNotEmpty &&
-          !requiredOptions.every((element) =>
+      int effectiveMinChoice = requiredOptions.isNotEmpty ? 1 : (customization.minChoiceOptions ?? 0);
+      print("Effective minChoiceOptions for ${customization.name}: $effectiveMinChoice");
+
+      bool hasAtLeastOneRequiredSelected = requiredOptions.isNotEmpty &&
+          requiredOptions.any((element) =>
               nestedOptionList.any((e) => e["option_id"] == element.optionId));
 
-      List<opt.Option> validOptionList = cList[i]
-              .options
-              ?.where((element) => nestedOptionList
-                  .any((e) => e["option_id"] == element.optionId))
-              .toList() ??
-          [];
-
-      if ((count < (cList[i].minChoiceOptions ?? 0)) ||
-          requiredOptionNotSelected) {
+      if (requiredOptions.isNotEmpty && !hasAtLeastOneRequiredSelected) {
+        print("None of the required options are selected in ${customization.name}");
         return false;
       }
 
-      if (cList[i].options?.isNotEmpty ?? false) {
-        for (opt.Option ele in validOptionList) {
-          if (!isFormValid(ele.customizations ?? [])) {
-            return false;
-          }
+      if (count < effectiveMinChoice) {
+        print(" Selected options count $count меньше минимально требуемого $effectiveMinChoice для ${customization.name}");
+        return false;
+      }
+
+      List<opt.Option> validOptionList = customization.options
+              ?.where((element) =>
+                  nestedOptionList.any((e) => e["option_id"] == element.optionId))
+              .toList() ?? [];
+
+      print(" Valid selected options in ${customization.name}: ${validOptionList.map((e) => e.name).join(", ")}");
+
+      for (opt.Option ele in validOptionList) {
+        if (!isFormValid(ele.customizations ?? [])) {
+          print("Nested customization inside ${ele.name} is invalid");
+          return false;
         }
       }
     }
+
+    print(" Form is valid");
     return true;
   }
 
@@ -844,7 +1059,8 @@ class _RestaurantMenuDetailsScreenState
                 nestedOptionList.add({
                   "option_id": option.optionId ?? '',
                   "quantity": 1,
-                  "marked_price": option.price
+                  "marked_price": double.tryParse(option.formattedPrice!.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0.0,
+                  "formattd_price": option.formattedPrice
                 });
               }
               return true;
@@ -886,19 +1102,55 @@ class _RestaurantMenuDetailsScreenState
     return (false, null);
   }
 
-  void setTotalPrice() {
-    price = widget.data.originalPrice;
-    for (var element in nestedOptionList) {
-      price = price + element['marked_price'];
-    }
-    price = price * item;
-  }
+  int setTotalPrice() {
+    print(widget.data.formattedPrice);
 
-  void addIntoCart() {
+    double price = 0.0;
+
+    final basePriceString = widget.data.formattedPrice;
+    if (basePriceString != null && basePriceString != 'Priced by add-ons') {
+      price = double.tryParse(
+            basePriceString.replaceAll(RegExp(r'[^\d.]'), ''),
+          ) ??
+          0.0;
+    }
+
+    for (var element in nestedOptionList) {
+      final markedPrice = element['marked_price'];
+      if (markedPrice != null) {
+        price += markedPrice;
+      }
+    }
+
+    price *= item;
+
+    int priceInCents = (price * 100).round();
+
+    print('Total price in cents: $priceInCents');
+    return priceInCents;
+  }
+  
+  Future<bool> addIntoCart() async {
+    print(item);
+    setState(() {
+      isAdding = true;
+    });
+
     if (item > 0) {
       bool valid = isFormValid(customizationList);
+      print('VALID $valid');
       if (valid) {
-        setTotalPrice();
+        price = setTotalPrice();
+        print('price $price');
+            final signalR = SignalRService();
+            try {
+              final signalRResult = await signalR.addItemsToCart();
+              print(' AddItemsToCart completed successfully: $signalRResult');
+
+            print(price);
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('item-added-to-cart', true);
+            await prefs.setBool('cart-opened', true);
         cartBloc.add(
           AddCartEvent(
             shoppingItem: ShoppingListData(
@@ -908,13 +1160,13 @@ class _RestaurantMenuDetailsScreenState
               quantity: item,
               price: price,
               originalPrice: widget.data.originalPrice,
-              options: nestedOptionList
-                  .map((e) => s_opt.Option(
-                        optionId: e["option_id"],
-                        quantity: e["quantity"],
-                        markedPrice: e["marked_price"],
-                      ))
-                  .toList(),
+              // options: nestedOptionList
+              //     .map((e) => s_opt.Option(
+              //           optionId: e["option_id"],
+              //           quantity: e["quantity"],
+              //           markedPrice: e["marked_price"],
+              //         ))
+              //     .toList(),
               mealmeStoreId: widget.restaurantId,
               productType: 'Restaurant',
               isChecked: false,
@@ -928,19 +1180,32 @@ class _RestaurantMenuDetailsScreenState
             ),
           ),
         );
+        setState(() {
+          isAdding = false;
+        });
+        return true;
+            } catch (e) {
+              print('AddItemsToCart failed: $e');
+              return false;
+            }
+
+            
       } else {
         showToast(
           message: 'Please Select Required Item',
           isSuccess: false,
           color: AppColors.black,
         );
+        return false;
       }
     } else {
+      
       showToast(
         message: 'Please Select One Item',
         isSuccess: false,
         color: AppColors.black,
       );
+      return false;
     }
   }
 }

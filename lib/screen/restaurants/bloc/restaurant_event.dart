@@ -14,7 +14,8 @@ abstract class RestaurantEvent {}
 class GetUserAddressEvent extends RestaurantEvent {}
 
 class MealPlanMatchEvent extends RestaurantEvent {
-  final String subcategoryId;
+  final String? subcategoryId;
+  final String? categoryId;
   final RestaurantMenu menu;
   final double? calories;
   final Function()? onSuccess;
@@ -23,6 +24,7 @@ class MealPlanMatchEvent extends RestaurantEvent {
   MealPlanMatchEvent({
     required this.menu,
     required this.subcategoryId,
+    this.categoryId,
     this.calories,
     this.onSuccess,
     this.onError,
@@ -38,6 +40,7 @@ class RestaurantVerifyEvent extends RestaurantEvent {
   final BuildContext context;
   final Function(RestaurantMenu?, qu.Quote?)? onVerify;
   final Function()? notVerify;
+  final String? restaurantName;
 
   RestaurantVerifyEvent({
     required this.latitude,
@@ -48,6 +51,7 @@ class RestaurantVerifyEvent extends RestaurantEvent {
     required this.context,
     required this.onVerify,
     this.notVerify,
+    this.restaurantName,
   });
 }
 
@@ -59,6 +63,7 @@ class GetRestaurantListEvent extends RestaurantEvent {
   final List categotyData;
   final String? mealName;
   final bool storeLocal;
+  final bool firstCall;
 
   GetRestaurantListEvent(
     this.latitude,
@@ -67,7 +72,12 @@ class GetRestaurantListEvent extends RestaurantEvent {
     this.categotyData, {
     this.storeLocal = true,
     this.mealName,
+    this.firstCall = false,
   });
+}
+
+class InitializeRestaurantsWindowsEvent extends RestaurantEvent {
+  InitializeRestaurantsWindowsEvent();
 }
 
 class RestaurantByNameEvent extends RestaurantEvent {
@@ -152,12 +162,14 @@ class CreateOrderEvent extends RestaurantEvent {
   final BuildContext context;
   final dynamic lat;
   final dynamic lng;
+  final bool isMock;
 
   CreateOrderEvent({
     required this.createOrderModel,
     required this.context,
     this.lat,
     this.lng,
+    this.isMock = false,
   });
 }
 

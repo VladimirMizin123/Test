@@ -524,78 +524,72 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
 
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  mainAxisExtent: MediaQuery.of(context).size.height * 0.13,
-                ),
-                physics: const BouncingScrollPhysics(),
-                itemCount: widget.catgoryDataList.length,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      if (localList
-                          .contains(widget.catgoryDataList[index]["title"])) {
-                        setState(() {
-                          localList
-                              .remove(widget.catgoryDataList[index]["title"]);
-                        });
-                      } else {
-                        setState(() {
-                          localList.add(widget.catgoryDataList[index]["title"]);
-                        });
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: localList.contains(
-                                widget.catgoryDataList[index]["title"])
-                            ? AppColors.coral
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: localList.contains(
-                                widget.catgoryDataList[index]["title"])
-                            ? Border.all(color: AppColors.terracotta)
-                            : const Border(),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xff004C63).withOpacity(0.08),
-                            offset: const Offset(0, 0),
-                            blurRadius: 16,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: SvgPicture.asset(
-                              widget.catgoryDataList[index]["image"],
-                              height: 45.h,
-                              width: 45.w,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            widget.catgoryDataList[index]["title"],
-                            style: FontUtils.h17(
-                              fontColor: Colors.black,
-                              fontWeight: FWT.semiBold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+           Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                mainAxisExtent: MediaQuery.of(context).size.height * 0.13,
               ),
+              physics: const BouncingScrollPhysics(),
+              itemCount: widget.catgoryDataList.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              itemBuilder: (context, index) {
+                final title = widget.catgoryDataList[index]["title"];
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (localList.contains(title)) {
+                        localList.remove(title);
+                      } else {
+                        localList.clear();
+                        localList.add(title);
+                      }
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: localList.contains(title) ? AppColors.coral : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: localList.contains(title)
+                          ? Border.all(color: AppColors.terracotta)
+                          : const Border(),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xff004C63).withOpacity(0.08),
+                          offset: const Offset(0, 0),
+                          blurRadius: 16,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: SvgPicture.asset(
+                            widget.catgoryDataList[index]["image"],
+                            height: 45.h,
+                            width: 45.w,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          title,
+                          style: FontUtils.h17(
+                            fontColor: Colors.black,
+                            fontWeight: FWT.semiBold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
+          ),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -620,9 +614,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                   : true,
                               localList.isNotEmpty
                                   ? localList
-                                  : categoryDataList
-                                      .map((e) => e["title"])
-                                      .toList(),
+                                  : [],
                             ),
                           );
                         }

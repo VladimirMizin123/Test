@@ -62,6 +62,7 @@ class Category {
   String? subcategoryId;
   List<MenuItemList>? menuItemList;
   List<Category>? subcategoryList;
+  bool hasShopRestaurant;
 
   Category({
     this.name,
@@ -69,6 +70,7 @@ class Category {
     this.subcategoryId,
     this.menuItemList,
     this.subcategoryList,
+    this.hasShopRestaurant = false,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(

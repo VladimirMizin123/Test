@@ -13,7 +13,7 @@ import 'package:gymeats_mobile/models/success_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/add_items_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_checkout_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
-import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart';
+import 'package:gymeats_mobile/screen/restaurants/model/create_order_response_model.dart' as crt;
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_request_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/create_product_response_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
@@ -26,8 +26,10 @@ import 'package:gymeats_mobile/screen/restaurants/model/near_by_store_model.dart
 import 'package:gymeats_mobile/screen/restaurants/model/update_cart_items_model.dart';
 import 'package:gymeats_mobile/service/api_urls.dart';
 import 'package:gymeats_mobile/service/apis.dart';
+import 'package:gymeats_mobile/service/signalr_service.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantRepository {
   final ApiServices apiServices = ApiServices();
@@ -52,7 +54,46 @@ class RestaurantRepository {
     }
   }
 
-  /// Get Restaurant List ====================================================================
+  Future<String> getCurrentAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final cachedAddress = prefs.getString('currentUserAddress');
+    final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
+
+    if (cachedAddress != null && !addressUpdated) {
+      return cachedAddress.trim();
+    }
+
+    final addressResult = await getUserAddressData();
+
+    if (addressResult.isRight) {
+      var add = addressResult.right.data
+          ?.firstWhereOrNull((element) => element.isPrimary ?? false);
+      add ??= addressResult.right.data?.first;
+
+      if (add != null) {
+        final parts = [
+          add.streetNum,
+          add.streetName,
+          add.city,
+          add.country
+        ]
+            .where((e) => e != null && e.trim().isNotEmpty)
+            .cast<String>()
+            .toList();
+
+        final address = parts.join(", ").trim();
+
+        if (address.isNotEmpty) {
+          await prefs.setString('currentUserAddress', address);
+          await prefs.setBool('AddressUpdated', false);
+          return address;
+        }
+      }
+    }
+
+    return '';
+  }
 
   Future<Either<ErrorModel, GetRestaurantListModel>> getRestaurantListData({
     required double? latitude,
@@ -61,54 +102,69 @@ class RestaurantRepository {
     String? mealName,
     required int maximumMiles,
     required List categoriesData,
+    int? page,
   }) async {
-    (double?, double?) pos = await Constant.i.position;
+    try {
+      print('getRestaurantListData');
+      final signalR = SignalRService();
+      await signalR.connect();
 
-    double? lat = latitude;
-    double? lng = longitude;
+      final address = await getCurrentAddress();
 
-    if (latitude == null &&
-        longitude == null &&
-        pos.$1 == null &&
-        pos.$2 == null) {
-      Either<ErrorModel, GetUserAddressModel> res = await getUserAddressData();
-      if (res.isRight) {
-        var add = res.right.data
-            ?.firstWhereOrNull((element) => element.isPrimary ?? false);
-        if (add != null) {
-          lat = add.latitude;
-          lng = add.longitude;
-        }
-        if ((res.right.data?.isNotEmpty ?? false) && add == null) {
-          lat = res.right.data?.first.latitude;
-          lng = res.right.data?.first.longitude;
-        }
+      print('using Address $address');
+
+      Map<String, dynamic> filters = {};
+      if (categoriesData.isNotEmpty && categoriesData.first is String && (categoriesData.first as String).trim().isNotEmpty) {
+        filters = { "CategoryName": categoriesData.first };
       }
-    }
+      
+      final rawData = await signalR.getFilteredRestaurants(
+        address: address,
+        userId: userID,
+        pageIndex: page ?? 1,
+        pageSize: 20,
+        filters: filters,
+      );
 
-    Map<String, dynamic> data = {
-      "latitude": pos.$1 ?? lat,
-      "longitude": pos.$2 ?? lng,
-      "pickup": pickup,
-      "maximum_miles": maximumMiles,
-      "categories": categoriesData,
-    };
-    if (mealName != null) {
-      data["mealName"] = mealName;
-    }
-    log("Api Url : ${ApiUrls.getRestaurantList}");
-    log('data---------->>>>>> ${jsonEncode(data)}');
+      final restaurantsContainer = rawData["Restaurants"];
+      late List<RestaurantList> restaurantList = [];
+      final List<dynamic> restaurantsJson = restaurantsContainer is String
+          ? jsonDecode(restaurantsContainer)["Restaurants"] as List<dynamic>
+          : (restaurantsContainer["Restaurants"] as List<dynamic>);
 
-    final response = await apiServices.post(ApiUrls.getRestaurantList, data);
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Right(GetRestaurantListModel.fromJson(jsonDecode(response.body)));
-    } else if (response.statusCode == 400) {
-      return Right(GetRestaurantListModel.fromJson(jsonDecode(response.body)));
-    } else {
-      return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      restaurantList = restaurantsJson.map<RestaurantList>((r) {
+        return RestaurantList.fromJson({
+          "_id": r["_id"],
+          "name": r["name"],
+          "weighted_rating_value": r["weighted_rating_value"],
+          "logo_photos": r["ImageSrc"] != null ? [r["ImageSrc"]] : [],
+        });
+      }).toList();
+            
+      return Right(GetRestaurantListModel(
+        success: true,
+        message: "Fetched from SignalR",
+        errorMessage: null,
+        data: restaurantList,
+      ));
+    } catch (e) {
+      print("[Restaurant] Error: $e");
+      return Left(ErrorModel(message: e.toString()));
     }
   }
+
+  Future<void> handleRestaurantsWindowsInitialization() async {
+    final signalR = SignalRService();
+    await signalR.connect();
+    final prefs = await SharedPreferences.getInstance();
+
+    final address = await getCurrentAddress();
+
+    if (userId != null) {
+      await signalR.initializeWindowReference(address: address, userId: userID);
+    }
+  }
+  
 
   Future<Either<ErrorModel, NearByStoreModel>> getStoreByName({
     required String latitude,
@@ -254,7 +310,7 @@ class RestaurantRepository {
 
   /// Get Restaurant Menu List ====================================================================
 
-  Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList({
+ Future<Either<ErrorModel, GetRestaurantMenuListModel>> getRestaurantMenuList({
     String? restaurantId,
     bool? pickup,
     String? mealType,
@@ -264,49 +320,111 @@ class RestaurantRepository {
     bool needLeft = false,
     (double?, double?)? position,
     Map<String, dynamic>? additionalData,
+    String? restaurantName,
   }) async {
     try {
-      (double?, double?) pos = position ?? await Constant.i.position;
-      Map<String, dynamic> data = {
-        "userId": userId,
-        "mealType": mealType,
-        "restaurantId": restaurantId,
-        "latitude": pos.$1 ?? latitude,
-        "longitude": pos.$2 ?? longitude,
-        "pickup": pickup,
-      };
-      if (menuId != null) {
-        data["menuId"] = menuId;
-      }
-      if (additionalData != null) {
-        data.addAll(additionalData);
-      }
-      log("Api Url : ${ApiUrls.getRestaurantMenuList}");
-      log("Request Data : ${jsonEncode(data)}");
+      Map<String, dynamic>? signalRResult;
 
-      final response = await apiServices
-          .post(ApiUrls.getRestaurantMenuList, data, customToast: true);
-
-      log("Copy Response : ===>");
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Right(
-            GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-      } else if (response.statusCode == 400) {
-        return needLeft
-            ? Left(ErrorModel.fromJson(jsonDecode(response.body)))
-            : Right(
-                GetRestaurantMenuListModel.fromJson(jsonDecode(response.body)));
-      } else {
-        showToast(
-          message: Left(ErrorModel.fromJson(jsonDecode(response.body)))
-              .value
-              .errorMessage
-              .toString(),
-          isSuccess: false,
-        );
-        return Left(ErrorModel.fromJson(jsonDecode(response.body)));
+      if (restaurantName != null && restaurantName.trim().isNotEmpty) {
+        final signalR = SignalRService();
+        try {
+          signalRResult = await signalR.selectRestaurant(restaurantName);
+        } catch (_) {
+          return Left(ErrorModel(errorMessage: "Restaurant is not available"));
+        }
       }
+
+      if (signalRResult == null) {
+        return Left(ErrorModel(errorMessage: "Restaurant is not available"));
+      }
+
+      final List categoryList = signalRResult['categories'] as List;
+      final List subcategoryList = signalRResult['subcategories'] as List;
+      final List menuData = signalRResult['menu'] as List;
+      final bool hasShopRestaurant = signalRResult['hasShopRestaurant'] == true;
+
+      return Right(
+        GetRestaurantMenuListModel(
+          success: true,
+          message: null,
+          errorMessage: null,
+          data: RestaurantMenu(
+            menuId: null,
+            breakfastCalorie: null,
+            lunchCalorie: null,
+            snackCalorie: null,
+            dinnerCalorie: null,
+            hasShopRestaurant: hasShopRestaurant,
+            categories: List<Category>.generate(categoryList.length, (index) {
+              final categoryName = categoryList[index] as String;
+
+              if (index == 0 && hasShopRestaurant) {
+                final List<Category> subcategories = List<Category>.generate(
+                  subcategoryList.length,
+                  (subIndex) {
+                    final subName = subcategoryList[subIndex] as String;
+
+                    return Category(
+                      name: subName,
+                      subcategoryId: null,
+                      menuItemList: subIndex == 0
+                          ? menuData.map<MenuItemList>((item) {
+                              final priceString = item['Price']
+                                  ?.replaceAll('\$', '')
+                                  .trim();
+                              final priceDouble =
+                                  double.tryParse(priceString ?? '') ?? 0.0;
+
+                              return MenuItemList(
+                                name: item['Name'] ?? '',
+                                image: item['ImageUrl'],
+                                formattedPrice: item['Price'],
+                                cartPrice: priceDouble,
+                                isAvailable: true,
+                                description: item['Calories'],
+                                itemUrl: item['ItemUrl'],
+                              );
+                            }).toList()
+                          : [],
+                    );
+                  },
+                );
+
+                return Category(
+                  name: categoryName,
+                  subcategoryId: null,
+                  subcategories: subcategories,
+                  menuItemList: [],
+                );
+              }
+
+              return Category(
+                name: categoryName,
+                subcategoryId: null,
+                subcategories: [],
+                menuItemList: index == 0 && !hasShopRestaurant
+                    ? menuData.map<MenuItemList>((item) {
+                        final priceString =
+                            item['Price']?.replaceAll('\$', '').trim();
+                        final priceDouble =
+                            double.tryParse(priceString ?? '') ?? 0.0;
+
+                        return MenuItemList(
+                          name: item['Name'] ?? '',
+                          image: item['ImageUrl'],
+                          formattedPrice: item['Price'],
+                          cartPrice: priceDouble,
+                          isAvailable: true,
+                          description: item['Calories'],
+                          itemUrl: item['ItemUrl'],
+                        );
+                      }).toList()
+                    : [],
+              );
+            }),
+          ),
+        ),
+      );
     } catch (e) {
       return Left(ErrorModel(errorMessage: e.toString()));
     }
@@ -429,25 +547,95 @@ class RestaurantRepository {
 
   /// Create Order ====================================================================
 
-  Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
-      {required CreateOrderModel createOrderModel}) async {
+  // Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
+  //     {required CreateOrderModel createOrderModel}) async {
+  //   Response? response;
+  //   try {
+  //     Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
+  //     Map<String, dynamic> req = createOrderModel.toJson();
+  //     if (createOrderModel.pickup != true) {
+  //       req['user_latitude'] = createOrderModel.userAddress?.latitude;
+  //       req['user_longitude'] = createOrderModel.userAddress?.longitude;
+  //       req.addAll(extAddress);
+  //     }
+
+  //     log(ApiUrls.createOrder);
+  //     log("Req : ${jsonEncode(req)}");
+  //     response = await apiServices.post(ApiUrls.createOrder, req);
+
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       return Right(
+  //           CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+  //     } else {
+  //       return Left(
+  //         ErrorModel.fromJson(jsonDecode(response.body))
+  //           ..statusCode = response.statusCode,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     return Left(
+  //       ErrorModel(message: e.toString(), errorMessage: e.toString())
+  //         ..statusCode = 500,
+  //     );
+  //   }
+  // }
+
+
+  Future<Either<ErrorModel, crt.CreateOrderResponseModel>> createOrder({
+    required CreateOrderModel createOrderModel,
+    bool isMock = false,
+  }) async {
+    if (isMock) {
+      print('Creating Empty Order...');
+
+      final mockResponse = crt.CreateOrderResponseModel(
+        success: true,
+        errorMessage: null,
+        data: crt.CreateOrderData(
+          orderPlaced: true,
+          orderId: "",
+          userId: "",
+          totalPrice: 0,
+          phoneNumber: 1234567890,
+          finalQuote: crt.FinalQuote(
+            store: "",
+            storeAddress: "",
+            storeId: "",
+            quoteId: "",
+            tip: 0,
+            totalWithTip: 10499,
+            markedTotalWithTip: 10499,
+            miscFees: [],
+            items: [],
+            quote: crt.Quote(
+              subtotal: 0,
+              deliveryFeeCents: 0,
+              serviceFeeCents: 0,
+              salesTaxCents: 0,
+            ),
+          ),
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 300));
+      return Right(mockResponse);
+    }
+
     Response? response;
     try {
       Map<String, dynamic> extAddress = PreferenceUtils.getMenuAddress();
       Map<String, dynamic> req = createOrderModel.toJson();
-      if (createOrderModel.pickup != true) {
-        req['user_latitude'] = createOrderModel.userAddress?.latitude;
-        req['user_longitude'] = createOrderModel.userAddress?.longitude;
-        req.addAll(extAddress);
-      }
 
       log(ApiUrls.createOrder);
       log("Req : ${jsonEncode(req)}");
+
       response = await apiServices.post(ApiUrls.createOrder, req);
+      print("Resp body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return Right(
-            CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+          crt.CreateOrderResponseModel.fromJson(jsonDecode(response.body)),
+        );
       } else {
         return Left(
           ErrorModel.fromJson(jsonDecode(response.body))
@@ -455,12 +643,14 @@ class RestaurantRepository {
         );
       }
     } catch (e) {
+      print('Exception in real createOrder: ${e.toString()}');
       return Left(
         ErrorModel(message: e.toString(), errorMessage: e.toString())
           ..statusCode = 500,
       );
     }
   }
+
 
   /// Create Product ====================================================================
 
@@ -470,9 +660,10 @@ class RestaurantRepository {
     // log("Request Data ; ${jsonEncode(createProductRequestModel.toJson())}")
     Map<String, dynamic> req = createProductRequestModel.toJson();
     log(ApiUrls.createProduct);
-    log("Req : ${jsonEncode(req)}");
+    print("Req : ${jsonEncode(req)}");
 
     final response = await apiServices.post(ApiUrls.createProduct, req);
+    print(response);
     if (response.statusCode == 200 || response.statusCode == 201) {
       // log("Response :${response.body}");
       return Right(
@@ -538,6 +729,7 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, MenuItemList>> fetchCustomization(String productId,
       {double? latitude, double? longitude, bool pickup = false}) async {
+        print('fetchCustomization');
     Map<String, dynamic> query = {};
     if (latitude != null && longitude != null) {
       query["latitude"] = latitude;

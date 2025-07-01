@@ -25,6 +25,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   RestaurantBloc() : super(InitialState()) {
     on<GetUserAddressEvent>(_onGetUserAddress);
     on<GetRestaurantListEvent>(_onGetRestaurantList);
+    on<InitializeRestaurantsWindowsEvent>(_onInitializeRestaurantsWindows);
     on<GetRestaurantMenuListEvent>(_onGetRestaurantMenuList);
     on<GetCousinesEvent>(_onGetCousinesList);
     on<AddRestaurantCartEvent>(_onAddToShoppingList);
@@ -63,6 +64,18 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     }
   }
 
+  Future<void> _onInitializeRestaurantsWindows(
+      InitializeRestaurantsWindowsEvent event,
+      Emitter<RestaurantState> emit,
+  ) async {
+    final tempRepository = RestaurantRepository();
+
+    try {
+      await tempRepository.handleRestaurantsWindowsInitialization();
+    } catch (_) {
+    }
+  }
+
   List<dynamic> lastCategoryData = [];
 
   // Get Restaurant List Bloc =================================================================
@@ -80,65 +93,63 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   }
 
   _onStoreVerify(
-      RestaurantVerifyEvent event, Emitter<RestaurantState> emit) async {
+    RestaurantVerifyEvent event, Emitter<RestaurantState> emit) async {
     try {
-      // !
-      Map<String, dynamic> req = PreferenceUtils.getMenuAddress();
-      final value =
-          Constant.i.requiredAddressField.every((e) => req.containsKey(e));
+      emit(VerifyRestaurantLoader(id: event.id));
 
-      if (value) {
-        emit(VerifyRestaurantLoader(id: event.id));
+      final tempRepository = RestaurantRepository();
 
-        (double?, double?) pos = await Constant.i.position;
-        final storeRes = await _repository.getRestaurantMenuList(
+      Either<ErrorModel, GetRestaurantMenuListModel>? storeRes;
+
+      try {
+        storeRes = await tempRepository.getRestaurantMenuList(
           restaurantId: event.id,
           pickup: event.pickup,
-          latitude: event.latitude,
-          longitude: event.longitude,
+          latitude: 0.0,
+          longitude: 0.0,
           mealType: "restaurant",
-          position: pos,
-          additionalData: req,
           needLeft: true,
+          restaurantName: event.restaurantName,
         );
+      } catch (e, st) {
+        print('error during getRestaurantMenuList');
+      }
 
-        emit(VerifyRestaurantLoader(id: null));
-        await Future.delayed(const Duration(milliseconds: 200));
-        if (event.id != prevId) {
-          return;
-        }
-        if (storeRes.isRight) {
-          if (storeRes.right.success ?? false) {
-            event.onVerify
-                ?.call(storeRes.right.data, storeRes.right.data?.quote);
-          } else {
+      emit(VerifyRestaurantLoader(id: null));
+
+      if (event.id != prevId) {
+        return;
+      }
+
+      if (storeRes != null) {
+        storeRes.fold(
+          (error) {
             showToast(
-                isSuccess: false, message: storeRes.right.errorMessage ?? "");
-            event.notVerify?.call();
-          }
-        } else {
-          showToast(
               isSuccess: false,
-              message: storeRes.left.errorMessage != null
-                  ? storeRes.left.errorMessage!
-                  : StringUtils.restaurantNotAvailable);
-          event.notVerify?.call();
-        }
-      } else {
-        dynamic result = await showModalBottomSheet(
-          context: event.context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-          ),
-          isScrollControlled: true,
-          builder: (context) => FoodMenuAddress(request: req),
+              message: error.errorMessage?.isNotEmpty == true
+                  ? error.errorMessage!
+                  : StringUtils.restaurantNotAvailable,
+            );
+            event.notVerify?.call();
+          },
+          (menuModel) {
+            if (menuModel.success ?? false) {
+              event.onVerify?.call(menuModel.data, menuModel.data?.quote);
+            } else {
+              showToast(
+                isSuccess: false,
+                message: menuModel.errorMessage ?? "",
+              );
+              event.notVerify?.call();
+            }
+          },
         );
-        if (result == true) {
-          add(event);
-        }
+      } else {
+        showToast(
+          isSuccess: false,
+          message: StringUtils.restaurantNotAvailable,
+        );
+        event.notVerify?.call();
       }
     } catch (e) {
       log(e.toString());
@@ -146,20 +157,18 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       emit(VerifyRestaurantLoader(id: null));
       if (event.id == prevId) {
         showToast(
-            isSuccess: false, message: StringUtils.restaurantNotAvailable);
+          isSuccess: false,
+          message: StringUtils.restaurantNotAvailable,
+        );
       }
     }
   }
 
   Future<dynamic> resFuture(
-      GetRestaurantListEvent event, Emitter<RestaurantState> emit) async {
-    String pref;
-
-    if (event.pickup) {
-      pref = restaurantsPickup;
-    } else {
-      pref = restaurantsBring;
-    }
+    GetRestaurantListEvent event,
+    Emitter<RestaurantState> emit,
+  ) async {
+    String pref = event.pickup ? restaurantsPickup : restaurantsBring;
 
     Either<ErrorModel, GetRestaurantListModel> data =
         await _repository.getRestaurantListData(
@@ -170,23 +179,36 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       categoriesData: event.categotyData,
       mealName: event.mealName,
     );
+
     if (data.isRight) {
-      GetRestaurantListModel right = data.right;
+      final GetRestaurantListModel right = data.right;
+
       if (event.storeLocal) {
         log("Set Cache : $pref");
+
         PreferenceUtils.setString(pref, jsonEncode(right.data ?? []));
-        for (int i = 0; i < (right.data?.length ?? 0); i++) {
-          if (right.data?[i].logoPhotos?.isNotEmpty ?? false) {
-            PreferenceUtils.setString("${right.data?[i].id}_img",
-                right.data?[i].logoPhotos?[0] ?? "");
+
+        for (final restaurant in right.data ?? []) {
+          final String? id = restaurant.id;
+          final List<String>? logos = restaurant.logoPhotos;
+
+          if (id != null && logos != null && logos.isNotEmpty) {
+            PreferenceUtils.setString("${id}_img", logos.first);
           }
         }
       }
 
-      emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
-      emit(RestaurantVerificationLoader(isLoading: false));
+      if (right.data != null && right.data!.isNotEmpty) {
+        await Future.delayed(Duration(milliseconds: 100));
+        if (!event.firstCall) {
+          emit(GetRestaurantListSuccessState(restaurantList: right.data ?? []));
+          emit(RestaurantVerificationLoader(isLoading: false));
+        }
+      }
+      
     } else {
-      onFailError(emit: emit, text: data.left.errorMessage!);
+      final String error = data.left.errorMessage ?? "Error fetching restaurants";
+      onFailError(emit: emit, text: error);
       emit(GetRestaurantListErrorState());
     }
   }
@@ -195,7 +217,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   _onGetRestaurantMenuList(
       GetRestaurantMenuListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantMenuListLoadingState());
-
     try {
       await _repository
           .getRestaurantMenuList(
@@ -220,48 +241,85 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   }
 
   _onMatchMealPlan(
-      MealPlanMatchEvent event, Emitter<RestaurantState> emit) async {
+    MealPlanMatchEvent event,
+    Emitter<RestaurantState> emit,
+  ) async {
     try {
       emit(MatchMealLoadingState(isLoading: true));
+
       RestaurantMenu menu = event.menu;
       List<Category> categories = menu.categories ?? [];
-      Category? category = categories.firstWhereOrNull(
-          (element) => element.subcategoryId == event.subcategoryId);
+
+      Category? category;
+      Category? parentCategory;
+      List<MenuItemList> menuItemList = [];
+
+      if (event.subcategoryId != null) {
+        parentCategory = categories.firstWhereOrNull(
+          (cat) => cat.name == event.categoryId,
+        );
+
+        if (parentCategory != null) {
+          category = parentCategory;
+          int? subIndex = int.tryParse(event.subcategoryId!);
+
+          if (subIndex != null &&
+              parentCategory.subcategories != null &&
+              subIndex >= 0 &&
+              subIndex < parentCategory.subcategories!.length) {
+            var sub = parentCategory.subcategories![subIndex];
+            menuItemList = sub.menuItemList ?? [];
+          }
+        }
+      } else {
+        parentCategory = categories.firstWhereOrNull(
+          (cat) => cat.name == event.categoryId,
+        );
+
+        if (parentCategory != null) {
+          category = parentCategory;
+          menuItemList = parentCategory.menuItemList ?? [];
+        }
+      }
+
       Map<String, dynamic> req = {
-        // "restrictions": PreferenceUtils.getStringList(getUserRestriction),
-        // "allergies": PreferenceUtils.getStringList(getUserAllergies),
         "restrictions": [],
         "allergies": [],
         "calories": event.calories ?? 0.0,
         "Categorie": category?.name,
-        "restaurantMenu":
-            category?.menuItemList?.map((e) => e.toJson()).toList() ?? [],
+        "restaurantMenu": menuItemList.map((e) => e.toJson()).toList(),
       };
-      log(ApiUrls.filterMenuFromAI);
-      log(jsonEncode(req));
-      var res =
-          await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
-      log("Response : ${res.body}");
+
+      var res = await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
+
       if (res.statusCode == 200) {
         var resData = jsonDecode(res.body);
+
         List<MenuItemList> updatedList = List<MenuItemList>.from(
-            resData["data"]?.map((x) => MenuItemList.fromJson(x)) ?? []);
-        log("Pass Record : ${category?.menuItemList?.length} Found Match Record : ${updatedList.length}");
+          resData["data"]?.map((x) => MenuItemList.fromJson(x)) ?? [],
+        );
+
         event.onSuccess?.call();
         emit(MatchMealState(
-            subCategoryId: event.subcategoryId, updatedList: updatedList));
+          subCategoryId: event.subcategoryId,
+          updatedList: updatedList,
+          categoryName: parentCategory!.name,
+        ));
       } else {
         event.onError?.call();
         dynamic data = jsonDecode(res.body);
+
         if (data != null) {
-          String message = data?["errorMessage"].toString() ?? "";
+          String message = data?["errorMessage"]?.toString() ?? "";
+
           if (message.trim().isNotEmpty) {
             showToast(isSuccess: false, message: message);
           }
         }
       }
-    } catch (e) {
-      log(e.toString());
+    } catch (e, stackTrace) {
+      print("Exception: $e");
+      print("Stacktrace: $stackTrace");
     } finally {
       emit(MatchMealLoadingState(isLoading: false));
     }
@@ -334,25 +392,38 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   // Create Order Bloc ==============================================================================
 
   _onCreateOrder(CreateOrderEvent event, Emitter<RestaurantState> emit) async {
+    print('_onCreateOrder STARTED');
     emit(CreateOrderLoadingState());
+    print('Emitted CreateOrderLoadingState');
 
     try {
+      print('Calling _repository.createOrder...');
       await _repository
-          .createOrder(createOrderModel: event.createOrderModel)
+          .createOrder(createOrderModel: event.createOrderModel,  isMock: event.isMock)
           .fold((left) async {
-        log("Error Json : ${left.toJson()} :${left.statusCode}");
-
+        print('Repository returned failure');
+        log("Error Json : ${left.toJson()} : ${left.statusCode}");
         showToast(isSuccess: false, message: left.errorMessage ?? "");
         emit(CreateOrderErrorState());
+        print('Emitted CreateOrderErrorState');
       }, (right) {
+        print('Repository returned success');
+        print('Order data: ${right.data}');
         emit(CreateOrderSuccessState(orderData: right.data));
+        print('Emitted CreateOrderSuccessState');
         showToast(
-            isSuccess: true,
-            message: right.message ?? StringUtils.orderCreatedSuccessfully);
+          isSuccess: true,
+          message: right.message ?? StringUtils.orderCreatedSuccessfully,
+        );
       });
-    } catch (e) {
+    } catch (e, stack) {
+      print('Exception caught in _onCreateOrder: $e');
+      print('Stack trace: $stack');
       showToast(isSuccess: false, message: e.toString());
       emit(CreateOrderErrorState());
+      print('Emitted CreateOrderErrorState from catch');
+    } finally {
+      print('_onCreateOrder FINISHED');
     }
   }
 
@@ -361,7 +432,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   _onCreateProduct(
       CreateProductEvent event, Emitter<RestaurantState> emit) async {
     emit(CreateProductLoadingState());
-
+    print('onCreateProduct');
     try {
       await _repository
           .createProduct(
@@ -386,8 +457,9 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   _onCreateCheckout(
       CreateCheckoutEvent event, Emitter<RestaurantState> emit) async {
     emit(CreateCheckoutLoadingState());
-
+    print('ON CREATE CHECKOUT');
     try {
+      print('inside TRY');
       await _repository
           .createCheckout(
               createCheckOutRequestModel: event.createCheckOutRequestModel)
@@ -400,6 +472,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         // showToast(isSuccess: true, message: right.message ?? "");
       });
     } catch (e) {
+      print('CATCH');
       showToast(isSuccess: false, message: e.toString());
       emit(CreateCheckoutErrorState());
     }

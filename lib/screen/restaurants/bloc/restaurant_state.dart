@@ -78,11 +78,13 @@ class MatchMealLoadingState extends RestaurantState {
 }
 
 class MatchMealState extends RestaurantState {
-  final String subCategoryId;
+  final String? subCategoryId;
+  final String? categoryName;
   final List<MenuItemList> updatedList;
   MatchMealState({
     required this.subCategoryId,
     required this.updatedList,
+    this.categoryName
   });
 }
 

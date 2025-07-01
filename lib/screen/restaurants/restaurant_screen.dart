@@ -31,6 +31,7 @@ import 'package:gymeats_mobile/screen/restaurants/bottomsheet/food_intake_bottom
 import 'package:gymeats_mobile/screen/restaurants/filter_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_cousines_list_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_restaurant_list_model.dart';
+import 'package:gymeats_mobile/repository/get_restaurant_details.dart';
 import 'package:gymeats_mobile/screen/restaurants/model/get_user_address_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_cart_screen.dart';
 import 'package:gymeats_mobile/screen/restaurants/restaurant_menu_screen.dart';
@@ -39,6 +40,12 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/calorie_details_dialog.dart';
 import 'package:gymeats_mobile/widget/network_image_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gymeats_mobile/repository/get_address.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
+import 'package:either_dart/either.dart';
+import 'package:gymeats_mobile/models/error_model.dart';
 
 class RestaurantScreen extends StatefulWidget {
   const RestaurantScreen({
@@ -55,62 +62,69 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   RxDouble kmRadius = 3.0.obs;
   RxBool showRadiusSlider = false.obs;
   final GlobalKey _alertKey = GlobalKey();
-
+  int currentPage = 2;
+  bool isRestaurantsLoading = false;
+  
   showBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return DeliverOrderBottomSheet(
-          selectedIndex: selectedIndex,
-          isFrom: 'isFromRestaurant',
-        );
-      },
-      isDismissible: false,
-      enableDrag: false,
-      shape: OutlineInputBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16.r),
-          topRight: Radius.circular(16.r),
-        ),
-        borderSide: const BorderSide(
-          color: Colors.transparent,
-        ),
-      ),
-    ).then((value) {
-      if (value != null) {
-        result = value;
-        selectedIndex = result == 'Bring me the order' ? 0 : 1;
-        if (mounted) {
-          setState(() {});
-        }
+    String searchValue = search.text;
+    fetchRestaurant(fromSearch: searchValue.trim().isNotEmpty);
+    // showModalBottomSheet(
+    //   context: context,
+    //   isScrollControlled: true,
+    //   builder: (context) {
+    //     return DeliverOrderBottomSheet(
+    //       selectedIndex: selectedIndex,
+    //       isFrom: 'isFromRestaurant',
+    //     );
+    //   },
+    //   isDismissible: false,
+    //   enableDrag: false,
+    //   shape: OutlineInputBorder(
+    //     borderRadius: BorderRadius.only(
+    //       topLeft: Radius.circular(16.r),
+    //       topRight: Radius.circular(16.r),
+    //     ),
+    //     borderSide: const BorderSide(
+    //       color: Colors.transparent,
+    //     ),
+    //   ),
+    // ).then((value) {
+    //   if (value != null) {
+    //     result = value;
+    //     selectedIndex = result == 'Bring me the order' ? 0 : 1;
+    //     if (mounted) {
+    //       setState(() {});
+    //     }
+    //     print('user address');
+    //     print(getUserAddress);
+    //     if (getUserAddress != null) {
+    //       /// GET RESTAURANT LIST API-----------------------------------------------------------
+    //       String searchValue = search.text;
+    //       fetchRestaurant(fromSearch: searchValue.trim().isNotEmpty);
 
-        if (getUserAddress != null) {
-          /// GET RESTAURANT LIST API-----------------------------------------------------------
-          String searchValue = search.text;
-          fetchRestaurant(fromSearch: searchValue.trim().isNotEmpty);
+    //       /// GET COUSINES LIST API-----------------------------------------------------------
+    //       restaurantBloc.add(
+    //         GetCousinesEvent(
+    //           getUserAddress?.latitude ?? 0,
+    //           getUserAddress?.longitude ?? 0,
+    //           getUserAddress?.streetNum ?? '',
+    //           getUserAddress?.streetName ?? '',
+    //           getUserAddress?.city ?? '',
+    //           getUserAddress?.state ?? '',
+    //           getUserAddress?.country ?? '',
+    //           getUserAddress?.zipcode ?? '',
+    //           result == 'Bring me the order' ? false : true,
+    //           kmRadius.value.round(),
+    //         ),
+    //       );
+    //     } else {}
 
-          /// GET COUSINES LIST API-----------------------------------------------------------
-          restaurantBloc.add(
-            GetCousinesEvent(
-              getUserAddress?.latitude ?? 0,
-              getUserAddress?.longitude ?? 0,
-              getUserAddress?.streetNum ?? '',
-              getUserAddress?.streetName ?? '',
-              getUserAddress?.city ?? '',
-              getUserAddress?.state ?? '',
-              getUserAddress?.country ?? '',
-              getUserAddress?.zipcode ?? '',
-              result == 'Bring me the order' ? false : true,
-              kmRadius.value.round(),
-            ),
-          );
-        } else {}
-
-        cartBloc.add(GetCartEvent());
-      }
-    });
+    //     cartBloc.add(GetCartEvent());
+    //   }
+    // });
   }
+
+  
 
   showLogIntakeBottomSheet({GetUserAddress? getUserAddress}) async {
     bool understand = PreferenceUtils.getBool(understandDisclaimer);
@@ -158,7 +172,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   List<RestaurantList> dataList = [];
   CousinesList? cousinesList;
   RestaurantBloc restaurantBloc = RestaurantBloc();
-  bool getRestaurantMenuLoadingState = false;
+  bool getRestaurantMenuLoadingState = true;
   bool restaurantVerificationLoader = false;
   bool getCousinesLoadingState = false;
   bool getAddressLoadingState = false;
@@ -170,8 +184,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   bool isSearchOn = false;
   int cartCount = 0;
   TextEditingController search = TextEditingController();
-  int selectedIndex = -1;
+  int selectedIndex = 0;
   final _debouncer = Debouncer();
+  List<Map<String, dynamic>> categoryData = [];
 
   GetDashboardModel dashboardModel = GetDashboardModel();
 
@@ -186,8 +201,107 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         }
       });
     });
+    // _fetchCategoryData();
     dashboardModel = GetDashboardModel.fromJson(
         jsonDecode(PreferenceUtils.getString(dashboardModelPref)));
+  }
+
+  
+
+  Future<List<Map<String, dynamic>>> _fetchCategoryData() async {
+    setState(){
+       getRestaurantMenuLoadingState = true;
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      String currentAddress = prefs.getString('currentUserAddress') ?? '';
+
+      if (currentAddress.trim().isEmpty) {
+        print('fetch Category data, address is empty');
+        String newAddress = "";
+        final repo = GetAddressRepository();
+        final addressResult = await repo.getUserAddressData();
+        print('Address Result in _fetchCategoryData');
+
+        if (addressResult.isRight) {
+          var add = addressResult.right.data
+              ?.firstWhereOrNull((element) => element.isPrimary ?? false);
+          add ??= addressResult.right.data?.first;
+
+          if (add != null) {
+            final parts = [
+              add.streetNum,
+              add.streetName,
+              add.city,
+              add.country
+            ].where((e) => e != null && e.trim().isNotEmpty).cast<String>().toList();
+            newAddress = parts.join(", ");
+          }
+          print('newAddress: $newAddress');
+        }
+
+        if (newAddress.trim().isEmpty) {
+          return [];
+        }
+
+        final trimmedNew = newAddress.trim();
+        final trimmedOld = currentAddress.trim();
+
+        final addressChanged = trimmedOld.isNotEmpty && trimmedOld != trimmedNew;
+
+        if (addressChanged || trimmedOld.isEmpty) {
+          await prefs.setString('currentUserAddress', trimmedNew);
+          print("Address saved in SharedPreferences: $trimmedNew");
+
+          if (trimmedOld.isNotEmpty && trimmedOld != trimmedNew) {
+            await prefs.setBool('AddressUpdated', true);
+            print("AddressUpdated");
+          }
+
+          currentAddress = trimmedNew;
+        }
+      }
+
+      final cacheKey = 'categoryCache_$currentAddress';
+
+      final cachedCategoriesString = prefs.getString(cacheKey);
+
+      if (cachedCategoriesString != null) {
+        final cachedList = jsonDecode(cachedCategoriesString) as List<dynamic>;
+        final cachedData = cachedList.cast<Map<String, dynamic>>();
+        print('Categories from cache for address: $currentAddress');
+        return cachedData;
+      }
+      String userID = PreferenceUtils.getString(prefUserData);
+      final signalR = SignalRService();
+      final categories = await signalR.getRestaurantCategories(currentAddress, userID);
+
+      final categoryData = (categories as List<dynamic>)
+        .where((category) => (category['name'] ?? '') != 'Grocery')
+        .map<Map<String, dynamic>>((category) {
+          print(category['name']);
+          return {
+            'title': category['name'],
+            'id': category['id'],
+            'image': category['imageSrc'],
+          };
+        }).toList();
+
+      print(categoryData);
+
+      await prefs.setString(cacheKey, jsonEncode(categoryData));
+      setState(){
+       getAddressLoadingState = false;
+      }
+      return categoryData;
+    } catch (e) {
+      setState(){
+       getAddressLoadingState = false;
+      }
+      print('Error fetching categories: $e');
+      return [];
+    }
   }
 
   Future<void> initLoad() async {
@@ -214,30 +328,44 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   bool cacheLoading = false;
 
   Future<void> fetchRestaurant({bool fromSearch = false}) async {
+    print('fetchrestaurant');
     String searchValue = search.text;
     List<String> cuisineList = selectedFoodOrigin.isNotEmpty
         ? selectedFoodOrigin.map((e) => e.toString()).toList()
-        : categoryDataList.map((e) => e["title"].toString()).toList();
-    if (fromSearch) {
-      restaurantBloc.add(
-        RestaurantByNameEvent(
-          getUserAddress?.latitude,
-          getUserAddress?.longitude,
-          result == 'Bring me the order' ? false : true,
-          searchValue,
-          cuisineList,
-        ),
-      );
+        : [];
+
+    final newCategoryData = await _fetchCategoryData();
+
+    if (mounted) {
+      print('SetState');
+      setState(() {
+        categoryData = newCategoryData;
+      });
     }
-    if (searchValue.trim().isEmpty) {
+
+    // List<String> cuisineList = categoryData.isNotEmpty
+    //     ? categoryData.map((e) => e["title"].toString()).toList()
+    //     : [];
+    //     print(cuisineList);
+    //     print('LLLLLLL');
+      if (fromSearch) {
+        restaurantBloc.add(
+          RestaurantByNameEvent(
+            getUserAddress?.latitude,
+            getUserAddress?.longitude,
+            result == 'Bring me the order' ? false : true,
+            searchValue,
+            cuisineList,
+          ),
+        );
+      }
       if (result == 'Bring me the order') {
         prefKey = restaurantsBring;
       } else {
         prefKey = restaurantsPickup;
       }
       String resPref = PreferenceUtils.getString(prefKey);
-      if (resPref.trim().isEmpty || isChange) {
-        restaurantBloc.add(
+      restaurantBloc.add(
           GetRestaurantListEvent(
             getUserAddress?.latitude ?? 0,
             getUserAddress?.longitude ?? 0,
@@ -246,14 +374,69 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             storeLocal: !isChange,
           ),
         );
-        isChange = false;
-      } else {
-        cacheLoading = true;
-        restaurantList = Set.from(restaurantListFromJson(resPref));
-        if (mounted) {
-          setState(() {});
+  }
+
+  Future<void> fetchNextRestaurants() async {
+    if (isRestaurantsLoading == true) return;
+      setState(() {
+        isRestaurantsLoading = true;
+      });
+      try {
+        List<String> cuisineList = selectedFoodOrigin.isNotEmpty
+            ? selectedFoodOrigin.map((e) => e.toString()).toList()
+            : [];
+
+        final rep = RestaurantRepository();
+
+        Either<ErrorModel, GetRestaurantListModel> data =
+            await rep.getRestaurantListData(
+          latitude: 0,
+          longitude: 0,
+          maximumMiles: PreferenceUtils.getRestaurantsRadius().round(),
+          pickup: false,
+          categoriesData: cuisineList,
+          mealName: '',
+          page: currentPage,
+        );
+
+        print(data);
+
+        if (data.isRight) {
+          final GetRestaurantListModel right = data.right;
+
+          if (right.data != null && right.data!.isNotEmpty) {
+            print('Fetched ${right.data!.length} restaurants on page $currentPage');
+            print('First restaurant: ${right.data!.first.name}');
+
+
+            final updatedSet = <RestaurantList>{...allRestaurantList};
+            updatedSet.addAll(right.data!);
+
+            allRestaurantList = updatedSet.toList();
+            restaurantList = updatedSet;
+            dataList = allRestaurantList;
+
+            currentPage++;
+
+            getRestaurantMenuLoadingState = false;
+
+          } else {
+            print('No new restaurants received on page $currentPage');
+          }
+        } else {
+          data.fold(
+            (error) => print('Error while fetching restaurants: $error'),
+            (_) => null,
+          );
         }
-      }
+
+      } catch (e, st) {
+      print('Exception while fetching restaurants: $e');
+      print(st);
+    } finally {
+      setState(() {
+        isRestaurantsLoading = false;
+      });
     }
   }
 
@@ -511,18 +694,20 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                           ),
                                         ],
                                       ).paddingAll(15),
-                                      Positioned(
-                                        right: 2,
-                                        top: 2,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            Get.back();
-                                            restaurantBloc.prevId = null;
-                                            verifyLoaderId = null;
-                                          },
-                                          icon: const Icon(Icons.close),
-                                        ),
-                                      ),
+                                      // Positioned(
+                                      //   right: 2,
+                                      //   top: 2,
+                                      //   child: IconButton(
+                                      //     onPressed: () async {
+                                      //       final signalR = SignalRService();
+                                      //       await signalR.goBack();
+                                      //       Get.back();
+                                      //       restaurantBloc.prevId = null;
+                                      //       verifyLoaderId = null;
+                                      //     },
+                                      //     icon: const Icon(Icons.close),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -641,7 +826,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    showBottomSheet();
+                                    print(result);
+                                    // showBottomSheet();
                                   },
                                   child: Container(
                                     height: 30,
@@ -668,9 +854,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                           color: AppColors.terracotta,
                                         ),
                                         Text(
-                                          result.isEmpty
-                                              ? 'Choose delivery type'
-                                              : result,
+                                          // result.isEmpty
+                                          //     ? 'Choose delivery type'
+                                          //     : result,
+                                          'bring me the order',
                                           style: const TextStyle(
                                             color: AppColors.terracotta,
                                             fontSize: 14,
@@ -797,118 +984,118 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Container(
-                                            height: 48,
-                                            width: 245.w,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff004C63)
-                                                      .withOpacity(0.08),
-                                                  offset: const Offset(0, 0),
-                                                  blurRadius: 16,
-                                                )
-                                              ],
-                                            ),
-                                            child: TextFormField(
-                                              style: const TextStyle(
-                                                  color: Colors.black),
-                                              controller: search,
-                                              decoration: InputDecoration(
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                                prefixIcon: const Icon(
-                                                  Icons.search,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                                contentPadding:
-                                                    const EdgeInsets.all(0),
-                                                hintText:
-                                                    'Search for item or place',
-                                              ),
-                                              onChanged: (String? value) {
-                                                _debouncer.run(() {
-                                                  fetchRestaurant(
-                                                      fromSearch: true);
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.to(
-                                                      () => RestaurantCart(
-                                                            pickUp: result ==
-                                                                    'Bring me the order'
-                                                                ? false
-                                                                : true,
-                                                            userAddress:
-                                                                getUserAddress,
-                                                          ),
-                                                      transition:
-                                                          Transition.fadeIn)!
-                                                  .then((value) {
-                                                cartBloc.add(GetCartEvent());
-                                              });
-                                            },
-                                            child: Container(
-                                              height: 48,
-                                              width: 77,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 18),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color:
-                                                        const Color(0xff004C63)
-                                                            .withOpacity(0.08),
-                                                    offset: const Offset(0, 0),
-                                                    blurRadius: 16,
-                                                  )
-                                                ],
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    AssetsUtils.icShoppingIcon,
-                                                    color: AppColors.darkGray,
-                                                  ),
-                                                  Text(
-                                                    '$cartCount',
-                                                    style: FontUtils.h18(
-                                                        fontColor:
-                                                            AppColors.darkGray,
-                                                        fontWeight: FWT.medium),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                          // Container(
+                                          //   height: 48,
+                                          //   width: 245.w,
+                                          //   decoration: BoxDecoration(
+                                          //     color: Colors.white,
+                                          //     borderRadius:
+                                          //         BorderRadius.circular(8),
+                                          //     boxShadow: [
+                                          //       BoxShadow(
+                                          //         color: const Color(0xff004C63)
+                                          //             .withOpacity(0.08),
+                                          //         offset: const Offset(0, 0),
+                                          //         blurRadius: 16,
+                                          //       )
+                                          //     ],
+                                          //   ),
+                                          //   child: TextFormField(
+                                          //     style: const TextStyle(
+                                          //         color: Colors.black),
+                                          //     controller: search,
+                                          //     decoration: InputDecoration(
+                                          //       enabledBorder:
+                                          //           OutlineInputBorder(
+                                          //         borderRadius:
+                                          //             BorderRadius.circular(8),
+                                          //         borderSide: BorderSide.none,
+                                          //       ),
+                                          //       focusedBorder:
+                                          //           OutlineInputBorder(
+                                          //         borderRadius:
+                                          //             BorderRadius.circular(8),
+                                          //         borderSide: BorderSide.none,
+                                          //       ),
+                                          //       border: OutlineInputBorder(
+                                          //         borderRadius:
+                                          //             BorderRadius.circular(8),
+                                          //         borderSide: BorderSide.none,
+                                          //       ),
+                                          //       prefixIcon: const Icon(
+                                          //         Icons.search,
+                                          //         color: AppColors.darkGray,
+                                          //       ),
+                                          //       contentPadding:
+                                          //           const EdgeInsets.all(0),
+                                          //       hintText:
+                                          //           'Search for item or place',
+                                          //     ),
+                                          //     onChanged: (String? value) {
+                                          //       _debouncer.run(() {
+                                          //         fetchRestaurant(
+                                          //             fromSearch: true);
+                                          //       });
+                                          //     },
+                                          //   ),
+                                          // ),
+                                          // GestureDetector(
+                                          //   onTap: () {
+                                          //     Get.to(
+                                          //             () => RestaurantCart(
+                                          //                   pickUp: result ==
+                                          //                           'Bring me the order'
+                                          //                       ? false
+                                          //                       : true,
+                                          //                   userAddress:
+                                          //                       getUserAddress,
+                                          //                 ),
+                                          //             transition:
+                                          //                 Transition.fadeIn)!
+                                          //         .then((value) {
+                                          //       cartBloc.add(GetCartEvent());
+                                          //     });
+                                          //   },
+                                          //   child: Container(
+                                          //     height: 48,
+                                          //     width: 77,
+                                          //     padding:
+                                          //         const EdgeInsets.symmetric(
+                                          //             horizontal: 18),
+                                          //     decoration: BoxDecoration(
+                                          //       color: Colors.white,
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(8),
+                                          //       boxShadow: [
+                                          //         BoxShadow(
+                                          //           color:
+                                          //               const Color(0xff004C63)
+                                          //                   .withOpacity(0.08),
+                                          //           offset: const Offset(0, 0),
+                                          //           blurRadius: 16,
+                                          //         )
+                                          //       ],
+                                          //     ),
+                                          //     child: Row(
+                                          //       mainAxisAlignment:
+                                          //           MainAxisAlignment
+                                          //               .spaceBetween,
+                                          //       children: [
+                                          //         SvgPicture.asset(
+                                          //           AssetsUtils.icShoppingIcon,
+                                          //           color: AppColors.darkGray,
+                                          //         ),
+                                          //         Text(
+                                          //           '$cartCount',
+                                          //           style: FontUtils.h18(
+                                          //               fontColor:
+                                          //                   AppColors.darkGray,
+                                          //               fontWeight: FWT.medium),
+                                          //         )
+                                          //       ],
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -1112,7 +1299,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                           getUserAddres:
                                                                               getUserAddress,
                                                                           catgoryDataList:
-                                                                              categoryDataList,
+                                                                              categoryData,
                                                                           // cousinesList:
                                                                           //     cousinesList!,
                                                                           restaurantList:
@@ -1194,287 +1381,54 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  ListView
-                                                                      .builder(
-                                                                    shrinkWrap:
-                                                                        true,
-                                                                    itemCount:
-                                                                        categoryDataList
-                                                                            .length,
-                                                                    // cousinesList
-                                                                    //     ?.cousines!
-                                                                    //     .length,
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .zero,
-                                                                    scrollDirection:
-                                                                        Axis.horizontal,
-                                                                    physics:
-                                                                        const NeverScrollableScrollPhysics(),
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                            index) {
+                                                                  ListView.builder(
+                                                                    shrinkWrap: true,
+                                                                    itemCount: categoryData.length,
+                                                                    padding: EdgeInsets.zero,
+                                                                    scrollDirection: Axis.horizontal,
+                                                                    physics: const NeverScrollableScrollPhysics(),
+                                                                    itemBuilder: (context, index) {
                                                                       return GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          /// TAB COLOR CHANGE ON TAP LOGIC ------------------------------------------------------
+                                                                        onTap: () {
+                                                                          final selectedTitle = categoryData[index]["title"];
 
-                                                                          if (selectedFoodOrigin.contains(
-                                                                              // cousinesList
-                                                                              //         ?.cousines![index],
-                                                                              categoryDataList[index]["title"])) {
-                                                                            selectedFoodOrigin.remove(categoryDataList[index]["title"]);
-                                                                            if (mounted) {
-                                                                              setState(() {});
-                                                                            }
-                                                                            isChange =
-                                                                                true;
-                                                                            fetchRestaurant();
+                                                                          if (selectedFoodOrigin.contains(selectedTitle)) {
+                                                                            selectedFoodOrigin.clear();
                                                                           } else {
-                                                                            selectedFoodOrigin.add(categoryDataList[index]["title"]);
-                                                                            isChange =
-                                                                                true;
-                                                                            fetchRestaurant();
-                                                                            if (mounted) {
-                                                                              setState(() {});
-                                                                            }
+                                                                            selectedFoodOrigin
+                                                                              ..clear()
+                                                                              ..add(selectedTitle);
                                                                           }
 
-                                                                          if (isSearchOn ==
-                                                                              true) {
-                                                                            ratingFilter =
-                                                                                {};
-                                                                            finalData =
-                                                                                {};
-
-                                                                            /// WHEN RATING IS SELECTED ------------------------------------------------------
-                                                                            if (rating.isNotEmpty) {
-                                                                              /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
-                                                                              if (rating.length == 1) {
-                                                                                ratingFilter.addAll(allSearchRestaurantList.where((element) => element.weightedRatingValue! <= int.parse(rating.first)).toList());
-                                                                              }
-
-                                                                              /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
-                                                                              else {
-                                                                                ratingFilter.addAll(allSearchRestaurantList.where((element) => element.weightedRatingValue! >= int.parse(rating.first) && element.weightedRatingValue! <= int.parse(rating.last)).toList());
-                                                                              }
-
-                                                                              /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
-
-                                                                              if (selectedFoodOrigin.isNotEmpty) {
-                                                                                for (var i = 0; i < ratingFilter.length; i++) {
-                                                                                  for (var j = 0; j < ratingFilter.elementAt(i).cuisines!.length; j++) {
-                                                                                    for (var k = 0; k < selectedFoodOrigin.length; k++) {
-                                                                                      if (ratingFilter.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                                        finalData.add(ratingFilter.elementAt(i));
-                                                                                      }
-                                                                                    }
-                                                                                  }
-                                                                                }
-
-                                                                                /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
-
-                                                                                searchRestaurantList = finalData;
-                                                                              } else {
-                                                                                searchRestaurantList = allSearchRestaurantList;
-                                                                              }
-                                                                            }
-
-                                                                            /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
-
-                                                                            else if (selectedFoodOrigin
-                                                                                .isNotEmpty) {
-                                                                              for (var i = 0; i < allSearchRestaurantList.length; i++) {
-                                                                                for (var j = 0; j < allSearchRestaurantList.elementAt(i).cuisines!.length; j++) {
-                                                                                  for (var k = 0; k < selectedFoodOrigin.length; k++) {
-                                                                                    if (allSearchRestaurantList.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                                      finalData.add(allSearchRestaurantList.elementAt(i));
-                                                                                    }
-                                                                                  }
-                                                                                }
-                                                                              }
-
-                                                                              /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
-
-                                                                              searchRestaurantList = finalData;
-                                                                            } else if (isFastDelivery ==
-                                                                                true) {
-                                                                              dataList.sort(
-                                                                                (a, b) {
-                                                                                  return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                                },
-                                                                              );
-
-                                                                              finalData = Set.from(dataList);
-
-                                                                              searchRestaurantList = finalData;
-                                                                            } else {
-                                                                              searchRestaurantList = allSearchRestaurantList;
-                                                                            }
+                                                                          if (mounted) {
+                                                                            setState(() {});
                                                                           }
 
-                                                                          /// When Search is off
-                                                                          else {
-                                                                            restaurantList.clear();
-                                                                            ratingFilter.clear();
-                                                                            finalData.clear();
-
-                                                                            /// WHEN RATING IS SELECTED ------------------------------------------------------
-                                                                            if (rating.isNotEmpty) {
-                                                                              /// WHEN ONLY ONE RATING IS SELECTED ------------------------------------------------------
-                                                                              if (rating.length == 1) {
-                                                                                ratingFilter.addAll(allRestaurantList.where((element) => element.weightedRatingValue! <= int.parse(rating.first)).toList());
-                                                                              }
-
-                                                                              /// WHEN RANGE OF RATING IS SELECTED ------------------------------------------------------
-                                                                              else {
-                                                                                ratingFilter.addAll(allRestaurantList.where((element) => element.weightedRatingValue! >= int.parse(rating.first) && element.weightedRatingValue! <= int.parse(rating.last)).toList());
-                                                                              }
-
-                                                                              /// WHEN CATEGORY IS SELECTED ------------------------------------------------------
-
-                                                                              if (selectedFoodOrigin.isNotEmpty) {
-                                                                                for (var i = 0; i < ratingFilter.length; i++) {
-                                                                                  for (var j = 0; j < ratingFilter.elementAt(i).cuisines!.length; j++) {
-                                                                                    for (var k = 0; k < selectedFoodOrigin.length; k++) {
-                                                                                      if (ratingFilter.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                                        finalData.add(ratingFilter.elementAt(i));
-                                                                                      }
-                                                                                    }
-                                                                                  }
-                                                                                }
-
-                                                                                /// WHEN FAST DELIVERY IS SELECTED ------------------------------------------------------
-
-                                                                                if (isFastDelivery == true) {
-                                                                                  List<RestaurantList> data = List.from(finalData);
-
-                                                                                  data.sort(
-                                                                                    (a, b) {
-                                                                                      return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                                    },
-                                                                                  );
-
-                                                                                  finalData = Set.from(data);
-
-                                                                                  restaurantList = finalData;
-                                                                                } else {
-                                                                                  restaurantList = finalData;
-                                                                                }
-                                                                              } else {
-                                                                                if (isFastDelivery == true) {
-                                                                                  List<RestaurantList> data = List.from(ratingFilter);
-
-                                                                                  data.sort(
-                                                                                    (a, b) {
-                                                                                      return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                                    },
-                                                                                  );
-
-                                                                                  ratingFilter = Set.from(data);
-                                                                                  restaurantList = ratingFilter;
-                                                                                } else {
-                                                                                  restaurantList = ratingFilter;
-                                                                                }
-                                                                              }
-                                                                            }
-
-                                                                            /// WHEN RATING IS NOT SELECTED AND CATEGORY SELECTED ------------------------------------------------------
-
-                                                                            else if (selectedFoodOrigin
-                                                                                .isNotEmpty) {
-                                                                              for (var i = 0; i < allRestaurantList.length; i++) {
-                                                                                for (var j = 0; j < allRestaurantList.elementAt(i).cuisines!.length; j++) {
-                                                                                  for (var k = 0; k < selectedFoodOrigin.length; k++) {
-                                                                                    if (allRestaurantList.elementAt(i).cuisines![j].contains(selectedFoodOrigin[k])) {
-                                                                                      finalData.add(allRestaurantList.elementAt(i));
-                                                                                    }
-                                                                                  }
-                                                                                }
-                                                                              }
-
-                                                                              /// WHEN FAST DELIVERY SELECTED ------------------------------------------------------
-                                                                              if (isFastDelivery == true) {
-                                                                                List<RestaurantList> data = List.from(finalData);
-
-                                                                                data.sort(
-                                                                                  (a, b) {
-                                                                                    return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                                  },
-                                                                                );
-
-                                                                                finalData = Set.from(data);
-
-                                                                                restaurantList = finalData;
-                                                                              }
-
-                                                                              /// WHEN FAST DELIVERY NOT SELECTED ------------------------------------------------------
-                                                                              else {
-                                                                                restaurantList = finalData;
-                                                                              }
-                                                                            } else if (isFastDelivery ==
-                                                                                true) {
-                                                                              dataList.sort(
-                                                                                (a, b) {
-                                                                                  return a.quotes!.cheapestDelivery!.timeEstimate!.minimum!.compareTo(b.quotes!.cheapestDelivery!.timeEstimate!.minimum!);
-                                                                                },
-                                                                              );
-
-                                                                              finalData = Set.from(dataList);
-
-                                                                              restaurantList = finalData;
-                                                                            } else {
-                                                                              restaurantList = Set.from(allRestaurantList);
-                                                                            }
-                                                                          }
+                                                                          fetchRestaurant();
                                                                         },
-                                                                        child:
-                                                                            Container(
-                                                                          margin: const EdgeInsets
-                                                                              .only(
-                                                                              right: 8),
-                                                                          padding: const EdgeInsets
-                                                                              .symmetric(
-                                                                              horizontal: 15),
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            color: selectedFoodOrigin.contains(categoryDataList[index]["title"])
-                                                                                // selectedFoodOrigin.contains(
-                                                                                //         cousinesList?.cousines![
-                                                                                //             index])
-                                                                                ? AppColors.coral
+                                                                        child: Container(
+                                                                          margin: const EdgeInsets.only(right: 8),
+                                                                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                                                                          decoration: BoxDecoration(
+                                                                            color: selectedFoodOrigin.contains(categoryData[index]["title"])
+                                                                                ? AppColors.coral 
                                                                                 : AppColors.lightGrey,
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(100),
+                                                                            borderRadius: BorderRadius.circular(100),
                                                                           ),
-                                                                          child:
-                                                                              Row(
+                                                                          child: Row(
                                                                             children: [
                                                                               Center(
                                                                                 child: Text(
-                                                                                  categoryDataList[index]["title"] ?? "",
-                                                                                  // cousinesList!
-                                                                                  //     .cousines![index],
+                                                                                  categoryData[index]["title"] ?? "",
                                                                                   style: FontUtils.h18(
-                                                                                    fontColor:
-                                                                                        // selectedFoodOrigin.contains(cousinesList?.cousines![index])
-                                                                                        selectedFoodOrigin.contains(categoryDataList[index]["title"]) ? AppColors.terracotta : AppColors.darkGray,
+                                                                                    fontColor: selectedFoodOrigin.contains(categoryData[index]["title"])
+                                                                                        ? AppColors.terracotta 
+                                                                                        : AppColors.darkGray,
                                                                                     fontWeight: FWT.medium,
                                                                                   ),
                                                                                 ),
                                                                               ),
-                                                                              index == 0
-                                                                                  ? Padding(
-                                                                                      padding: const EdgeInsets.only(left: 10),
-                                                                                      child: Icon(
-                                                                                        Icons.arrow_forward_ios_outlined,
-                                                                                        size: 15,
-                                                                                        color:
-                                                                                            // selectedFoodOrigin.contains(cousinesList?.cousines![index])
-                                                                                            selectedFoodOrigin.contains(categoryDataList[index]["title"]) ? AppColors.terracotta : AppColors.darkGray,
-                                                                                      ),
-                                                                                    )
-                                                                                  : const SizedBox()
+                                                                              
                                                                             ],
                                                                           ),
                                                                         ),
@@ -1706,217 +1660,207 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                             : restaurantList
                                                                     .isNotEmpty
                                                                 ? Expanded(
-                                                                    child:
-                                                                        ListView(
-                                                                      shrinkWrap:
-                                                                          true,
-                                                                      physics:
-                                                                          const BouncingScrollPhysics(),
+                                                        child: NotificationListener<ScrollNotification>(
+                                                          onNotification: (ScrollNotification scrollInfo) {
+                                                            if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                                                                !restaurantVerificationLoader) {
+                                                              fetchNextRestaurants();
+                                                            }
+                                                            return false;
+                                                          },
+                                                          child: ListView(
+                                                            shrinkWrap: true,
+                                                            physics: const BouncingScrollPhysics(),
+                                                            children: [
+                                                              ListView.separated(
+                                                                itemCount: restaurantList.length,
+                                                                shrinkWrap: true,
+                                                                physics: const NeverScrollableScrollPhysics(),
+                                                                padding: const EdgeInsets.only(bottom: 10, top: 5),
+                                                                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                                                                itemBuilder: (context, index) => GestureDetector(
+                                                                  onTap: () {
+                                                                    onRestaurantTap(res: restaurantList.elementAt(index));
+                                                                  },
+                                                                  child: Container(
+                                                                    width: MediaQuery.of(context).size.width,
+                                                                    decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(8),
+                                                                    ),
+                                                                    child: Column(
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      mainAxisSize: MainAxisSize.max,
                                                                       children: [
-                                                                        ListView
-                                                                            .separated(
-                                                                          itemCount:
-                                                                              restaurantList.length,
-                                                                          shrinkWrap:
-                                                                              true,
-                                                                          physics:
-                                                                              const NeverScrollableScrollPhysics(),
-                                                                          padding: const EdgeInsets
-                                                                              .only(
-                                                                              bottom: 10,
-                                                                              top: 5),
-                                                                          separatorBuilder:
-                                                                              (context, index) {
-                                                                            return const SizedBox(
-                                                                              height: 16,
-                                                                            );
-                                                                          },
-                                                                          itemBuilder: (context, index) =>
-                                                                              GestureDetector(
-                                                                            onTap:
-                                                                                () {
-                                                                              onRestaurantTap(res: restaurantList.elementAt(index));
-                                                                            },
-                                                                            child:
-                                                                                Container(
-                                                                              width: MediaQuery.of(context).size.width,
-                                                                              decoration: BoxDecoration(
-                                                                                borderRadius: BorderRadius.circular(8),
+                                                                        SizedBox(
+                                                                          height: 160,
+                                                                          width: MediaQuery.of(context).size.width,
+                                                                          child: Stack(
+                                                                            children: [
+                                                                              Positioned.fill(
+                                                                                child: ClipRRect(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  child: (restaurantList.elementAt(index).logoPhotos?.isEmpty ?? true)
+                                                                                      ? Image.asset(
+                                                                                          AssetsUtils.icGenericLogo,
+                                                                                          fit: BoxFit.cover,
+                                                                                        )
+                                                                                      : NetworkImageWidget(
+                                                                                          url: restaurantList.elementAt(index).logoPhotos?[0] ?? "",
+                                                                                          showLoader: false,
+                                                                                          placeholder: AssetsUtils.icGenericLogo,
+                                                                                          fit: BoxFit.cover,
+                                                                                        ),
+                                                                                ),
                                                                               ),
-                                                                              child: Column(
+                                                                              Column(
                                                                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                mainAxisSize: MainAxisSize.max,
                                                                                 children: [
-                                                                                  SizedBox(
-                                                                                    height: 160,
-                                                                                    width: MediaQuery.of(context).size.width,
-                                                                                    child: Stack(
-                                                                                      children: [
-                                                                                        Positioned.fill(
-                                                                                          child: ClipRRect(
-                                                                                            borderRadius: BorderRadius.circular(8),
-                                                                                            child: (restaurantList.elementAt(index).logoPhotos?.isEmpty ?? true)
-                                                                                                ? Image.asset(
-                                                                                                    AssetsUtils.icGenericLogo,
-                                                                                                    fit: BoxFit.cover,
-                                                                                                  )
-                                                                                                : NetworkImageWidget(
-                                                                                                    url: restaurantList.elementAt(index).logoPhotos?[0] ?? "",
-                                                                                                    showLoader: false,
-                                                                                                    placeholder: AssetsUtils.icGenericLogo,
-                                                                                                    fit: BoxFit.cover,
-                                                                                                  ),
-                                                                                          ),
-                                                                                        ),
-                                                                                        Column(
-                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                          children: [
-                                                                                            restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
-                                                                                                ? Container(
-                                                                                                    width: 109,
-                                                                                                    margin: const EdgeInsets.all(12),
-                                                                                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                                    child: Center(
-                                                                                                      child: Text(
-                                                                                                        'Free Delivery',
-                                                                                                        style: FontUtils.h16(
-                                                                                                          fontColor: Colors.black,
-                                                                                                          fontWeight: FWT.regular,
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  )
-                                                                                                : const SizedBox(),
-                                                                                            const Spacer(),
-                                                                                            Align(
-                                                                                              alignment: Alignment.bottomRight,
-                                                                                              child: Container(
-                                                                                                height: 30,
-                                                                                                width: 109,
-                                                                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                                                                margin: const EdgeInsets.all(9),
-                                                                                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                                                                                                child: Row(
-                                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                                  children: [
-                                                                                                    Image.asset(AssetsUtils.ratingStar),
-                                                                                                    Padding(
-                                                                                                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                                                                                                      child: Center(
-                                                                                                        child: Text(
-                                                                                                          restaurantList.elementAt(index).weightedRatingValue?.toStringAsFixed(1) ?? "",
-                                                                                                          style: FontUtils.h16(
-                                                                                                            fontColor: Colors.black,
-                                                                                                            fontWeight: FWT.regular,
-                                                                                                          ),
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Center(
-                                                                                                      child: Text(
-                                                                                                        '(${restaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
-                                                                                                        style: FontUtils.h12(
-                                                                                                          fontColor: AppColors.disable,
-                                                                                                          fontWeight: FWT.regular,
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                              ),
-                                                                                            )
-                                                                                          ],
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                  Padding(
-                                                                                    padding: const EdgeInsets.only(top: 8, bottom: 4),
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        Expanded(
-                                                                                          child: Text(
-                                                                                            restaurantList.elementAt(index).name ?? '',
-                                                                                            style: FontUtils.h18(
-                                                                                              fontColor: AppColors.darkGray,
-                                                                                              fontWeight: FWT.semiBold,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                          height: 22,
-                                                                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                                  restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat == 0
+                                                                                      ? Container(
+                                                                                          width: 109,
+                                                                                          margin: const EdgeInsets.all(12),
                                                                                           decoration: BoxDecoration(
-                                                                                            color: AppColors.lightGrey,
+                                                                                            color: Colors.white,
                                                                                             borderRadius: BorderRadius.circular(8),
                                                                                           ),
                                                                                           child: Center(
                                                                                             child: Text(
-                                                                                              (restaurantList.elementAt(index).cuisines?.isEmpty ?? true) || restaurantList.elementAt(index).cuisines == [] ? '' : (restaurantList.elementAt(index).cuisines?[0] ?? ""),
-                                                                                              style: FontUtils.h14(
-                                                                                                fontColor: AppColors.darkGray,
-                                                                                                fontWeight: FWT.lightMedium,
+                                                                                              'Free Delivery',
+                                                                                              style: FontUtils.h16(
+                                                                                                fontColor: Colors.black,
+                                                                                                fontWeight: FWT.regular,
                                                                                               ),
                                                                                             ),
                                                                                           ),
-                                                                                        ),
-                                                                                      ],
+                                                                                        )
+                                                                                      : const SizedBox(),
+                                                                                  const Spacer(),
+                                                                                  Align(
+                                                                                    alignment: Alignment.bottomRight,
+                                                                                    child: Container(
+                                                                                      height: 30,
+                                                                                      width: 109,
+                                                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                                                      margin: const EdgeInsets.all(9),
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: Colors.white,
+                                                                                        borderRadius: BorderRadius.circular(8),
+                                                                                      ),
+                                                                                      child: Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                        children: [
+                                                                                          Image.asset(AssetsUtils.ratingStar),
+                                                                                          Padding(
+                                                                                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                                                            child: Center(
+                                                                                              child: Text(
+                                                                                                restaurantList.elementAt(index).weightedRatingValue?.toStringAsFixed(1) ?? "",
+                                                                                                style: FontUtils.h16(
+                                                                                                  fontColor: Colors.black,
+                                                                                                  fontWeight: FWT.regular,
+                                                                                                ),
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                          Center(
+                                                                                            child: Text(
+                                                                                              '(${restaurantList.elementAt(index).aggregatedRatingCount ?? ''})',
+                                                                                              style: FontUtils.h12(
+                                                                                                fontColor: AppColors.disable,
+                                                                                                fontWeight: FWT.regular,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
                                                                                     ),
-                                                                                  ),
-                                                                                  // result == 'I will pick it up myself'
-                                                                                  //     ? const SizedBox()
-                                                                                  //     : Row(
-                                                                                  //         children: [
-                                                                                  //           Image.asset(
-                                                                                  //             AssetsUtils.deliveryVehicle,
-                                                                                  //             width: 15,
-                                                                                  //             height: 15,
-                                                                                  //             color: AppColors.darkGray,
-                                                                                  //           ),
-                                                                                  //           const SizedBox(
-                                                                                  //             width: 8,
-                                                                                  //           ),
-                                                                                  //           Text(
-                                                                                  //             '\$ ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
-                                                                                  //             style: FontUtils.h14(
-                                                                                  //               fontColor: AppColors.darkGray,
-                                                                                  //               fontWeight: FWT.lightMedium,
-                                                                                  //             ),
-                                                                                  //           )
-                                                                                  //         ],
-                                                                                  //       ),
+                                                                                  )
                                                                                 ],
                                                                               ),
-                                                                            ),
+                                                                            ],
                                                                           ),
                                                                         ),
-                                                                        if (restaurantVerificationLoader) ...[
-                                                                          const SizedBox(
-                                                                              height: 16),
-                                                                          const AppCenterLoader(),
-                                                                          const SizedBox(
-                                                                              height: 16),
-                                                                        ],
+                                                                        Padding(
+                                                                          padding: const EdgeInsets.only(top: 8, bottom: 4),
+                                                                          child: Row(
+                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Expanded(
+                                                                                child: Text(
+                                                                                  restaurantList.elementAt(index).name ?? '',
+                                                                                  style: FontUtils.h18(
+                                                                                    fontColor: AppColors.darkGray,
+                                                                                    fontWeight: FWT.semiBold,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              Container(
+                                                                                height: 22,
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                                decoration: BoxDecoration(
+                                                                                  color: AppColors.lightGrey,
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                ),
+                                                                                child: Center(
+                                                                                  child: Text(
+                                                                                    (restaurantList.elementAt(index).cuisines?.isEmpty ?? true) || restaurantList.elementAt(index).cuisines == []
+                                                                                        ? ''
+                                                                                        : (restaurantList.elementAt(index).cuisines?[0] ?? ""),
+                                                                                    style: FontUtils.h14(
+                                                                                      fontColor: AppColors.darkGray,
+                                                                                      fontWeight: FWT.lightMedium,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        // Row(
+                                                                        //   children: [
+                                                                        //     Image.asset(
+                                                                        //       AssetsUtils.deliveryVehicle,
+                                                                        //       width: 15,
+                                                                        //       height: 15,
+                                                                        //       color: AppColors.darkGray,
+                                                                        //     ),
+                                                                        //     const SizedBox(width: 8),
+                                                                        //     Text(
+                                                                        //       '\$ ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.deliveryFee?.deliveryFeeFlat ?? 0}  •  ${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.minimum ?? 0}-${restaurantList.elementAt(index).quotes?.cheapestDelivery?.timeEstimate?.maximum ?? 0} min',
+                                                                        //       style: FontUtils.h14(
+                                                                        //         fontColor: AppColors.darkGray,
+                                                                        //         fontWeight: FWT.lightMedium,
+                                                                        //       ),
+                                                                        //     )
+                                                                        //   ],
+                                                                        // ),
                                                                       ],
                                                                     ),
-                                                                  )
-                                                                : Expanded(
-                                                                    child:
-                                                                        Center(
-                                                                      child:
-                                                                          Text(
-                                                                        'Currently No Restaurant Found',
-                                                                        style: FontUtils
-                                                                            .h18(
-                                                                          fontColor:
-                                                                              AppColors.darkGray,
-                                                                          fontWeight:
-                                                                              FWT.medium,
-                                                                        ),
-                                                                      ),
-                                                                    ),
                                                                   ),
+                                                                ),
+                                                              ),
+                                                              if (restaurantVerificationLoader) ...[
+                                                                const SizedBox(height: 16),
+                                                                const AppCenterLoader(),
+                                                                const SizedBox(height: 16),
+                                                              ],
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )
+                                                      : Expanded(
+                                                        child: Center(
+                                                          child: getRestaurantMenuLoadingState
+                                                              ? SizedBox.shrink()
+                                                              : Text(
+                                                                  'Currently No Restaurant Found',
+                                                                  style: FontUtils.h18(
+                                                                    fontColor: AppColors.darkGray,
+                                                                    fontWeight: FWT.medium,
+                                                                  ),
+                                                                ),
+                                                        ),
+                                                      )
                                                       ],
                                                     );
                                             }),
@@ -1938,6 +1882,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               ],
                             ),
                           ),
+                          if (isRestaurantsLoading) ...[
+                            const SizedBox(height: 16),
+                            const AppCenterLoader(),
+                            const SizedBox(height: 16),
+                          ],
                         ],
                       ),
                     );
@@ -1978,24 +1927,23 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       if (verifyLoaderId != null) {
         return;
       }
-
       restaurantBloc.add(
         RestaurantVerifyEvent(
-          latitude: getUserAddress?.latitude ?? 0,
-          longitude: getUserAddress?.longitude ?? 0,
+          latitude: 0,
+          longitude: 0,
           pickup: result == 'Bring me the order' ? false : true,
           id: res.id ?? "",
           mealType: mealType,
           context: context,
+          restaurantName: res.name,
           onVerify: (menu, quote) {
             if (verifyLoaderId != null || !mounted) {
               return;
             }
-
             Get.to(
               () => RestaurantMenuScreen(
                 getUserAddress: getUserAddress,
-                address: res.address!,
+                address: res.address ?? Address(),
                 userId: res.id ?? "",
                 restaurantName: res.name ?? '',
                 restaurantId: res.id ?? "",
@@ -2018,7 +1966,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             searchRestaurantList.removeWhere((element) => element.id == res.id);
             if (search.text.trim().isEmpty) {
               PreferenceUtils.setString(
-                  prefKey, jsonEncode(restaurantList.toList()));
+                prefKey, 
+                jsonEncode(restaurantList.toList()),
+              );
             }
             if (mounted) {
               setState(() {});
@@ -2027,6 +1977,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         ),
       );
     } catch (e) {
+      print('exception');
       log(e.toString());
     }
   }

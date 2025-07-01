@@ -50,6 +50,7 @@ class ShoppingListData {
   String? userId;
   String? productId;
   String? productName;
+  String? image;
   Address? resAddress;
   int? quantity;
   int? price;
@@ -72,6 +73,7 @@ class ShoppingListData {
     this.userId,
     this.productId,
     this.productName,
+    this.image,
     this.resAddress,
     this.quantity,
     this.price,
@@ -96,6 +98,7 @@ class ShoppingListData {
         userId: json["userId"],
         productId: json["productId"],
         productName: json["productName"],
+        image: json["image"],
         quantity: json["quantity"],
         price: json["price"],
         originalPrice: json["originalPrice"],
@@ -123,6 +126,7 @@ class ShoppingListData {
         "userId": userId,
         "productId": productId,
         "productName": productName,
+        "image": image,
         "quantity": quantity,
         "price": price,
         "originalPrice": originalPrice,

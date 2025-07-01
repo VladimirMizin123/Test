@@ -24,6 +24,9 @@ import 'package:gymeats_mobile/widget/app_center_loader.dart';
 import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
+import 'dart:convert';
+import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StoreMenuDetailsScreen extends StatefulWidget {
   const StoreMenuDetailsScreen({
@@ -75,11 +78,13 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
   RxList<opt.Option> routingList = RxList<opt.Option>();
   List<Map<String, dynamic>> nestedOptionList = [];
+  bool _isLoadingCustomization = false;
 
   RestaurantBloc restaurantBloc = RestaurantBloc();
   bool addToCart = false;
   bool isAdding = false;
   bool loading = false;
+  bool isGoingBack = false;
 
   getData() async {
     selectedOption.clear();
@@ -102,24 +107,6 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     optionsList = widget.options ?? [];
   }
 
-  void _handleCustomization() {
-    if (customizationList.isEmpty &&
-        (widget.data.shouldFetchCustomizations ?? false)) {
-      restaurantBloc.add(ProductCustomizationEvent(
-        productId: widget.data.productId ?? "",
-        callback: (menu) {
-          customizationList = menu.customizations ?? [];
-          widget.onCustomizationChange?.call(customizationList);
-          getData();
-          if (mounted) {
-            setState(() {});
-          }
-          log(customizationList.length.toString());
-        },
-      ));
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -129,6 +116,94 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     getData();
     _handleCustomization();
     widget.cartBloc.add(GetGroceryCartList());
+  }
+
+  Future<void> _handleCustomization() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final signalRItem = {
+      "Name": widget.data.name,
+      "ImageUrl": widget.data.image,
+      "Price": widget.data.formattedPrice,
+      "Calories": widget.data.description,
+      "ItemUrl": widget.data.itemUrl,
+    };
+
+    final jsonString = jsonEncode(signalRItem);
+
+    setState(() {
+      _isLoadingCustomization = true;
+    });
+
+    final signalR = SignalRService();
+    List<dynamic>? signalRResult;
+
+    final isCartOpened = prefs.getBool('cart-opened') ?? false;
+    if (isCartOpened) {
+      await signalR.CloseViewCart();
+      await prefs.setBool('cart-opened', false);
+    }
+
+    try {
+      signalRResult = await signalR.getCustomization(jsonString);
+    } catch (_) {
+      setState(() {
+        _isLoadingCustomization = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingCustomization = false;
+    });
+
+    if (signalRResult != null && signalRResult.isNotEmpty) {
+      List<Customization> parsedCustomizations = [];
+
+      try {
+        parsedCustomizations = signalRResult.map<Customization>((item) {
+          final String? header = item['Header'];
+          final bool isRequired = item['IsRequired'] ?? false;
+          final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
+
+          final List<opt.Option> options =
+              (item['Items'] as List).map<opt.Option>((optItem) {
+            final String name = optItem['Name'] ?? '';
+            final String priceString = optItem['Price'] ?? '';
+            final int price = 0;
+
+            return opt.Option(
+              name: name,
+              formattedPrice: priceString,
+              price: price,
+              minQty: 0,
+              maxQty: isManySelectionAllowed ? 99 : 1,
+              isRequired: isRequired,
+              defaultQty: 0,
+              optionId: name,
+              isNestedSelection: optItem['IsNestedSelection'],
+            );
+          }).toList();
+
+          return Customization(
+            name: header,
+            minChoiceOptions: isRequired ? 1 : 0,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            options: options,
+            customizationId: header,
+            level: 1,
+          );
+        }).toList();
+      } catch (_) {
+        return;
+      }
+
+      setState(() {
+        widget.data.customizations = parsedCustomizations;
+        customizationList = parsedCustomizations;
+        widget.onCustomizationChange?.call(customizationList);
+      });
+    }
   }
 
   @override
@@ -199,9 +274,25 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                               alignment: Alignment.topLeft,
                               child: Padding(
                                 padding: EdgeInsets.only(top: 30.h, left: 15.w),
-                                child: GestureDetector(
-                                  onTap: () {
+                                child: 
+                                isGoingBack == true ? 
+                                    const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                : 
+                                GestureDetector(
+                                  onTap: () async {
+                                    setState(() {
+                                      isGoingBack = true;
+                                    });
+                                    final signalR = SignalRService();
+                                    await signalR.goBack();
                                     Get.back(result: addToCart);
+                                    setState(() {
+                                      isGoingBack = false;
+                                    });
                                   },
                                   child: const Icon(
                                     Icons.arrow_back_ios,
@@ -266,6 +357,15 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                           : const SizedBox.shrink();
                                     },
                                   ),
+                                  _isLoadingCustomization
+                                    ? const Center(
+                                        child: SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      )
+                                    :
                                   customizationList.isEmpty
                                       ? const SizedBox()
                                       : nestedItemView(),
@@ -277,7 +377,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         GestureDetector(
-                                          onTap: () {
+                                          onTap: () async {
                                             if (alreadyInCart) {
                                               cartMenu?.cartQuantity =
                                                   (cartMenu.cartQuantity ?? 0) -
@@ -289,6 +389,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                                 item--;
                                               }
                                             }
+                                              final signalR = SignalRService();
+                                              await signalR.selectQuantity(item);
                                             setState(() {});
                                           },
                                           child: Container(
@@ -335,7 +437,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                         ),
                                         SizedBox(width: 8.w),
                                         GestureDetector(
-                                          onTap: () {
+                                          onTap: () async {
                                             if (alreadyInCart) {
                                               cartMenu?.cartQuantity =
                                                   (cartMenu.cartQuantity ?? 0) +
@@ -346,6 +448,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                               item++;
                                               setState(() {});
                                             }
+                                              final signalR = SignalRService();
+                                              await signalR.selectQuantity(item);
                                           },
                                           child: Container(
                                             height: size.height * 0.060,
@@ -377,17 +481,19 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                       ],
                                     ),
                                   ),
+                                   isAdding == true
+                                          ? const Center(
+                                              child:
+                                                  CircularProgressIndicator())
+                                          : 
                                   RestaurantMealAddButtonWidget(
-                                    onTap: () {
-                                      if (!alreadyInCart) {
-                                        addIntoTheCart();
-                                      } else {
+                                    onTap: () async{
+                                      final success = await addIntoTheCart();
+                                      if (success) {
                                         Get.back();
                                       }
                                     },
-                                    buttonLable: cartMenu != null
-                                        ? 'View Cart'
-                                        : 'Add to cart',
+                                    buttonLable: 'Add to cart',
                                     isFillColor: true,
                                     selectedItemCount: cartMenu != null
                                         ? cartMenuList.length
@@ -460,7 +566,9 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                               customization: routeCs[index],
                               setBackButton: index == 0 ? true : false,
                               parentTitle: routing.name,
-                              onBack: () {
+                              onBack: () async {
+                                final signalR = new SignalRService();
+                                await signalR.SaveNestedSelectionOption();
                                 routingList.removeLast();
                                 // routing.value = null;
                               },
@@ -662,13 +770,78 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     );
   }
 
-  void onTileTap(Customization cs, opt.Option option,
-      {required Customization parent, bool setRouting = true}) {
+  Future<void> onTileTap(Customization cs, opt.Option option,
+    {required Customization parent, bool setRouting = true}) async {
+
+    final signalR = SignalRService();
+    final header = cs.name ?? '';
+    final selectedName = option.name ?? '';
+
+    if (option.isNestedSelection == true &&
+        (option.customizations == null || option.customizations!.isEmpty)) {
+
+      try {
+        final signalRResult = await signalR.getNestedSelection(header, selectedName);
+
+        final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
+          final String? nestedHeader = item['header'] ?? item['Header'];
+          final bool isRequired = item['isRequired'] ?? item['IsRequired'] ?? false;
+          final bool isManySelectionAllowed =
+              item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;
+
+          final optionsList = item['items'] ?? item['Items'] ?? [];
+
+          List<opt.Option> options =
+              (optionsList as List).map<opt.Option>((optItem) {
+            try {
+              final name = optItem['name'] ?? optItem['Name'] ?? '';
+              final priceString = optItem['price']?.toString() ??
+                  optItem['Price']?.toString() ??
+                  '';
+              final isNested =
+                  optItem['isNestedSelection'] ?? optItem['IsNestedSelection'] ?? false;
+
+              return opt.Option(
+                name: name,
+                formattedPrice: priceString,
+                price: 0,
+                minQty: 0,
+                maxQty: isManySelectionAllowed ? 99 : 1,
+                isRequired: isRequired,
+                defaultQty: 0,
+                optionId: name,
+                isNestedSelection: isNested,
+              );
+            } catch (e) {
+              rethrow;
+            }
+          }).toList();
+
+          return Customization(
+            name: nestedHeader,
+            minChoiceOptions: isRequired ? 1 : 0,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            options: options,
+            customizationId: nestedHeader,
+            level: cs.level + 1,
+          );
+        }).toList();
+
+        option.customizations = parsedNestedCustomizations;
+      } catch (e) {
+        // handle error if needed
+      }
+    } else {
+      try {
+        await signalR.selectCustomizationItem(header, selectedName);
+      } catch (e) {
+        // handle error if needed
+      }
+    }
+
     setState(() {
-      if (nestedOptionList
-          .any((element) => element["option_id"] == option.optionId)) {
-        nestedOptionList
-            .removeWhere((element) => element["option_id"] == option.optionId);
+      if (nestedOptionList.any((element) => element["option_id"] == option.optionId)) {
+        nestedOptionList.removeWhere((element) => element["option_id"] == option.optionId);
         removeOptions(option);
         return;
       }
@@ -686,45 +859,45 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     });
   }
 
-  bool isFormValid(List<Customization> cList) {
+ bool isFormValid(List<Customization> cList) {
     for (var i = 0; i < cList.length; i++) {
+      final customization = cList[i];
+
       int count = nestedOptionList
-          .where((e) => cList.any((element) =>
-              cList[i].options?.any((k) => k.optionId == e["option_id"]) ??
-              false))
-          .toList()
+          .where((e) =>
+              customization.options?.any((k) => k.optionId == e["option_id"]) ??
+              false)
           .length;
 
-      List<opt.Option> requiredOptions = cList[i]
-              .options
-              ?.where((element) => element.isRequired ?? false)
-              .toList() ??
-          [];
+      List<opt.Option> requiredOptions =
+          customization.options?.where((element) => element.isRequired ?? false).toList() ?? [];
 
-      bool requiredOptionNotSelected = requiredOptions.isNotEmpty &&
-          !requiredOptions.every((element) =>
+      int effectiveMinChoice =
+          requiredOptions.isNotEmpty ? 1 : (customization.minChoiceOptions ?? 0);
+
+      bool hasAtLeastOneRequiredSelected = requiredOptions.isNotEmpty &&
+          requiredOptions.any((element) =>
               nestedOptionList.any((e) => e["option_id"] == element.optionId));
 
-      List<opt.Option> validOptionList = cList[i]
-              .options
-              ?.where((element) => nestedOptionList
-                  .any((e) => e["option_id"] == element.optionId))
-              .toList() ??
-          [];
-
-      if ((count < (cList[i].minChoiceOptions ?? 0)) ||
-          requiredOptionNotSelected) {
+      if (requiredOptions.isNotEmpty && !hasAtLeastOneRequiredSelected) {
         return false;
       }
 
-      if (cList[i].options?.isNotEmpty ?? false) {
-        for (opt.Option ele in validOptionList) {
-          if (!isFormValid(ele.customizations ?? [])) {
-            return false;
-          }
+      if (count < effectiveMinChoice) {
+        return false;
+      }
+
+      List<opt.Option> validOptionList =
+          customization.options?.where((element) =>
+              nestedOptionList.any((e) => e["option_id"] == element.optionId)).toList() ?? [];
+
+      for (opt.Option ele in validOptionList) {
+        if (!isFormValid(ele.customizations ?? [])) {
+          return false;
         }
       }
     }
+
     return true;
   }
 
@@ -808,47 +981,103 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     return (false, null);
   }
 
-  void setTotalPrice() {
-    price = widget.data.originalPrice;
-    for (var element in nestedOptionList) {
-      price = price + element['marked_price'];
+  int setTotalPrice() {
+    print('setTotalPrice');
+    double price = 0.0;
+
+    final basePriceString = widget.data.formattedPrice;
+    if (basePriceString != null && basePriceString != 'Priced by add-ons') {
+      price = double.tryParse(
+            basePriceString.replaceAll(RegExp(r'[^\d.]'), ''),
+          ) ??
+          0.0;
     }
-    price = price * item;
+
+    for (var element in nestedOptionList) {
+      final markedPrice = element['marked_price'];
+      if (markedPrice != null) {
+        price += markedPrice;
+      }
+    }
+
+    price *= item;
+
+    int priceInCents = (price * 100).round();
+
+    print('Total price in cents: $priceInCents');
+    return priceInCents;
   }
 
-  void addIntoTheCart() {
-    if (item > 0) {
-      bool valid = isFormValid(customizationList);
-      if (valid) {
-        setTotalPrice();
-        MenuItemList menuItem = widget.data;
-        menuItem
-          ..cartQuantity = item
-          ..totalPrice = price;
-        menuItem.selectedOptions = nestedOptionList
-            .map(
-              (e) => SelectedOptions(
-                optionId: e["option_id"],
-                quantity: e["quantity"],
-                markedPrice: e["marked_price"],
-              ),
-            )
-            .toList();
-        cartMenuList.add(menuItem);
-        widget.cartBloc.add(ModifyCart(menuItemList: cartMenuList));
-      } else {
-        showToast(
-          message: 'Please Select Required Item',
-          isSuccess: false,
-          color: AppColors.black,
-        );
-      }
-    } else {
+  Future<bool> addIntoTheCart() async {
+    setState(() {
+      isAdding = true;
+    });
+    print(item);
+    if (customizationList.isNotEmpty && item <= 0) {
       showToast(
         message: 'Please Select One Item',
         isSuccess: false,
         color: AppColors.black,
       );
+      setState(() {
+        isAdding = false;
+      });
+      return false;
+    }
+
+    if (customizationList.isNotEmpty) {
+      bool valid = isFormValid(customizationList);
+      if (!valid) {
+        showToast(
+          message: 'Please Select Required Item',
+          isSuccess: false,
+          color: AppColors.black,
+        );
+        setState(() {
+          isAdding = false;
+        });
+        return false;
+      }
+    }
+
+    try {
+      final signalR = SignalRService();
+      final signalRResult = await signalR.addItemsToCart();
+
+      price = setTotalPrice();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('item-added-to-cart', true);
+      await prefs.setBool('cart-opened', true);
+
+      MenuItemList menuItem = widget.data;
+      menuItem
+        ..cartQuantity = item
+        ..totalPrice = price;
+
+      menuItem.selectedOptions = nestedOptionList
+          .map(
+            (e) => SelectedOptions(
+              optionId: e["option_id"],
+              quantity: e["quantity"],
+              markedPrice: e["marked_price"],
+            ),
+          )
+          .toList();
+
+      cartMenuList.add(menuItem);
+      widget.cartBloc.add(ModifyCart(menuItemList: cartMenuList));
+
+      setState(() {
+        isAdding = false;
+      });
+
+      return true;
+    } catch (e) {
+      setState(() {
+        isAdding = false;
+      });
+      return false;
     }
   }
 }

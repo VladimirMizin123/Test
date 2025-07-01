@@ -261,19 +261,18 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
           return;
         }
       }
-
       emit(VerifyLoader(id: event.id));
 
       DateTime time = DateTime.now();
 
-      (double?, double?) pos = await Constant.i.position;
+      // (double?, double?) pos = await Constant.i.position;
 
       log("Take Time : ${DateTime.now().difference(time).inSeconds}.${DateTime.now().difference(time).inMilliseconds % 1000}");
 
       Either<ErrorModel, CategorieModel> categoriesRes =
           await _repository.getStoreCategorieList(event.getUserAddress,
               event.askReceiveOrder?.index, event.id ?? "",
-              position: pos);
+              name: event.name ?? "");
 
       emit(VerifyLoader(id: null));
       if (event.id != prevId) {
@@ -318,12 +317,12 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   _onNearByStore(StoreNearByEvent event, Emitter<GroceryState> emit) async {
     emit(GrocerySearchLoadingState());
     try {
-      String prefKey;
-      if (event.askReceiveOrder == AskReceiveOrder.bringTheOrder) {
-        prefKey = groceryBring;
-      } else {
-        prefKey = groceryPickup;
-      }
+      String prefKey = groceryBring;
+      // if (event.askReceiveOrder == AskReceiveOrder.bringTheOrder) {
+      //   prefKey = groceryBring;
+      // } else {
+      //   prefKey = groceryPickup;
+      // }
       Either<ErrorModel, NearByStoreModel> res =
           await _repository.nearByStoreSearch(
         getUserAddress: event.getUserAddress,
@@ -452,30 +451,44 @@ class GroceryBloc extends Bloc<GroceryEvent, GroceryState> {
   // Create Order Bloc ==============================================================================
 
   _onCreateOrder(CreateOrderEvent event, Emitter<GroceryState> emit) async {
+    print('_onCreateOrder STARTED');
     emit(CreateOrderLoadingState(isLoading: true));
+    print('Emitted CreateOrderLoadingState(isLoading: true)');
 
     try {
+      print('Calling _repository.createOrder...');
       await _repository
           .createOrder(createOrderModel: event.createGroceryOrderModel)
           .fold((left) async {
+        print('Repository returned failure: ${left.errorMessage}');
         showToast(isSuccess: false, message: left.errorMessage ?? "");
         emit(CreateOrderErrorState());
+        print('Emitted CreateOrderErrorState');
       }, (right) async {
+        print('Repository returned success: ${right.message}');
         if (event.onSuccess != null) {
+          print('Calling onSuccess callback');
           event.onSuccess?.call(right.data);
         } else {
+          print('Emitting CreateOrderSuccessState');
           emit(CreateOrderSuccessState(orderData: right.data));
         }
 
         showToast(
-            isSuccess: true,
-            message: right.message ?? "Order Created Successfully");
+          isSuccess: true,
+          message: right.message ?? "Order Created Successfully",
+        );
       });
-    } catch (e) {
+    } catch (e, stack) {
+      print('Exception caught in _onCreateOrder: $e');
+      print('Stack trace: $stack');
       showToast(isSuccess: false, message: e.toString());
       emit(CreateOrderErrorState());
+      print('Emitted CreateOrderErrorState from catch');
     } finally {
       emit(CreateOrderLoadingState(isLoading: false));
+      print('Emitted CreateOrderLoadingState(isLoading: false)');
+      print('_onCreateOrder FINISHED');
     }
   }
 

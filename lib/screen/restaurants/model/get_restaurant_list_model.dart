@@ -100,41 +100,30 @@ class RestaurantList {
   });
 
   factory RestaurantList.fromJson(Map<String, dynamic> json) => RestaurantList(
-        id: json["_id"],
-        name: json["name"],
-        phoneNumber: json["phone_number"],
-        address:
-            json["address"] == null ? null : Address.fromJson(json["address"]),
-        type: json["type"],
-        description: json["description"],
-        localHours: json["local_hours"] == null
-            ? null
-            : LocalHours.fromJson(json["local_hours"]),
-        utcHours: json["utc_hours"],
-        cuisines: json["cuisines"] == null
-            ? []
-            : List<String>.from(json["cuisines"]!.map((x) => x)),
-        foodPhotos: json["food_photos"] == null
-            ? []
-            : List<String>.from(json["food_photos"]!.map((x) => x)),
-        logoPhotos: json["logo_photos"] == null
-            ? []
-            : List<String>.from(json["logo_photos"]!.map((x) => x)),
-        storePhotos: json["store_photos"] == null
-            ? []
-            : List<String>.from(json["store_photos"]!.map((x) => x)),
-        dollarSigns: json["dollar_signs"],
-        pickupEnabled: json["pickup_enabled"],
-        deliveryEnabled: json["delivery_enabled"],
-        isOpen: json["is_open"],
-        quotes: json["quotes"] == null ? null : Quotes.fromJson(json["quotes"]),
-        offersFirstPartyDelivery: json["offers_first_party_delivery"],
-        offersThirdPartyDelivery: json["offers_third_party_delivery"],
-        miles: json["miles"]?.toDouble(),
-        weightedRatingValue: json["weighted_rating_value"]?.toDouble(),
-        aggregatedRatingCount: json["aggregated_rating_count"],
-        supportsUpcCodes: json["supports_upc_codes"],
-      );
+    id: json["_id"] ?? '',
+    name: json["name"] ?? '',
+    phoneNumber: json["phone_number"] ?? 0,
+    address: json["address"] != null ? Address.fromJson(json["address"]) : null,
+    type: json["type"] ?? '',
+    description: json["description"] ?? '',
+    localHours: json["local_hours"] != null ? LocalHours.fromJson(json["local_hours"]) : null,
+    utcHours: json["utc_hours"],
+    cuisines: json["cuisines"] != null ? List<String>.from(json["cuisines"]) : [],
+    foodPhotos: json["food_photos"] != null ? List<String>.from(json["food_photos"]) : [],
+    logoPhotos: json["logo_photos"] != null ? List<String>.from(json["logo_photos"]) : [],
+    storePhotos: json["store_photos"] != null ? List<String>.from(json["store_photos"]) : [],
+    dollarSigns: json["dollar_signs"] ?? 0,
+    pickupEnabled: json["pickup_enabled"] ?? false,
+    deliveryEnabled: json["delivery_enabled"] ?? false,
+    isOpen: json["is_open"] ?? false,
+    quotes: json["quotes"] != null ? Quotes.fromJson(json["quotes"]) : null,
+    offersFirstPartyDelivery: json["offers_first_party_delivery"] ?? false,
+    offersThirdPartyDelivery: json["offers_third_party_delivery"] ?? false,
+    miles: (json["miles"] ?? 0).toDouble(),
+    weightedRatingValue: (json["weighted_rating_value"] ?? 0).toDouble(),
+    aggregatedRatingCount: json["aggregated_rating_count"] ?? 0,
+    supportsUpcCodes: json["supports_upc_codes"] ?? false,
+  );
 
   Map<String, dynamic> toJson() => {
         "_id": id,

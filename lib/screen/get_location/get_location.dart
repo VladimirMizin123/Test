@@ -33,6 +33,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:gymeats_mobile/widget/back_button_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../restaurants/model/get_user_address_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GetUserAddress extends StatefulWidget {
   const GetUserAddress({super.key});
@@ -742,6 +743,9 @@ class _GetUserAddressState extends State<GetUserAddress>
                                         )
                                       : GestureDetector(
                                           onTap: () async {
+                                            final prefs = await SharedPreferences.getInstance();
+                                            prefs.setBool('AddressUpdated', true);
+
                                             if (cartCount != 0) {
                                               dynamic result = await Constant.i
                                                   .showAlertDialog(
