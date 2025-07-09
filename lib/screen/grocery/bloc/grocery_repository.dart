@@ -247,11 +247,21 @@ class GroceryRepository {
         : (rawData["Restaurants"]["Restaurants"] as List<dynamic>);
 
     final List<gms.Store> storeList = restaurantsJson.map<gms.Store>((r) {
+      String? imageUrl;
+
+      if (r["ImageSrcSet"] != null && r["ImageSrcSet"] is String) {
+        final parts = r["ImageSrcSet"].split(',');
+        if (parts.isNotEmpty) {
+          final firstPart = parts[0].trim();
+          imageUrl = firstPart.split(' ').first;
+        }
+      }
+
       return gms.Store(
         id: r["_id"] as String?,
         name: r["name"] as String?,
         weightedRatingValue: (r["weighted_rating_value"] as num?)?.toDouble(),
-        logoPhotos: r["ImageSrc"] != null ? [r["ImageSrc"] as String] : <String>[],
+        logoPhotos: imageUrl != null ? [imageUrl] : <String>[],
         phoneNumber: null,
         address: null,
         type: null,

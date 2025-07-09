@@ -405,77 +405,65 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
   }
 
   void handleCategoryTap(Category? category, int index, {Category? subCategory}) async {
-    setState(() {
-      isLoading = true;
-    });
+  if (category == null) return;
 
-    if (category == null) return;
+  setState(() {
+    isLoading = true;
+  });
 
-    final signalR = SignalRService();
+  final signalR = SignalRService();
 
-    try {
-      if (category.hasShopRestaurant == true && subCategory == null) {
-        final List<String> subcategoryNames =
-            await signalR.getRestaurantSubcategories(category.name ?? '');
-
-        if (subcategoryNames.isEmpty) {
-          final signalRResult = await signalR.getMenuItems(category.name ?? '');
-
-          final menuItems = signalRResult.map<gtm.MenuItemList>((item) {
-            final priceString = item['Price']?.replaceAll('\$', '').trim();
-            final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
-
-            return gtm.MenuItemList(
-              name: item['Name'] ?? '',
-              image: item['ImageUrl'],
-              formattedPrice: item['Price'],
-              cartPrice: priceDouble,
-              isAvailable: true,
-              description: item['Calories'],
-              itemUrl: item['ItemUrl'],
-            );
-          }).toList();
-
-          category.menuItemList = menuItems;
-        } else {
-          final firstSub = subcategoryNames.first;
-          final signalRResult = await signalR.getMenuItems(category.name ?? '', firstSub);
-
-          final firstMenuItems = signalRResult.map<gtm.MenuItemList>((item) {
-            final priceString = item['Price']?.replaceAll('\$', '').trim();
-            final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
-
-            return gtm.MenuItemList(
-              name: item['Name'] ?? '',
-              image: item['ImageUrl'],
-              formattedPrice: item['Price'],
-              cartPrice: priceDouble,
-              isAvailable: true,
-              description: item['Calories'],
-              itemUrl: item['ItemUrl'],
-            );
-          }).toList();
-
-          category.subcategoryList = List<Category>.generate(
-            subcategoryNames.length,
-            (subIndex) => Category(
-              name: subcategoryNames[subIndex],
-              subcategoryId: null,
-              menuItemList: subIndex == 0 ? firstMenuItems : [],
-            ),
-          );
-          setState(() {});
-        }
-
-        routing.add(index);
+  try {
+    final alreadyHasMenu = () {
+      if (subCategory != null) {
+        return subCategory.menuItemList?.isNotEmpty == true;
       } else {
-        late final List<dynamic> signalRResult;
+        return category.menuItemList?.isNotEmpty == true;
+      }
+    }();
 
-        if (subCategory != null) {
-          signalRResult = await signalR.getMenuItems(category.name ?? '', subCategory.name);
-        } else {
-          signalRResult = await signalR.getMenuItems(category.name ?? '');
-        }
+    if (alreadyHasMenu) {
+      setState(() {
+        isLoading = false;
+      });
+
+      signalR.getMenuItems(
+        category.name ?? '',
+        subCategory?.name,
+        1,
+        false,
+      );
+
+      dynamic result = await Get.to(
+        () => StoreCartScreen(
+          groceryBloc: groceryBloc,
+          menuItemList: subCategory?.menuItemList ?? category.menuItemList ?? [],
+          categoryName: category.name ?? '',
+          subCategoryName: subCategory?.name,
+          storeName: widget.storeName,
+          storeId: widget.storeId,
+          address: widget.address,
+          grocAdd: widget.grocAdd,
+          groceryDetails: widget.groceryDetails,
+          cartBloc: storeCartBloc,
+          askOrder: widget.askOrder,
+        ),
+      );
+
+      if (result == "category") {
+        routing = [];
+        setState(() {});
+      }
+
+      return;
+    }
+
+    if (category.hasShopRestaurant == true && subCategory == null) {
+      final List<String> subcategoryNames =
+          await signalR.getRestaurantSubcategories(category.name ?? '');
+
+      if (subcategoryNames.isEmpty) {
+        final signalRResult = await signalR.getMenuItems(category.name ?? '', null, 1, true);
 
         final menuItems = signalRResult.map<gtm.MenuItemList>((item) {
           final priceString = item['Price']?.replaceAll('\$', '').trim();
@@ -486,51 +474,112 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
             image: item['ImageUrl'],
             formattedPrice: item['Price'],
             cartPrice: priceDouble,
+            originalPrice: (priceDouble * 100).round(),
             isAvailable: true,
             description: item['Calories'],
             itemUrl: item['ItemUrl'],
           );
         }).toList();
 
-        if (subCategory != null) {
-          subCategory.menuItemList = menuItems;
-        } else {
-          category.menuItemList = menuItems;
-        }
+        category.menuItemList = menuItems;
+      } else {
+        final firstSub = subcategoryNames.first;
+        final signalRResult = await signalR.getMenuItems(category.name ?? '', firstSub, 1, true);
 
-        setState(() {});
+        final firstMenuItems = signalRResult.map<gtm.MenuItemList>((item) {
+          final priceString = item['Price']?.replaceAll('\$', '').trim();
+          final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
 
-        dynamic result = await Get.to(
-          () => StoreCartScreen(
-            groceryBloc: groceryBloc,
-            menuItemList: subCategory?.menuItemList ?? category.menuItemList ?? [],
-            categoryName: subCategory?.name ?? category.name,
-            storeName: widget.storeName,
-            storeId: widget.storeId,
-            address: widget.address,
-            grocAdd: widget.grocAdd,
-            groceryDetails: widget.groceryDetails,
-            cartBloc: storeCartBloc,
-            askOrder: widget.askOrder,
+          return gtm.MenuItemList(
+            name: item['Name'] ?? '',
+            image: item['ImageUrl'],
+            formattedPrice: item['Price'],
+            cartPrice: priceDouble,
+            originalPrice: (priceDouble * 100).round(),
+            isAvailable: true,
+            description: item['Calories'],
+            itemUrl: item['ItemUrl'],
+          );
+        }).toList();
+
+        category.subcategoryList = List<Category>.generate(
+          subcategoryNames.length,
+          (subIndex) => Category(
+            name: subcategoryNames[subIndex],
+            subcategoryId: null,
+            menuItemList: subIndex == 0 ? firstMenuItems : [],
           ),
         );
 
-        if (result == "category") {
-          routing = [];
-          setState(() {});
-        }
+        setState(() {});
       }
 
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
+      routing.add(index);
+    } else {
+      final signalRResult = await signalR.getMenuItems(
+        category.name ?? '',
+        subCategory?.name,
+        1,
+        true,
+      );
+
+      final menuItems = signalRResult.map<gtm.MenuItemList>((item) {
+        final priceString = item['Price']?.replaceAll('\$', '').trim();
+        final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+        return gtm.MenuItemList(
+          name: item['Name'] ?? '',
+          image: item['ImageUrl'],
+          formattedPrice: item['Price'],
+          cartPrice: priceDouble,
+          originalPrice: (priceDouble * 100).round(),
+          isAvailable: true,
+          description: item['Calories'],
+          itemUrl: item['ItemUrl'],
+        );
+      }).toList();
+
+      if (subCategory != null) {
+        subCategory.menuItemList = menuItems;
+      } else {
+        category.menuItemList = menuItems;
+      }
+
+      setState(() {});
+
+      dynamic result = await Get.to(
+        () => StoreCartScreen(
+          groceryBloc: groceryBloc,
+          menuItemList: subCategory?.menuItemList ?? category.menuItemList ?? [],
+          categoryName: category.name ?? '',
+          subCategoryName: subCategory?.name,
+          storeName: widget.storeName,
+          storeId: widget.storeId,
+          address: widget.address,
+          grocAdd: widget.grocAdd,
+          groceryDetails: widget.groceryDetails,
+          cartBloc: storeCartBloc,
+          askOrder: widget.askOrder,
+        ),
+      );
+
+      if (result == "category") {
+        routing = [];
+        setState(() {});
+      }
     }
+
+    setState(() {
+      isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+    print('Error in handleCategoryTap: $e');
   }
+}
+
 
 
   void handleBackTap() async {

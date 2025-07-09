@@ -38,6 +38,7 @@ class StoreCartScreen extends StatefulWidget {
   final GroceryBloc groceryBloc;
   final StoreCartBloc cartBloc;
   final String? categoryName;
+  final String? subCategoryName;
   final String? storeName;
   final String? storeId;
   final user_address.UserAddress? address;
@@ -51,6 +52,7 @@ class StoreCartScreen extends StatefulWidget {
     this.menuItemList = const [],
     required this.groceryBloc,
     this.categoryName,
+    this.subCategoryName = null,
     this.storeName,
     this.storeId,
     this.address,
@@ -70,6 +72,8 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   List<MenuItemList> cartMenuList = [];
   bool _isGoingBack = false;
 
+  List<MenuItemList> filterItem = [];
+
   List<Product> groceryTempResult = [];
   bool isProductSelect = false;
   bool isFilter = false;
@@ -78,6 +82,9 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   String? searchText;
   AddNewGroceryItemBloc groceryItemBloc = AddNewGroceryItemBloc();
   late StoreCartBloc cartBloc;
+  bool _isFetchingMore = false;
+  bool isLoadingMenu = false;
+  int currentMenuPage = 0;
 
   @override
   void initState() {
@@ -92,6 +99,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   }
 
   void sortingData() {
+    print('SORTING DATA');
     if (selectedSorting == 'Cheapest first') {
       menuItemList.sort((a, b) => a.originalPrice!.compareTo(b.originalPrice!));
       setState(() {});
@@ -104,6 +112,97 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
   RangeValues? priceRange;
 
   bool isCreateOrder = false;
+
+  Future<void> loadNewMenuItems() async {
+  if (isLoadingMenu) return;
+  isLoadingMenu = true;
+
+  try {
+    print("Starting to load new menu items...");
+    final signalR = SignalRService();
+
+    print("Calling getMenuItems with:");
+    print("   - category: ${widget.categoryName}");
+    print("   - subcategory: ${widget.subCategoryName}");
+    print("   - page: $currentMenuPage");
+
+    final List<dynamic>? result = await signalR.getMenuItems(
+      widget.categoryName!,
+      widget.subCategoryName,
+      currentMenuPage,
+      false,
+    );
+
+    print('Response received');
+    print(result);
+
+    if (result != null && result.isNotEmpty) {
+      final newItems = result.map<MenuItemList>((item) {
+        final priceString = item['Price']?.replaceAll('\$', '').trim();
+        final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+        final newItem = MenuItemList(
+          name: item['Name'] ?? '',
+          image: item['ImageUrl'],
+          formattedPrice: item['Price'],
+          cartPrice: priceDouble,
+          isAvailable: true,
+          description: item['Calories'],
+          itemUrl: item['ItemUrl'],
+          productId: item['ProductId'],
+        );
+
+        final inCart = cartMenuList.firstWhereOrNull(
+          (e) => e.name?.toLowerCase().trim() == newItem.name!.toLowerCase().trim(),
+        );
+
+        if (inCart != null) {
+          newItem.cartQuantity = inCart.cartQuantity;
+          newItem.selectedOptions = inCart.selectedOptions;
+          newItem.customizations = inCart.customizations;
+        }
+
+        return newItem;
+      }).toList();
+
+      final existingNames = menuItemList
+          .map((e) => e.name?.toLowerCase().trim())
+          .toSet();
+
+      final filteredNewItems = <MenuItemList>[];
+
+      for (final item in newItems) {
+        final itemName = item.name!.toLowerCase().trim();
+        if (existingNames.contains(itemName)) {
+          print("✅ Already in menuItemList: $itemName");
+        } else {
+          print("➕ New to menuItemList: $itemName");
+          filteredNewItems.add(item);
+        }
+      }
+
+      if (filteredNewItems.isNotEmpty) {
+        print("🟢 Adding ${filteredNewItems.length} new items to menuItemList");
+
+        setState(() {
+          cartMenuList.addAll(filteredNewItems);
+          menuItemList.addAll(filteredNewItems);
+          currentMenuPage++;
+        });
+      } else {
+        print("ℹ️ No new items to add");
+      }
+    } else {
+      print("ℹ️ No new menu items received");
+    }
+  } catch (e, st) {
+    print("❌ Error loading more menu items: $e");
+    print("📍 Stack trace:\n$st");
+  } finally {
+    isLoadingMenu = false;
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +347,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                   Expanded(
                     child: Builder(
                       builder: (_) {
-                        List<MenuItemList> filterItem =
+                        filterItem =
                             List<MenuItemList>.from(menuItemList)
                                 .where((element) =>
                                     element.name?.toLowerCase().contains(
@@ -277,129 +376,148 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                       FontUtils.h16(fontColor: AppColors.black),
                                 ),
                               )
-                            : ListView.separated(
-                                itemCount: filterItem.length,
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 28, 0, 28),
-                                separatorBuilder: (_, __) => Column(
+                            : NotificationListener<ScrollNotification>(
+                                onNotification: (ScrollNotification scrollInfo) {
+                                  if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                                      !_isFetchingMore && !isLoadingMenu) {
+                                    setState(() {
+                                      _isFetchingMore = true;
+                                    });
+
+                                    loadNewMenuItems().then((_) {
+                                      Future.delayed(const Duration(milliseconds: 1500), () {
+                                        setState(() {
+                                          _isFetchingMore = false;
+                                        });
+                                      });
+                                    });
+                                  }
+                                  return false;
+                                },
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.only(bottom: 20),
                                   children: [
-                                    16.height,
-                                    const Divider(
-                                        color: AppColors.lightGrey,
-                                        thickness: 1,
-                                        height: 0),
-                                    16.height,
+                                    ListView.separated(
+                                      itemCount: filterItem.length,
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.fromLTRB(0, 28, 0, 28),
+                                      separatorBuilder: (_, __) => Column(
+                                        children: [
+                                          16.height,
+                                          const Divider(
+                                            color: AppColors.lightGrey,
+                                            thickness: 1,
+                                            height: 0,
+                                          ),
+                                          16.height,
+                                        ],
+                                      ),
+                                      itemBuilder: (_, index) {
+                                        final item = filterItem[index];
+                                        final splitItemName = item.name
+                                                ?.toLowerCase()
+                                                .replaceAll(",", " ")
+                                                .split(" ") ??
+                                            [];
+
+                                        final i = widget.groceryDetails?.indexWhere((e) =>
+                                                !(e.itemName
+                                                        ?.toLowerCase()
+                                                        .split(" ")
+                                                        .any((element) => !splitItemName.contains(element)) ??
+                                                    true)) ??
+                                            -1;
+
+                                        final cartMenu = cartMenuList.firstWhereOrNull(
+                                            (element) => element.productId == item.productId);
+
+                                        return ProductCardWidget(
+                                          categoryName: !i.isNegative
+                                              ? (widget.groceryDetails?[i].itemName ?? "")
+                                              : "",
+                                          cartItem: cartMenu,
+                                          menuItem: item,
+                                          showDiscount: false,
+                                          storeName: widget.storeName,
+                                          qty: item.cartQuantity,
+                                          isGroceryItem: !i.isNegative,
+                                          showQuantity: false,
+                                          onTap: () async {
+                                            Get.to(
+                                              () => StoreMealDetails(
+                                                data: item,
+                                                cartBloc: widget.cartBloc,
+                                                storeId: widget.storeId ?? "",
+                                                shoppingListData: null,
+                                                cartCount: item.cartQuantity ?? 0,
+                                                grocAdd: widget.grocAdd,
+                                                pickUp: widget.askOrder == AskReceiveOrder.pickMySelf,
+                                                matchMealStatus: null,
+                                                onAddToCart: (p0, qty) {
+                                                  item.cartQuantity = qty;
+                                                  item.selectedOptions = p0
+                                                      .map(
+                                                        (e) => SelectedOptions(
+                                                          markedPrice: e["marked_price"],
+                                                          optionId: e["option_id"],
+                                                          quantity: e["quantity"],
+                                                        ),
+                                                      )
+                                                      .toList();
+                                                  setState(() {});
+                                                  widget.cartBloc.add(ModifyCart(menuItemList: filterItem));
+                                                  final signalR = SignalRService();
+                                                  signalR.goBack();
+                                                  Get.back();
+                                                },
+                                                fromGrocery: true,
+                                                onCustomizationChange: (p0) {
+                                                  item.customizations = p0;
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              transition: Transition.fadeIn,
+                                            );
+                                          },
+                                          onCartTap: () {
+                                            Get.to(
+                                              () => StoreMenuDetailsScreen(
+                                                data: item,
+                                                cartBloc: widget.cartBloc,
+                                                restaurantId: widget.storeId ?? "",
+                                                cartCount: item.cartQuantity ?? 0,
+                                                pickUp: widget.askOrder == AskReceiveOrder.pickMySelf,
+                                                grocAdd: widget.grocAdd,
+                                                options: item.selectedOptions?.map((e) => e.toJson()).toList() ?? [],
+                                                onCustomizationChange: (p0) {
+                                                  item.customizations = p0;
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          onAdd: () => cartBloc.add(ChangeGroceryQty(
+                                            productID: item.productId,
+                                            type: ModifyType.decrement,
+                                          )),
+                                          onRemove: () => cartBloc.add(ChangeGroceryQty(
+                                            productID: item.productId,
+                                            type: ModifyType.increment,
+                                          )),
+                                        );
+                                      },
+                                    ),
+
+                                    if (isLoadingMenu) ...[
+                                      const SizedBox(height: 16),
+                                      const Center(child: CircularProgressIndicator()),
+                                      const SizedBox(height: 16),
+                                    ],
                                   ],
                                 ),
-                                itemBuilder: (_, index) {
-                                  MenuItemList? item = filterItem[index];
-                                  List<String> splitItemName = item.name
-                                          ?.toLowerCase()
-                                          .replaceAll(",", " ")
-                                          .split(" ") ??
-                                      [];
-
-                                  int i = widget.groceryDetails?.indexWhere(
-                                          (e) => !(e.itemName
-                                                  ?.toLowerCase()
-                                                  .split(" ")
-                                                  .any((element) =>
-                                                      !splitItemName
-                                                          .contains(element)) ??
-                                              true)) ??
-                                      -1;
-
-                                  MenuItemList? cartMenu =
-                                      cartMenuList.firstWhereOrNull((element) =>
-                                          element.productId == item.productId);
-
-                                  return ProductCardWidget(
-                                    categoryName: !i.isNegative
-                                        ? (widget.groceryDetails?[i].itemName ??
-                                            "")
-                                        : "",
-                                    cartItem: cartMenu,
-                                    menuItem: item,
-                                    showDiscount: false,
-                                    storeName: widget.storeName,
-                                    qty: item.cartQuantity,
-                                    isGroceryItem: !i.isNegative,
-                                    showQuantity: false,
-                                    onTap: () async {
-                                      Get.to(
-                                        () => StoreMealDetails(
-                                          data: item,
-                                          cartBloc: widget.cartBloc,
-                                          storeId: widget.storeId ?? "",
-                                          shoppingListData: null,
-                                          cartCount: item.cartQuantity ?? 0,
-                                          grocAdd: widget.grocAdd,
-                                          pickUp: widget.askOrder ==
-                                              AskReceiveOrder.pickMySelf,
-                                          matchMealStatus: null,
-                                          onAddToCart: (p0, qty) {
-                                            item.cartQuantity = qty;
-                                            item.selectedOptions = p0
-                                                .map(
-                                                  (e) => SelectedOptions(
-                                                    markedPrice:
-                                                        e["marked_price"],
-                                                    optionId: e["option_id"],
-                                                    quantity: e["quantity"],
-                                                  ),
-                                                )
-                                                .toList();
-                                            setState(() {});
-                                            widget.cartBloc.add(ModifyCart(
-                                                menuItemList: filterItem));
-                                                final signalR = SignalRService();
-                                                signalR.goBack();
-                                            Get.back();
-                                          },
-                                          fromGrocery: true,
-                                          onCustomizationChange: (p0) {
-                                            item.customizations = p0;
-                                            setState(() {});
-                                          },
-                                        ),
-                                        transition: Transition.fadeIn,
-                                      );
-                                    },
-                                    onCartTap: () {
-                                      Get.to(
-                                        () => StoreMenuDetailsScreen(
-                                          data: item,
-                                          cartBloc: widget.cartBloc,
-                                          restaurantId: widget.storeId ?? "",
-                                          cartCount: item.cartQuantity ?? 0,
-                                          pickUp: widget.askOrder ==
-                                              AskReceiveOrder.pickMySelf,
-                                          grocAdd: widget.grocAdd,
-                                          options: item.selectedOptions
-                                                  ?.map((e) => e.toJson())
-                                                  .toList() ??
-                                              [],
-                                          onCustomizationChange: (p0) {
-                                            item.customizations = p0;
-                                            setState(() {});
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    onAdd: () => cartBloc.add(
-                                      ChangeGroceryQty(
-                                        productID: item.productId,
-                                        type: ModifyType.decrement,
-                                      ),
-                                    ),
-                                    onRemove: () => cartBloc.add(
-                                      ChangeGroceryQty(
-                                        productID: item.productId,
-                                        type: ModifyType.increment,
-                                      ),
-                                    ),
-                                  );
-                                },
                               );
                       },
                     ),

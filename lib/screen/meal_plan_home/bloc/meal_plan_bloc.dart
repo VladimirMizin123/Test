@@ -113,19 +113,19 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
 
     try {
       await _repository.fetchMealPlan().fold((left) {
-        onFailError(emit: emit, text: left.errorMessage!);
+        onFailError(emit: emit, text:  left.errorMessage!);
         emit(FetchMealPlanErrorState());
       }, (right) {
         box.write('mealPlan', right.data);
-
         emit(FetchMealPlanSuccessState(
             mealPlanList:
                 right.data == null ? [] : right.data!.reversed.toList()));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      print('Fetch Meal plan error');
+      // showToast(isSuccess: false, message: e.toString());
 
-      emit(FetchMealPlanErrorState());
+      // emit(FetchMealPlanErrorState());
     }
   }
 
@@ -469,7 +469,7 @@ class MealPlanBloc extends Bloc<MealPlanEvent, FetchMealPlanState> {
       {required String text,
       required Emitter<FetchMealPlanState> emit,
       bool? hasGrocery}) {
-    showToast(isSuccess: false, message: text);
+    // showToast(isSuccess: false, message: text);
     emit(FetchMealPlanErrorState(hasGrocery: hasGrocery ?? false));
   }
 

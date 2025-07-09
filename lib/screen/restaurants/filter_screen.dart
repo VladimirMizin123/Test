@@ -568,10 +568,14 @@ class _FilterScreenState extends State<FilterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Center(
-                          child: SvgPicture.asset(
+                          child: Image.network(
                             widget.catgoryDataList[index]["image"],
                             height: 45.h,
                             width: 45.w,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.error);
+                            },
                           ),
                         ),
                         SizedBox(height: 10.h),

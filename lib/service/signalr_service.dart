@@ -1581,7 +1581,7 @@ class SignalRService {
     return true;
   }
 
-  Future<List<dynamic>> getMenuItems(String categoryName, [String? subCategory]) async {
+  Future<List<dynamic>> getMenuItems(String categoryName, [String? subCategory, int pageIndex = 0, bool? isInitLoad = true]) async {
     await connect();
 
     if (_storeItemsCompleter == null || _storeItemsCompleter!.isCompleted) {
@@ -1590,12 +1590,12 @@ class SignalRService {
     }
 
     final localCompleter = _storeItemsCompleter!;
-    print('Fetching menu items for category: $categoryName  for subcategory $subCategory');
+    print('Fetching menu items for category: $categoryName  for subcategory $subCategory for index $pageIndex');
 
     try {
-      await _connection!.invoke("GetMenuItem", args: [categoryName, _currentWindowReference!, _userId!, _hasShopRestaurant, subCategory ?? '']);
+      await _connection!.invoke("GetFilteredMenuItems", args: [categoryName, _currentWindowReference!, _userId!, _hasShopRestaurant, pageIndex, isInitLoad!, subCategory ?? '']);
     } catch (e) {
-      throw Exception("Error during GetMenuItem invoke: $e");
+      throw Exception("Error during GetFilteredMenuItems invoke: $e");
     }
 
     await localCompleter.future.timeout(

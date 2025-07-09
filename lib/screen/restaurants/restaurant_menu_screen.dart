@@ -75,6 +75,9 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   bool _isGoingBack = false;
   bool isMenuLoading = false;
 
+  int currentMenuPage = 1;
+  bool isLoadingMenu = false;
+
   // RestaurantBloc restaurantBloc = RestaurantBloc();
   bool loading = false;
   bool loading1 = false;
@@ -88,6 +91,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   List<MenuItemList> menuItem = [];
   bool hasCartData = false;
   bool iCanEat = false;
+  int selectedCategoryIndex = 0;
+  int? selectedSubIndex;
+
+  final ScrollController _scrollController = ScrollController();
+  bool _isFetchingMore = false;
+
+  String selectedCategoryName = '';
+  String? selectedSubcategoryName = '';
 
   List<String> mealPlanId = [];
   List<MealData> mealInfo = [];
@@ -443,7 +454,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                         select = index;
                                                         iCanEat = !iCanEat;
                                                       });
-                                                      _handleCanEat(restaurantMenu?.categories?[index].name ?? "", index);
+                                                      _handleFilterTap(restaurantMenu?.categories?[index].name ?? "", index);
                                                     },
                                                     child: Container(
                                                     height: 30.h,
@@ -517,7 +528,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                       final subcategory = category?.subcategories?[index];
 
                                                       if (category != null && subcategory != null) {
-                                                        _handleCanEat(
+                                                        _handleFilterTap(
                                                           category.name ?? "",
                                                           select,
                                                           subcategoryIndex: index,
@@ -551,6 +562,153 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                               ),
                                             ),
                                           ),
+
+                                          // Filters
+
+                                          Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 16, bottom: 20),
+                                          child: SizedBox(
+                                            height: 40.h,
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: mealType.length,
+                                              padding: const EdgeInsets.only(
+                                                  left: 16),
+                                              scrollDirection: Axis.horizontal,
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    if (index != 0) {
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return FilterBottomSheet(
+                                                            filterType:
+                                                                mealType[index],
+                                                            price: priceValue,
+                                                          );
+                                                        },
+                                                        isDismissible: false,
+                                                        shape:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    16.r),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    16.r),
+                                                          ),
+                                                          borderSide:
+                                                              const BorderSide(
+                                                            color: Colors
+                                                                .transparent,
+                                                          ),
+                                                        ),
+                                                      ).then((value) {
+                                                        if (value != null) {
+                                                          setState(() {
+                                                            priceValue = value;
+                                                          });
+                                                        } else {
+                                                          setState(() {
+                                                            priceValue = '';
+                                                          });
+                                                        }
+                                                      });
+                                                    } else {
+                                                      String subId =
+                                                          restaurantMenu!
+                                                                  .categories?[
+                                                                      select]
+                                                                  .subcategoryId ??
+                                                              "";
+                                                      setState(() {
+                                                        iCanEat = !iCanEat;
+                                                      });
+                                                      _handleCanEat();
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 8),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 15),
+                                                    decoration: BoxDecoration(
+                                                      color: index == 1 &&
+                                                                  priceValue
+                                                                      .isNotEmpty ||
+                                                              index == 0 &&
+                                                                  iCanEat ==
+                                                                      true
+                                                          ? AppColors.coral
+                                                          : AppColors.lightGrey,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          mealType[index] ?? "",
+                                                          style: FontUtils.h18(
+                                                            fontColor: index ==
+                                                                            1 &&
+                                                                        priceValue
+                                                                            .isNotEmpty ||
+                                                                    index ==
+                                                                            0 &&
+                                                                        iCanEat ==
+                                                                            true
+                                                                ? AppColors
+                                                                    .terracotta
+                                                                : AppColors
+                                                                    .darkGray,
+                                                            fontWeight:
+                                                                FWT.medium,
+                                                          ),
+                                                        ),
+                                                        index != 0
+                                                            ? Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            10),
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .arrow_forward_ios_outlined,
+                                                                  size: 15,
+                                                                  color: index == 1 &&
+                                                                              priceValue
+                                                                                  .isNotEmpty ||
+                                                                          index == 0 &&
+                                                                              iCanEat ==
+                                                                                  true
+                                                                      ? AppColors
+                                                                          .terracotta
+                                                                      : AppColors
+                                                                          .darkGray,
+                                                                ),
+                                                              )
+                                                            : const SizedBox()
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
 
                                         /// Restaurant Menu ----------------------------------------------------------------
 
@@ -604,33 +762,65 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                                 );
                                               }
                                             }
+                                                                                  
 
                                             return Expanded(
-                                              child: ListView.separated(
-                                                shrinkWrap: true,
-                                                itemCount: menuItems.length,
-                                                physics: const BouncingScrollPhysics(),
-                                                padding: const EdgeInsets.only(bottom: 20),
-                                                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                                                itemBuilder: (context, index) {
-                                                  final item = menuItems[index];
-                                                  final price = (item.originalPrice ?? 0) / 100;
-
-                                                  final isInRange = priceValue.isEmpty ||
-                                                      (priceValue == '40'
-                                                          ? int.parse(priceValue) <= price
-                                                          : int.parse(priceValue.split('-').first) <= price &&
-                                                              int.parse(priceValue.split('-').last) >= price);
-
-                                                  return isInRange
-                                                      ? displayData(
-                                                          index: index,
-                                                          subcategoryIndex: restaurantMenu!.hasShopRestaurant == true
-                                                              ? selectedSubCategoryIndex
-                                                              : null,
-                                                        )
-                                                      : const SizedBox();
+                                              child: NotificationListener<ScrollNotification>(
+                                                onNotification: (ScrollNotification scrollInfo) {
+                                                  if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                                                      !_isFetchingMore && !isLoadingMenu) {
+                                                        print('FETCHING MORE $_isFetchingMore');
+                                                        setState(() {
+                                                            _isFetchingMore = true;
+                                                        });
+                                                    loadNewMenuItems().then((_) {
+                                                      Future.delayed(const Duration(milliseconds: 500), () {
+                                                        setState(() {
+                                                          _isFetchingMore = false;
+                                                        });
+                                                      });
+                                                    });
+                                                  }
+                                                  return false;
                                                 },
+                                                child: ListView(
+                                                  shrinkWrap: true,
+                                                  physics: const BouncingScrollPhysics(),
+                                                  children: [
+                                                    ListView.separated(
+                                                      itemCount: menuItems.length,
+                                                      shrinkWrap: true,
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      padding: const EdgeInsets.only(bottom: 20),
+                                                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                                                      itemBuilder: (context, index) {
+                                                        final item = menuItems[index];
+                                                        final price = (item.originalPrice ?? 0) / 100;
+
+                                                        final isInRange = priceValue.isEmpty ||
+                                                            (priceValue == '40'
+                                                                ? int.parse(priceValue) <= price
+                                                                : int.parse(priceValue.split('-').first) <= price &&
+                                                                    int.parse(priceValue.split('-').last) >= price);
+
+                                                        return isInRange
+                                                            ? displayData(
+                                                                index: index,
+                                                                subcategoryIndex: restaurantMenu!.hasShopRestaurant == true
+                                                                    ? selectedSubCategoryIndex
+                                                                    : null,
+                                                              )
+                                                            : const SizedBox();
+                                                      },
+                                                    ),
+
+                                                    if (isLoadingMenu) ...[
+                                                      const SizedBox(height: 16),
+                                                      const Center(child: CircularProgressIndicator()),
+                                                      const SizedBox(height: 16),
+                                                    ],
+                                                  ],
+                                                ),
                                               ),
                                             );
                                           },
@@ -1060,80 +1250,55 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     }
   }
 
- Future<void> _handleCanEat(
-    String categoryName,
-    int index, {
-    int? subcategoryIndex,
-    String? subcategoryName,
-  }) async {
-    print("HANDLE CAN EAT");
+  Future<void> loadNewMenuItems() async {
+  if (isLoadingMenu) return;
+  isLoadingMenu = true;
+
+  try {
+
+     if (selectedCategoryName == "") {
+      final categories = restaurantMenu?.categories;
+      if (categories != null && categories.isNotEmpty) {
+        selectedCategoryName = categories[0].name ?? '';
+        selectedCategoryIndex = 0;
+
+        final subcategories = categories[0].subcategories;
+        if (subcategories != null && subcategories.isNotEmpty) {
+          selectedSubcategoryName = subcategories[0].name ?? '';
+          selectedSubIndex = 0;
+        } else {
+          selectedSubcategoryName = null;
+          selectedSubIndex = null;
+        }
+      }
+    }
+
+    print("🟦 Starting to load new menu items...");
+    final signalR = SignalRService();
+
+    print("🔹 Calling getMenuItems with:");
+    print("   - category: $selectedCategoryName");
+    print("   - subcategory: $selectedSubcategoryName");
+    print("   - page: $currentMenuPage");
+
+    final List<dynamic>? result = await signalR.getMenuItems(
+      selectedCategoryName,
+      selectedSubcategoryName,
+      currentMenuPage,
+      false,
+    );
+
+    print('✅ Response received');
+    print(result);
 
     setState(() {
-      isMenuLoading = true;
+      currentMenuPage++;
     });
 
-    final signalR = SignalRService();
-    List<dynamic>? signalRResult;
-
-    try {
-      if (restaurantMenu?.hasShopRestaurant == true &&
-          subcategoryIndex == null &&
-          subcategoryName == null) {
-        final subcategoryNames = await signalR.getRestaurantSubcategories(categoryName);
-
-        if (subcategoryNames.isEmpty) {
-          signalRResult = await signalR.getMenuItems(categoryName);
-        } else {
-          selectedSubCategoryIndex = 0;
-          final firstSub = subcategoryNames.first;
-          signalRResult = await signalR.getMenuItems(categoryName, firstSub);
-
-          final subcategoryList = List<Category>.generate(
-            subcategoryNames.length,
-            (subIndex) => Category(
-              name: subcategoryNames[subIndex],
-              subcategoryId: null,
-              menuItemList: subIndex == 0
-                  ? signalRResult!.map<MenuItemList>((item) {
-                      final priceString = item['Price']?.replaceAll('\$', '').trim();
-                      final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
-
-                      return MenuItemList(
-                        name: item['Name'] ?? '',
-                        image: item['ImageUrl'],
-                        formattedPrice: item['Price'],
-                        cartPrice: priceDouble,
-                        isAvailable: true,
-                        description: item['Calories'],
-                        itemUrl: item['ItemUrl'],
-                      );
-                    }).toList()
-                  : [],
-            ),
-          );
-
-          if (restaurantMenu!.categories != null &&
-              index >= 0 &&
-              index < restaurantMenu!.categories!.length) {
-            restaurantMenu!.categories![index].subcategories = subcategoryList;
-          }
-
-          if (mounted) {
-            setState(() {
-              isMenuLoading = false;
-            });
-          }
-
-          return; 
-        }
-      } else {
-        signalRResult = await signalR.getMenuItems(categoryName, subcategoryName);
-      }
-
-      final List<MenuItemList> menuItems = signalRResult!.map<MenuItemList>((item) {
+    if (result != null && result.isNotEmpty) {
+      final newItems = result.map<MenuItemList>((item) {
         final priceString = item['Price']?.replaceAll('\$', '').trim();
         final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
-
         return MenuItemList(
           name: item['Name'] ?? '',
           image: item['ImageUrl'],
@@ -1145,25 +1310,231 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         );
       }).toList();
 
-      if (restaurantMenu?.categories != null &&
-          index >= 0 &&
-          index < restaurantMenu!.categories!.length) {
-        final category = restaurantMenu!.categories![index];
+      setState(() {
+        print("🔍 Trying to update existing menu list");
 
-        if (subcategoryIndex != null &&
-            category.subcategories != null &&
-            subcategoryIndex >= 0 &&
-            subcategoryIndex < category.subcategories!.length) {
-          category.subcategories![subcategoryIndex].menuItemList = menuItems;
-        } else {
-          category.menuItemList = menuItems;
+        if (selectedCategoryIndex == null) {
+          print("❌ selectedCategoryIndex is null");
+          return;
         }
-      }
 
-      if (mounted) {
+        final category = restaurantMenu?.categories?[selectedCategoryIndex!];
+        if (category == null) {
+          print("❌ Category is null");
+          return;
+        }
+
+        List<MenuItemList>? currentList;
+
+        if (selectedSubIndex != null) {
+          final subcategories = category.subcategories;
+          if (subcategories == null || selectedSubIndex! >= subcategories.length) {
+            print("❌ Subcategory index out of bounds or null list");
+            return;
+          }
+          currentList = subcategories[selectedSubIndex!].menuItemList;
+        } else {
+          currentList = category.menuItemList;
+        }
+
+        final existingNames = currentList?.map((e) => e.name).toSet() ?? {};
+        final filteredNewItems = newItems
+            .where((item) => !existingNames.contains(item.name))
+            .toList();
+
+        if (filteredNewItems.isNotEmpty) {
+          print("Adding ${filteredNewItems.length} new items to current list");
+          currentList?.addAll(filteredNewItems);
+          currentMenuPage++;
+        } else {
+          print("ℹNo new items to add");
+        }
+      });
+    } else {
+      print("ℹNo new menu items received");
+    }
+  } catch (e, st) {
+    print("Error loading more menu items: $e");
+    print("Stack trace:\n$st");
+  } finally {
+    isLoadingMenu = false;
+  }
+}
+
+void _handleCanEat() {
+  if (iCanEat && restaurantMenu != null) {
+    iCanEat = false;
+    openLoader();
+
+    String? localSubcategoryIndex = selectedSubCategoryIndex.toString();
+
+    if (localSubcategoryIndex != null) {
+      final subcategories = restaurantMenu
+          ?.categories?[selectedCategoryIndex].subcategories;
+      if (subcategories != null && subcategories.isNotEmpty) {
+        localSubcategoryIndex = '0';
+      } else {
+        localSubcategoryIndex = null;
+      }
+    }
+
+    MealData? meal = mealInfo.firstWhereOrNull(
+      (element) => element.meal == widget.mealType.toLowerCase(),
+    );
+
+    widget.bloc.add(
+      MealPlanMatchEvent(
+        menu: restaurantMenu!,
+        categoryId: selectedCategoryIndex.toString(),
+        subcategoryId: localSubcategoryIndex?.toString(),
+        calories: meal?.calories,
+        onSuccess: () {
+          mealPlanId.add((localSubcategoryIndex ?? selectedCategoryIndex).toString());
+          if (_alertKey.currentContext != null) {
+            iCanEat = true;
+            setState(() {});
+            Navigator.of(context).pop();
+          }
+        },
+        onError: () {
+          if (_alertKey.currentContext != null) {
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+    );
+  }
+}
+
+ Future<void> _handleFilterTap(
+    String categoryName,
+    int index, {
+    int? subcategoryIndex,
+    String? subcategoryName,
+  }) async {
+    print("HANDLE CAN EAT");
+
+    setState(() {
+      isMenuLoading = true;
+      selectedCategoryName = categoryName;
+      selectedCategoryIndex = index;
+      if (subcategoryName != null) {
+        selectedSubcategoryName = subcategoryName;
+        selectedSubIndex = subcategoryIndex;
+      }
+    });
+
+    final signalR = SignalRService();
+    List<dynamic>? signalRResult;
+
+    try {
+      final category = restaurantMenu?.categories?[index];
+
+      final alreadyHasMenu = () {
+        if (subcategoryIndex != null && category?.subcategories != null) {
+          final subcat = category!.subcategories!;
+          final menu = subcategoryIndex >= 0 &&
+                      subcategoryIndex < subcat.length
+                      ? subcat[subcategoryIndex].menuItemList
+                      : null;
+          return menu?.isNotEmpty == true;
+        } else {
+          return category?.menuItemList?.isNotEmpty == true;
+        }
+      }();
+
+      if (alreadyHasMenu) {
+        signalR.getMenuItems(categoryName, subcategoryName, 1, false);
+        print("Using already loaded menu. Triggered background update with isInitLoad = false");
+
         setState(() {
           isMenuLoading = false;
         });
+
+      } else {
+        if (restaurantMenu?.hasShopRestaurant == true &&
+            subcategoryIndex == null &&
+            subcategoryName == null) {
+          final subcategoryNames = await signalR.getRestaurantSubcategories(categoryName);
+
+          if (subcategoryNames.isEmpty) {
+            signalRResult = await signalR.getMenuItems(categoryName);
+          } else {
+            selectedSubCategoryIndex = 0;
+            final firstSub = subcategoryNames.first;
+            signalRResult = await signalR.getMenuItems(categoryName, firstSub);
+
+            final subcategoryList = List<Category>.generate(
+              subcategoryNames.length,
+              (subIndex) => Category(
+                name: subcategoryNames[subIndex],
+                subcategoryId: null,
+                menuItemList: subIndex == 0
+                    ? signalRResult!.map<MenuItemList>((item) {
+                        final priceString = item['Price']?.replaceAll('\$', '').trim();
+                        final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+                        return MenuItemList(
+                          name: item['Name'] ?? '',
+                          image: item['ImageUrl'],
+                          formattedPrice: item['Price'],
+                          cartPrice: priceDouble,
+                          isAvailable: true,
+                          description: item['Calories'],
+                          itemUrl: item['ItemUrl'],
+                        );
+                      }).toList()
+                    : [],
+              ),
+            );
+
+            if (category != null) {
+              category.subcategories = subcategoryList;
+            }
+
+            if (mounted) {
+              setState(() {
+                isMenuLoading = false;
+              });
+            }
+
+            return;
+          }
+        } else {
+          signalRResult = await signalR.getMenuItems(categoryName, subcategoryName);
+        }
+
+        final List<MenuItemList> menuItems = signalRResult!.map<MenuItemList>((item) {
+          final priceString = item['Price']?.replaceAll('\$', '').trim();
+          final priceDouble = double.tryParse(priceString ?? '') ?? 0.0;
+
+          return MenuItemList(
+            name: item['Name'] ?? '',
+            image: item['ImageUrl'],
+            formattedPrice: item['Price'],
+            cartPrice: priceDouble,
+            isAvailable: true,
+            description: item['Calories'],
+            itemUrl: item['ItemUrl'],
+          );
+        }).toList();
+
+        if (category != null) {
+          if (subcategoryIndex != null &&
+              category.subcategories != null &&
+              subcategoryIndex >= 0 &&
+              subcategoryIndex < category.subcategories!.length) {
+            category.subcategories![subcategoryIndex].menuItemList = menuItems;
+          } else {
+            category.menuItemList = menuItems;
+          }
+        }
+
+        if (mounted) {
+          setState(() {
+            isMenuLoading = false;
+          });
+        }
       }
 
       if (iCanEat) {
@@ -1186,8 +1557,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               if (subcategoryIndex == null) {
                 valueToAdd = categoryName;
               } else {
-                final subcategories = restaurantMenu!.categories![index].subcategories;
-                if (subcategoryIndex >= 0 && subcategoryIndex < subcategories!.length) {
+                final subcategories = category?.subcategories;
+                if (subcategoryIndex >= 0 && subcategories != null && subcategoryIndex < subcategories.length) {
                   valueToAdd = subcategories[subcategoryIndex].name;
                 }
               }

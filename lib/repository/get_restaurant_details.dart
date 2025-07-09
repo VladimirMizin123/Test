@@ -128,16 +128,28 @@ class RestaurantRepository {
 
       final restaurantsContainer = rawData["Restaurants"];
       late List<RestaurantList> restaurantList = [];
+
       final List<dynamic> restaurantsJson = restaurantsContainer is String
           ? jsonDecode(restaurantsContainer)["Restaurants"] as List<dynamic>
           : (restaurantsContainer["Restaurants"] as List<dynamic>);
 
       restaurantList = restaurantsJson.map<RestaurantList>((r) {
+        String? imageUrl;
+
+        if (r["ImageSrcSet"] != null && r["ImageSrcSet"] is String) {
+          final parts = r["ImageSrcSet"].split(',');
+          if (parts.isNotEmpty) {
+            final firstPart = parts[0].trim();
+            final urlPart = firstPart.split(' ').first;
+            imageUrl = urlPart;
+          }
+        }
+
         return RestaurantList.fromJson({
           "_id": r["_id"],
           "name": r["name"],
           "weighted_rating_value": r["weighted_rating_value"],
-          "logo_photos": r["ImageSrc"] != null ? [r["ImageSrc"]] : [],
+          "logo_photos": imageUrl != null ? [imageUrl] : [],
         });
       }).toList();
             
@@ -329,6 +341,7 @@ class RestaurantRepository {
         final signalR = SignalRService();
         try {
           signalRResult = await signalR.selectRestaurant(restaurantName);
+
         } catch (_) {
           return Left(ErrorModel(errorMessage: "Restaurant is not available"));
         }

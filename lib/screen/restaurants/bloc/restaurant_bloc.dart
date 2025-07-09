@@ -100,7 +100,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       final tempRepository = RestaurantRepository();
 
       Either<ErrorModel, GetRestaurantMenuListModel>? storeRes;
-
       try {
         storeRes = await tempRepository.getRestaurantMenuList(
           restaurantId: event.id,
@@ -114,13 +113,11 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       } catch (e, st) {
         print('error during getRestaurantMenuList');
       }
-
       emit(VerifyRestaurantLoader(id: null));
 
       if (event.id != prevId) {
         return;
       }
-
       if (storeRes != null) {
         storeRes.fold(
           (error) {
@@ -218,6 +215,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       GetRestaurantMenuListEvent event, Emitter<RestaurantState> emit) async {
     emit(GetRestaurantMenuListLoadingState());
     try {
+      print("BEFORE CALL REPOSITORY");
       await _repository
           .getRestaurantMenuList(
         restaurantId: event.restaurantId,
@@ -227,9 +225,12 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         longitude: event.getUserAddress?.longitude,
       )
           .fold((left) {
+            print("RETURN IS LEFT");
         onFailError(emit: emit, text: left.errorMessage!);
+        
         emit(GetRestaurantMenuListErrorState());
       }, (right) async {
+        print("RETURN IS RIGHT");
         event.onDataGet?.call(right.data);
         emit(
             GetRestaurantMenuListSuccessState(restaurantMenuList: right.data!));
@@ -245,6 +246,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     Emitter<RestaurantState> emit,
   ) async {
     try {
+      print('HEREE');
       emit(MatchMealLoadingState(isLoading: true));
 
       RestaurantMenu menu = event.menu;
@@ -255,6 +257,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       List<MenuItemList> menuItemList = [];
 
       if (event.subcategoryId != null) {
+        print('NOT NULL');
         parentCategory = categories.firstWhereOrNull(
           (cat) => cat.name == event.categoryId,
         );
@@ -272,14 +275,10 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
           }
         }
       } else {
-        parentCategory = categories.firstWhereOrNull(
-          (cat) => cat.name == event.categoryId,
-        );
-
-        if (parentCategory != null) {
-          category = parentCategory;
-          menuItemList = parentCategory.menuItemList ?? [];
-        }
+        print('SUB IS NULL');
+        parentCategory = categories[event.categoryId != null ? int.parse(event.categoryId!) : 0];
+        category = parentCategory;
+        menuItemList = parentCategory.menuItemList ?? [];
       }
 
       Map<String, dynamic> req = {
@@ -290,10 +289,12 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         "restaurantMenu": menuItemList.map((e) => e.toJson()).toList(),
       };
 
+
       var res = await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
 
       if (res.statusCode == 200) {
         var resData = jsonDecode(res.body);
+        print(resData);
 
         List<MenuItemList> updatedList = List<MenuItemList>.from(
           resData["data"]?.map((x) => MenuItemList.fromJson(x)) ?? [],
@@ -308,7 +309,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       } else {
         event.onError?.call();
         dynamic data = jsonDecode(res.body);
-
+        print(data);
         if (data != null) {
           String message = data?["errorMessage"]?.toString() ?? "";
 

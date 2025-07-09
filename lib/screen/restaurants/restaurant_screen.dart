@@ -1936,7 +1936,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           mealType: mealType,
           context: context,
           restaurantName: res.name,
-          onVerify: (menu, quote) {
+          onVerify: (menu, quote) async {
+            await Future.delayed(Duration(milliseconds: 500));
+            print(verifyLoaderId);
             if (verifyLoaderId != null || !mounted) {
               return;
             }
@@ -1962,6 +1964,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             );
           },
           notVerify: () {
+            print("STORE NOT VERIFIFED");
             restaurantList.removeWhere((element) => element.id == res.id);
             searchRestaurantList.removeWhere((element) => element.id == res.id);
             if (search.text.trim().isEmpty) {

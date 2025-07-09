@@ -946,7 +946,7 @@ class _RestaurantMenuDetailsScreenState
 
       if (setRouting && (option.customizations?.isNotEmpty ?? false)) {
         routingList.add(option);
-        _animateToTop();
+        // _animateToTop();
       }
 
       findOptionPath(parent, option);
