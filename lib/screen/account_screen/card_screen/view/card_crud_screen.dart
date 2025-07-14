@@ -8,6 +8,7 @@ import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
 import 'package:gymeats_mobile/bloc/card_bloc/card_bloc.dart';
 import 'package:gymeats_mobile/constant/asset_utils.dart';
 import 'package:gymeats_mobile/constant/color_utils.dart';
@@ -19,6 +20,11 @@ import 'package:gymeats_mobile/models/stripe_card_model.dart';
 import 'package:gymeats_mobile/screen/restaurants/credit_card.dart';
 import 'package:gymeats_mobile/service/toast_service.dart';
 import 'package:ml_card_scanner/ml_card_scanner.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 class CardCrudScreen extends StatefulWidget {
   const CardCrudScreen({
@@ -44,6 +50,7 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
   bool saveLoader = false;
   bool defaultCardLoader = false;
   var controller = MaskedTextController(mask: '00/0000');
+  final ApiServices _api = ApiServices();
 
   final formKey = GlobalKey<FormState>();
 
@@ -60,6 +67,8 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
           formatCardNumber((widget.card?.last4 ?? "").padLeft(16, 'x'));
       controller.text =
           '${widget.card?.expMonth.toString().padLeft(2, '0')}/${widget.card?.expYear}';
+    } else {
+      initStripeCardFlow();
     }
   }
 
@@ -69,410 +78,163 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
     getData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    bool isEdit = widget.card != null;
+  Future<void> initStripeCardFlow() async {
+  try {
+    print('initStripeCardFlow');
 
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: BlocConsumer<CardBloc, CardState>(
-          bloc: widget.cardBloc,
-          listener: (context, state) {
-            if (state is CardSuccessState) {
-              ToastService.showToast(
-                  "Card ${isEdit ? "updated" : "added"} successfully",
-                  isSuccess: true);
-              if (Get.currentRoute.contains('CardCrudScreen')) {
-                Get.back();
-              }
-            }
+    final response = await _api.get(ApiUrls.getCardIntent);
 
-            if (state is CardAddLoadingState) {
-              saveLoader = state.isLoad;
-              setState(() {});
-            }
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body)['data'];
 
-            if (state is SetDefaultCardLoader) {
-              defaultCardLoader = state.isLoad;
-              setState(() {});
-            }
+      final setupIntentClientSecret = data['cardIntentClientSecret'];
+      final ephemeralKey = data['ephemeralKey'];
+      final customerId = data['stripeCustomerId'];
+      final publishableKey = data['publishableKey']; 
 
-            if (state is CardRemoveSuccessState) {
-              ToastService.showToast(StringUtils.cardRemovedSuccessfully,
-                  isSuccess: true);
-            }
+      Stripe.publishableKey = publishableKey;
 
-            if (state is CardRemoveLoadingState) {
-              deleteLoader.value = state.isLoad;
-            }
-          },
-          builder: (_, __) {
-            return Stack(
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          customerId: customerId,
+          customerEphemeralKeySecret: ephemeralKey,
+          setupIntentClientSecret: setupIntentClientSecret,
+          merchantDisplayName: 'MealMe App',
+          style: ThemeMode.system,
+        ),
+      );
+
+      await Stripe.instance.presentPaymentSheet();
+
+    } else {
+    }
+  } catch (e) {
+    print("Stripe flow: $e");
+  }
+}
+
+ @override
+Widget build(BuildContext context) {
+  bool isEdit = widget.card != null;
+
+  return GestureDetector(
+    onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+    child: Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Stack(
               children: [
-                SafeArea(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  isEdit
-                                      ? StringUtils.editCard
-                                      : StringUtils.addCard,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayMedium
-                                      ?.copyWith(
-                                          color: const Color(0xFF010101)),
-                                )
-                              ],
-                            ),
-                            Positioned.fill(
-                              left: 0,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: InkWell(
-                                  onTap: () => Get.back(),
-                                  child: SvgPicture.asset(
-                                    AssetsUtils.icBackArrow,
-                                    height: 25.h,
-                                    width: 25.w,
-                                    color: AppColors.darkGray,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ).paddingOnly(left: 20, right: 20, top: 10),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding:
-                                      EdgeInsets.only(bottom: 4.h, top: 10.h),
-                                  child: Text('Name',
-                                      style: TextStyle(
-                                          color: const Color(0xff373737),
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w300)),
-                                ),
-                                commonTextField(
-                                  label: 'Please Enter Name',
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please Enter Name';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: cardName,
-                                ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.only(bottom: 4.h, top: 10.h),
-                                  child: Text(
-                                    'Card number',
-                                    style: TextStyle(
-                                      color: const Color(0xff373737),
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  ),
-                                ),
-                                commonTextField(
-                                  label: 'Please Card number',
-                                  readOnly: isEdit,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please Card number';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: cardNumber,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(16),
-                                    CardNumberFormatter(),
-                                  ],
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 13),
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        await Get.to(() => const CreditCard())!
-                                            .then((value) {
-                                          if (value != null) {
-                                            setState(() {
-                                              _cardInfo = value;
-                                              cardNumber.text =
-                                                  _cardInfo?.number ?? "";
-                                            });
-                                          }
-                                        });
-                                      },
-                                      child: Image.asset(
-                                        AssetsUtils.scanner,
-                                        height: 10.h,
-                                        width: 10.w,
-                                        color: AppColors.darkGray,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                bottom: 4.h, top: 10.h),
-                                            child: Text('Valid until',
-                                                style: TextStyle(
-                                                    color:
-                                                        const Color(0xff373737),
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ),
-                                          commonTextField(
-                                            label: 'MM/YYYY',
-                                            controller: controller,
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Enter Month/Month';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            onChanged: (value) {},
-                                            maxLength: 6,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9]'))
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                bottom: 4.h, top: 10.h),
-                                            child: Text('CVV',
-                                                style: TextStyle(
-                                                    color:
-                                                        const Color(0xff373737),
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ),
-                                          commonTextField(
-                                            label: '***',
-                                            keyboardType: TextInputType.number,
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please Enter CVV Number';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            maxLength: 3,
-                                            controller: cvvNumber,
-                                            suffixIcon: const Icon(
-                                              Icons.info_outline,
-                                              color: AppColors.darkGray,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                Center(
+                  child: Text(
+                    isEdit ? "Edit Card" : "Add Card",
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                          color: const Color(0xFF010101),
                         ),
-                        if (!(widget.card?.isPrimary ?? false) && isEdit) ...[
-                          GestureDetector(
-                            onTap: () {
-                              widget.cardBloc.add(
-                                SetDefaultCardEvent(
-                                  id: widget.card?.id ?? "",
-                                  onComplete: () {
-                                    ToastService.showToast(
-                                      "${widget.card?.brand ?? ""} card set as default",
-                                      isSuccess: true,
-                                    );
-                                    if (Get.currentRoute
-                                        .contains('CardCrudScreen')) {
-                                      Get.back();
-                                    }
-                                  },
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "Set as default",
-                              style: FontUtils.h16(
-                                fontColor: AppColors.terracotta,
-                                fontWeight: FWT.medium,
-                              ),
-                            ),
-                          ),
-                          20.height,
-                        ],
-                        GestureDetector(
-                          onTap: () async {
-                            if (!formKey.currentState!.validate()) {
-                              return;
-                            }
-
-                            List<String> valid = controller.text.split("/");
-                            int expMonth = valid.isNotEmpty
-                                ? int.tryParse(valid[0]) ?? 0
-                                : 0;
-                            int expYear = valid.length > 1
-                                ? int.tryParse(valid[1]) ?? 0
-                                : 0;
-
-                            Map<String, dynamic> req = {
-                              "exp_month": expMonth,
-                              "exp_Year": expYear,
-                              "name": cardName.text,
-                            };
-
-                            if (!isEdit) {
-                              req["number"] =
-                                  cardNumber.text.replaceAll(" ", "");
-                              req["cvc"] = cvvNumber.text;
-                            } else {
-                              req["id"] = widget.card?.id;
-                            }
-
-                            widget.cardBloc.add(
-                              CreateOrEditCardEvent(
-                                card: req,
-                                isAdd: !isEdit,
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: 45.h,
-                            margin: EdgeInsets.only(
-                                bottom: 20.h, left: 20, right: 20),
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.r),
-                              color: const Color(0xffCE6B53),
-                            ),
-                            child: Center(
-                              child: saveLoader
-                                  ? const CircularProgressIndicator(
-                                      color: AppColors.whiteColor,
-                                    )
-                                  : Text(
-                                      'Save',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'Avenir',
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-                        if (isEdit && widget.deleteAccess) ...[
-                          GestureDetector(
-                            onTap: () async {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) {
-                                  return Obx(
-                                    () => Constant.i.deleteAlertDialog(
-                                      title: StringUtils.cards,
-                                      desc: StringUtils
-                                          .areYouSureDoYouWantToDeleteCard,
-                                      onTap: () => widget.cardBloc.add(
-                                        RemoveCardEvent(
-                                          id: widget.card?.id ?? "",
-                                          onSuccess: () {
-                                            Get.back();
-                                            if (Get.currentRoute
-                                                .contains('CardCrudScreen')) {
-                                              Get.back();
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      buttonLoader: deleteLoader.value,
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 45.h,
-                              margin: EdgeInsets.only(
-                                  bottom: 20.h, left: 20, right: 20),
-                              width: Get.width,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.r),
-                                color: const Color(0xffCE6B53),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Delete',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Avenir',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  child: InkWell(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(
+                      AssetsUtils.icBackArrow,
+                      height: 25.h,
+                      width: 25.w,
+                      color: AppColors.darkGray,
                     ),
                   ),
                 ),
-                if (defaultCardLoader) const CustomTextLoader(),
               ],
-            );
-          },
+            ).paddingOnly(left: 20, right: 20, top: 10),
+
+            const Spacer(),
+
+            GestureDetector(
+              onTap: () async {
+                await initStripeCardFlow();
+              },
+              child: Container(
+                height: 45.h,
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20.h),
+                width: Get.width,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: const Color(0xffCE6B53),
+                ),
+                child: Center(
+                  child: saveLoader
+                      ? const CircularProgressIndicator(
+                          color: AppColors.whiteColor,
+                        )
+                      : Text(
+                          'Add Card',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+
+            if (isEdit && widget.deleteAccess)
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => Obx(
+                      () => Constant.i.deleteAlertDialog(
+                        title: "Card",
+                        desc: "Are you sure you want to delete this card?",
+                        onTap: () => widget.cardBloc.add(
+                          RemoveCardEvent(
+                            id: widget.card?.id ?? "",
+                            onSuccess: () {
+                              Get.back(); // close dialog
+                              if (Get.currentRoute.contains('CardCrudScreen')) {
+                                Get.back(); // close screen
+                              }
+                            },
+                          ),
+                        ),
+                        buttonLoader: deleteLoader.value,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 45.h,
+                  margin: EdgeInsets.only(bottom: 20.h, left: 20, right: 20),
+                  width: Get.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: const Color(0xffCE6B53),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            if (defaultCardLoader) const CustomTextLoader(),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget commonTextField({
     String? Function(String?)? validator,

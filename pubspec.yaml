@@ -48,8 +48,6 @@ dependencies:
   android_intent_plus:
   geolocator:
   permission_handler:
-  firebase_dynamic_links:
-  firebase_core:
   carousel_slider: ^5.0.0
   qr_code_scanner: ^1.0.1
   ml_card_scanner: ^0.2.1
@@ -83,12 +81,14 @@ dependencies:
   flutter_animate: ^4.5.0
   firebase_crashlytics: ^3.4.9
   firebase_analytics: ^10.8.0
-  image_picker: ^1.0.8
+  image_picker: ^1.1.2
   sentry_flutter: ^8.9.0
   flutter_bugfender: ^3.0.0+1
   sliding_up_panel: ^2.0.0+1
-#  firebase_dynamic_links: ^5.3.5
-#  firebase_core: ^2.15.1
+  firebase_dynamic_links: ^5.3.5
+  firebase_core: ^2.15.1
+  signalr_netcore: ^1.4.3
+  flutter_stripe: 10.0.0
 
 dev_dependencies:
   flutter_test:

@@ -36,6 +36,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
       final response = responses[0];
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        print('RESPONSE ${jsonDecode(response.body)}');
         StripeCardModel card =
             StripeCardModel.fromJson(jsonDecode(response.body));
 
@@ -67,23 +68,37 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   _onCardAdd(CreateOrEditCardEvent event, Emitter<CardState> emit) async {
     try {
       emit(CardAddLoadingState(isLoad: true));
-      log("Api : ${event.isAdd ? ApiUrls.createCard : ApiUrls.updateCard}");
-      log("Req : ${jsonEncode(event.card)}");
 
-      final response = await (event.isAdd
-          ? _api.post(ApiUrls.createCard, event.card)
-          : _api.put(ApiUrls.updateCard, event.card));
+      final url = event.isAdd ? ApiUrls.createCard : ApiUrls.updateCard;
+      final requestBody = jsonEncode(event.card);
+
+      print("API URL: $url");
+      log("Request Body: $requestBody");
+      print(event.card);
+      final response = event.isAdd
+          ? await _api.post(url, event.card)
+          : await _api.put(url, event.card);
+
+      print('Raw Response Object: $response');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      log("Status Code: ${response.statusCode}");
+      log("Response Body: ${response.body}");
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         add(ListAllCardEvent());
         emit(CardSuccessState());
       } else {
         ErrorModel error = ErrorModel.fromJson(jsonDecode(response.body));
-        ToastService.showToast((error.errorMessage?.isNotEmpty ?? false)
-            ? error.errorMessage!
-            : "Unable to create the card. Please try again later.");
+        ToastService.showToast(
+          (error.errorMessage?.isNotEmpty ?? false)
+              ? error.errorMessage!
+              : "Unable to create the card. Please try again later.",
+        );
       }
-    } catch (e) {
-      log(e.toString());
+    } catch (e, stacktrace) {
+      log('Exception: $e');
+      log('Stacktrace: $stacktrace');
     } finally {
       emit(CardAddLoadingState(isLoad: false));
     }
