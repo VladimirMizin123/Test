@@ -121,7 +121,7 @@ class RestaurantRepository {
       final rawData = await signalR.getFilteredRestaurants(
         address: address,
         userId: userID,
-        pageIndex: page ?? 1,
+        pageIndex: page ?? 0,
         pageSize: 20,
         filters: filters,
       );
@@ -336,13 +336,11 @@ class RestaurantRepository {
   }) async {
     try {
       Map<String, dynamic>? signalRResult;
-
       if (restaurantName != null && restaurantName.trim().isNotEmpty) {
         final signalR = SignalRService();
         try {
           signalRResult = await signalR.selectRestaurant(restaurantName);
-
-        } catch (_) {
+        } catch (e, stackTrace) {
           return Left(ErrorModel(errorMessage: "Restaurant is not available"));
         }
       }

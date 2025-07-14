@@ -58,7 +58,7 @@ class ChooseGroceryStore extends StatefulWidget {
 class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
   List<Store> storeList = [];
   bool isLoadingMore = false;
-  int currentPage = 2;
+  int currentPage = 1;
   final ScrollController _scrollController = ScrollController();
   bool pageLoader = false;
   RestaurantBloc restaurantBloc = RestaurantBloc();

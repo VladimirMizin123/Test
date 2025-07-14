@@ -863,6 +863,7 @@ class SignalRService {
   }
 
   Future<void> releaseDriverByUserId() async {
+    print('ReleaseDriverByUserId');
     try {
       final uri = Uri.https(
         "gymeats.azurewebsites.net",
@@ -1078,7 +1079,7 @@ class SignalRService {
     }
 
     await localCompleter.future.timeout(
-      Duration(seconds: 6),
+      Duration(seconds: 15),
       onTimeout: () => throw Exception("Timeout while waiting for SelectRestaurantResponse"),
     );
 

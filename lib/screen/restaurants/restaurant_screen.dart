@@ -62,7 +62,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   RxDouble kmRadius = 3.0.obs;
   RxBool showRadiusSlider = false.obs;
   final GlobalKey _alertKey = GlobalKey();
-  int currentPage = 2;
+  int currentPage = 1;
   bool isRestaurantsLoading = false;
   
   showBottomSheet() {

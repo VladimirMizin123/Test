@@ -28,7 +28,7 @@ class FetchMealPlanModel {
         success: json["success"],
         message: json["message"],
         errorMessage: json["errorMessage"],
-        data: json["data"] == null
+        data: json["data"] == null || json["data"] == 'null'
             ? []
             : List<FetchMealPlanData>.from(
                 json["data"]!.map((x) => FetchMealPlanData.fromJson(x))),

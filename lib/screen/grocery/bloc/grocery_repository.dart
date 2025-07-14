@@ -237,7 +237,7 @@ class GroceryRepository {
     final rawData = await signalR.getFilteredRestaurants(
       address: currentAddress,
       userId: userID,
-      pageIndex: 1,
+      pageIndex: 0,
       pageSize: 20,
       filters: filters,
     );

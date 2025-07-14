@@ -3,7 +3,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-
     }
 
     dependencies {
@@ -21,23 +20,35 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 
-    afterEvaluate {
-        if (it.hasProperty('android')) {
-            // Check whether the android.namespace property is set.
-            // If not, read the package name from the app's manifest file and set it as the namespace.
-            if (it.android.namespace == null) {
-                def manifest = new XmlSlurper().parse(file(it.android.sourceSets.main.manifest.srcFile))
-                def packageName = manifest.@package.text()
-                println("Setting ${packageName} as android namespace")
-                android.namespace = packageName
+    plugins.whenPluginAdded { plugin ->
+        if (plugin.class.name.contains("Kotlin")) {
+            tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
             }
         }
     }
 
+    afterEvaluate {
+        if (it.hasProperty('android')) {
+            if (it.android.namespace == null) {
+                def manifest = new XmlSlurper().parse(file(it.android.sourceSets.main.manifest.srcFile))
+                def packageName = manifest.@package.text()
+                println("Setting ${packageName} as android namespace")
+                it.android.namespace = packageName
+            }
+
+            it.android.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+            it.android.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
 }
+
 subprojects {
     project.evaluationDependsOn(':app')
 }

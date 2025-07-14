@@ -640,16 +640,20 @@ class _BestMatchRestaurantsScreenState
           longitude: getUserAddress?.longitude ?? 0,
           pickup: false,
           id: res.id ?? "",
+          restaurantName: res.name,
           mealType: mealType,
           context: context,
-          onVerify: (menu, quote) {
+          onVerify: (menu, quote) async {
+            print("VERIFIED");
+            await Future.delayed(Duration(milliseconds: 500));
+            print(verifyLoaderId);
             if (verifyLoaderId != null || !mounted) {
               return;
             }
             Get.to(
               () => RestaurantMenuScreen(
                 getUserAddress: getUserAddress,
-                address: res.address!,
+                address: res.address ?? Address(),
                 userId: res.id ?? "",
                 restaurantName: res.name ?? '',
                 restaurantId: res.id ?? "",
@@ -663,7 +667,9 @@ class _BestMatchRestaurantsScreenState
               transition: get_route.Transition.fadeIn,
             );
           },
-          notVerify: () {},
+          notVerify: () {
+            print('NOT VERIFIED');
+          },
         ),
       );
     } catch (e) {

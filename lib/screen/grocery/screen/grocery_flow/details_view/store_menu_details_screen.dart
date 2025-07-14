@@ -60,7 +60,7 @@ class StoreMenuDetailsScreen extends StatefulWidget {
 class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   int item = 1;
   dynamic price = 0;
-  int cartCount = 0;
+  int cartCount = 1;
   bool selectFirst = false;
   bool selectSecond = false;
   bool isAddUpdate = false;
@@ -103,7 +103,9 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
         selectedOption.add(element.optionId);
       }
     }
-    item = widget.data.cartQuantity ?? 1;
+    item = (widget.data.cartQuantity != null && widget.data.cartQuantity! > 0)
+    ? widget.data.cartQuantity!
+    : 1;
     optionsList = widget.options ?? [];
   }
 
@@ -111,7 +113,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   void initState() {
     super.initState();
     shoppingListData = widget.shoppingListData;
-    cartCount = widget.cartCount;
+    cartCount = widget.cartCount == 0 ? 1 : widget.cartCount;
+    print('Cart Count : $cartCount');
     customizationList = widget.data.customizations ?? [];
     getData();
     _handleCustomization();
@@ -380,7 +383,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                           onTap: () async {
                                             if (alreadyInCart) {
                                               cartMenu?.cartQuantity =
-                                                  (cartMenu.cartQuantity ?? 0) -
+                                                  (cartMenu.cartQuantity ?? 1) -
                                                       1;
                                               widget.cartBloc.add(ModifyCart(
                                                   menuItemList: cartMenuList));
@@ -440,7 +443,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                           onTap: () async {
                                             if (alreadyInCart) {
                                               cartMenu?.cartQuantity =
-                                                  (cartMenu.cartQuantity ?? 0) +
+                                                  (cartMenu.cartQuantity ?? 1) +
                                                       1;
                                               widget.cartBloc.add(ModifyCart(
                                                   menuItemList: cartMenuList));
