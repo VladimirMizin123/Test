@@ -156,12 +156,24 @@ class _RestaurantMenuDetailsScreenState
           final String? header = item['Header'];
           final bool isRequired = item['IsRequired'] ?? false;
           final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
+          final int maxSelectableItems = item['MaxSelectableItems'] ?? 1;
+
+          int minChoiceOptions = 0;
+          if (isRequired) {
+            final selectionText = item['SelectionRequirementText'] ?? '';
+            final match = RegExp(r'\d+').firstMatch(selectionText);
+            if (match != null) {
+              minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
+            } else {
+              minChoiceOptions = 1;
+            }
+          }
 
           List<opt.Option> options = (item['Items'] as List).map<opt.Option>((optItem) {
             try {
               String name = optItem['Name'] ?? '';
               String priceString = optItem['Price'] ?? '';
-              int? price = 0;
+              int? price = 0; 
 
               return opt.Option(
                 name: name,
@@ -173,6 +185,8 @@ class _RestaurantMenuDetailsScreenState
                 defaultQty: 0,
                 optionId: name,
                 isNestedSelection: optItem['IsNestedSelection'],
+                hasQuantityControl: optItem['HasQuantityControl'] ?? false,
+                isSelected: optItem['IsSelected'] ?? false, 
               );
             } catch (e) {
               rethrow;
@@ -181,8 +195,8 @@ class _RestaurantMenuDetailsScreenState
 
           return Customization(
             name: header,
-            minChoiceOptions: isRequired ? 1 : 0,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            minChoiceOptions: minChoiceOptions,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
             options: options,
             customizationId: header,
             level: 1,
@@ -199,6 +213,7 @@ class _RestaurantMenuDetailsScreenState
       });
     }
   }
+
 
   @override
   void initState() {
@@ -293,7 +308,7 @@ class _RestaurantMenuDetailsScreenState
                                             Get.back();
                                           } else {
                                             setState(() => _isGoingBack = true);
-                                            await signalR.goBack();
+                                            signalR.goBack();
                                             if (mounted) Get.back();
                                           }
 
@@ -375,18 +390,7 @@ class _RestaurantMenuDetailsScreenState
                               )
                             : customizationList.isEmpty
                                 ? const SizedBox.shrink()
-                                : FutureBuilder<Widget>(
-                                    future: nestedItemView(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return const CircularProgressIndicator();
-                                      } else if (snapshot.hasError) {
-                                        return const Text('');
-                                      } else {
-                                        return snapshot.data!;
-                                      }
-                                    },
-                                  ),
+                                :  nestedItemView(),
                                   15.height,
                                   Column(
                                     children: [
@@ -598,7 +602,8 @@ class _RestaurantMenuDetailsScreenState
     );
   }
 
-  Future<Widget> nestedItemView() async {
+  
+  Widget nestedItemView() {
     print('nestedItemView');
     final signalR = SignalRService();
     List<dynamic>? signalRResult;
@@ -831,8 +836,8 @@ class _RestaurantMenuDetailsScreenState
               }
             },
             child: Image.asset(
-              nestedOptionList
-                      .any((element) => element["option_id"] == option.optionId)
+              option.isSelected == true || 
+                      nestedOptionList.any((element) => element["option_id"] == option.optionId)
                   ? AssetsUtils.terracotaCheck
                   : AssetsUtils.greyCircle,
               height: 18.h,
@@ -883,8 +888,12 @@ class _RestaurantMenuDetailsScreenState
     final selectedName = option.name ?? '';
 
     if (option.isNestedSelection == true &&
-        (option.customizations == null || option.customizations!.isEmpty)) {
+    (option.customizations == null || option.customizations!.isEmpty)) {
       try {
+
+        setState(() {
+          _isLoadingCustomization = true;
+        });
         final signalRResult = await signalR.getNestedSelection(header, selectedName);
 
         final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
@@ -892,6 +901,20 @@ class _RestaurantMenuDetailsScreenState
           final bool isRequired = item['isRequired'] ?? item['IsRequired'] ?? false;
           final bool isManySelectionAllowed =
               item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;
+          final int maxSelectableItems = item['maxSelectableItems'] ??
+              item['MaxSelectableItems'] ?? 1;
+
+          int minChoiceOptions = 0;
+          if (isRequired) {
+            final selectionText = item['selectionRequirementText'] ??
+                item['SelectionRequirementText'] ?? '';
+            final match = RegExp(r'\d+').firstMatch(selectionText);
+            if (match != null) {
+              minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
+            } else {
+              minChoiceOptions = 1;
+            }
+          }
 
           final optionsList = item['items'] ?? item['Items'] ?? [];
 
@@ -900,8 +923,12 @@ class _RestaurantMenuDetailsScreenState
               final name = optItem['name'] ?? optItem['Name'] ?? '';
               final priceString = optItem['price']?.toString() ??
                   optItem['Price']?.toString() ?? '';
-              final isNested =
-                  optItem['isNestedSelection'] ?? optItem['IsNestedSelection'] ?? false;
+              final isNested = optItem['isNestedSelection'] ??
+                  optItem['IsNestedSelection'] ?? false;
+              final hasQtyCtrl = optItem['hasQuantityControl'] ??
+                  optItem['HasQuantityControl'] ?? false;
+              final isSelected = optItem['isSelected'] ??
+                  optItem['IsSelected'] ?? false;
 
               return opt.Option(
                 name: name,
@@ -913,16 +940,23 @@ class _RestaurantMenuDetailsScreenState
                 defaultQty: 0,
                 optionId: name,
                 isNestedSelection: isNested,
+                hasQuantityControl: hasQtyCtrl,
+                isSelected: isSelected,
               );
             } catch (e) {
               rethrow;
             }
           }).toList();
 
+          setState(() {
+            _isLoadingCustomization = false;
+          });
+
           return Customization(
             name: nestedHeader,
-            minChoiceOptions: isRequired ? 1 : 0,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            minChoiceOptions: minChoiceOptions,
+            maxChoiceOptions:
+                isManySelectionAllowed ? options.length : maxSelectableItems,
             options: options,
             customizationId: nestedHeader,
             level: cs.level + 1,
@@ -930,7 +964,8 @@ class _RestaurantMenuDetailsScreenState
         }).toList();
 
         option.customizations = parsedNestedCustomizations;
-      } catch (e) {}
+      } catch (e) {
+      }
     } else {
       try {
         await signalR.selectCustomizationItem(header, selectedName);
@@ -961,8 +996,8 @@ class _RestaurantMenuDetailsScreenState
   }
 
   void _animateToTop() {
-    controller.animateTo(0,
-        duration: const Duration(milliseconds: 1000), curve: Curves.easeInOut);
+    // controller.animateTo(0,
+    //     duration: const Duration(milliseconds: 1000), curve: Curves.easeInOut);
   }
 
   bool isFormValid(List<Customization> cList) {

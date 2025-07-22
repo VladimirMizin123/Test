@@ -184,7 +184,7 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                                           ),
                                           onPressed: () async {
                                             final signalR = SignalRService();
-                                            await signalR.clearRestaurantCartItems();
+                                            signalR.clearRestaurantCartItems();
                                             Get.back(result: true);
                                           },
                                         ),
@@ -194,16 +194,17 @@ class _StoreCategoriesScreenState extends State<StoreCategoriesScreen> {
                                   ) ??
                                   false);
                               if (allow == true) {
+                                 print('ALLOW TRUE');
                                  setState(() => isGoingBack = true);
                                   final signalR = SignalRService();
-                                  await signalR.redirectToHomePage();
+                                  signalR.redirectToHomePage();
                                   setState(() => isGoingBack = false);
                                   Get.back();
                               }
                             } else {
                                 setState(() => isGoingBack = true);
                                 final signalR = SignalRService();
-                                await signalR.redirectToHomePage();
+                                signalR.redirectToHomePage();
                                 setState(() => isGoingBack = false);
                                 Get.back();
                             }

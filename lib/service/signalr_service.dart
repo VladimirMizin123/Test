@@ -3,7 +3,8 @@ import 'package:signalr_netcore/signalr_client.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:get/get.dart';
+import 'package:gymeats_mobile/screen/appmanager/app_manager_screen.dart';
 
 class SignalRService {
   static final SignalRService _instance = SignalRService._internal();
@@ -83,7 +84,7 @@ class SignalRService {
       final data = arguments.first;
       if (data is! Map<String, dynamic>) return;
 
-      final message = data["Message"];
+      var message = data["Message"];
       print('MESSAGE RECIEVED');
       print(data);
 
@@ -573,9 +574,17 @@ class SignalRService {
             _addItemsToCartCompleter!.completeError(Exception("AddItemsToCart failed: ${data.toString()}"));
           }
           if (_openRestaurantCartCompleter != null && !_openRestaurantCartCompleter!.isCompleted) {
-              _openRestaurantCartCompleter!.complete();
-              _openRestaurantCartCompleter = null;
-            }
+            _openRestaurantCartCompleter!.complete();
+            _openRestaurantCartCompleter = null;
+          }
+
+          final isExpired = data['IsUserSessionExpired'];
+          if (isExpired == true || isExpired == 'true') {
+            _currentWindowReference = null;
+            print('Session expired — redirecting to Dashboard');
+            Get.offAll(AppManagerScreen(selectIndex: 2));
+          }
+
           break;
 
         default:
@@ -691,6 +700,8 @@ class SignalRService {
 
   Future<List<Map<String, dynamic>>> getRestaurantCategories([String? address = '', String? userId]) async {
     if (_currentWindowReference == null) {
+      print('=============================');
+      print('Current Windwos Reference is Null InititalizeWindowReference');
       await initializeWindowReference(address: address!, userId: userId!);
     }
 
@@ -812,6 +823,8 @@ class SignalRService {
     required String address,
     required String userId,
   }) async {
+    print('---------------------------------------');
+    print('INITIALIZE WINDOW REFERENCE');
     print(userId);
     _userId = userId;
     print('TRY to ping');
@@ -906,6 +919,8 @@ class SignalRService {
     _restaurantData = null;
     await connect();
     print('getFilteredRestaurants');
+    print('===========================');
+    print(_currentWindowReference);
     if (_currentWindowReference == null) {
       await initializeWindowReference(address: address, userId: userId);
     }

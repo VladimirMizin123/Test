@@ -214,31 +214,71 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     }
     try {
       final prefs = await SharedPreferences.getInstance();
+      print('FETCH CATEGORY DATA');
 
       String currentAddress = prefs.getString('currentUserAddress') ?? '';
 
-      if (currentAddress.trim().isEmpty) {
+      if (currentAddress.trim().isEmpty || !PreferenceUtils.isManualLocation) {
         print('fetch Category data, address is empty');
         String newAddress = "";
-        final repo = GetAddressRepository();
-        final addressResult = await repo.getUserAddressData();
-        print('Address Result in _fetchCategoryData');
 
-        if (addressResult.isRight) {
-          var add = addressResult.right.data
-              ?.firstWhereOrNull((element) => element.isPrimary ?? false);
-          add ??= addressResult.right.data?.first;
+        final foodMenuAddressRaw = prefs.getString('foodMenuAddress');
+        print('FOOD MENU ADDRESS: $foodMenuAddressRaw');
+        if (foodMenuAddressRaw != null && foodMenuAddressRaw.isNotEmpty) {
+          try {
+            final parsed = jsonDecode(foodMenuAddressRaw);
 
-          if (add != null) {
-            final parts = [
-              add.streetNum,
-              add.streetName,
-              add.city,
-              add.country
-            ].where((e) => e != null && e.trim().isNotEmpty).cast<String>().toList();
-            newAddress = parts.join(", ");
+            String? streetNumRaw = parsed['user_street_num'];
+            String? streetNum;
+
+            if (streetNumRaw != null && streetNumRaw.trim().isNotEmpty) {
+              streetNum = streetNumRaw;
+            }
+
+            if (streetNum != null && streetNum.isNotEmpty) {
+              final parts = [
+                streetNum,
+                parsed['user_street_name'],
+                parsed['user_city'],
+                parsed['user_country']
+              ]
+                  .where((e) => e != null && e.toString().trim().isNotEmpty)
+                  .map((e) => e.toString().trim())
+                  .toList();
+
+              newAddress = parts.join(", ");
+              print('newAddress from foodMenuAddress: $newAddress');
+            } else {
+              print('Invalid or missing street number, skipping...');
+              newAddress = '';
+            }
+          } catch (e) {
+            print('Error parsing foodMenuAddress: $e');
+            newAddress = '';
           }
-          print('newAddress: $newAddress');
+        }
+
+        if (newAddress.trim().isEmpty) {
+          final repo = GetAddressRepository();
+          final addressResult = await repo.getUserAddressData();
+          print('Address Result in _fetchCategoryData');
+
+          if (addressResult.isRight) {
+            var add = addressResult.right.data
+                ?.firstWhereOrNull((element) => element.isPrimary ?? false);
+            add ??= addressResult.right.data?.first;
+
+            if (add != null) {
+              final parts = [
+                add.streetNum,
+                add.streetName,
+                add.city,
+                add.country
+              ].where((e) => e != null && e.trim().isNotEmpty).cast<String>().toList();
+              newAddress = parts.join(", ");
+            }
+            print('newAddress from API: $newAddress');
+          }
         }
 
         if (newAddress.trim().isEmpty) {
@@ -275,6 +315,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       }
       String userID = PreferenceUtils.getString(prefUserData);
       final signalR = SignalRService();
+      print('GET Categories for address $currentAddress');
       final categories = await signalR.getRestaurantCategories(currentAddress, userID);
 
       final categoryData = (categories as List<dynamic>)
@@ -1162,107 +1203,109 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                           true ||
                                                       getCousinesLoadingState ==
                                                           true
-                                                  ? SingleChildScrollView(
-                                                      physics:
-                                                          const BouncingScrollPhysics(),
-                                                      child: ListView.builder(
-                                                        itemCount: 10,
-                                                        shrinkWrap: true,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 20),
-                                                        scrollDirection:
-                                                            Axis.vertical,
-                                                        physics:
-                                                            const NeverScrollableScrollPhysics(),
-                                                        itemBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                int index) {
-                                                          return Shimmer
-                                                              .fromColors(
-                                                                  baseColor: AppColors
-                                                                      .disable
-                                                                      .withOpacity(
-                                                                          0.20),
-                                                                  highlightColor: AppColors
-                                                                      .disable
-                                                                      .withOpacity(
-                                                                          0.20),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Container(
-                                                                        height:
-                                                                            160.h,
-                                                                        decoration: BoxDecoration(
-                                                                            color:
-                                                                                AppColors.disable,
-                                                                            borderRadius: BorderRadius.circular(7)),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                          height:
-                                                                              7),
-                                                                      Column(
-                                                                        children: [
-                                                                          Row(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Expanded(
-                                                                                flex: 0,
-                                                                                child: Container(
-                                                                                  height: 30,
-                                                                                  width: 70,
-                                                                                  decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                                                ),
-                                                                              ),
-                                                                              const Spacer(),
-                                                                              Expanded(
-                                                                                flex: 0,
-                                                                                child: Container(
-                                                                                  height: 20,
-                                                                                  width: 50,
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: AppColors.disable,
-                                                                                    borderRadius: BorderRadius.circular(4),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          const SizedBox(
-                                                                            height:
-                                                                                5,
-                                                                          ),
-                                                                          Row(
-                                                                            children: [
-                                                                              Expanded(
-                                                                                flex: 1,
-                                                                                child: Container(
-                                                                                  height: 30,
-                                                                                  decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
-                                                                                ),
-                                                                              ),
-                                                                              const Expanded(
-                                                                                child: SizedBox(),
-                                                                              )
-                                                                            ],
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      const SizedBox(
-                                                                          height:
-                                                                              10),
-                                                                      const Divider(
-                                                                          color: AppColors
-                                                                              .disable,
-                                                                          thickness:
-                                                                              1.2),
-                                                                    ],
-                                                                  ));
-                                                        },
-                                                      ),
-                                                    )
+                                                  ? 
+                                                  // SingleChildScrollView(
+                                                  //     physics:
+                                                  //         const BouncingScrollPhysics(),
+                                                  //     child: ListView.builder(
+                                                  //       itemCount: 10,
+                                                  //       shrinkWrap: true,
+                                                  //       padding:
+                                                  //           const EdgeInsets
+                                                  //               .only(top: 20),
+                                                  //       scrollDirection:
+                                                  //           Axis.vertical,
+                                                  //       physics:
+                                                  //           const NeverScrollableScrollPhysics(),
+                                                  //       itemBuilder:
+                                                  //           (BuildContext
+                                                  //                   context,
+                                                  //               int index) {
+                                                  //         return Shimmer
+                                                  //             .fromColors(
+                                                  //                 baseColor: AppColors
+                                                  //                     .disable
+                                                  //                     .withOpacity(
+                                                  //                         0.20),
+                                                  //                 highlightColor: AppColors
+                                                  //                     .disable
+                                                  //                     .withOpacity(
+                                                  //                         0.20),
+                                                  //                 child: Column(
+                                                  //                   children: [
+                                                  //                     Container(
+                                                  //                       height:
+                                                  //                           160.h,
+                                                  //                       decoration: BoxDecoration(
+                                                  //                           color:
+                                                  //                               AppColors.disable,
+                                                  //                           borderRadius: BorderRadius.circular(7)),
+                                                  //                     ),
+                                                  //                     const SizedBox(
+                                                  //                         height:
+                                                  //                             7),
+                                                  //                     Column(
+                                                  //                       children: [
+                                                  //                         Row(
+                                                  //                           crossAxisAlignment:
+                                                  //                               CrossAxisAlignment.start,
+                                                  //                           children: [
+                                                  //                             Expanded(
+                                                  //                               flex: 0,
+                                                  //                               child: Container(
+                                                  //                                 height: 30,
+                                                  //                                 width: 70,
+                                                  //                                 decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                  //                               ),
+                                                  //                             ),
+                                                  //                             const Spacer(),
+                                                  //                             Expanded(
+                                                  //                               flex: 0,
+                                                  //                               child: Container(
+                                                  //                                 height: 20,
+                                                  //                                 width: 50,
+                                                  //                                 decoration: BoxDecoration(
+                                                  //                                   color: AppColors.disable,
+                                                  //                                   borderRadius: BorderRadius.circular(4),
+                                                  //                                 ),
+                                                  //                               ),
+                                                  //                             ),
+                                                  //                           ],
+                                                  //                         ),
+                                                  //                         const SizedBox(
+                                                  //                           height:
+                                                  //                               5,
+                                                  //                         ),
+                                                  //                         Row(
+                                                  //                           children: [
+                                                  //                             Expanded(
+                                                  //                               flex: 1,
+                                                  //                               child: Container(
+                                                  //                                 height: 30,
+                                                  //                                 decoration: BoxDecoration(color: AppColors.disable, borderRadius: BorderRadius.circular(7)),
+                                                  //                               ),
+                                                  //                             ),
+                                                  //                             const Expanded(
+                                                  //                               child: SizedBox(),
+                                                  //                             )
+                                                  //                           ],
+                                                  //                         ),
+                                                  //                       ],
+                                                  //                     ),
+                                                  //                     const SizedBox(
+                                                  //                         height:
+                                                  //                             10),
+                                                  //                     const Divider(
+                                                  //                         color: AppColors
+                                                  //                             .disable,
+                                                  //                         thickness:
+                                                  //                             1.2),
+                                                  //                   ],
+                                                  //                 ));
+                                                  //       },
+                                                  //     ),
+                                                  //   )
+                                                  const AppCenterLoader()
                                                   : Column(
                                                       children: [
                                                         /// Tab bar ----------------------------------------------------------------------

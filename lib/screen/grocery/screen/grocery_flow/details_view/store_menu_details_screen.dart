@@ -168,9 +168,20 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
           final String? header = item['Header'];
           final bool isRequired = item['IsRequired'] ?? false;
           final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
+          final int maxSelectableItems = item['MaxSelectableItems'] ?? 1;
 
-          final List<opt.Option> options =
-              (item['Items'] as List).map<opt.Option>((optItem) {
+          int minChoiceOptions = 0;
+          if (isRequired) {
+            final selectionText = item['SelectionRequirementText'] ?? '';
+            final match = RegExp(r'\d+').firstMatch(selectionText);
+            if (match != null) {
+              minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
+            } else {
+              minChoiceOptions = 1;
+            }
+          }
+
+          final List<opt.Option> options = (item['Items'] as List).map<opt.Option>((optItem) {
             final String name = optItem['Name'] ?? '';
             final String priceString = optItem['Price'] ?? '';
             final int price = 0;
@@ -185,13 +196,15 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
               defaultQty: 0,
               optionId: name,
               isNestedSelection: optItem['IsNestedSelection'],
+              hasQuantityControl: optItem['HasQuantityControl'] ?? false,
+              isSelected: optItem['IsSelected'] ?? false,
             );
           }).toList();
 
           return Customization(
             name: header,
-            minChoiceOptions: isRequired ? 1 : 0,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            minChoiceOptions: minChoiceOptions,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
             options: options,
             customizationId: header,
             level: 1,
@@ -208,6 +221,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +305,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                       isGoingBack = true;
                                     });
                                     final signalR = SignalRService();
-                                    await signalR.goBack();
+                                    signalR.goBack();
                                     Get.back(result: addToCart);
                                     setState(() {
                                       isGoingBack = false;
@@ -721,15 +735,15 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                 onTileTap(cs, option, parent: parent, setRouting: setRouting);
               } else {
                 showToast(
-                    isSuccess: false,
-                    color: AppColors.black,
-                    message:
-                        "This product is already in the cart and cannot be modified.");
+                  isSuccess: false,
+                  color: AppColors.black,
+                  message: "This product is already in the cart and cannot be modified.",
+                );
               }
             },
             child: Image.asset(
-              nestedOptionList
-                      .any((element) => element["option_id"] == option.optionId)
+              (option.isSelected == true || 
+              nestedOptionList.any((element) => element["option_id"] == option.optionId))
                   ? AssetsUtils.terracotaCheck
                   : AssetsUtils.greyCircle,
               height: 18.h,
@@ -781,9 +795,12 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
     final selectedName = option.name ?? '';
 
     if (option.isNestedSelection == true &&
-        (option.customizations == null || option.customizations!.isEmpty)) {
-
+    (option.customizations == null || option.customizations!.isEmpty)) {
       try {
+        setState(() {
+          _isLoadingCustomization = true;
+        });
+
         final signalRResult = await signalR.getNestedSelection(header, selectedName);
 
         final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
@@ -791,18 +808,34 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
           final bool isRequired = item['isRequired'] ?? item['IsRequired'] ?? false;
           final bool isManySelectionAllowed =
               item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;
+          final int maxSelectableItems =
+              item['maxSelectableItems'] ?? item['MaxSelectableItems'] ?? 1;
+
+          int minChoiceOptions = 0;
+          if (isRequired) {
+            final selectionText = item['selectionRequirementText'] ??
+                item['SelectionRequirementText'] ?? '';
+            final match = RegExp(r'\d+').firstMatch(selectionText);
+            if (match != null) {
+              minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
+            } else {
+              minChoiceOptions = 1;
+            }
+          }
 
           final optionsList = item['items'] ?? item['Items'] ?? [];
 
-          List<opt.Option> options =
-              (optionsList as List).map<opt.Option>((optItem) {
+          List<opt.Option> options = (optionsList as List).map<opt.Option>((optItem) {
             try {
               final name = optItem['name'] ?? optItem['Name'] ?? '';
-              final priceString = optItem['price']?.toString() ??
-                  optItem['Price']?.toString() ??
-                  '';
+              final priceString =
+                  optItem['price']?.toString() ?? optItem['Price']?.toString() ?? '';
               final isNested =
                   optItem['isNestedSelection'] ?? optItem['IsNestedSelection'] ?? false;
+              final hasQtyCtrl =
+                  optItem['hasQuantityControl'] ?? optItem['HasQuantityControl'] ?? false;
+              final isSelected =
+                  optItem['isSelected'] ?? optItem['IsSelected'] ?? false;
 
               return opt.Option(
                 name: name,
@@ -814,6 +847,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                 defaultQty: 0,
                 optionId: name,
                 isNestedSelection: isNested,
+                hasQuantityControl: hasQtyCtrl,
+                isSelected: isSelected,
               );
             } catch (e) {
               rethrow;
@@ -822,17 +857,22 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
           return Customization(
             name: nestedHeader,
-            minChoiceOptions: isRequired ? 1 : 0,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : 1,
+            minChoiceOptions: minChoiceOptions,
+            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
             options: options,
             customizationId: nestedHeader,
             level: cs.level + 1,
           );
         }).toList();
 
-        option.customizations = parsedNestedCustomizations;
+        setState(() {
+          option.customizations = parsedNestedCustomizations;
+          _isLoadingCustomization = false;
+        });
       } catch (e) {
-        // handle error if needed
+        setState(() {
+          _isLoadingCustomization = false;
+        });
       }
     } else {
       try {

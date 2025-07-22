@@ -85,7 +85,9 @@ class _BestMatchRestaurantsScreenState
         Get.back();
         return;
       }
-      showBottomSheet();
+      setState(() {
+        deliveryType = 0;
+      });
       mealType = value;
     });
   }
@@ -115,6 +117,7 @@ class _BestMatchRestaurantsScreenState
       if (value != null && value != -1) {
         setState(() {
           deliveryType = int.tryParse(value?.toString() ?? "") ?? 0;
+          // print('DELIVERY TYPE : $deliveryType');
         });
       }
     });

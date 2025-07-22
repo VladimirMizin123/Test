@@ -56,13 +56,57 @@ class RestaurantRepository {
 
   Future<String> getCurrentAddress() async {
     final prefs = await SharedPreferences.getInstance();
+    print('=============================');
+    print('IS MANUAL LOCATION: ${PreferenceUtils.isManualLocation}');
+    print('===================');
 
     final cachedAddress = prefs.getString('currentUserAddress');
     final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
 
-    if (cachedAddress != null && !addressUpdated) {
+    if (cachedAddress != null && !addressUpdated && PreferenceUtils.isManualLocation) {
       return cachedAddress.trim();
     }
+
+    final foodMenuAddressRaw = prefs.getString('foodMenuAddress');
+    print('FOOD MENU ADDRESS: $foodMenuAddressRaw');
+    if (foodMenuAddressRaw != null && foodMenuAddressRaw.isNotEmpty) {
+      try {
+        final parsed = jsonDecode(foodMenuAddressRaw);
+
+        String? streetNumRaw = parsed['user_street_num'];
+        String? streetNum;
+
+        if (streetNumRaw != null && streetNumRaw.trim().isNotEmpty) {
+          streetNum = streetNumRaw;
+        }
+
+        if (streetNum == null || streetNum.isEmpty) {
+          print('Street number is empty or invalid, skipping...');
+        } else {
+          final parts = [
+            streetNum,
+            parsed['user_street_name'],
+            parsed['user_city'],
+            parsed['user_country']
+          ]
+              .where((e) => e != null && e.toString().trim().isNotEmpty)
+              .map((e) => e.toString().trim())
+              .toList();
+
+          final address = parts.join(", ");
+          print('FOOD MENU ADDRESS STRING $foodMenuAddressRaw');
+
+          if (address.isNotEmpty) {
+            await prefs.setString('currentUserAddress', address);
+            await prefs.setBool('AddressUpdated', false);
+            return address;
+          }
+        }
+      } catch (e) {
+        print('Error parsing foodMenuAddress: $e');
+      }
+    }
+
 
     final addressResult = await getUserAddressData();
 
@@ -335,6 +379,9 @@ class RestaurantRepository {
     String? restaurantName,
   }) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final foodMenuAddress = prefs.getString('foodMenuAddress');
+      print('foodMenuAddress from prefs: $foodMenuAddress');
       Map<String, dynamic>? signalRResult;
       if (restaurantName != null && restaurantName.trim().isNotEmpty) {
         final signalR = SignalRService();

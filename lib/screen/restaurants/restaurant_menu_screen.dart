@@ -110,13 +110,13 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     String trackerList = PreferenceUtils.getString(trackerListStore);
     print('TRACKER LIST');
     print(trackerList);
-    mealInfo = mealDataModelFromJson(trackerList);
-    print('MEAL INFO');
-    print(widget.mealType.toLowerCase());
-    print(mealInfo);
-    for (final meal in mealInfo) {
-      print(meal.toJson());
-    }
+    // mealInfo = mealDataModelFromJson(trackerList);
+    // print('MEAL INFO');
+    // print(widget.mealType.toLowerCase());
+    // print(mealInfo);
+    // for (final meal in mealInfo) {
+      // print(meal.toJson());
+    // }
     if (widget.menu == null) {
       widget.bloc.add(
         GetRestaurantMenuListEvent(widget.restaurantId, widget.pickup,
@@ -196,34 +196,41 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   );
 
                   if (parentCategoryIndex != null && parentCategoryIndex >= 0) {
+                    final updatedList = state.updatedList;
+
                     if (state.subCategoryId == null) {
-                      var categoryList = restaurantMenu?.categories?[parentCategoryIndex].menuItemList ?? [];
+                      var menuItems = restaurantMenu?.categories?[parentCategoryIndex].menuItemList ?? [];
 
-                      categoryList.removeWhere((item) {
-                        final exists = state.updatedList.any((updated) => updated.name == item.name);
-                        return !exists;
-                      });
+                      for (var item in menuItems) {
+                        final updatedItem = updatedList.firstWhere(
+                          (updated) => updated.name == item.name,
+                          orElse: () => item,
+                        );
+                        item.highLightedColor = updatedItem.highLightedColor;
+                      }
 
-                      restaurantMenu?.categories?[parentCategoryIndex].menuItemList = categoryList;
-
+                      restaurantMenu?.categories?[parentCategoryIndex].menuItemList = menuItems;
                     } else {
                       final subIndex = int.tryParse(state.subCategoryId ?? '');
+
                       if (subIndex != null &&
                           subIndex >= 0 &&
                           subIndex < (restaurantMenu?.categories?[parentCategoryIndex].subcategories?.length ?? 0)) {
-                        
-                        var subcategoryList = restaurantMenu?.categories?[parentCategoryIndex]
+                        var menuItems = restaurantMenu?.categories?[parentCategoryIndex]
                             .subcategories?[subIndex]
                             .menuItemList ?? [];
 
-                        subcategoryList.removeWhere((item) {
-                          final exists = state.updatedList.any((updated) => updated.name == item.name);
-                          return !exists;
-                        });
+                        for (var item in menuItems) {
+                          final updatedItem = updatedList.firstWhere(
+                            (updated) => updated.name == item.name,
+                            orElse: () => item,
+                          );
+                          item.highLightedColor = updatedItem.highLightedColor;
+                        }
 
                         restaurantMenu?.categories?[parentCategoryIndex]
                             .subcategories?[subIndex]
-                            .menuItemList = subcategoryList;
+                            .menuItemList = menuItems;
                       } else {
                         print("Invalid subcategory index: $subIndex");
                       }
@@ -286,11 +293,11 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                                   }
                                   cartBloc.add(RemoveCart());
                                   cartCount = 0;
-                                  await signalR.clearRestaurantCartItems();
+                                  signalR.clearRestaurantCartItems();
                                   await prefs.setBool('item-added-to-cart', false);
                                 }
 
-                                await signalR.redirectToHomePage();
+                                signalR.redirectToHomePage();
 
                                 if (mounted) {
                                   setState(() => _isGoingBack = false);
@@ -1681,6 +1688,7 @@ void _handleCanEat() {
   }
 
   int status(MenuItemList menu) {
+    print(menu.highLightedColor);
     switch (menu.highLightedColor) {
       case "Yellow":
         return 1;

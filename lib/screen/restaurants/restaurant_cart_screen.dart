@@ -100,47 +100,28 @@ class _RestaurantCartState extends State<RestaurantCart> {
   void mergeCartDataFromServer(List<dynamic> serverCartItems) {
     print('mergeCartDataFromServer');
 
-    final Map<String, List<dynamic>> groupedByName = {};
+    cartData.clear();
 
     for (var item in serverCartItems) {
-      final itemName = item['Name'] as String?;
-      if (itemName == null) continue;
+      final name = item['Name'] as String?;
+      final itemPriceStr = item['Price'] as String?;
+      final itemUrl = item['ItemUrl'] as String?;
+      final itemQuantity = int.tryParse(item['Quantity']?.toString() ?? '0');
 
-      groupedByName.putIfAbsent(itemName, () => []).add(item);
-    }
+      if (name == null || itemPriceStr == null || itemQuantity == null) continue;
 
-    for (var entry in groupedByName.entries) {
-      final name = entry.key;
-      final serverItemsForName = entry.value;
+      final parsedPrice = (double.tryParse(itemPriceStr.replaceAll('\$', '').trim()) ?? 0.0) * 100;
+      final int newPrice = parsedPrice.toInt();
 
-      final existingItems = cartData.where((e) => e.productName == name).toList();
-
-      for (int i = 0; i < serverItemsForName.length; i++) {
-        final serverItem = serverItemsForName[i];
-        final itemPriceStr = serverItem['Price'] as String?;
-        final itemUrl = serverItem['ItemUrl'] as String?;
-        final itemQuantity = int.tryParse(serverItem['Quantity']?.toString() ?? '0');
-
-        if (itemPriceStr == null) continue;
-
-        final parsedPrice = (double.tryParse(itemPriceStr.replaceAll('\$', '').trim()) ?? 0.0) * 100;
-        final int newPrice = parsedPrice.toInt();
-
-        if (i < existingItems.length) {
-          existingItems[i].price = newPrice;
-          existingItems[i].quantity = itemQuantity;
-        } else {
-          cartData.add(
-            ShoppingListData(
-              productName: name,
-              price: newPrice,
-              quantity: itemQuantity,
-              mealmeStoreId: itemUrl,
-              image: itemUrl
-            ),
-          );
-        }
-      }
+      cartData.add(
+        ShoppingListData(
+          productName: name,
+          price: newPrice,
+          quantity: itemQuantity,
+          mealmeStoreId: itemUrl,
+          image: itemUrl,
+        ),
+      );
     }
 
     price = 0;

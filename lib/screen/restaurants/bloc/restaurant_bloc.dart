@@ -96,11 +96,13 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     RestaurantVerifyEvent event, Emitter<RestaurantState> emit) async {
     try {
       emit(VerifyRestaurantLoader(id: event.id));
-
+      print('ON STORE VERIFY');
       final tempRepository = RestaurantRepository();
-
+      print('111');
       Either<ErrorModel, GetRestaurantMenuListModel>? storeRes;
+      print('22222');
       try {
+        print('33333');
         storeRes = await tempRepository.getRestaurantMenuList(
           restaurantId: event.id,
           pickup: event.pickup,
@@ -246,7 +248,6 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     Emitter<RestaurantState> emit,
   ) async {
     try {
-      print('HEREE');
       emit(MatchMealLoadingState(isLoading: true));
 
       RestaurantMenu menu = event.menu;
@@ -256,27 +257,37 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       Category? parentCategory;
       List<MenuItemList> menuItemList = [];
 
-      if (event.subcategoryId != null) {
-        print('NOT NULL');
-        parentCategory = categories.firstWhereOrNull(
-          (cat) => cat.name == event.categoryId,
-        );
+      if (event.subcategoryId != null && event.categoryId != null) {
+        print(event.categoryId);
+        print(event.subcategoryId);
+        print(event);
 
-        if (parentCategory != null) {
-          category = parentCategory;
-          int? subIndex = int.tryParse(event.subcategoryId!);
+        int? parentIndex = int.tryParse(event.categoryId!);
+        int? subIndex = int.tryParse(event.subcategoryId!);
 
-          if (subIndex != null &&
-              parentCategory.subcategories != null &&
+        if (parentIndex != null &&
+            subIndex != null &&
+            parentIndex >= 0 &&
+            parentIndex < categories.length) {
+              
+          parentCategory = categories[parentIndex];
+
+          if (parentCategory.subcategories != null &&
               subIndex >= 0 &&
               subIndex < parentCategory.subcategories!.length) {
+                
             var sub = parentCategory.subcategories![subIndex];
+            category = sub;
             menuItemList = sub.menuItemList ?? [];
           }
         }
       } else {
         print('SUB IS NULL');
-        parentCategory = categories[event.categoryId != null ? int.parse(event.categoryId!) : 0];
+        if (event.categoryId != null && int.tryParse(event.categoryId!) != null) {
+          parentCategory = categories[int.parse(event.categoryId!)];
+        } else {
+          parentCategory = categories[0];
+        }
         category = parentCategory;
         menuItemList = parentCategory.menuItemList ?? [];
       }
@@ -285,9 +296,11 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         "restrictions": [],
         "allergies": [],
         "calories": event.calories ?? 0.0,
-        "Categorie": category?.name,
+        "Categorie": parentCategory?.name,
         "restaurantMenu": menuItemList.map((e) => e.toJson()).toList(),
       };
+
+      print(req);
 
 
       var res = await _repository.apiServices.post(ApiUrls.filterMenuFromAI, req);
@@ -301,6 +314,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
         );
 
         event.onSuccess?.call();
+        print(updatedList[0].highLightedColor);
         emit(MatchMealState(
           subCategoryId: event.subcategoryId,
           updatedList: updatedList,
@@ -309,7 +323,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       } else {
         event.onError?.call();
         dynamic data = jsonDecode(res.body);
-        print(data);
+        print(data); 
         if (data != null) {
           String message = data?["errorMessage"]?.toString() ?? "";
 

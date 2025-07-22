@@ -181,12 +181,58 @@ class GroceryRepository {
 
   Future<String> getCurrentAddress() async {
     final prefs = await SharedPreferences.getInstance();
+    print('=============================');
+    print('IS MANUAL LOCATION: ${PreferenceUtils.isManualLocation}');
+    print('===================');
 
     final cachedAddress = prefs.getString('currentUserAddress');
     final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
 
-    if (cachedAddress != null && !addressUpdated) {
+    if (cachedAddress != null &&
+        !addressUpdated &&
+        PreferenceUtils.isManualLocation) {
       return cachedAddress.trim();
+    }
+
+    final foodMenuAddressRaw = prefs.getString('foodMenuAddress');
+    print('FOOD MENU ADDRESS: $foodMenuAddressRaw');
+
+    if (foodMenuAddressRaw != null && foodMenuAddressRaw.isNotEmpty) {
+      try {
+        final parsed = jsonDecode(foodMenuAddressRaw);
+
+        String? streetNumRaw = parsed['user_street_num'];
+        String? streetNum;
+
+        if (streetNumRaw != null && streetNumRaw.trim().isNotEmpty) {
+          streetNum = streetNumRaw;
+        }
+
+        if (streetNum == null || streetNum.isEmpty) {
+          print('Invalid or missing street number, skipping...');
+        } else {
+          final parts = [
+            streetNum,
+            parsed['user_street_name'],
+            parsed['user_city'],
+            parsed['user_country']
+          ]
+              .where((e) => e != null && e.toString().trim().isNotEmpty)
+              .map((e) => e.toString().trim())
+              .toList();
+
+          final address = parts.join(", ");
+          print('FOOD MENU ADDRESS STRING: $address');
+
+          if (address.isNotEmpty) {
+            await prefs.setString('currentUserAddress', address);
+            await prefs.setBool('AddressUpdated', false);
+            return address;
+          }
+        }
+      } catch (e) {
+        print('Error parsing foodMenuAddress: $e');
+      }
     }
 
     final addressResult = await getUserAddressData();
@@ -220,6 +266,40 @@ class GroceryRepository {
     return '';
   }
 
+  Future<void> ensureCategoriesCached(String address) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cacheKey = 'categoryCache_$address';
+
+      final cachedCategoriesString = prefs.getString(cacheKey);
+      if (cachedCategoriesString != null) {
+        print('categories already cached');
+        return;
+      }
+
+      print('Fetching categories for address: $address');
+
+      final signalR = SignalRService();
+      final userID = PreferenceUtils.getString(prefUserData);
+
+      final categories = await signalR.getRestaurantCategories(address, userID);
+
+      final categoryData = (categories as List<dynamic>)
+          .map<Map<String, dynamic>>((category) => {
+                'title': category['name'],
+                'id': category['id'],
+                'image': category['imageSrc'],
+              })
+          .toList();
+
+      await prefs.setString(cacheKey, jsonEncode(categoryData));
+      print('Categories cached for: $address');
+    } catch (e) {
+      print('Failed to cache categories: $e');
+    }
+  }
+
+
   Future<Either<ErrorModel, NearByStoreModel>> nearByStoreSearch({
     required user_address.UserAddress? getUserAddress,
     AskReceiveOrder? askReceiveOrder,
@@ -228,6 +308,9 @@ class GroceryRepository {
     final user_address.UserAddress? address = getUserAddress;
     final String currentAddress = await getCurrentAddress();
 
+    print('Grocery Current Address: $currentAddress');
+
+    await ensureCategoriesCached(currentAddress);
     final signalR = SignalRService();
     await signalR.connect();
 

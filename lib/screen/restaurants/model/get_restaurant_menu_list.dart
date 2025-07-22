@@ -323,6 +323,7 @@ class Option {
   List<Customization>? customizations;
   bool isNestedSelection;
   bool hasQuantityControl;
+  bool isSelected;
 
   Option({
     this.name,
@@ -336,6 +337,7 @@ class Option {
     this.customizations,
     this.isNestedSelection = false,
     this.hasQuantityControl = false,
+    this.isSelected = false,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(
@@ -349,6 +351,7 @@ class Option {
         optionId: json["option_id"],
         isNestedSelection: json["is_nested_selection"] ?? false,
         hasQuantityControl: json["has_quantity_control"] ?? false,
+        isSelected: json["is_selected"] ?? false,
         customizations: json["customizations"] != null
             ? List<Customization>.from(json["customizations"]!.map((x) => Customization.fromJson(x)))
             : null,
@@ -364,6 +367,7 @@ class Option {
         "default_qty": defaultQty,
         "option_id": optionId,
         "is_nested_selection": isNestedSelection,
+        "is_selected": isSelected,
         "has_quantity_control": hasQuantityControl,
         "customizations": customizations?.map((e) => e.toJson()).toList(),
       };

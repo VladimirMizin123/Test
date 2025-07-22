@@ -284,7 +284,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
 
                           final signalR = SignalRService();
                           try {
-                            await signalR.goBack();
+                            signalR.goBack();
                             Get.back(result: "category");
                           } catch (e) {
                           } finally {
@@ -488,7 +488,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                                 data: item,
                                                 cartBloc: widget.cartBloc,
                                                 restaurantId: widget.storeId ?? "",
-                                                cartCount: item.cartQuantity ?? 0,
+                                                cartCount: item.cartQuantity ?? 1,
                                                 pickUp: widget.askOrder == AskReceiveOrder.pickMySelf,
                                                 grocAdd: widget.grocAdd,
                                                 options: item.selectedOptions?.map((e) => e.toJson()).toList() ?? [],

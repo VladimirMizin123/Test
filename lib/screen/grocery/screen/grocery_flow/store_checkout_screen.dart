@@ -144,6 +144,7 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
           ..image = imageUrl
           ..productId = itemUrl,
       );
+      print('LENGTHL:${cartMenuList.length}');
     }
   }
 
@@ -155,7 +156,7 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
       bloc: widget.storeCartBloc,
       listener: (context, state) {
         if (state is StoreCheckoutState) {
-          cartMenuList = state.menuItemList;
+          // cartMenuList = state.menuItemList;
 
           price = 0;
           for (var element in cartMenuList) {
