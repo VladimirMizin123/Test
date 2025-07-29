@@ -605,7 +605,7 @@ class RestaurantRepository {
 
   /// Create Order ====================================================================
 
-  // Future<Either<ErrorModel, CreateOrderResponseModel>> createOrder(
+  // Future<Either<ErrorModel, crt.CreateOrderResponseModel>> createOrder(
   //     {required CreateOrderModel createOrderModel}) async {
   //   Response? response;
   //   try {
@@ -623,7 +623,7 @@ class RestaurantRepository {
 
   //     if (response.statusCode == 200 || response.statusCode == 201) {
   //       return Right(
-  //           CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
+  //           crt.CreateOrderResponseModel.fromJson(jsonDecode(response.body)));
   //     } else {
   //       return Left(
   //         ErrorModel.fromJson(jsonDecode(response.body))
@@ -735,16 +735,18 @@ class RestaurantRepository {
 
   Future<Either<ErrorModel, SuccessModel>> createCheckout(
       {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
-    log("Create Check Out: ${ApiUrls.createCheckout}");
-    log("Req: ${jsonEncode(createCheckOutRequestModel.toJson())}");
+    print("Create Check Out: ${ApiUrls.createCheckout}");
+    print("Req: ${jsonEncode(createCheckOutRequestModel.toJson())}");
     final response = await apiServices.post(
       ApiUrls.createCheckout,
       createCheckOutRequestModel.toJson(),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      print(jsonDecode(response.body));
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
+      print(jsonDecode(response.body));
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

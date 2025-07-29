@@ -1374,7 +1374,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
                                                                           isFastDelivery =
                                                                               value['fastDelivery'];
-                                                                          if (mounted) {
+                                                                          if (mounted) { 
                                                                             setState(() {});
                                                                           }
                                                                         } else {}
@@ -1944,6 +1944,20 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   }
 
   void onRestaurantTap({required RestaurantList res}) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final String logo = (res.logoPhotos != null && res.logoPhotos!.isNotEmpty)
+      ? res.logoPhotos!.first
+      : "";
+
+    final currentRestaurant = {
+      "name": res.name ?? "",
+      "logo": logo,
+      "id": res.id ?? "",
+    };
+
+    await prefs.setString("currentRestaurant", jsonEncode(currentRestaurant));
+
     try {
       if ((dashboardModel.data?.totalIntakeFood?.round() ?? 0) >=
           (dashboardModel.data?.totalCalorie?.round() ?? 0)) {

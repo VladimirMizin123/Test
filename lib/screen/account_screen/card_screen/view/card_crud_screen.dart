@@ -51,9 +51,9 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
   bool defaultCardLoader = false;
   var controller = MaskedTextController(mask: '00/0000');
   final ApiServices _api = ApiServices();
-
+CardFieldInputDetails? _cardFieldInput;
   final formKey = GlobalKey<FormState>();
-
+String? _clientSecret;
   String formatCardNumber(String cardNumber) {
     return cardNumber
         .replaceAllMapped(RegExp(r'.{1,4}'), (match) => '${match.group(0)} ')
@@ -78,10 +78,8 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
     getData();
   }
 
-  Future<void> initStripeCardFlow() async {
+Future<void> initStripeCardFlow() async {
   try {
-    print('initStripeCardFlow');
-
     final response = await _api.get(ApiUrls.getCardIntent);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -90,26 +88,58 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
       final setupIntentClientSecret = data['cardIntentClientSecret'];
       final ephemeralKey = data['ephemeralKey'];
       final customerId = data['stripeCustomerId'];
-      final publishableKey = data['publishableKey']; 
+      final publishableKey = data['publishableKey'];
 
       Stripe.publishableKey = publishableKey;
 
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          customerId: customerId,
-          customerEphemeralKeySecret: ephemeralKey,
-          setupIntentClientSecret: setupIntentClientSecret,
-          merchantDisplayName: 'MealMe App',
-          style: ThemeMode.system,
-        ),
-      );
+      await Stripe.instance.applySettings(); 
 
-      await Stripe.instance.presentPaymentSheet();
-
+      _clientSecret = setupIntentClientSecret;
     } else {
+      print('error Stripe');
     }
   } catch (e) {
     print("Stripe flow: $e");
+  }
+}
+
+Future<void> confirmCard() async {
+  try {
+    if (_cardFieldInput == null || !_cardFieldInput!.complete) {
+      print(_cardFieldInput);
+      print('Please fill in all card details');
+      return;
+    }
+
+    if (_clientSecret == null) {
+      print('Stripe secret not initialized');
+      return;
+    }
+
+    setState(() => saveLoader = true);
+
+    final billingDetails = BillingDetails(
+      name: cardName.text,
+    );
+
+    final paymentMethodData = PaymentMethodData(
+      billingDetails: billingDetails,
+    );
+
+    final params = PaymentMethodParams.card(
+      paymentMethodData: paymentMethodData,
+    );
+
+    final result = await Stripe.instance.confirmSetupIntent(
+      paymentIntentClientSecret: _clientSecret!,
+      params: params,
+    );
+
+    print('Card setup completed: ${result.id}');
+  } catch (e) {
+    print('Error saving card: $e');
+  } finally {
+    setState(() => saveLoader = false);
   }
 }
 
@@ -149,11 +179,55 @@ Widget build(BuildContext context) {
               ],
             ).paddingOnly(left: 20, right: 20, top: 10),
 
-            const Spacer(),
+            Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text('Name',
+                          style: TextStyle(
+                            color: Color(0xff373737),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          )),
+                      commonTextField(
+                        label: 'Please Enter Name',
+                        controller: cardName,
+                        validator: (v) => v!.isEmpty ? 'Please Enter Name' : null,
+                      ),
 
-            GestureDetector(
-              onTap: () async {
-                await initStripeCardFlow();
+                      const SizedBox(height: 20),
+                      Text('Card details',
+                          style: TextStyle(
+                            color: Color(0xff373737),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          )),
+
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xffCFCFCF)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: CardField(
+                          enablePostalCode: false,
+                          onCardChanged: (details) {
+                            setState(() => _cardFieldInput = details);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+                          GestureDetector(
+                            onTap: () async {
+                await confirmCard();
               },
               child: Container(
                 height: 45.h,

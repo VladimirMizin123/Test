@@ -283,7 +283,7 @@ class ApiUrls {
   static const String listAllCard = '${baseUrl}api/StripePayment/ListAllCard';
   static const String getCard =
       '${baseUrl}api/StripePayment/GetCard/id?id={cardId}';
-  static const String createCard = '${baseUrl}api/StripePayment/createcard';
+  static const String createCard = '${baseUrl}api/StripePayment/CreateCard';
   static const String updateCard = '${baseUrl}api/StripePayment/updatecard';
   static const String removeCard =
       '${baseUrl}api/StripePayment/RemoveCard?id={cardId}';
@@ -291,4 +291,6 @@ class ApiUrls {
       '${baseUrl}api/StripePayment/getdefaultcard';
   static const String setDefaultCard =
       '${baseUrl}api/StripePayment/setdefaultcard?id={cardId}';
+  static const String getCardIntent =
+      '${baseUrl}api/StripePayment/GetCardIntent';
 }

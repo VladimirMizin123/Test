@@ -600,6 +600,9 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
                                                                     filterStore[index].id,
                                                                     filterStore[index].name,
                                                                     filterStore[index].address,
+                                                                    filterStore[index].logoPhotos?.isNotEmpty == true
+                                                                      ? filterStore[index].logoPhotos![0]
+                                                                      : ''
                                                                   );
                                                                 },
                                                               );
@@ -646,11 +649,22 @@ class _ChooseGroceryStoreState extends State<ChooseGroceryStore> {
         });
   }
 
-  void verifyGrocery(String? id, String? storeName, groc_add.Address? grocAdd) {
+  void verifyGrocery(String? id, String? storeName, groc_add.Address? grocAdd, String? logo) {
     groceryBloc.prevId = id;
     if (verifyLoaderId != null) {
       return;
     }
+
+     SharedPreferences.getInstance().then((prefs) {
+      final currentRestaurant = {
+        "name": storeName ?? "",
+        "logo": logo ?? "",
+        "id": id ?? "",
+      };
+      print('SET CURRENT RESTAURANT $currentRestaurant');
+      prefs.setString("currentRestaurant", jsonEncode(currentRestaurant));
+    });
+
     groceryBloc.add(
       StoreVerifyEvent(
         getUserAddress: getUserAddress,

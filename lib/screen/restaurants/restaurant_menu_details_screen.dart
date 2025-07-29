@@ -90,6 +90,7 @@ class _RestaurantMenuDetailsScreenState
   bool addToCart = false;
   bool isAdding = false;
   bool loading = false;
+  bool isNestedLoaded = false;
 
   bool alreadyInCart = false;
 
@@ -153,14 +154,15 @@ class _RestaurantMenuDetailsScreenState
 
       try {
         parsedCustomizations = signalRResult.map<Customization>((item) {
+          print(item);
           final String? header = item['Header'];
           final bool isRequired = item['IsRequired'] ?? false;
           final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
           final int maxSelectableItems = item['MaxSelectableItems'] ?? 1;
-
+          final selectionText = item['SelectionRequirementText'] ?? '';
           int minChoiceOptions = 0;
           if (isRequired) {
-            final selectionText = item['SelectionRequirementText'] ?? '';
+            
             final match = RegExp(r'\d+').firstMatch(selectionText);
             if (match != null) {
               minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
@@ -175,7 +177,10 @@ class _RestaurantMenuDetailsScreenState
               String priceString = optItem['Price'] ?? '';
               int? price = 0; 
 
-              return opt.Option(
+              bool isSelectedRaw = optItem['IsSelected'] ?? false;
+              bool isSelected = isSelectedRaw == true || isSelectedRaw == "true";
+
+              final optionObject = opt.Option(
                 name: name,
                 formattedPrice: priceString,
                 price: price,
@@ -186,8 +191,18 @@ class _RestaurantMenuDetailsScreenState
                 optionId: name,
                 isNestedSelection: optItem['IsNestedSelection'],
                 hasQuantityControl: optItem['HasQuantityControl'] ?? false,
-                isSelected: optItem['IsSelected'] ?? false, 
+                isSelected: isSelected, 
               );
+
+              if (isSelected) {
+                nestedOptionList.add({
+                  "option_id": optionObject.optionId ?? '',
+                  "quantity": 1,
+                  "marked_price": optionObject.price,
+                });
+              }
+
+              return optionObject;
             } catch (e) {
               rethrow;
             }
@@ -196,10 +211,12 @@ class _RestaurantMenuDetailsScreenState
           return Customization(
             name: header,
             minChoiceOptions: minChoiceOptions,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
+            maxChoiceOptions: maxSelectableItems ??
+                (isManySelectionAllowed ? options.length : 1),
             options: options,
             customizationId: header,
             level: 1,
+            text: selectionText
           );
         }).toList();
       } catch (e) {
@@ -836,7 +853,6 @@ class _RestaurantMenuDetailsScreenState
               }
             },
             child: Image.asset(
-              option.isSelected == true || 
                       nestedOptionList.any((element) => element["option_id"] == option.optionId)
                   ? AssetsUtils.terracotaCheck
                   : AssetsUtils.greyCircle,
@@ -888,12 +904,13 @@ class _RestaurantMenuDetailsScreenState
     final selectedName = option.name ?? '';
 
     if (option.isNestedSelection == true &&
-    (option.customizations == null || option.customizations!.isEmpty)) {
+        (option.customizations == null || option.customizations!.isEmpty)) {
       try {
-
         setState(() {
           _isLoadingCustomization = true;
+          isNestedLoaded = true;
         });
+
         final signalRResult = await signalR.getNestedSelection(header, selectedName);
 
         final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
@@ -903,11 +920,11 @@ class _RestaurantMenuDetailsScreenState
               item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;
           final int maxSelectableItems = item['maxSelectableItems'] ??
               item['MaxSelectableItems'] ?? 1;
+          final selectionText = item['selectionRequirementText'] ??
+            item['SelectionRequirementText'] ?? '';
 
           int minChoiceOptions = 0;
           if (isRequired) {
-            final selectionText = item['selectionRequirementText'] ??
-                item['SelectionRequirementText'] ?? '';
             final match = RegExp(r'\d+').firstMatch(selectionText);
             if (match != null) {
               minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
@@ -919,33 +936,39 @@ class _RestaurantMenuDetailsScreenState
           final optionsList = item['items'] ?? item['Items'] ?? [];
 
           List<opt.Option> options = (optionsList as List).map<opt.Option>((optItem) {
-            try {
-              final name = optItem['name'] ?? optItem['Name'] ?? '';
-              final priceString = optItem['price']?.toString() ??
-                  optItem['Price']?.toString() ?? '';
-              final isNested = optItem['isNestedSelection'] ??
-                  optItem['IsNestedSelection'] ?? false;
-              final hasQtyCtrl = optItem['hasQuantityControl'] ??
-                  optItem['HasQuantityControl'] ?? false;
-              final isSelected = optItem['isSelected'] ??
-                  optItem['IsSelected'] ?? false;
+            final name = optItem['name'] ?? optItem['Name'] ?? '';
+            final priceString = optItem['price']?.toString() ??
+                optItem['Price']?.toString() ?? '';
+            final isNested = optItem['isNestedSelection'] ??
+                optItem['IsNestedSelection'] ?? false;
+            final hasQtyCtrl = optItem['hasQuantityControl'] ??
+                optItem['HasQuantityControl'] ?? false;
+            final isSelected = optItem['isSelected'] ??
+                optItem['IsSelected'] ?? false;
 
-              return opt.Option(
-                name: name,
-                formattedPrice: priceString,
-                price: 0,
-                minQty: 0,
-                maxQty: isManySelectionAllowed ? 99 : 1,
-                isRequired: isRequired,
-                defaultQty: 0,
-                optionId: name,
-                isNestedSelection: isNested,
-                hasQuantityControl: hasQtyCtrl,
-                isSelected: isSelected,
-              );
-            } catch (e) {
-              rethrow;
+            final optionObject = opt.Option(
+              name: name,
+              formattedPrice: priceString,
+              price: 0,
+              minQty: 0,
+              maxQty: isManySelectionAllowed ? 99 : 1,
+              isRequired: isRequired,
+              defaultQty: 0,
+              optionId: name,
+              isNestedSelection: isNested,
+              hasQuantityControl: hasQtyCtrl,
+              isSelected: isSelected,
+            );
+
+            if (isSelected == true || isSelected == "true") {
+              nestedOptionList.add({
+                "option_id": optionObject.optionId ?? '',
+                "quantity": 1,
+                "marked_price": optionObject.price,
+              });
             }
+
+            return optionObject;
           }).toList();
 
           setState(() {
@@ -955,11 +978,12 @@ class _RestaurantMenuDetailsScreenState
           return Customization(
             name: nestedHeader,
             minChoiceOptions: minChoiceOptions,
-            maxChoiceOptions:
-                isManySelectionAllowed ? options.length : maxSelectableItems,
+            maxChoiceOptions: maxSelectableItems ??
+                (isManySelectionAllowed ? options.length : 1),
             options: options,
             customizationId: nestedHeader,
             level: cs.level + 1,
+            text: selectionText
           );
         }).toList();
 
@@ -968,8 +992,39 @@ class _RestaurantMenuDetailsScreenState
       }
     } else {
       try {
+        final customizationText = cs.text ?? '';
+        final isUpToSelection = customizationText.contains('Choose up to');
+
+        if (isUpToSelection) {
+          final maxChoices = cs.maxChoiceOptions;
+          final currentOptions = cs.options!.map((e) => e.optionId).toSet();
+
+          final selectedFromThisCustomization = nestedOptionList.where((element) {
+            return currentOptions.contains(element['option_id']);
+          }).toList();
+
+          final alreadySelectedIds =
+              selectedFromThisCustomization.map((e) => e['option_id']).toList();
+
+          final isAlreadySelected = alreadySelectedIds.contains(option.optionId);
+
+          if (!isAlreadySelected && maxChoices != null &&
+              selectedFromThisCustomization.length >= maxChoices) {
+            final toDeselectId = selectedFromThisCustomization.first['option_id'];
+
+            print("DISAVLE OLD CUSTOMIZATION BEFORE ADD NEW ONE");
+            await signalR.selectCustomizationItem(header, toDeselectId);
+
+            nestedOptionList.removeWhere(
+              (element) => element["option_id"] == toDeselectId,
+            );
+          }
+        }
+
         await signalR.selectCustomizationItem(header, selectedName);
-      } catch (e) {}
+      } catch (e) {
+        // handle error if needed
+      }
     }
 
     setState(() {
@@ -995,66 +1050,54 @@ class _RestaurantMenuDetailsScreenState
     });
   }
 
+
   void _animateToTop() {
     // controller.animateTo(0,
     //     duration: const Duration(milliseconds: 1000), curve: Curves.easeInOut);
   }
 
   bool isFormValid(List<Customization> cList) {
-    print(" Checking form validity for ${cList.length} customizations");
-
     for (var i = 0; i < cList.length; i++) {
       final customization = cList[i];
-      print(" Customization: ${customization.name}");
 
       int count = nestedOptionList
-          .where((e) => customization.options?.any((k) => k.optionId == e["option_id"]) ?? false)
+          .where((e) =>
+              customization.options?.any((k) => k.optionId == e["option_id"]) ??
+              false)
           .length;
-      print(" Selected options count: $count (original min required: ${customization.minChoiceOptions ?? "null"})");
 
-      List<opt.Option> requiredOptions = customization.options
-              ?.where((element) => element.isRequired ?? false)
-              .toList() ?? [];
+      List<opt.Option> requiredOptions =
+          customization.options?.where((element) => element.isRequired ?? false).toList() ?? [];
 
-      if (requiredOptions.isNotEmpty) {
-        print("⚠️ Required options for ${customization.name}: ${requiredOptions.map((e) => e.name).join(", ")}");
-      }
-
-      int effectiveMinChoice = requiredOptions.isNotEmpty ? 1 : (customization.minChoiceOptions ?? 0);
-      print("Effective minChoiceOptions for ${customization.name}: $effectiveMinChoice");
+      int effectiveMinChoice =
+          requiredOptions.isNotEmpty ? 1 : (customization.minChoiceOptions ?? 0);
 
       bool hasAtLeastOneRequiredSelected = requiredOptions.isNotEmpty &&
           requiredOptions.any((element) =>
               nestedOptionList.any((e) => e["option_id"] == element.optionId));
 
       if (requiredOptions.isNotEmpty && !hasAtLeastOneRequiredSelected) {
-        print("None of the required options are selected in ${customization.name}");
         return false;
       }
 
       if (count < effectiveMinChoice) {
-        print(" Selected options count $count меньше минимально требуемого $effectiveMinChoice для ${customization.name}");
         return false;
       }
 
-      List<opt.Option> validOptionList = customization.options
-              ?.where((element) =>
-                  nestedOptionList.any((e) => e["option_id"] == element.optionId))
-              .toList() ?? [];
-
-      print(" Valid selected options in ${customization.name}: ${validOptionList.map((e) => e.name).join(", ")}");
+      List<opt.Option> validOptionList =
+          customization.options?.where((element) =>
+              nestedOptionList.any((e) => e["option_id"] == element.optionId)).toList() ?? [];
 
       for (opt.Option ele in validOptionList) {
         if (!isFormValid(ele.customizations ?? [])) {
-          print("Nested customization inside ${ele.name} is invalid");
           return false;
         }
       }
     }
 
-    print(" Form is valid");
     return true;
   }
+
 
   void removeIfNotValidate(Customization cs) {
     List<String> optionsIds =
@@ -1167,18 +1210,25 @@ class _RestaurantMenuDetailsScreenState
   
   Future<bool> addIntoCart() async {
     print(item);
-    setState(() {
-      isAdding = true;
-    });
+
 
     if (item > 0) {
       bool valid = isFormValid(customizationList);
       print('VALID $valid');
       if (valid) {
+        setState(() {
+          isAdding = true;
+        });
         price = setTotalPrice();
         print('price $price');
             final signalR = SignalRService();
             try {
+              if (isNestedLoaded) {
+                await signalR.SaveNestedSelectionOption();
+                setState(() {
+                  isNestedLoaded = false;
+                });
+              }
               final signalRResult = await signalR.addItemsToCart();
               print(' AddItemsToCart completed successfully: $signalRResult');
 

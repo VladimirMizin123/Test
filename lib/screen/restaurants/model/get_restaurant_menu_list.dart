@@ -272,6 +272,7 @@ class MenuItemList {
 
 class Customization {
   String? name;
+  String? text;
   int? minChoiceOptions;
   int? maxChoiceOptions;
   List<Option>? options;
@@ -280,6 +281,7 @@ class Customization {
 
   Customization({
     this.name,
+    this.text,
     this.minChoiceOptions,
     this.maxChoiceOptions,
     this.options,
@@ -291,6 +293,7 @@ class Customization {
         name: json["name"],
         minChoiceOptions: json["min_choice_options"],
         maxChoiceOptions: json["max_choice_options"],
+        text: json['text'],
         options: json["options"] == null
             ? []
             : List<Option>.from(
@@ -303,6 +306,7 @@ class Customization {
         "name": name,
         "min_choice_options": minChoiceOptions,
         "max_choice_options": maxChoiceOptions,
+        "text": text,
         "options": options == null
             ? []
             : List<dynamic>.from(options!.map((x) => x.toJson())),

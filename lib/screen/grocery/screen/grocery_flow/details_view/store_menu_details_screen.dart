@@ -85,6 +85,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   bool isAdding = false;
   bool loading = false;
   bool isGoingBack = false;
+  bool isNestedLoaded = false;
 
   getData() async {
     selectedOption.clear();
@@ -186,7 +187,10 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
             final String priceString = optItem['Price'] ?? '';
             final int price = 0;
 
-            return opt.Option(
+            final bool isSelectedRaw = optItem['IsSelected'] ?? false;
+            final bool isSelected = isSelectedRaw == true || isSelectedRaw == "true";
+
+            final optionObject = opt.Option(
               name: name,
               formattedPrice: priceString,
               price: price,
@@ -197,14 +201,25 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
               optionId: name,
               isNestedSelection: optItem['IsNestedSelection'],
               hasQuantityControl: optItem['HasQuantityControl'] ?? false,
-              isSelected: optItem['IsSelected'] ?? false,
+              isSelected: isSelected,
             );
+
+            if (isSelected) {
+              nestedOptionList.add({
+                "option_id": optionObject.optionId ?? '',
+                "quantity": 1,
+                "marked_price": optionObject.price,
+              });
+            }
+
+            return optionObject;
           }).toList();
 
           return Customization(
             name: header,
             minChoiceOptions: minChoiceOptions,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
+            maxChoiceOptions: maxSelectableItems ??
+                (isManySelectionAllowed ? options.length : 1),
             options: options,
             customizationId: header,
             level: 1,
@@ -742,7 +757,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
               }
             },
             child: Image.asset(
-              (option.isSelected == true || 
+              (
               nestedOptionList.any((element) => element["option_id"] == option.optionId))
                   ? AssetsUtils.terracotaCheck
                   : AssetsUtils.greyCircle,
@@ -789,16 +804,17 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
   Future<void> onTileTap(Customization cs, opt.Option option,
     {required Customization parent, bool setRouting = true}) async {
-
     final signalR = SignalRService();
     final header = cs.name ?? '';
     final selectedName = option.name ?? '';
 
     if (option.isNestedSelection == true &&
-    (option.customizations == null || option.customizations!.isEmpty)) {
+        (option.customizations == null || option.customizations!.isEmpty)) {
+
       try {
         setState(() {
           _isLoadingCustomization = true;
+          isNestedLoaded = true;
         });
 
         final signalRResult = await signalR.getNestedSelection(header, selectedName);
@@ -834,10 +850,11 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                   optItem['isNestedSelection'] ?? optItem['IsNestedSelection'] ?? false;
               final hasQtyCtrl =
                   optItem['hasQuantityControl'] ?? optItem['HasQuantityControl'] ?? false;
-              final isSelected =
+              final isSelectedRaw =
                   optItem['isSelected'] ?? optItem['IsSelected'] ?? false;
+              final isSelected = isSelectedRaw == true || isSelectedRaw == "true";
 
-              return opt.Option(
+              final optionObject = opt.Option(
                 name: name,
                 formattedPrice: priceString,
                 price: 0,
@@ -850,6 +867,16 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                 hasQuantityControl: hasQtyCtrl,
                 isSelected: isSelected,
               );
+
+              if (isSelected) {
+                nestedOptionList.add({
+                  "option_id": optionObject.optionId ?? '',
+                  "quantity": 1,
+                  "marked_price": optionObject.price,
+                });
+              }
+
+              return optionObject;
             } catch (e) {
               rethrow;
             }
@@ -858,7 +885,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
           return Customization(
             name: nestedHeader,
             minChoiceOptions: minChoiceOptions,
-            maxChoiceOptions: isManySelectionAllowed ? options.length : maxSelectableItems,
+            maxChoiceOptions: maxSelectableItems ??
+                (isManySelectionAllowed ? options.length : 1),
             options: options,
             customizationId: nestedHeader,
             level: cs.level + 1,
@@ -901,6 +929,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
       });
     });
   }
+
 
  bool isFormValid(List<Customization> cList) {
     for (var i = 0; i < cList.length; i++) {
@@ -1052,9 +1081,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
   }
 
   Future<bool> addIntoTheCart() async {
-    setState(() {
-      isAdding = true;
-    });
+    
     print(item);
     if (customizationList.isNotEmpty && item <= 0) {
       showToast(
@@ -1070,6 +1097,9 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
     if (customizationList.isNotEmpty) {
       bool valid = isFormValid(customizationList);
+      setState(() {
+        isAdding = true;
+      });
       if (!valid) {
         showToast(
           message: 'Please Select Required Item',
@@ -1085,6 +1115,12 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
     try {
       final signalR = SignalRService();
+      if (isNestedLoaded) {
+        await signalR.SaveNestedSelectionOption();
+        setState(() {
+          isNestedLoaded = false;
+        });
+      }
       final signalRResult = await signalR.addItemsToCart();
 
       price = setTotalPrice();

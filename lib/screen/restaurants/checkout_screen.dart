@@ -55,6 +55,10 @@ import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.d
 import 'package:gymeats_mobile/service/signalr_service.dart';
 import 'dart:convert';
 import 'package:gymeats_mobile/screen/restaurants/model/create_order_request_model.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({
@@ -91,10 +95,12 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
+  final ApiServices apiServices = ApiServices();
   GoogleMapController? _mapController;
   String orderId = '';
   bool _isGoingBack = false;
   bool isCheckoutLoading = false;
+  bool paymentSucceed = false;
 
   Future<void> getCheckout() async {
     setState(() {
@@ -253,6 +259,60 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     super.dispose();
   }
 
+  Future<bool> handleAutoPayment(Map<String, dynamic> data, StripeCard selectedCard) async {
+  try {
+    setState(() {
+      paymentSucceed = false;
+    });
+    if (selectedCard == null || paymentSucceed == true) {
+      return false;
+    }
+
+    Stripe.publishableKey = data['publishableKey'];
+    await Stripe.instance.applySettings();
+
+    await Stripe.instance.confirmPayment(
+      paymentIntentClientSecret: data['paymentIntentClientSecret'],
+      data: PaymentMethodParams.cardFromMethodId(
+        paymentMethodData: PaymentMethodDataCardFromMethod(
+          paymentMethodId: selectedCard.id!,
+        ),
+      ),
+    );
+
+    setState(() {
+      paymentSucceed = true;
+    });
+
+
+    final signalR = SignalRService();
+    await signalR.placeOrder();
+
+    final url = '${ApiUrls.baseUrl}api/MealmeOrder/UpdateOrderStatus';
+    final body = {
+      "orderId": data['orderId'],
+      "uberEatsOrderId": "string",
+      "orderStatus": 2,
+    };
+
+    print("UpdateOrderStatus: $url");
+    print("Req: ${jsonEncode(body)}");
+
+    final response = await apiServices.post(url, body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print("UpdateOrderStatus Success: ${response.body}");
+      return true;
+    } else {
+      print("UpdateOrderStatus Error: ${response.body}");
+      return false;
+    }
+
+  } catch (e) {
+    return false;
+  }
+}
+
   res_addd.Address? get findResAddress {
     if (widget.cartData is List<ShoppingListData>) {
       List<ShoppingListData> data = widget.cartData as List<ShoppingListData>;
@@ -287,11 +347,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
             if (state is CardFetchSuccessState) {
               cardList = state.cardList;
-              StripeCard? card = cardList
-                  .firstWhereOrNull((element) => element.isPrimary ?? false);
-              if (card != null || cardList.isNotEmpty) {
-                selectedCard = card ?? cardList.first;
+              print("CARD LIST $cardList");
+
+              StripeCard? card = cardList.firstWhereOrNull((element) => element.isPrimary ?? false);
+
+              if (cardList.isNotEmpty) {
+                print('CARD LIST IS NOT EMPTYT $card');
+                selectedCard = cardList.first;
+                print(cardList.first);
+              } else {
+                selectedCard = null;
               }
+              print('SELECTED CARD: $selectedCard');
               setState(() {});
             }
           },
@@ -306,29 +373,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   loadCreateOrder = false;
                 }
                 if (state is CreateProductSuccessState) {
-                  productData = state.productData;
-                  print('CREATE PRODUCT SUCCESS');
-                  print(selectedCard?.id);
+                  // productData = state.productData;
+                  // print(selectedCard?.id);
 
-                  restaurantBloc.add(
-                    CreateCheckoutEvent(
-                      createCheckOutRequestModel:
-                          checkout.CreateCheckOutRequestModel(
-                        userId: userId,
-                        isPickUp: selectedIndex == 1,
-                        phoneNumber: 0,
-                        mealmeOrderId: orderId,
-                        priceId: 'string',
-                        totalPrice: 100,
-                        cardId: selectedCard?.id,
-                        productType:
-                            widget.isFromGrocery ? "Grocery" : "Restaurant",
-                      ),
-                    ),
-                  );
+                  // restaurantBloc.add(
+                  //   CreateCheckoutEvent(
+                  //     createCheckOutRequestModel:
+                  //         checkout.CreateCheckOutRequestModel(
+                  //       userId: userId,
+                  //       isPickUp: selectedIndex == 1,
+                  //       phoneNumber: 0,
+                  //       mealmeOrderId: orderId,
+                  //       priceId: 'string',
+                  //       totalPrice: 100,
+                  //       cardId: selectedCard?.id,
+                  //       productType:
+                  //           widget.isFromGrocery ? "Grocery" : "Restaurant",
+                  //     ),
+                  //   ),
+                  // );
                 }
 
-                /// Create Checkout State ---------------------------------------------------
 
                 if (state is CreateCheckoutLoadingState) {
                   loadCreateOrder = true;
@@ -337,152 +402,63 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   loadCreateOrder = false;
                 }
                 if (state is CreateOrderSuccessState) {
-                  print('ORDER SUCCESS STATE');
                   final orderId = state.orderData?.orderId;
 
-                  if (orderId != null) {
-                    setState(() {
-                      this.orderId = orderId;
-                    });
-
-                    final productType = widget.isFromGrocery ? 'Grocery' : 'Restaurant';
-
-                    final requestModel = product.CreateProductRequestModel(
-                      orderId: orderId,
-                      productType: productType,
-                      totalAmount: 1,
-                    );
-
-                    restaurantBloc.add(
-                      CreateProductEvent(
-                        createProductRequestModel: requestModel,
+                  restaurantBloc.add(
+                    CreateCheckoutEvent(
+                      createCheckOutRequestModel:
+                          checkout.CreateCheckOutRequestModel(
+                        userId: userId,
+                        isPickUp: false,
+                        phoneNumber: 0,
+                        mealmeOrderId: orderId,
+                        priceId: 'string',
+                        totalPrice: double.parse(
+                          (subTotal + deliveryFee + serviceFee + serviceFeeTax).toStringAsFixed(2),
+                        ),
+                        cardId: selectedCard?.id,
+                        productType:
+                            widget.isFromGrocery ? "Grocery" : "Restaurant",
                       ),
-                    );
-                  }
+                    ),
+                  );
+
+                  // if (orderId != null) {
+                  //   setState(() {
+                  //     this.orderId = orderId;
+                  //   });
+
+                  //   final productType = widget.isFromGrocery ? 'Grocery' : 'Restaurant';
+
+                  //   final requestModel = product.CreateProductRequestModel(
+                  //     orderId: orderId,
+                  //     productType: productType,
+                  //     totalAmount: 1,
+                  //   );
+
+                  //   restaurantBloc.add(
+                  //     CreateProductEvent(
+                  //       createProductRequestModel: requestModel,
+                  //     ),
+                  //   );
+                  // }
                 }
                 if (state is CreateCheckoutSuccessState) {
                   loadCreateOrder = false;
                   print('Create checkout success!');
-                  if (state.data?['confirmUrl'] != null) {
-                    print('Confirm URL');
-                    // webViewOpen = true;
-                    // controller
-                    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                    //   ..setBackgroundColor(const Color(0x00000000))
-                    //   ..setNavigationDelegate(
-                    //     NavigationDelegate(
-                    //       onProgress: (int progress) {
-                    //         const Center(child: CircularProgressIndicator());
-                    //       },
-                    //       onPageStarted: (String url) {},
-                    //       onPageFinished: (String url) {},
-                    //       onWebResourceError: (WebResourceError error) {},
-                    //       onNavigationRequest:
-                    //           (NavigationRequest request) async {
-                    //         log("Request Url After Payment Completed ${request.url}");
-                    //         log(widget.orderData?.orderId.toString() ?? "");
+                  final Map<String, dynamic> data = Map<String, dynamic>.from(state.data);
 
-                    //         if (request.url.startsWith(
-                    //             'https://gymeats.azurewebsites.net/')) {
-                    //           // Check
-                    //           webViewOpen = false;
-                    //           paymentStatusLoader = true;
-                    //           setState(() {});
-                    //           int currentAttempt = 1;
-                    //           await Future.delayed(const Duration(seconds: 5));
-                    //           // ! Start Lopping
-                    //           for (int i = currentAttempt;
-                    //               i <= maxAttempt;
-                    //               currentAttempt++) {
-                    //             log("Status Attempt : $i");
-                    //             Either<ErrorModel, PaymentStatusModel> res =
-                    //                 await RestaurantRepository()
-                    //                     .checkPaymentStatus(
-                    //               orderId: widget.orderData?.orderId,
-                    //               userId: userId,
-                    //             );
-                    //             if (res.isRight) {
-                    //               paymentStatusLoader = false;
-                    //               log("Status : ----- ${res.right.data?.status.toString() ?? ""}");
-                    //               if (res.right.data?.status == "Success") {
-                    //                 if (widget.isFromGrocery) {
-                    //                   if (!widget.hasMultipleStore) {
-                    //                     PreferenceUtils.removePref(paymentCard);
-                    //                     Get.offAll(
-                    //                       () => PaymentSuccessScreen(
-                    //                         createMultipleOrder:
-                    //                             widget.createMultipleOrder,
-                    //                       ),
-                    //                     );
-                    //                   } else {
-                    //                     Get.back(result: true);
-                    //                   }
-
-                    //                   if (widget.groceryList?.isNotEmpty ??
-                    //                       false) {
-                    //                     widget.groceryList?.forEach((element) {
-                    //                       AddNewGroceryItemBloc().add(
-                    //                         RemoveGroceryItemEvent(
-                    //                           userGroceryListId: element.id,
-                    //                           showToast: false,
-                    //                         ),
-                    //                       );
-                    //                     });
-                    //                   }
-                    //                 } else {
-                    //                   cartBloc.add(RemoveCart());
-                    //                   PreferenceUtils.removePref(paymentCard);
-                    //                   Get.offAll(
-                    //                       () => const PaymentSuccessScreen());
-                    //                 }
-                    //               } else {
-                    //                 showToast(
-                    //                   message:
-                    //                       StringUtils.paymentWasUnsuccessfull,
-                    //                   isSuccess: false,
-                    //                   timeInSecForIosWeb: 4,
-                    //                 );
-
-                    //                 setState(() {});
-                    //               }
-                    //               break;
-                    //             } else {
-                    //               if (i >= maxAttempt) {
-                    //                 paymentStatusLoader = false;
-                    //                 showToast(
-                    //                   message: "Order not found please wait",
-                    //                   isSuccess: false,
-                    //                   timeInSecForIosWeb: 4,
-                    //                 );
-                    //                 setState(() {});
-                    //               } else {
-                    //                 await Future.delayed(
-                    //                     const Duration(seconds: 1));
-                    //                 continue;
-                    //               }
-                    //             }
-                    //           }
-                    //           // ! Close looping
-
-                    //           return NavigationDecision.prevent;
-                    //         } else {
-                    //           return NavigationDecision.navigate;
-                    //         }
-                    //       },
-                    //     ),
-                    //   )
-                    //   ..loadRequest(
-                    //     Uri.parse(state.data?['confirmUrl'] ?? ""),
-                    //   );
-                  } else {
-                    showToast(
-                      message: "Payment url not received",
-                      isSuccess: false,
-                      timeInSecForIosWeb: 4,
-                    );
-                  }
+                  handleAutoPayment(data, selectedCard!).then((result) {
+                    if (result == true) {
+                      Get.offAll(() => const PaymentSuccessScreen()); 
+                    } else {
+                      showToast(
+                        message: "Something went wrong with payment",
+                        isSuccess: false,
+                      );
+                    }
+                  });
                 }
-
                 /// Update Delivery Status ---------------------------------------------------
 
                 if (state is GetDeliveryStatusSuccessState) {
@@ -1193,7 +1169,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           //   } else {
                                           /// Create Product / Create Checkout Api
 
-                                          if (selectedCard != null) {
+                                          if (selectedCard == null) {
                                             showToast(
                                               message:
                                                   'Please Select Card For Payment',
@@ -1226,36 +1202,47 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                               final userMobile = PreferenceUtils.getString(prefUserMobile);
                                               final userPhone = int.tryParse(userMobile.isNotEmpty ? userMobile : '1234567890') ?? 1234567890;
 
-                                              final orderModel = CreateOrderModel(
-                                                userId: userId,
-                                                pickup: false,
-                                                mealmeItems: data,
-                                                userAddress: UserAddress(latitude: 0.0, longitude: 0.0),
-                                                userPhone: userPhone,
-                                                driverTipCents: 0,
-                                                pickupTipCents: 0,
-                                                userDropoffNotes: notes.text,
-                                                productType: productType,
-                                                totalAmount: widget.orderData?.totalPrice?.toDouble() ?? 0,
-                                                subtotal: widget.orderData?.totalPrice?.toDouble() ?? 0,
-                                                deliveryFee: 0,
-                                                taxesOtherFee: 0,
-                                                store: OrderStoreModel(
-                                                  storeId: widget.orderData?.finalQuote?.storeId ?? 'store123',
-                                                  storeName: widget.orderData?.finalQuote?.store ?? 'Test Store',
-                                                  storeLogo: 'https://dummyimage.com/100x100/000/fff&text=Logo',
-                                                ),
-                                              );
+                                              SharedPreferences.getInstance().then((prefs) {
+                                                 final jsonString = prefs.getString("currentRestaurant");
+                                                final Map<String, dynamic> restaurantData =
+                                                    jsonString != null ? jsonDecode(jsonString) : {};
 
-                                              restaurantBloc.add(
-                                                CreateOrderEvent(
-                                                  context: context,
-                                                  lat: 0.0,
-                                                  lng: 0.0,
-                                                  createOrderModel: orderModel,
-                                                  isMock: false,
-                                                ),
-                                              );
+                                                final String storeId = restaurantData["id"] ?? "defaultStoreId";
+                                                final String storeName = restaurantData["name"] ?? "Default Store";
+                                                final String storeLogo = restaurantData["logo"] ?? "";
+                                              
+                                                final orderModel = CreateOrderModel(
+                                                  userId: userId,
+                                                  pickup: false,
+                                                  mealmeItems: data,
+                                                  userAddress: UserAddress(latitude: 0.0, longitude: 0.0),
+                                                  userPhone: userPhone,
+                                                  driverTipCents: 0,
+                                                  pickupTipCents: 0,
+                                                  userDropoffNotes: notes.text,
+                                                  productType: productType,
+                                                  totalAmount: widget.orderData?.totalPrice?.toDouble() ?? 0,
+                                                  subtotal: widget.orderData?.totalPrice?.toDouble() ?? 0,
+                                                  deliveryFee: 0,
+                                                  taxesOtherFee: 0,
+                                                  store: OrderStoreModel(
+                                                    storeId: widget.orderData?.finalQuote?.storeId ?? 'store123',
+                                                    storeName: widget.orderData?.finalQuote?.store ?? 'Test Store',
+                                                    storeLogo: 'https://dummyimage.com/100x100/000/fff&text=Logo',
+                                                  ),
+                                                );
+
+                                                restaurantBloc.add(
+                                                  CreateOrderEvent(
+                                                    context: context,
+                                                    lat: 0.0,
+                                                    lng: 0.0,
+                                                    createOrderModel: orderModel,
+                                                    isMock: false,
+                                                  ),
+                                                );
+                                              });
+                                             
 
                                               // restaurantBloc.add(
                                               //   CreateProductEvent(

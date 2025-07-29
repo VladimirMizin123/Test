@@ -37,11 +37,13 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
             dashboardModelPref, jsonEncode(response.right));
         await PreferenceUtils.setString(
             mealDataByDatePref, jsonEncode(data.right.data ?? []));
+        await Future.delayed(Duration(seconds: 1));
         emit(LoadDashboardData(model: response.right, data: data.right.data));
       } else if (response.isRight && data.isLeft) {
         await PreferenceUtils.setString(
             dashboardModelPref, jsonEncode(response.right));
         await PreferenceUtils.setString(mealDataByDatePref, jsonEncode([]));
+        await Future.delayed(Duration(seconds: 1));
         emit(LoadDashboardData(model: response.right, data: []));
       }
     } catch (e) {
@@ -56,9 +58,9 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     try {
       emit(LoadingData());
       await _planRepository.fetchMealPlan().fold((left) {
-        emit(ErrorStateData(
-          errMessage: left.errorMessage!,
-        ));
+        // emit(ErrorStateData(
+        //   errMessage: left.errorMessage!,
+        // ));
       }, (right) async {
         right.data!.map((e) {
           if (dateTimeYYYYMMDD(dateTimeVal: e.date.toString()) ==
@@ -75,7 +77,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
       });
     } catch (e) {
       print("Error:- $e");
-      emit(ErrorStateData(errMessage: e.toString()));
+      // emit(ErrorStateData(errMessage: e.toString()));
     }
   }
 
@@ -97,7 +99,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
               recipeId: event.recipeId,
               calorie: event.calorie)
           .fold((left) {
-        showToast(isSuccess: false, message: left.errorMessage!);
+        // showToast(isSuccess: false, message: left.errorMessage!);
       }, (right) async {
         showToast(isSuccess: true, message: right.message!);
         dataList.map((e) {
@@ -109,7 +111,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
         emit(LoadMealData(trackerDataList: dataList));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
     }
   }
 
@@ -125,7 +127,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
             invoiceData: right.data?.orderedItems ?? []));
       });
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
       emit(GetOrderInvoiceErrorState());
     }
   }
@@ -135,7 +137,7 @@ class GetDashboardBloc extends Bloc<GetDashboardEvent, GetDashboardState> {
     try {
       await _dashboardRepository.addIngredientToUserGroceryList();
     } catch (e) {
-      showToast(isSuccess: false, message: e.toString());
+      // showToast(isSuccess: false, message: e.toString());
     }
   }
 }

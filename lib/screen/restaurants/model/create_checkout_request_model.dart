@@ -6,7 +6,7 @@ class CreateCheckOutRequestModel {
   String? priceId;
   List<MealmeItem>? mealmeItems;
   int? phoneNumber;
-  int? totalPrice;
+  double? totalPrice;
   bool? isPickUp;
   String? cardId;
   String? productType;

@@ -780,6 +780,36 @@ class SignalRService {
     }
   }
 
+  Future<void> placeOrder() async {
+    if (_currentWindowReference == null) {
+      print('=============================');
+      print('Current Window Reference is null — initializing...');
+      final prefs = await SharedPreferences.getInstance();
+      final address = prefs.getString('currentUserAddress') ?? '';
+      final userId = _userId;
+      if (address.isEmpty || userId == null) {
+        print('Address or User ID is missing. Cannot place order.');
+        return;
+      }
+
+      await initializeWindowReference(address: address, userId: userId);
+    }
+
+    await connect();
+
+    print("[SignalR] placeOrder started");
+
+    try {
+      print("[SignalR] Sending invoke: PlaceOrder");
+      final result = await _connection!.invoke("PlaceOrder", args: [_currentWindowReference!, _userId!]);
+
+      print("[SignalR] RESULT FOR PLACE ORDER:");
+      print(result);
+    } catch (e, stack) {
+      print("Error during PlaceOrder: $e\n$stack");
+    }
+  }
+
   Future<List<String>> getRestaurantSubcategories(String categoryName) async {
     await connect();
 
