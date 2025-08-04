@@ -271,12 +271,8 @@ class _AddressConfirmationState extends State<AddressConfirmation> {
                         addAddressModel: addAddressModel,
                       );
 
-                      if (widget.arguments?["alreadyPurchase"] ?? false) {
-                        Get.toNamed('/BuildMyProfileScreen',
+                      Get.toNamed('/BuildMyProfileScreen',
                             arguments: userData);
-                      } else {
-                        Get.toNamed('/PremiumScreen', arguments: userData);
-                      }
                     } else {
                       bloc.add(
                         SaveClickEvent(

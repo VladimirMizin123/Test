@@ -21,6 +21,7 @@ import 'package:gymeats_mobile/widget/app_widget.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
@@ -32,11 +33,13 @@ class PremiumScreen extends StatefulWidget {
 class _PremiumScreenState extends State<PremiumScreen> {
   List<ProductDetails> productList = [];
   int selectedIndex = 0;
+  late final String? accessToken;
 
   @override
   void initState() {
     _initialize();
     super.initState();
+    accessToken = Get.parameters['access_token'];
   }
 
   Future<void> _initialize() async {
@@ -250,21 +253,19 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     bgColor: AppColors.appColor,
                     textColor: const Color(0xFFC1EACE),
                     onPressed: () async {
-                      if (showLoader.value) {
+                      if (showLoader.value) return;
+
+                      if (accessToken == null || accessToken!.isEmpty) {
+                        showToast(message: "Access token is missing", isSuccess: false);
                         return;
                       }
-                      if (productList.isEmpty) {
-                        showToast(
-                          message: "Subscription plan not found",
-                          isSuccess: false,
-                        );
-                        return;
-                      }
-                      try {
-                        ProductDetails details = productList[selectedIndex];
-                        await IapService.i.buyProduct(details);
-                      } catch (e) {
-                        log(e.toString());
+
+                      final url = 'https://gymeats.azurewebsites.net/manage-subscription?access_token=$accessToken';
+
+                      if (await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                      } else {
+                        showToast(message: "Cannot open browser", isSuccess: false);
                       }
                     },
                   ).paddingOnly(

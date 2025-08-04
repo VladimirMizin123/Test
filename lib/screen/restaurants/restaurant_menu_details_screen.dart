@@ -315,8 +315,7 @@ class _RestaurantMenuDetailsScreenState
                                         onTap: () async {
                                           if (_isGoingBack) return;
 
-                                          
-
+                                        
                                           final prefs = await SharedPreferences.getInstance();
                                           final itemAdded = prefs.getBool('cart-opened') ?? false;
                                           final signalR = SignalRService();
@@ -325,6 +324,7 @@ class _RestaurantMenuDetailsScreenState
                                             Get.back();
                                           } else {
                                             setState(() => _isGoingBack = true);
+                                            await prefs.setBool("isGoingBack", true);
                                             signalR.goBack();
                                             if (mounted) Get.back();
                                           }
@@ -621,6 +621,7 @@ class _RestaurantMenuDetailsScreenState
 
   
   Widget nestedItemView() {
+    print("---------------------------------------------- NESTED ITEM VIEW");
     print('nestedItemView');
     final signalR = SignalRService();
     List<dynamic>? signalRResult;
@@ -809,93 +810,184 @@ class _RestaurantMenuDetailsScreenState
     );
   }
 
-  Widget normalTile(Customization cs, opt.Option option,
-      {bool showRadioButton = true,
-      required Customization parent,
-      bool setRouting = true}) {
-    bool isOptionRequired = option.isRequired ?? false;
-    return GestureDetector(
-      onTap: () {
-        bool isSelected = nestedOptionList
-            .any((element) => element["option_id"] == option.optionId);
-        if (cs.name == parent.name &&
-            setRouting &&
-            (option.customizations?.isNotEmpty ?? false) &&
-            isSelected) {
-          routingList.add(option);
-          _animateToTop();
+  Widget normalTile(
+  Customization cs,
+  opt.Option option, {
+  bool showRadioButton = true,
+  required Customization parent,
+  bool setRouting = true,
+}) {
+  bool isOptionRequired = option.isRequired ?? false;
+  bool hasQty = option.hasQuantityControl ?? false;
+
+  return GestureDetector(
+    onTap: () {
+      bool isSelected = nestedOptionList
+          .any((element) => element["option_id"] == option.optionId);
+
+      if (cs.name == parent.name &&
+          setRouting &&
+          (option.customizations?.isNotEmpty ?? false) &&
+          isSelected) {
+        routingList.add(option);
+        _animateToTop();
+      } else {
+        if (!alreadyInCart) {
+          onTileTap(cs, option, parent: parent, setRouting: setRouting);
         } else {
-          if (!alreadyInCart) {
-            onTileTap(cs, option, parent: parent, setRouting: setRouting);
-          } else {
-            showToast(
-              isSuccess: false,
-              color: AppColors.black,
-              message: StringUtils.productAlreadyInCart,
-            );
-          }
+          showToast(
+            isSuccess: false,
+            color: AppColors.black,
+            message: StringUtils.productAlreadyInCart,
+          );
         }
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
-              print('onTap2');
-              if (!alreadyInCart) {
-                onTileTap(cs, option, parent: parent, setRouting: setRouting);
-              } else {
-                showToast(
-                  isSuccess: false,
-                  color: AppColors.black,
-                  message: StringUtils.productAlreadyInCart,
-                );
-              }
-            },
-            child: Image.asset(
-                      nestedOptionList.any((element) => element["option_id"] == option.optionId)
-                  ? AssetsUtils.terracotaCheck
-                  : AssetsUtils.greyCircle,
-              height: 18.h,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                text: option.name ?? '',
-                style: FontUtils.h15(
-                  fontColor: Colors.black,
-                  fontWeight: FWT.lightMedium,
-                ),
-                children: isOptionRequired
-                    ? <InlineSpan>[
-                        const WidgetSpan(
-                          alignment: PlaceholderAlignment.baseline,
-                          baseline: TextBaseline.alphabetic,
-                          child: SizedBox(width: 10),
+      }
+    },
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        hasQty
+            ? Row(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final signalR = new SignalRService();
+
+                      var payload = {
+                        "Header": cs.name,
+                        "Items": [option.name]
+                      };
+                      final jsonPayload = jsonEncode(payload);
+                      if (option.name != null) {
+                        await signalR.triggerOptionButtonClick(jsonPayload, option.name!, 'decrement');
+                      }
+                      setState(() {
+                        if ((option.quantity ?? 0) > 0) {
+                          option.quantity = (option.quantity ?? 0) - 1;
+                        }
+                      });
+                    },
+                    child: Container(
+                      height: 30.h,
+                      width: 30.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.terracotta),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.remove, size: 20, color: AppColors.terracotta),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Container(
+                    height: 30.h,
+                    width: 30.h,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.disable),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${option.quantity ?? 0}',
+                        style: FontUtils.h15(
+                          fontWeight: FWT.semiBold,
+                          fontColor: AppColors.darkGray,
                         ),
-                        TextSpan(
-                          text: "Required",
-                          style: FontUtils.h12(
-                            fontColor: AppColors.terracotta,
-                            fontWeight: FWT.medium,
-                          ),
-                        )
-                      ]
-                    : [],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  GestureDetector(
+                    onTap: () async {
+                      final signalR = new SignalRService();
+
+                      var payload = {
+                        "Header": cs.name,
+                        "Items": [option.name]
+                      };
+                      final jsonPayload = jsonEncode(payload);
+                      if (option.name != null) {
+                        await signalR.triggerOptionButtonClick(jsonPayload, option.name!, 'increment');
+                      }
+                      setState(() {
+                        option.quantity = (option.quantity ?? 0) + 1;
+                      });
+                      print((option.quantity ?? 0) + 1);
+                      print('Increment: ${option.quantity}');
+                    },
+                    child: Container(
+                      height: 30.h,
+                      width: 30.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: AppColors.coral,
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, size: 20, color: AppColors.terracotta),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : GestureDetector(
+                onTap: () {
+                  print('onTap2');
+                  if (!alreadyInCart) {
+                    onTileTap(cs, option, parent: parent, setRouting: setRouting);
+                  } else {
+                    showToast(
+                      isSuccess: false,
+                      color: AppColors.black,
+                      message: StringUtils.productAlreadyInCart,
+                    );
+                  }
+                },
+                child: Image.asset(
+                  nestedOptionList.any(
+                          (element) => element["option_id"] == option.optionId)
+                      ? AssetsUtils.terracotaCheck
+                      : AssetsUtils.greyCircle,
+                  height: 18.h,
+                ),
               ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              text: option.name ?? '',
+              style: FontUtils.h15(
+                fontColor: Colors.black,
+                fontWeight: FWT.lightMedium,
+              ),
+              children: isOptionRequired
+                  ? <InlineSpan>[
+                      const WidgetSpan(
+                        alignment: PlaceholderAlignment.baseline,
+                        baseline: TextBaseline.alphabetic,
+                        child: SizedBox(width: 10),
+                      ),
+                      TextSpan(
+                        text: "Required",
+                        style: FontUtils.h12(
+                          fontColor: AppColors.terracotta,
+                          fontWeight: FWT.medium,
+                        ),
+                      )
+                    ]
+                  : [],
             ),
           ),
-          10.width,
-          Text(
-            option.formattedPrice ?? '',
-            style: const TextStyle(color: Colors.black),
-          )
-        ],
-      ).paddingOnly(left: 15, right: 15),
-    );
-  }
+        ),
+        10.width,
+        Text(
+          option.formattedPrice ?? '',
+          style: const TextStyle(color: Colors.black),
+        )
+      ],
+    ).paddingOnly(left: 15, right: 15),
+  );
+}
 
   Future<void> onTileTap(Customization cs, opt.Option option,
     {required Customization parent, bool setRouting = true}) async {
@@ -915,6 +1007,10 @@ class _RestaurantMenuDetailsScreenState
 
         final parsedNestedCustomizations = signalRResult.map<Customization>((item) {
           final String? nestedHeader = item['header'] ?? item['Header'];
+          if (item['header'] == 'Chai Teas') {
+            print('========= Full item ===========');
+            print(item);
+          }
           final bool isRequired = item['isRequired'] ?? item['IsRequired'] ?? false;
           final bool isManySelectionAllowed =
               item['isManySelectionAllowed'] ?? item['IsManySelectionAllowed'] ?? false;

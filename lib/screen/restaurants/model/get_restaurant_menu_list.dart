@@ -328,6 +328,7 @@ class Option {
   bool isNestedSelection;
   bool hasQuantityControl;
   bool isSelected;
+  num? quantity;
 
   Option({
     this.name,
@@ -342,6 +343,7 @@ class Option {
     this.isNestedSelection = false,
     this.hasQuantityControl = false,
     this.isSelected = false,
+    this.quantity = 0,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(

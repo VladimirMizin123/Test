@@ -511,6 +511,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                     try {
                                       PreferenceUtils.removePref(paymentCard);
+                                      final prefs = await SharedPreferences.getInstance();
+                                      await prefs.setBool("isGoingBack", true);
                                       signalR.goBack();
 
                                       if (mounted) Get.back(result: true);

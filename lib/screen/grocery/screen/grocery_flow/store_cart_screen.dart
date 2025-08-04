@@ -32,6 +32,8 @@ import 'package:gymeats_mobile/screen/grocery/modal/create_order_request_model.d
 import 'package:gymeats_mobile/screen/grocery/modal/grocery_multi_search_modal.dart'
     as groc_add;
 import 'package:gymeats_mobile/service/signalr_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class StoreCartScreen extends StatefulWidget {
   final List<MenuItemList>? menuItemList;
@@ -284,6 +286,8 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
 
                           final signalR = SignalRService();
                           try {
+                            final prefs = await SharedPreferences.getInstance();
+                                      await prefs.setBool("isGoingBack", true);
                             signalR.goBack();
                             Get.back(result: "category");
                           } catch (e) {
@@ -456,7 +460,7 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                                 grocAdd: widget.grocAdd,
                                                 pickUp: widget.askOrder == AskReceiveOrder.pickMySelf,
                                                 matchMealStatus: null,
-                                                onAddToCart: (p0, qty) {
+                                                onAddToCart: (p0, qty) async {
                                                   item.cartQuantity = qty;
                                                   item.selectedOptions = p0
                                                       .map(
@@ -470,6 +474,8 @@ class _StoreCartScreenState extends State<StoreCartScreen> {
                                                   setState(() {});
                                                   widget.cartBloc.add(ModifyCart(menuItemList: filterItem));
                                                   final signalR = SignalRService();
+                                                  final prefs = await SharedPreferences.getInstance();
+                                                  await prefs.setBool("isGoingBack", true);
                                                   signalR.goBack();
                                                   Get.back();
                                                 },

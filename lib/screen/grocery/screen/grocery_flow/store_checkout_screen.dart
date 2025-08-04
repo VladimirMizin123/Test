@@ -69,6 +69,7 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
   List<MenuItemList> cartMenuList = [];
   bool orderLoader = false;
   bool isLoading = false;
+  bool isChangingQuantity = false;
   GroceryBloc groceryBloc = GroceryBloc();
   late StoreCartBloc bloc;
 
@@ -376,6 +377,7 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                                 cartItem: item,
                                                 storeName: widget.storeName,
                                                 add: true,
+                                                isLoading: isChangingQuantity,
                                                 onCartTap: () {},
                                                 onAdd: () {
                                                   widget.storeCartBloc.add(
@@ -392,6 +394,11 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                                     type: ModifyType.increment,
                                                   ),
                                                 ),
+                                                onChangeQuantity: (bool isLoading) {
+                                                  setState(() {
+                                                    isChangingQuantity = isLoading;
+                                                  });
+                                                },
                                                 
                                               );
                                             },
@@ -478,7 +485,16 @@ class _StoreCheckOutScreenState extends State<StoreCheckOutScreen> {
                                         fontWeight: FWT.semiBold,
                                       ),
                                     ),
-                                    Text(
+                                      isChangingQuantity
+                                  ? SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.darkGray,
+                                      ),
+                                    )
+                                  : Text(
                                       '\$ ${price / 100}',
                                       style: FontUtils.h22(
                                         fontColor: AppColors.darkGray,

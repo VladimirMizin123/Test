@@ -98,7 +98,7 @@ class RestaurantRepository {
 
           if (address.isNotEmpty) {
             await prefs.setString('currentUserAddress', address);
-            await prefs.setBool('AddressUpdated', false);
+            // await prefs.setBool('AddressUpdated', false);
             return address;
           }
         }

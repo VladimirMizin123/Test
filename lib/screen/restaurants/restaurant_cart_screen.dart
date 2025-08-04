@@ -48,6 +48,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
   dynamic price = 0;
   bool loadCreateOrder = false;
   bool _isGoingBack = false;
+  bool isLoading = true;
 
   order.CreateOrderData? orderData;
   final formKey = GlobalKey<FormState>();
@@ -91,6 +92,10 @@ class _RestaurantCartState extends State<RestaurantCart> {
 
       print('RESULT FROM SIGNAL R');
       mergeCartDataFromServer(serverResult);
+
+      setState(() {
+        isLoading = false;
+      });
 
     } catch (e) {
       print('Error syncing cart: $e');
@@ -223,7 +228,7 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                     final prefs = await SharedPreferences.getInstance();
 
                                     try {
-                                      await signalR.CloseViewCart();
+                                      signalR.CloseViewCart();
                                       await prefs.setBool('cart-opened', false);
 
                                       if (mounted) Get.back(result: true);
@@ -319,16 +324,19 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                                       .regular),
                                                             ),
                                                           ),
-                                                          Text(
-                                                            '\$${(cartData[index].price ?? 0) / 100}',
-                                                            style:
-                                                                FontUtils.h18(
-                                                              fontColor:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FWT.medium,
-                                                            ),
-                                                          )
+                                                          isLoading
+                                                            ? const SizedBox(
+                                                                width: 16,
+                                                                height: 16,
+                                                                child: CircularProgressIndicator(strokeWidth: 2),
+                                                              )
+                                                            : Text(
+                                                                '\$${(cartData[index].price ?? 0) / 100}',
+                                                                style: FontUtils.h18(
+                                                                  fontColor: Colors.black,
+                                                                  fontWeight: FWT.medium,
+                                                                ),
+                                                              ),
                                                         ],
                                                       ),
                                                       Row(
@@ -338,6 +346,9 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                         children: [
                                                           GestureDetector(
                                                            onTap: ()  async{
+                                                              setState(() {
+                                                                isLoading = true;
+                                                              });
                                                               print('11');
                                                               final signalR = SignalRService();
                                                               await signalR.adjustCartItemQuantity(cartData[index].mealmeStoreId!, 'decrement');
@@ -383,6 +394,9 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                           ),
                                                           GestureDetector(
                                                             onTap: ()  async{
+                                                              setState(() {
+                                                                isLoading = true;
+                                                              });
                                                               final signalR = SignalRService();
                                                               await signalR.adjustCartItemQuantity(cartData[index].mealmeStoreId!, 'increment');
                                                               await  syncCartWithServer(isOpened: true);
@@ -521,20 +535,24 @@ class _RestaurantCartState extends State<RestaurantCart> {
                                                 Text(
                                                   'Total',
                                                   style: FontUtils.h18(
-                                                    fontColor:
-                                                        AppColors.darkGray,
+                                                    fontColor: AppColors.darkGray,
                                                     fontWeight: FWT.medium,
                                                   ),
                                                 ),
                                                 const Spacer(),
-                                                Text(
-                                                  '\$ ${price / 100}',
-                                                  style: FontUtils.h24(
-                                                    fontColor:
-                                                        const Color(0xff010101),
-                                                    fontWeight: FWT.medium,
-                                                  ),
-                                                )
+                                                isLoading
+                                                    ? const SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                                      )
+                                                    : Text(
+                                                        '\$ ${price / 100}',
+                                                        style: FontUtils.h24(
+                                                          fontColor: const Color(0xff010101),
+                                                          fontWeight: FWT.medium,
+                                                        ),
+                                                      ),
                                               ],
                                             ),
                                           ),

@@ -32,9 +32,11 @@ class ProductCardWidget extends StatelessWidget {
     this.showQuantity = true,
     this.isIncrementing = false,
     this.isDecrementing = false,
+    this.isLoading = false,
     required this.onCartTap,
     required this.onRemove,
     required this.onAdd,
+    this.onChangeQuantity,
   });
   final String? categoryName;
   final MenuItemList? menuItem;
@@ -49,10 +51,13 @@ class ProductCardWidget extends StatelessWidget {
   final bool checkoutScreen;
   final bool isGroceryItem;
   final bool showQuantity;
+  final bool isLoading;
   final Function()? onTap;
   final Function() onCartTap;
   final Function() onRemove;
   final Function() onAdd;
+  final void Function(bool)? onChangeQuantity;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -282,75 +287,89 @@ class ProductCardWidget extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  final signalR = SignalRService();
-                                  if (menuItem?.itemUrl != null) {
-                                    await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'decrement');
-                                  }
-                                  onAdd.call();
-                                },
-                                child: Container(
-                                  height: context.height * 0.060,
-                                  width: context.height * 0.060,
-                                  decoration: BoxDecoration(
+                              if (isLoading)
+                                const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              else ...[
+                                GestureDetector(
+                                  onTap: () async {
+                                    onChangeQuantity?.call(true);
+                                    final signalR = SignalRService();
+                                    if (menuItem?.itemUrl != null) {
+                                      await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'decrement');
+                                    }
+                                    onAdd.call();
+                                    onChangeQuantity?.call(false);
+                                  },
+                                  child: Container(
+                                    height: context.height * 0.060,
+                                    width: context.height * 0.060,
+                                    decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: AppColors.terracotta)),
-                                  child: Center(
-                                    child: cartItem?.cartQuantity == 1
-                                        ? SvgPicture.asset(
-                                            AssetsUtils.icDelete,
-                                            color: AppColors.terracotta,
-                                          )
-                                        : const Icon(
-                                            Icons.remove,
-                                            color: AppColors.terracotta,
-                                          ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Container(
-                                height: context.height * 0.060,
-                                width: context.height * 0.060,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.disable),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Center(
-                                    child: Text(
-                                  '${menuItem?.cartQuantity ?? 0}',
-                                  style: FontUtils.h18(
-                                      fontWeight: FWT.semiBold,
-                                      fontColor: AppColors.darkGray),
-                                )),
-                              ),
-                              SizedBox(width: 8.w),
-                              GestureDetector(
-                                onTap: () async {
-                                  final signalR = SignalRService();
-                                  if (menuItem?.itemUrl != null) {
-                                    await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'increment');
-                                  }
-                                  onRemove.call();
-                                },
-                                child: Container(
-                                  height: context.height * 0.060,
-                                  width: context.height * 0.060,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    color: AppColors.coral,
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 27,
-                                      color: AppColors.terracotta,
+                                      border: Border.all(color: AppColors.terracotta),
+                                    ),
+                                    child: Center(
+                                      child: cartItem?.cartQuantity == 1
+                                          ? SvgPicture.asset(
+                                              AssetsUtils.icDelete,
+                                              color: AppColors.terracotta,
+                                            )
+                                          : const Icon(
+                                              Icons.remove,
+                                              color: AppColors.terracotta,
+                                            ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                SizedBox(width: 8.w),
+                                Container(
+                                  height: context.height * 0.060,
+                                  width: context.height * 0.060,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.disable),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${menuItem?.cartQuantity ?? 0}',
+                                      style: FontUtils.h18(
+                                        fontWeight: FWT.semiBold,
+                                        fontColor: AppColors.darkGray,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                GestureDetector(
+                                  onTap: () async {
+                                    onChangeQuantity?.call(true);
+                                    final signalR = SignalRService();
+                                    if (menuItem?.itemUrl != null) {
+                                      await signalR.adjustCartItemQuantity(menuItem!.itemUrl!, 'increment');
+                                    }
+                                    onRemove.call();
+                                    onChangeQuantity?.call(false);
+                                  },
+                                  child: Container(
+                                    height: context.height * 0.060,
+                                    width: context.height * 0.060,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: AppColors.coral,
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        size: 27,
+                                        color: AppColors.terracotta,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]
                             ],
                           ),
                         ],

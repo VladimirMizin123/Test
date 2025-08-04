@@ -1,1 +1,5 @@
 -keep class org.videolan.libvlc.** { *; }
+-keep class com.stripe.** { *; }
+-dontwarn com.stripe.**
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**

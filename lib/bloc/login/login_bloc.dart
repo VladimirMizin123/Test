@@ -46,8 +46,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               prefToken, right.data!.token!.accessToken!);
           if (right.data?.profileCompleted ?? false) {
             if (right.data != null) {
-              log('right.data!.token!.accessToken!---------->>>>>> ${right.data!.token!.accessToken!}');
-
               userId = right.data!.userId!;
               await PreferenceUtils.setString(
                   prefUserData, right.data!.userId!);
@@ -61,8 +59,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             getUserDetailsResponse.fold((left) {
               onFailError(emit: emit, text: left.errorMessage!);
             }, (r) async {
-              // if (right.data?.subscriptionStatus == "Active") {
-              PreferenceUtils.setBool(subscriptionStatus, true);
+              
               final getGender = r.data!.gender;
               await PreferenceUtils.setString(
                   prefUserMobile, r.data?.phoneNumber ?? '');
@@ -70,14 +67,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                   prefUserName,
                   ("${r.data?.firstName ?? ""} ${r.data?.lastName ?? ""}")
                       .trim());
-              Get.toNamed('/RandomLoginScreen',
+              if (right.data!.subscriptionStatus == 'Disable') {
+                Get.offAllNamed("/PremiumScreen", parameters: {
+                  "fromDashboard": 'true',
+                  "access_token": right.data!.token!.accessToken!,
+                });
+                PreferenceUtils.setBool(subscriptionStatus, false);
+                // Get.toNamed('/RandomLoginScreen',
+                //   arguments: getGender.toString().capitalizeFirst);
+              } else {
+                PreferenceUtils.setBool(subscriptionStatus, true);
+                Get.toNamed('/RandomLoginScreen',
                   arguments: getGender.toString().capitalizeFirst);
-              // } else {
-              //   PreferenceUtils.setBool(subscriptionStatus, false);
-              //   Get.offAllNamed("/PremiumScreen", parameters: {
-              //     "fromDashboard": 'true',
-              //   });
-              // }
+              }
+              
             });
           } else {
             Either<ErrorModel, GetUserDetailsById> rt = await _dataRepository

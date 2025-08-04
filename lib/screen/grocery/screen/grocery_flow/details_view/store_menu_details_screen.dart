@@ -320,6 +320,8 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
                                       isGoingBack = true;
                                     });
                                     final signalR = SignalRService();
+                                    final prefs = await SharedPreferences.getInstance();
+                                    await prefs.setBool("isGoingBack", true);
                                     signalR.goBack();
                                     Get.back(result: addToCart);
                                     setState(() {
@@ -1097,9 +1099,7 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
 
     if (customizationList.isNotEmpty) {
       bool valid = isFormValid(customizationList);
-      setState(() {
-        isAdding = true;
-      });
+      
       if (!valid) {
         showToast(
           message: 'Please Select Required Item',
@@ -1112,6 +1112,9 @@ class _StoreMenuDetailsScreenState extends State<StoreMenuDetailsScreen> {
         return false;
       }
     }
+    setState(() {
+      isAdding = true;
+    });
 
     try {
       final signalR = SignalRService();
