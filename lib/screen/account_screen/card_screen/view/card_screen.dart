@@ -126,16 +126,19 @@ class _CardsScreenState extends State<CardsScreen> {
                             itemBuilder: (context, index) {
                               return CreditCardWidget(
                                 card: cardList[index],
-                                onTap: () {
-                                  Get.to(
+                                onTap: () async {
+                                  final shouldRefresh = await Get.to(
                                     () => CardCrudScreen(
                                       cardBloc: _bloc,
                                       card: cardList[index],
                                     ),
                                   );
+                                  if (shouldRefresh == true) {
+                                    _bloc.add(ListAllCardEvent());
+                                  }
                                 },
                               );
-                            },
+                            }
                           ),
                   };
                 },
@@ -144,8 +147,11 @@ class _CardsScreenState extends State<CardsScreen> {
             buildButton(
               context: context,
               title: "Add new card",
-              onPressed: () {
-                Get.to(() => CardCrudScreen(cardBloc: _bloc));
+              onPressed: () async {
+                final shouldRefresh = await Get.to(() => CardCrudScreen(cardBloc: _bloc));
+                if (shouldRefresh == true) {
+                  _bloc.add(ListAllCardEvent());
+                }
               },
               textColor: AppColors.whiteColor,
               bgColor: AppColors.terracotta,

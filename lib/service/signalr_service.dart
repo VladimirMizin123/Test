@@ -671,7 +671,6 @@ class SignalRService {
   }
 
   Future<bool> renderHomeScreen(String address, {String? userId}) async {
-
     if (_currentWindowReference == null) {
       await initializeWindowReference(address: address, userId: userId ?? _userId!);
     }
@@ -685,7 +684,6 @@ class SignalRService {
     } catch (e) {
       throw Exception("Error in RenderHomeScreen: $e");
     }
-
     try {
       await localCompleter.future.timeout(
         Duration(seconds: 20),
@@ -700,7 +698,6 @@ class SignalRService {
 
   Future<List<Map<String, dynamic>>> getRestaurantCategories([String? address = '', String? userId]) async {
     if (_currentWindowReference == null) {
-      print('=============================');
       print('Current Windwos Reference is Null InititalizeWindowReference');
       await initializeWindowReference(address: address!, userId: userId!);
     }
@@ -724,8 +721,8 @@ class SignalRService {
     }
 
     await connect();
-
     final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
+    print(prefs.getBool('AddressUpdated'));
     if (addressUpdated) {
       print(" AddressUpdated = true");
       await renderHomeScreen(address!);
@@ -769,7 +766,6 @@ class SignalRService {
         final title = cat["title"] ?? cat["Title"] ?? "";
         return title != "Grocery";
       }).toList();
-
       await prefs.setString(cacheKey, jsonEncode(filteredCategories));
       print("Categories saved in cache $cacheKey");
 
@@ -782,7 +778,6 @@ class SignalRService {
 
   Future<void> placeOrder() async {
     if (_currentWindowReference == null) {
-      print('=============================');
       print('Current Window Reference is null — initializing...');
       final prefs = await SharedPreferences.getInstance();
       final address = prefs.getString('currentUserAddress') ?? '';
@@ -853,8 +848,6 @@ class SignalRService {
     required String address,
     required String userId,
   }) async {
-    print('---------------------------------------');
-    print('INITIALIZE WINDOW REFERENCE');
     print(userId);
     _userId = userId;
     print('TRY to ping');
@@ -949,7 +942,6 @@ class SignalRService {
     _restaurantData = null;
     await connect();
     print('getFilteredRestaurants');
-    print('===========================');
     print(_currentWindowReference);
     if (_currentWindowReference == null) {
       await initializeWindowReference(address: address, userId: userId);
@@ -958,16 +950,15 @@ class SignalRService {
     if (firstCall) {
       return  <String, dynamic>{};
     }
-
     final prefs = await SharedPreferences.getInstance();
     final addressUpdated = prefs.getBool('AddressUpdated') ?? false;
 
     if (addressUpdated) {
       print("AddressUpdated = true");
 
-      await renderHomeScreen(address);
+      // await renderHomeScreen(address);
 
-      await prefs.setBool('AddressUpdated', false);
+      // await prefs.setBool('AddressUpdated', false);
       print("AddressUpdated false");
     }
 
@@ -1183,6 +1174,8 @@ class SignalRService {
 
     try {
       await _connection!.invoke("GoBack", args: [_currentWindowReference!, _userId!]);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool("isGoingBack", false);
       print(' GoBack invoked successfully');
     } catch (e) {
       throw Exception("Error during GoBack invoke: $e");
@@ -1267,6 +1260,35 @@ class SignalRService {
     }
   }
 
+  Future<dynamic> triggerOptionButtonClick(String header, String selectedItemName, String buttonType) async {
+    await connect();
+
+
+    print('Invoking TriggerOptionButtonClick with payload: $header');
+    print(header);
+    print(selectedItemName);
+    print(buttonType);
+    
+    try {
+      final result = await _connection!.invoke("TriggerOptionButtonClick", args: [
+        header,
+        selectedItemName,
+        buttonType,
+        _currentWindowReference!,
+        _userId!,
+      ]);
+
+      print("Raw result from triggerOptionButtonClick:");
+      print(result);
+
+      return result;
+    } catch (e) {
+      print("Error during TriggerOptionButtonClick invoke: $e");
+      return [];
+    }
+  }
+
+
   Future<dynamic> CloseViewCart() async {
     await connect();
 
@@ -1292,6 +1314,13 @@ class SignalRService {
     await connect();
 
     print('Invoking ClearRestaurantCartItems');
+
+    final prefs = await SharedPreferences.getInstance();
+    while (prefs.getBool("isGoingBack") == true) {
+      print("Waiting for isGoingBack to become false...");
+      await Future.delayed(const Duration(milliseconds: 500));
+      await prefs.reload();
+    }
 
     try {
       final result = await _connection!.invoke("ClearRestaurantCartItems", args: [

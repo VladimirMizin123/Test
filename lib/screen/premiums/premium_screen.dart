@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/gestures.dart';
@@ -22,6 +23,10 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gymeats_mobile/app/sharedPrefrence.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:gymeats_mobile/service/apis.dart';
+import 'package:http/http.dart' as http;
 
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
@@ -34,12 +39,24 @@ class _PremiumScreenState extends State<PremiumScreen> {
   List<ProductDetails> productList = [];
   int selectedIndex = 0;
   late final String? accessToken;
+  Timer? _subscriptionCheckTimer;
+  bool _hasRedirected = false;
 
   @override
   void initState() {
     _initialize();
     super.initState();
     accessToken = Get.parameters['access_token'];
+    final alreadyActive =
+        PreferenceUtils.getBool(subscriptionStatus) == true;
+
+    if (!alreadyActive) {
+      _checkSubscriptionStatus();
+      _subscriptionCheckTimer = Timer.periodic(
+        const Duration(seconds: 15),
+        (_) => _checkSubscriptionStatus(),
+      );
+    }
   }
 
   Future<void> _initialize() async {
@@ -48,6 +65,57 @@ class _PremiumScreenState extends State<PremiumScreen> {
     selectedIndex = productList.length - 1;
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  String get userEmail => PreferenceUtils.getString(prefUserEmail);
+
+  Future<void> _checkSubscriptionStatus() async {
+    try {
+      if (PreferenceUtils.getBool(subscriptionStatus) == true) {
+        _subscriptionCheckTimer?.cancel();
+        return;
+      }
+
+      final apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
+      print('Checking subscription: $apiURL');
+
+      final response = await http.get(
+        Uri.parse(apiURL),
+        headers: {
+          'Api_Key': ApiUrls.apiKey,
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final json = jsonDecode(response.body);
+        final status = json['data']?.toString();
+        print('Subscription status: $status');
+
+        if (status?.toLowerCase() == 'active' && !_hasRedirected) {
+          _hasRedirected = true;
+
+          await PreferenceUtils.setBool(subscriptionStatus, true);
+
+          _subscriptionCheckTimer?.cancel();
+
+          final genderString = PreferenceUtils.getString('gender');
+          Get.toNamed(
+            '/RandomLoginScreen',
+            arguments: genderString.toString().capitalizeFirst,
+          );
+        }
+      } else {
+        print('Error checking subscription: ${response.statusCode} - ${response.body}');
+                  final genderString = PreferenceUtils.getString('gender');
+
+        // Get.toNamed(
+        //     '/RandomLoginScreen',
+        //     arguments: genderString.toString().capitalizeFirst,
+        //   );
+      }
+    } catch (e) {
+      print('Exception checking subscription: $e');
     }
   }
 

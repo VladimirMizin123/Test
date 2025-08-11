@@ -34,6 +34,8 @@ import 'package:gymeats_mobile/constant/string_utils.dart';
 import 'package:gymeats_mobile/models/fetch_meal_plan_model.dart';
 import 'package:gymeats_mobile/models/get_dashboard_model.dart';
 import 'package:gymeats_mobile/widget/app_center_loader.dart';
+import 'package:gymeats_mobile/service/api_urls.dart';
+import 'package:http/http.dart' as http;
 
 final CartBloc cartBloc = CartBloc();
 
@@ -77,9 +79,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   bool hasPremium = false;
   MealPlanBloc mealPlanBloc = MealPlanBloc();
   bool cacheLoader = false;
+  bool isDashboardLoaded = false;
+  String get userEmail => PreferenceUtils.getString(prefUserEmail);
 
   @override
   void initState() {
+    print('🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿INIT DASHBOARD STATE');
     String trackerList = PreferenceUtils.getString(trackerListStore);
     String dashboardList = PreferenceUtils.getString(dashboardModelPref);
     String mealList = PreferenceUtils.getString(mealDataByDatePref);
@@ -121,7 +126,81 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         PreferenceUtils.setBool(showOrderHint, true);
       });
     }
+    final accessToken = PreferenceUtils.getString(prefToken);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeDailySubscriptionCheck(accessToken: accessToken);
+    });
     super.initState();
+  }
+
+  bool _shouldCheckToday() {
+    final last = PreferenceUtils.getInt('lastSubscriptionCheckEpoch');
+    if (last == null) return true;
+
+    final lastDate = DateTime.fromMillisecondsSinceEpoch(last);
+    final today = DateTime.now();
+    final lastDay = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    final todayDay = DateTime(today.year, today.month, today.day);
+
+    return todayDay.difference(lastDay).inDays >= 1;
+  }
+
+  Future<void> _markCheckedToday() async {
+    final now = DateTime.now();
+    final todayMidnight = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
+    await PreferenceUtils.setInt('lastSubscriptionCheckEpoch', todayMidnight);
+  }
+
+  Future<void> _maybeDailySubscriptionCheck({required String accessToken}) async {
+    print('DAILY CHECK');
+    try {
+      if (!_shouldCheckToday()) return;
+
+      if (userEmail.isEmpty) {
+        await _markCheckedToday();
+        return;
+      }
+
+      final apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
+      print('[DailyCheck] Checking subscription: $apiURL');
+
+      final response = await http.get(
+        Uri.parse(apiURL),
+        headers: {
+          'Api_Key': ApiUrls.apiKey,
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await _markCheckedToday();
+
+        final json = jsonDecode(response.body);
+        final status = json['data']?.toString();
+        print('[DailyCheck] Subscription status: $status');
+
+        if ((status ?? '').toLowerCase() != 'active') {
+          await PreferenceUtils.setBool(subscriptionStatus, false);
+
+          if (accessToken.trim().isEmpty) {
+            Get.toNamed('/LoginScreen', preventDuplicates: false);
+          } else {
+            Get.offAllNamed(
+              "/PremiumScreen",
+              parameters: {
+                "fromDashboard": 'true',
+                "access_token": accessToken,
+              },
+            );
+          }
+        } else {
+          await PreferenceUtils.setBool(subscriptionStatus, true);
+        }
+      } else {
+        print('[DailyCheck] Error: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('[DailyCheck] Exception: $e');
+    }
   }
 
   @override
@@ -225,18 +304,29 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   bloc: bloc,
                   builder: (context, state) {
                     if (state is LoadDashboardData || cacheLoader) {
+                      print('STATE IS LOAD DASHBOARD');
+                      
                       return initView();
                     }
                     if (state is LoadMealData && !cacheLoader) {
-                      return const AppCenterLoader();
+                      print('STATE IS LOAD LoadMealData');
+                      if (isDashboardLoaded) {
+                        print(';TUUUUUUTT');
+                        return initView();
+                      } else {
+                        return const AppCenterLoader();
+                      }
                     }
                     if (state is LoadingDoneState || cacheLoader) {
+                      print('STATE IS LOAD LoadingDoneState');
                       return initView();
                     }
                     if (state is LoadingData && !cacheLoader) {
+                      print('STATE IS LOAD LoadingData');
                       return const AppCenterLoader();
                     }
                     if (state is ErrorStateData) {
+                      print('STATE IS LOAD ErrorStateData');
                       return Center(
                         child: Text(
                           state.errMessage,
@@ -252,9 +342,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   },
                   listener: (context, state) async {
                     if (state is LoadDashboardData) {
+
+                      print('STATE IS LOAD LoadDashboardData');
+                      setState(() {
+                        isDashboardLoaded = true;
+                      });
+
                       loadDashboard(state.model, state.data);
                     }
                     if (state is LoadMealData) {
+                      print('STATE IS LOAD LoadMealData');
+
                       isDoneLoader = false;
                       trackerDataList = state.trackerDataList;
                       if (mounted) {
@@ -262,8 +360,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       }
                       // bloc.add(GetDashboardData());
                       bloc.add(AddIngredientGroceryList());
+                     
                     }
                     if (state is LoadingDoneState) {
+                      print('STATE IS LOAD LoadingDoneState');  
                       isDoneLoader = true;
                       mealId = state.mealID;
                     }

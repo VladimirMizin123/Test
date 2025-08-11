@@ -49,6 +49,7 @@ class _CardCrudScreenState extends State<CardCrudScreen> {
   CardInfo? _cardInfo;
   bool saveLoader = false;
   bool defaultCardLoader = false;
+  bool isUpdatingCard = false;
   var controller = MaskedTextController(mask: '00/0000');
   final ApiServices _api = ApiServices();
 CardFieldInputDetails? _cardFieldInput;
@@ -89,6 +90,7 @@ Future<void> initStripeCardFlow() async {
       final ephemeralKey = data['ephemeralKey'];
       final customerId = data['stripeCustomerId'];
       final publishableKey = data['publishableKey'];
+      print('PUBLISHABLE KEY $publishableKey');
 
       Stripe.publishableKey = publishableKey;
 
@@ -107,12 +109,22 @@ Future<void> confirmCard() async {
   try {
     if (_cardFieldInput == null || !_cardFieldInput!.complete) {
       print(_cardFieldInput);
-      print('Please fill in all card details');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill in all card details'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
     if (_clientSecret == null) {
-      print('Stripe secret not initialized');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Stripe secret not initialized'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -136,12 +148,31 @@ Future<void> confirmCard() async {
     );
 
     print('Card setup completed: ${result.id}');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Card added successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    await Future.delayed(Duration(seconds: 2));
+
+    Get.back(result: true); 
   } catch (e) {
     print('Error saving card: $e');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to save card'),
+        backgroundColor: Colors.red,
+      ),
+    );
   } finally {
     setState(() => saveLoader = false);
   }
 }
+
 
  @override
 Widget build(BuildContext context) {
@@ -198,13 +229,15 @@ Widget build(BuildContext context) {
                         validator: (v) => v!.isEmpty ? 'Please Enter Name' : null,
                       ),
 
-                      const SizedBox(height: 20),
-                      Text('Card details',
-                          style: TextStyle(
-                            color: Color(0xff373737),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w300,
-                          )),
+                     const SizedBox(height: 20),
+                      Text(
+                        isEdit ? 'Card Info' : 'Card details',
+                        style: TextStyle(
+                          color: Color(0xff373737),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
 
                       Container(
                         margin: const EdgeInsets.only(top: 8),
@@ -215,44 +248,108 @@ Widget build(BuildContext context) {
                         ),
                         child: CardField(
                           enablePostalCode: false,
+                          disabled: (isEdit && !isUpdatingCard) ? true : false,
+                          numberHintText: isEdit && !isUpdatingCard
+                              ? '**** **** **** ${widget.card?.last4 ?? "XXXX"}'
+                              : '1234 1234 1234 1234',
+                          expirationHintText: isEdit && !isUpdatingCard
+                              ? '${widget.card?.expMonth.toString().padLeft(2, '0')}/${widget.card?.expYear ?? 'YY'}'
+                              : 'MM/YY',
+                          cvcHintText: isEdit && !isUpdatingCard ? '•••' : 'CVC',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
                           onCardChanged: (details) {
-                            setState(() => _cardFieldInput = details);
+                            if (!isEdit || isUpdatingCard) {
+                              setState(() => _cardFieldInput = details);
+                            }
                           },
                         ),
                       ),
+
+                      const SizedBox(height: 12),
+
+                      if (isEdit && !isUpdatingCard && !(widget.card?.isPrimary ?? false)) ...[
+                        GestureDetector(
+                          onTap: () {
+                            widget.cardBloc.add(
+                              SetDefaultCardEvent(
+                                id: widget.card?.id ?? "",
+                                onComplete: () {
+                                  ToastService.showToast(
+                                    "${widget.card?.brand ?? ""} card set as default",
+                                    isSuccess: true,
+                                  );
+                                  if (Get.currentRoute.contains('CardCrudScreen')) {
+                                    Get.back();
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Set as default",
+                            style: FontUtils.h16(
+                              fontColor: AppColors.terracotta,
+                              fontWeight: FWT.medium,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ],
                   ),
                 ),
               ),
 
-                          GestureDetector(
-                            onTap: () async {
-                await confirmCard();
-              },
-              child: Container(
-                height: 45.h,
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20.h),
-                width: Get.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  color: const Color(0xffCE6B53),
-                ),
-                child: Center(
-                  child: saveLoader
-                      ? const CircularProgressIndicator(
-                          color: AppColors.whiteColor,
-                        )
-                      : Text(
-                          'Add Card',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
+                   GestureDetector(
+                      onTap: () async {
+                        if (isEdit && !isUpdatingCard) {
+                          setState(() {
+                            isUpdatingCard = true;
+                          });
+                        } else {
+                          if (isEdit && isUpdatingCard) {
+                            widget.cardBloc.add(
+                              RemoveCardEvent(
+                                id: widget.card?.id ?? "",
+                                onSuccess: () {
+                                  confirmCard();
+                                },
+                              ),
+                            );
+                          } else {
+                            await confirmCard();
+                          }
+                        }
+                      },
+                      child: Container(
+                        height: 45.h,
+                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20.h),
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.r),
+                          color: const Color(0xffCE6B53),
                         ),
-                ),
-              ),
-            ),
+                        child: Center(
+                          child: saveLoader
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.whiteColor,
+                                )
+                              : Text(
+                                  isEdit
+                                      ? (isUpdatingCard ? 'Save Card' : 'Update Card')
+                                      : 'Add Card',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
 
             if (isEdit && widget.deleteAccess)
               GestureDetector(

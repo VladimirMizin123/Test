@@ -16,6 +16,7 @@ import '../../app/functions.dart';
 import '../../repository/get_user_details.dart';
 import '../../repository/login.dart';
 import '../../widget/app_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(InitialState()) {
@@ -61,12 +62,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             }, (r) async {
               
               final getGender = r.data!.gender;
+                print('GENDER: ${getGender.toString().capitalizeFirst}');
+
+                final prefs = await SharedPreferences.getInstance();
+                final genderString = getGender?.toString().capitalizeFirst ?? '';
+                await prefs.setString('gender', genderString);
+              print('GENDER: ${getGender.toString().capitalizeFirst}');
               await PreferenceUtils.setString(
                   prefUserMobile, r.data?.phoneNumber ?? '');
               await PreferenceUtils.setString(
                   prefUserName,
                   ("${r.data?.firstName ?? ""} ${r.data?.lastName ?? ""}")
                       .trim());
+                      print(right.data!.subscriptionStatus);
               if (right.data!.subscriptionStatus == 'Disable') {
                 Get.offAllNamed("/PremiumScreen", parameters: {
                   "fromDashboard": 'true',

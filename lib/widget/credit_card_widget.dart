@@ -22,9 +22,9 @@ class CreditCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isPrimary = card.isPrimary ?? false;
+    final bool isPrimary = card.isPrimary ?? false;
 
-    Color color = isPrimary ? AppColors.terracotta : AppColors.lightGrey;
+    final Color color = isPrimary ? AppColors.terracotta : AppColors.lightGrey;
 
     return GestureDetector(
       onTap: () => onTap?.call(),
@@ -32,10 +32,7 @@ class CreditCardWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(
-            width: 1,
-            color: color,
-          ),
+          border: Border.all(width: 1, color: color),
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
@@ -65,19 +62,50 @@ class CreditCardWidget extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Text(
-                        formatCardNumber((card.last4 ?? "").padLeft(16, "x")),
-                        style: const TextStyle(
-                          color: Color(0xff010101),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              formatCardNumber(
+                                (card.last4 ?? "").padLeft(16, "x"),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xff010101),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          if (isPrimary) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.terracotta.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: AppColors.terracotta),
+                              ),
+                              child: const Text(
+                                'default',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.terracotta,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
                 ),
                 5.width,
-                // const Spacer(),
                 Image.asset(
                   AssetsUtils.arrowForward,
                   height: 15,

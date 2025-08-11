@@ -37,18 +37,28 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('RESPONSE ${jsonDecode(response.body)}');
-        StripeCardModel card =
-            StripeCardModel.fromJson(jsonDecode(response.body));
-
+        StripeCardModel card = StripeCardModel.fromJson(jsonDecode(response.body));
         try {
           final cardResponse = responses[1];
-          DefaultCardModel defaultCard =
-              DefaultCardModel.fromJson(jsonDecode(cardResponse.body));
-          card.data!
-              .firstWhereOrNull(
-                  (element) => defaultCard.data?.defaultSourceId == element.id)
-              ?.isPrimary = true;
-        } catch (e) {
+          final raw = jsonDecode(cardResponse.body) as Map<String, dynamic>;
+
+          final data = raw['data'] as Map<String, dynamic>?;
+          final dynamic rawId = data?['defaultSourceId'] ?? data?['id'];
+          final String? defaultId = (rawId is String && rawId.isNotEmpty) ? rawId : null;
+
+          print('DEFAULT CARD ID: $defaultId');
+
+          if (defaultId != null) {
+            for (final c in (card.data ?? [])) {
+              c.isPrimary = (c.id == defaultId);
+            }
+          } else {
+            for (final c in (card.data ?? [])) {
+              c.isPrimary = false;
+            }
+          }
+        } catch (e, st) {
+          print('ERROR $e');
           log(e.toString());
         }
 
@@ -131,15 +141,18 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   _onSetDefaultCard(SetDefaultCardEvent event, Emitter<CardState> emit) async {
     try {
       emit(SetDefaultCardLoader(isLoad: true));
-
+      print(event.id);
       final response = await _api.post(
           ApiUrls.setDefaultCard.replaceAll("{cardId}", event.id),
           {"id": event.id});
+          print(response.statusCode);
+      print(response.statusCode);
       if (response.statusCode == 200 || response.statusCode == 201) {
         event.onComplete?.call();
         add(ListAllCardEvent());
       } else {
         ErrorModel error = ErrorModel.fromJson(jsonDecode(response.body));
+        print(error.errorMessage);
         if (error.errorMessage?.isNotEmpty ?? false) {
           ToastService.showToast(error.errorMessage!);
         }

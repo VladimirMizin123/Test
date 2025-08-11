@@ -46,6 +46,8 @@ class ApiUrls {
 
   static const String getSubscriptionStatus =
       '${baseUrl}api/SubscriptionDetails/GetUserSubscriptionStatus';
+        static const String getUserSubscriptionDetail =
+      '${baseUrl}api/SubscriptionDetails/GetUserSubscriptionDetail';  
   static const String addReceiptDetails =
       '${baseUrl}api/SubscriptionDetails/AddReceiptDetails';
 

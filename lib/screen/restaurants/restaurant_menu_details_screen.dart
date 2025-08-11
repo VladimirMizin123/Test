@@ -93,6 +93,7 @@ class _RestaurantMenuDetailsScreenState
   bool isNestedLoaded = false;
 
   bool alreadyInCart = false;
+  Map<String, bool> isQuantityLoading = {};
 
   getData() async {
     selectedOption.clear();
@@ -179,6 +180,7 @@ class _RestaurantMenuDetailsScreenState
 
               bool isSelectedRaw = optItem['IsSelected'] ?? false;
               bool isSelected = isSelectedRaw == true || isSelectedRaw == "true";
+              final quantity = optItem['quantity'] ?? 0;
 
               final optionObject = opt.Option(
                 name: name,
@@ -191,7 +193,8 @@ class _RestaurantMenuDetailsScreenState
                 optionId: name,
                 isNestedSelection: optItem['IsNestedSelection'],
                 hasQuantityControl: optItem['HasQuantityControl'] ?? false,
-                isSelected: isSelected, 
+                isSelected: isSelected,
+                quantity: quantity is num ? quantity : int.tryParse(quantity.toString()) ?? 0,
               );
 
               if (isSelected) {
@@ -243,379 +246,402 @@ class _RestaurantMenuDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: bloc.BlocConsumer<CartBloc, CartState>(
-        bloc: cartBloc,
-        listener: (context, state) {
-          if (state is RestaurantCartState) {
-            int index = state.shoppingList.indexWhere(
-                (element) => element.productId == widget.data.productId);
-            if (!index.isNegative) {
-              alreadyInCart = true;
-              ShoppingListData data = state.shoppingList[index];
-              nestedOptionList = data.options
-                      ?.map((e) => {
-                            "option_id": e.optionId ?? '',
-                            "quantity": e.quantity,
-                            "marked_price": e.markedPrice,
-                          })
-                      .toList() ??
-                  [];
-              item = data.quantity ?? 1;
-              cartCount = state.shoppingList.length;
-            } else {
-              routingList.clear();
-              alreadyInCart = false;
-              item = 1;
-              cartCount = 0;
-              nestedOptionList.clear();
-            }
-            setState(() {});
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        if (_isGoingBack) return;
+
+        final prefs = await SharedPreferences.getInstance();
+        final itemAdded = prefs.getBool('cart-opened') ?? false;
+        final signalR = SignalRService();
+
+        setState(() => _isGoingBack = true);
+        await prefs.setBool("isGoingBack", true);
+
+        try {
+          if (!itemAdded) {
+            signalR.goBack();
           }
-        },
-        builder: (context, state) {
-          return bloc.BlocConsumer(
-            bloc: restaurantBloc,
-            listener: (context, state) {},
+          if (context.mounted) Navigator.of(context).pop();
+        } finally {
+          if (context.mounted) setState(() => _isGoingBack = false);
+        }
+      },
+      child:Scaffold(
+          body: bloc.BlocConsumer<CartBloc, CartState>(
+            bloc: cartBloc,
+            listener: (context, state) {
+              if (state is RestaurantCartState) {
+                int index = state.shoppingList.indexWhere(
+                    (element) => element.productId == widget.data.productId);
+                if (!index.isNegative) {
+                  alreadyInCart = true;
+                  ShoppingListData data = state.shoppingList[index];
+                  nestedOptionList = data.options
+                          ?.map((e) => {
+                                "option_id": e.optionId ?? '',
+                                "quantity": e.quantity,
+                                "marked_price": e.markedPrice,
+                              })
+                          .toList() ??
+                      [];
+                  item = data.quantity ?? 1;
+                  cartCount = state.shoppingList.length;
+                } else {
+                  routingList.clear();
+                  alreadyInCart = false;
+                  item = 1;
+                  cartCount = 0;
+                  nestedOptionList.clear();
+                }
+                setState(() {});
+              }
+            },
             builder: (context, state) {
-              return loading == true
-                  ? const Align(
-                      alignment: Alignment.center,
-                      child: AppCenterLoader(),
-                    )
-                  : SingleChildScrollView(
-                      controller: controller,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: size.height * 0.45,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              image: widget.data.image == null ||
-                                      widget.data.image!.isEmpty
-                                  ? const DecorationImage(
-                                      image: AssetImage(AssetsUtils.food3),
-                                      fit: BoxFit.cover)
-                                  : DecorationImage(
-                                      image: NetworkImage(widget.data.image!),
-                                      fit: BoxFit.cover),
-                            ),
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 30.h, left: 15.w),
-                                child: _isGoingBack
-                                    ? const SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                      )
-                                    : GestureDetector(
-                                        onTap: () async {
-                                          if (_isGoingBack) return;
+              return bloc.BlocConsumer(
+                bloc: restaurantBloc,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  return loading == true
+                      ? const Align(
+                          alignment: Alignment.center,
+                          child: AppCenterLoader(),
+                        )
+                      : SingleChildScrollView(
+                          controller: controller,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: size.height * 0.45,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  image: widget.data.image == null ||
+                                          widget.data.image!.isEmpty
+                                      ? const DecorationImage(
+                                          image: AssetImage(AssetsUtils.food3),
+                                          fit: BoxFit.cover)
+                                      : DecorationImage(
+                                          image: NetworkImage(widget.data.image!),
+                                          fit: BoxFit.cover),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 30.h, left: 15.w),
+                                    child: _isGoingBack
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                          )
+                                        : GestureDetector(
+                                            onTap: () async {
+                                              if (_isGoingBack) return;
 
-                                        
-                                          final prefs = await SharedPreferences.getInstance();
-                                          final itemAdded = prefs.getBool('cart-opened') ?? false;
-                                          final signalR = SignalRService();
+                                            
+                                              final prefs = await SharedPreferences.getInstance();
+                                              final itemAdded = prefs.getBool('cart-opened') ?? false;
+                                              final signalR = SignalRService();
 
-                                          if (itemAdded) {
-                                            Get.back();
-                                          } else {
-                                            setState(() => _isGoingBack = true);
-                                            await prefs.setBool("isGoingBack", true);
-                                            signalR.goBack();
-                                            if (mounted) Get.back();
-                                          }
+                                              if (itemAdded) {
+                                                Get.back();
+                                              } else {
+                                                setState(() => _isGoingBack = true);
+                                                await prefs.setBool("isGoingBack", true);
+                                                signalR.goBack();
+                                                if (mounted) Get.back();
+                                              }
 
-                                          if (mounted) setState(() => _isGoingBack = false);
-                                        },
-                                        child: const Icon(
-                                          Icons.arrow_back_ios,
-                                          color: Colors.black,
+                                              if (mounted) setState(() => _isGoingBack = false);
+                                            },
+                                            child: const Icon(
+                                              Icons.arrow_back_ios,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: SizedBox(
+                                  // height: customizationList.isEmpty
+                                  //     ? size.height * 0.55
+                                  //     : null,
+                                  width: context.width,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        widget.data.name ?? "",
+                                        style: FontUtils.h24(
+                                          fontColor: Colors.black,
+                                          fontWeight: FWT.medium,
                                         ),
                                       ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: SizedBox(
-                              // height: customizationList.isEmpty
-                              //     ? size.height * 0.55
-                              //     : null,
-                              width: context.width,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.data.name ?? "",
-                                    style: FontUtils.h24(
-                                      fontColor: Colors.black,
-                                      fontWeight: FWT.medium,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 2),
-                                    child: Text(
-                                      widget.data.formattedPrice ?? "",
-                                      style: FontUtils.h18(
-                                        fontColor: Colors.black,
-                                        fontWeight: FWT.medium,
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(vertical: 2),
+                                        child: Text(
+                                          widget.data.formattedPrice ?? "",
+                                          style: FontUtils.h18(
+                                            fontColor: Colors.black,
+                                            fontWeight: FWT.medium,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        right: 10.w, bottom: 10.h),
-                                    child: Text(
-                                      widget.data.description ?? '',
-                                      style: FontUtils.h14(
-                                        fontColor: const Color(0xffA2A4A7),
-                                        fontWeight: FWT.lightMedium,
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            right: 10.w, bottom: 10.h),
+                                        child: Text(
+                                          widget.data.description ?? '',
+                                          style: FontUtils.h14(
+                                            fontColor: const Color(0xffA2A4A7),
+                                            fontWeight: FWT.lightMedium,
+                                          ),
+                                        ),
                                       ),
+                                      bloc.BlocBuilder(
+                                        bloc: restaurantBloc,
+                                        builder: (context, state) {
+                                          return state
+                                                  is FetchCustomizationLoaderState
+                                              ? const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    AppCenterLoader(),
+                                                  ],
+                                                ).paddingOnly(top: 20, bottom: 20)
+                                              : const SizedBox.shrink();
+                                        },
+                                      ),
+                                      _isLoadingCustomization
+                                ? const Center(
+                                    child: SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
                                     ),
-                                  ),
-                                  bloc.BlocBuilder(
-                                    bloc: restaurantBloc,
-                                    builder: (context, state) {
-                                      return state
-                                              is FetchCustomizationLoaderState
-                                          ? const Row(
+                                  )
+                                : customizationList.isEmpty
+                                    ? const SizedBox.shrink()
+                                    :  nestedItemView(),
+                                      15.height,
+                                      Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 8, bottom: 18),
+                                            child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                AppCenterLoader(),
-                                              ],
-                                            ).paddingOnly(top: 20, bottom: 20)
-                                          : const SizedBox.shrink();
-                                    },
-                                  ),
-                                  _isLoadingCustomization
-                            ? const Center(
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                ),
-                              )
-                            : customizationList.isEmpty
-                                ? const SizedBox.shrink()
-                                :  nestedItemView(),
-                                  15.height,
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 8, bottom: 18),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () async {
-                                                print('TAP');
-                                                if (alreadyInCart) {
-                                                  cartBloc.add(
-                                                    ChangeQty(
-                                                      productID:
-                                                          widget.data.productId,
-                                                      type:
-                                                          ModifyType.decrement,
-                                                    ),
-                                                  );
-                                                  print(widget.data
-                                                                  .cartQuantity);
-                                                } else {
-                                                  if (item > 0) {
-                                                    item--;
-                                                  }
-                                                  print(widget.data
-                                                                  .cartQuantity);
-                                                }
-                                                setState(() {
-                                                  addToCart = true;
-                                                });
-                                                if (item != 0) {
-                                                  final signalR = SignalRService();
-                                                  await signalR.selectQuantity(item);
-                                                }
-                                              },
-                                              child: Container(
-                                                height: size.height * 0.060,
-                                                width: size.height * 0.060,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                    border: Border.all(
-                                                        color: AppColors
-                                                            .terracotta)),
-                                                child: Center(
-                                                  child: widget.data
-                                                              .isRemoveUpdated ==
-                                                          true
-                                                      ? Transform.scale(
-                                                          scale: 0.5,
-                                                          child:
-                                                              const CircularProgressIndicator(
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    print('TAP');
+                                                    if (alreadyInCart) {
+                                                      cartBloc.add(
+                                                        ChangeQty(
+                                                          productID:
+                                                              widget.data.productId,
+                                                          type:
+                                                              ModifyType.decrement,
+                                                        ),
+                                                      );
+                                                      print(widget.data
+                                                                      .cartQuantity);
+                                                    } else {
+                                                      if (item > 0) {
+                                                        item--;
+                                                      }
+                                                      print(widget.data
+                                                                      .cartQuantity);
+                                                    }
+                                                    setState(() {
+                                                      addToCart = true;
+                                                    });
+                                                    if (item != 0) {
+                                                      final signalR = SignalRService();
+                                                      await signalR.selectQuantity(item);
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.060,
+                                                    width: size.height * 0.060,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                6),
+                                                        border: Border.all(
                                                             color: AppColors
-                                                                .terracotta,
-                                                          ),
-                                                        )
-                                                      : widget.data
-                                                                  .cartQuantity ==
-                                                              1
-                                                          ? SvgPicture.asset(
-                                                              AssetsUtils
-                                                                  .icDelete,
-                                                              color: AppColors
-                                                                  .terracotta,
+                                                                .terracotta)),
+                                                    child: Center(
+                                                      child: widget.data
+                                                                  .isRemoveUpdated ==
+                                                              true
+                                                          ? Transform.scale(
+                                                              scale: 0.5,
+                                                              child:
+                                                                  const CircularProgressIndicator(
+                                                                color: AppColors
+                                                                    .terracotta,
+                                                              ),
                                                             )
-                                                          : const Icon(
-                                                              Icons.remove,
-                                                              color: AppColors
-                                                                  .terracotta,
-                                                            ),
-                                                ),
-                                                // child: const Center(child: Icon(Icons.remove, size: 27)),
-                                              ),
-                                            ),
-                                            SizedBox(width: 8.w),
-                                            Container(
-                                              height: size.height * 0.060,
-                                              width: size.height * 0.060,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: AppColors.disable),
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: Center(
-                                                  child: Text(
-                                                '$item',
-                                                style: FontUtils.h18(
-                                                    fontWeight: FWT.semiBold,
-                                                    fontColor:
-                                                        AppColors.darkGray),
-                                              )),
-                                            ),
-                                            SizedBox(width: 8.w),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                if (alreadyInCart) {
-                                                  cartBloc.add(
-                                                    ChangeQty(
-                                                      productID:
-                                                          widget.data.productId,
-                                                      type:
-                                                          ModifyType.increment,
+                                                          : widget.data
+                                                                      .cartQuantity ==
+                                                                  1
+                                                              ? SvgPicture.asset(
+                                                                  AssetsUtils
+                                                                      .icDelete,
+                                                                  color: AppColors
+                                                                      .terracotta,
+                                                                )
+                                                              : const Icon(
+                                                                  Icons.remove,
+                                                                  color: AppColors
+                                                                      .terracotta,
+                                                                ),
                                                     ),
-                                                  );
-                                                
-                                                  print(item);
-                                                } else {
-                                                  item++;
-                                                  setState(() {});
-                                                  print(item);
-                                                }
-                                                if (item != 0) {
-                                                  final signalR = SignalRService();
-                                                  await signalR.selectQuantity(item);
-                                                }
-                                                
-                                              },
-                                              child: Container(
-                                                height: size.height * 0.060,
-                                                width: size.height * 0.060,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  color: AppColors.coral,
-                                                ),
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.add,
-                                                    size: 27,
-                                                    color: AppColors.terracotta,
+                                                    // child: const Center(child: Icon(Icons.remove, size: 27)),
                                                   ),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Container(
+                                                  height: size.height * 0.060,
+                                                  width: size.height * 0.060,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: AppColors.disable),
+                                                    borderRadius:
+                                                        BorderRadius.circular(6),
+                                                  ),
+                                                  child: Center(
+                                                      child: Text(
+                                                    '$item',
+                                                    style: FontUtils.h18(
+                                                        fontWeight: FWT.semiBold,
+                                                        fontColor:
+                                                            AppColors.darkGray),
+                                                  )),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    if (alreadyInCart) {
+                                                      cartBloc.add(
+                                                        ChangeQty(
+                                                          productID:
+                                                              widget.data.productId,
+                                                          type:
+                                                              ModifyType.increment,
+                                                        ),
+                                                      );
+                                                    
+                                                      print(item);
+                                                    } else {
+                                                      item++;
+                                                      setState(() {});
+                                                      print(item);
+                                                    }
+                                                    if (item != 0) {
+                                                      final signalR = SignalRService();
+                                                      await signalR.selectQuantity(item);
+                                                    }
+                                                    
+                                                  },
+                                                  child: Container(
+                                                    height: size.height * 0.060,
+                                                    width: size.height * 0.060,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(6),
+                                                      color: AppColors.coral,
+                                                    ),
+                                                    child: const Center(
+                                                      child: Icon(
+                                                        Icons.add,
+                                                        size: 27,
+                                                        color: AppColors.terracotta,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (alreadyInCart) ...[
+                                            TextButton(
+                                              onPressed: () => Get.back(),
+                                              child: Text(
+                                                "Back to Menu",
+                                                style: FontUtils.h18(
+                                                  fontColor: AppColors.black,
+                                                  fontWeight: FWT.medium,
                                                 ),
                                               ),
                                             ),
                                           ],
-                                        ),
-                                      ),
-                                      if (alreadyInCart) ...[
-                                        TextButton(
-                                          onPressed: () => Get.back(),
-                                          child: Text(
-                                            "Back to Menu",
-                                            style: FontUtils.h18(
-                                              fontColor: AppColors.black,
-                                              fontWeight: FWT.medium,
+                                          isAdding == true
+                                              ? const Center(
+                                                  child:
+                                                      CircularProgressIndicator())
+                                              : RestaurantMealAddButtonWidget(
+                                                  onTap: ()  async {
+                                                    // if (!alreadyInCart) {
+                                                      final success = await addIntoCart();
+                                                      if (success) {
+                                                        Get.back();
+                                                      }
+                                                    // } else {
+                                                    //   Get.to(
+                                                    //     () => RestaurantCart(
+                                                    //       pickUp: widget.pickUp,
+                                                    //       userAddress:
+                                                    //           widget.userAddress,
+                                                    //     ),
+                                                    //     transition:
+                                                    //         Transition.fadeIn,
+                                                    //   );
+                                                    // }
+                                                  },
+                                                  buttonLable: alreadyInCart
+                                                      ? 'View Cart'
+                                                      : 'Add to cart',
+                                                  isFillColor: true,
+                                                  selectedItemCount:
+                                                      alreadyInCart ? cartCount : 0,
+                                                ),
+                                          const SizedBox(height: 5),
+                                          Center(
+                                            child: Image.asset(
+                                              AssetsUtils.gymEatsSpoon,
+                                              height: 22.h,
+                                              width: 56.w,
+                                              color: AppColors.terracotta,
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                      isAdding == true
-                                          ? const Center(
-                                              child:
-                                                  CircularProgressIndicator())
-                                          : RestaurantMealAddButtonWidget(
-                                              onTap: ()  async {
-                                                // if (!alreadyInCart) {
-                                                  final success = await addIntoCart();
-                                                  if (success) {
-                                                    Get.back();
-                                                  }
-                                                // } else {
-                                                //   Get.to(
-                                                //     () => RestaurantCart(
-                                                //       pickUp: widget.pickUp,
-                                                //       userAddress:
-                                                //           widget.userAddress,
-                                                //     ),
-                                                //     transition:
-                                                //         Transition.fadeIn,
-                                                //   );
-                                                // }
-                                              },
-                                              buttonLable: alreadyInCart
-                                                  ? 'View Cart'
-                                                  : 'Add to cart',
-                                              isFillColor: true,
-                                              selectedItemCount:
-                                                  alreadyInCart ? cartCount : 0,
-                                            ),
-                                      const SizedBox(height: 5),
-                                      Center(
-                                        child: Image.asset(
-                                          AssetsUtils.gymEatsSpoon,
-                                          height: 22.h,
-                                          width: 56.w,
-                                          color: AppColors.terracotta,
-                                        ),
+                                          const SizedBox(height: 25),
+                                        ],
                                       ),
-                                      const SizedBox(height: 25),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        )
     );
   }
 
@@ -852,7 +878,9 @@ class _RestaurantMenuDetailsScreenState
                   GestureDetector(
                     onTap: () async {
                       final signalR = new SignalRService();
-
+                       setState(() {
+                          isQuantityLoading[option.name!] = true;
+                        });
                       var payload = {
                         "Header": cs.name,
                         "Items": [option.name]
@@ -865,6 +893,7 @@ class _RestaurantMenuDetailsScreenState
                         if ((option.quantity ?? 0) > 0) {
                           option.quantity = (option.quantity ?? 0) - 1;
                         }
+                        isQuantityLoading[option.name!] = false;
                       });
                     },
                     child: Container(
@@ -888,20 +917,28 @@ class _RestaurantMenuDetailsScreenState
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Center(
-                      child: Text(
-                        '${option.quantity ?? 0}',
-                        style: FontUtils.h15(
-                          fontWeight: FWT.semiBold,
-                          fontColor: AppColors.darkGray,
-                        ),
-                      ),
+                      child: isQuantityLoading[option.name] == true
+                          ? SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(
+                              '${option.quantity ?? 0}',
+                              style: FontUtils.h15(
+                                fontWeight: FWT.semiBold,
+                                fontColor: AppColors.darkGray,
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () async {
                       final signalR = new SignalRService();
-
+                      setState(() {
+                        isQuantityLoading[option.name!] = true;
+                      });
                       var payload = {
                         "Header": cs.name,
                         "Items": [option.name]
@@ -912,6 +949,7 @@ class _RestaurantMenuDetailsScreenState
                       }
                       setState(() {
                         option.quantity = (option.quantity ?? 0) + 1;
+                        isQuantityLoading[option.name!] = false;
                       });
                       print((option.quantity ?? 0) + 1);
                       print('Increment: ${option.quantity}');
@@ -1032,6 +1070,11 @@ class _RestaurantMenuDetailsScreenState
           final optionsList = item['items'] ?? item['Items'] ?? [];
 
           List<opt.Option> options = (optionsList as List).map<opt.Option>((optItem) {
+            print(optItem);
+            if(optItem['Name'] == 'American Cheese') {
+              print(optItem);
+              print('-========');
+            }
             final name = optItem['name'] ?? optItem['Name'] ?? '';
             final priceString = optItem['price']?.toString() ??
                 optItem['Price']?.toString() ?? '';
@@ -1041,6 +1084,9 @@ class _RestaurantMenuDetailsScreenState
                 optItem['HasQuantityControl'] ?? false;
             final isSelected = optItem['isSelected'] ??
                 optItem['IsSelected'] ?? false;
+
+            final quantity = optItem['quantity'] ?? 0;
+
 
             final optionObject = opt.Option(
               name: name,
@@ -1054,6 +1100,7 @@ class _RestaurantMenuDetailsScreenState
               isNestedSelection: isNested,
               hasQuantityControl: hasQtyCtrl,
               isSelected: isSelected,
+              quantity: quantity is num ? quantity : int.tryParse(quantity.toString()) ?? 0,
             );
 
             if (isSelected == true || isSelected == "true") {
