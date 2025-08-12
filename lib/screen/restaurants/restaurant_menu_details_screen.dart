@@ -94,6 +94,7 @@ class _RestaurantMenuDetailsScreenState
 
   bool alreadyInCart = false;
   Map<String, bool> isQuantityLoading = {};
+  bool _isItemUnavailable = false;
 
   getData() async {
     selectedOption.clear();
@@ -116,7 +117,6 @@ class _RestaurantMenuDetailsScreenState
     final prefs = await SharedPreferences.getInstance();
 
     final isCartOpened = prefs.getBool('cart-opened') ?? false;
-
     if (isCartOpened) {
       await signalR.CloseViewCart();
       await prefs.setBool('cart-opened', false);
@@ -132,13 +132,13 @@ class _RestaurantMenuDetailsScreenState
 
     final jsonString = jsonEncode(signalRItem);
 
-    List<dynamic>? signalRResult;
+    Map<String, dynamic>? payload;
     setState(() {
       _isLoadingCustomization = true;
     });
 
     try {
-      signalRResult = await signalR.getCustomization(jsonString);
+      payload = await signalR.getCustomization(jsonString);
     } catch (e) {
       setState(() {
         _isLoadingCustomization = false;
@@ -150,33 +150,37 @@ class _RestaurantMenuDetailsScreenState
       _isLoadingCustomization = false;
     });
 
-    if (signalRResult != null && signalRResult.isNotEmpty) {
-      List<Customization> parsedCustomizations = [];
+    if (payload != null) {
+      final isUnavailable = payload!["isItemsUnavailable"] == true;
+      final rawList = (payload!["customizations"] as List?) ?? [];
 
-      try {
-        parsedCustomizations = signalRResult.map<Customization>((item) {
-          print(item);
-          final String? header = item['Header'];
-          final bool isRequired = item['IsRequired'] ?? false;
-          final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
-          final int maxSelectableItems = item['MaxSelectableItems'] ?? 1;
-          final selectionText = item['SelectionRequirementText'] ?? '';
-          int minChoiceOptions = 0;
-          if (isRequired) {
-            
-            final match = RegExp(r'\d+').firstMatch(selectionText);
-            if (match != null) {
-              minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
-            } else {
-              minChoiceOptions = 1;
+      _isItemUnavailable = isUnavailable;
+
+      if (rawList.isNotEmpty) {
+        List<Customization> parsedCustomizations = [];
+
+        try {
+          parsedCustomizations = rawList.map<Customization>((item) {
+            final String? header = item['Header'];
+            final bool isRequired = item['IsRequired'] ?? false;
+            final bool isManySelectionAllowed = item['IsManySelectionAllowed'] ?? false;
+            final int maxSelectableItems = item['MaxSelectableItems'] ?? 1;
+            final selectionText = item['SelectionRequirementText'] ?? '';
+            int minChoiceOptions = 0;
+
+            if (isRequired) {
+              final match = RegExp(r'\d+').firstMatch(selectionText);
+              if (match != null) {
+                minChoiceOptions = int.tryParse(match.group(0)!) ?? 1;
+              } else {
+                minChoiceOptions = 1;
+              }
             }
-          }
 
-          List<opt.Option> options = (item['Items'] as List).map<opt.Option>((optItem) {
-            try {
+            List<opt.Option> options = (item['Items'] as List).map<opt.Option>((optItem) {
               String name = optItem['Name'] ?? '';
               String priceString = optItem['Price'] ?? '';
-              int? price = 0; 
+              int? price = 0;
 
               bool isSelectedRaw = optItem['IsSelected'] ?? false;
               bool isSelected = isSelectedRaw == true || isSelectedRaw == "true";
@@ -206,31 +210,30 @@ class _RestaurantMenuDetailsScreenState
               }
 
               return optionObject;
-            } catch (e) {
-              rethrow;
-            }
+            }).toList();
+
+            return Customization(
+              name: header,
+              minChoiceOptions: minChoiceOptions,
+              maxChoiceOptions: maxSelectableItems ?? (isManySelectionAllowed ? options.length : 1),
+              options: options,
+              customizationId: header,
+              level: 1,
+              text: selectionText,
+            );
           }).toList();
+        } catch (e) {
+          return;
+        }
 
-          return Customization(
-            name: header,
-            minChoiceOptions: minChoiceOptions,
-            maxChoiceOptions: maxSelectableItems ??
-                (isManySelectionAllowed ? options.length : 1),
-            options: options,
-            customizationId: header,
-            level: 1,
-            text: selectionText
-          );
-        }).toList();
-      } catch (e) {
-        return;
+        setState(() {
+          widget.data.customizations = parsedCustomizations;
+          customizationList = parsedCustomizations;
+          widget.onCustomizationChange?.call(customizationList);
+        });
+      } else {
+        setState(() {});
       }
-
-      setState(() {
-        widget.data.customizations = parsedCustomizations;
-        customizationList = parsedCustomizations;
-        widget.onCustomizationChange?.call(customizationList);
-      });
     }
   }
 
@@ -588,36 +591,22 @@ class _RestaurantMenuDetailsScreenState
                                               ),
                                             ),
                                           ],
-                                          isAdding == true
-                                              ? const Center(
-                                                  child:
-                                                      CircularProgressIndicator())
-                                              : RestaurantMealAddButtonWidget(
-                                                  onTap: ()  async {
-                                                    // if (!alreadyInCart) {
+                                          _isItemUnavailable
+                                            ? const SizedBox.shrink()
+                                            : (isAdding == true
+                                                ? const Center(child: CircularProgressIndicator())
+                                                : RestaurantMealAddButtonWidget(
+                                                    onTap: () async {
                                                       final success = await addIntoCart();
                                                       if (success) {
                                                         Get.back();
                                                       }
-                                                    // } else {
-                                                    //   Get.to(
-                                                    //     () => RestaurantCart(
-                                                    //       pickUp: widget.pickUp,
-                                                    //       userAddress:
-                                                    //           widget.userAddress,
-                                                    //     ),
-                                                    //     transition:
-                                                    //         Transition.fadeIn,
-                                                    //   );
-                                                    // }
-                                                  },
-                                                  buttonLable: alreadyInCart
-                                                      ? 'View Cart'
-                                                      : 'Add to cart',
-                                                  isFillColor: true,
-                                                  selectedItemCount:
-                                                      alreadyInCart ? cartCount : 0,
-                                                ),
+                                                    },
+                                                    buttonLable: alreadyInCart ? 'View Cart' : 'Add to cart',
+                                                    isFillColor: true,
+                                                    selectedItemCount: alreadyInCart ? cartCount : 0,
+                                                  )
+                                              ),
                                           const SizedBox(height: 5),
                                           Center(
                                             child: Image.asset(

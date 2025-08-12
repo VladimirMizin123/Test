@@ -117,8 +117,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
     int? subtotal = _getAmountByLabel(fareItems, 'Subtotal');
     int? deliveryFee = _getAmountByLabel(fareItems, 'Delivery Fee');
-    int? serviceFee = _getAmountByLabel(fareItems, 'Fees');
-    int? taxesAndFees = _getAmountByLabel(fareItems, 'Taxes & Other Fees');
+    int? serviceFee = _getAmountByLabel(fareItems, 'Taxes & Service Fees');
+    int? taxesAndFees = _getAmountByLabel(fareItems, 'Other Fees');
 
     setState(() {
       widget.orderData?.finalQuote?.quote?.subtotal = (subtotal ?? 0);
@@ -237,6 +237,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   // address.UserAddress? getUserAddress;
   TextEditingController notes = TextEditingController();
+  TextEditingController contactPhoneController = TextEditingController();
+  TextEditingController fullNameController = TextEditingController();
   int selectedIndex = 0;
   // List<String> optionsList = ['Bring me the order', 'I will pick it up myself'];
     List<String> optionsList = ['Bring me the order'];
@@ -247,7 +249,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void initState() {
     restaurantBloc.add(GetUserAddressEvent());
     restaurantBloc.add(GetDeliveryStatusEvent());
-
+    _prefillProfileInfo();
     _cardBloc.add(ListAllCardEvent());
     getCheckout();
     super.initState();
@@ -258,6 +260,39 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     PreferenceUtils.removePref(paymentCard);
     super.dispose();
   }
+
+  final userId = PreferenceUtils.getString(prefUserData);
+
+  Future<void> _prefillProfileInfo() async {
+  try {
+    final url = '${ApiUrls.getProfileDetails}$userId';
+    final response = await apiServices.get(url);
+
+    if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 400) {
+      final body = jsonDecode(response.body);
+
+      final String phone = body['data']?['phoneNumber']?.toString() ?? '';
+      final String first = body['data']?['firstName']?.toString() ?? '';
+      final String last  = body['data']?['lastName']?.toString() ?? '';
+
+      final String fullName = [first, last]
+          .where((s) => s.trim().isNotEmpty)
+          .join(' ')
+          .trim();
+
+      if (mounted) {
+        setState(() {
+          contactPhoneController.text = phone;
+          fullNameController.text = fullName; // NEW
+        });
+      }
+    } else {
+      print('Profile fetch failed: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    print('Profile fetch exception: $e');
+  }
+}
 
   Future<bool> handleAutoPayment(Map<String, dynamic> data, StripeCard selectedCard) async {
   try {
@@ -314,6 +349,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 }
 
   res_addd.Address? get findResAddress {
+    print('FIND USER ADDRESSS');
     if (widget.cartData is List<ShoppingListData>) {
       List<ShoppingListData> data = widget.cartData as List<ShoppingListData>;
       if (data.isNotEmpty && selectedIndex == 1) {
@@ -612,7 +648,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ///Delivery info --------------------------------------------------------------------
                                   Padding(
                                     padding:
-                                        EdgeInsets.only(top: 20.h, bottom: 16.h),
+                                        EdgeInsets.only(top: 20.h, bottom: 8.h),
                                     child: Text(
                                       'Delivery info',
                                       style: FontUtils.h18(
@@ -623,7 +659,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
 
                                   Padding(
-                                    padding: EdgeInsets.only(bottom: 16.h),
+                                    padding: EdgeInsets.only(bottom: 8.h),
                                     child: Text(
                                       ' Order Notes',
                                       style: FontUtils.h18(
@@ -670,6 +706,102 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     ),
                                   ),
 
+                                  SizedBox(height: 8.h),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 8.h),
+                                    child: Text(
+                                      ' Contact Phone',
+                                      style: FontUtils.h18(
+                                        fontColor: const Color(0xff000000),
+                                        fontWeight: FWT.semiBold,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff004C63).withOpacity(0.08),
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 16,
+                                        )
+                                      ],
+                                    ),
+                                    child: TextFormField(
+                                      style: const TextStyle(color: Colors.black),
+                                      controller: contactPhoneController,
+                                      keyboardType: TextInputType.phone,
+                                      decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: const EdgeInsets.all(0),
+                                        hintText: 'Enter contact phone',
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 8.h),
+                                    child: Text(
+                                      ' Full Name',
+                                      style: FontUtils.h18(
+                                        fontColor: const Color(0xff000000),
+                                        fontWeight: FWT.semiBold,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff004C63).withOpacity(0.08),
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 16,
+                                        )
+                                      ],
+                                    ),
+                                    child: TextFormField(
+                                      style: const TextStyle(color: Colors.black),
+                                      controller: fullNameController,
+                                      textCapitalization: TextCapitalization.words,
+                                      decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: const EdgeInsets.all(0),
+                                        hintText: 'Enter full name',
+                                      ),
+                                    ),
+                                  ),
                                   SizedBox(height: 16.h),
 
                                   Container(
@@ -1108,11 +1240,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 10),
                                   child: 
-                                  // loadCreateOrder == true
-                                  //     ? const Center(
-                                  //         child: CircularProgressIndicator(),
-                                  //       )
-                                  //     : 
+                                  loadCreateOrder == true
+                                      ? const Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : 
                                       simpleTextBorderButton(
                                           color: AppColors.terracotta,
                                           width:
@@ -1122,75 +1254,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           isLoadingWidget: false,
                                           buttonLable: 'Confirm',
                                           lableColor: Colors.white,
-                                          onTap: () {
-                                            //   if (createOrder == false) {
-                                            //     List<CreateOrderMealmeItems> data = [];
-                                            //
-                                            //     for (var element in widget.cartData) {
-                                            //       List<SelectedOptions> optionList = [];
-                                            //       for (var element1
-                                            //           in element.options!) {
-                                            //         optionList.add(
-                                            //           SelectedOptions(
-                                            //             quantity: element1.quantity,
-                                            //             markedPrice:
-                                            //                 element1.markedPrice,
-                                            //             optionId: element1.optionId,
-                                            //           ),
-                                            //         );
-                                            //       }
-                                            //
-                                            //       data.add(
-                                            //         CreateOrderMealmeItems(
-                                            //           productId: element.productId,
-                                            //           productType: 1,
-                                            //           quantity: element.quantity,
-                                            //           notes: notes.text,
-                                            //           productMarkedPrice: element.price,
-                                            //           selectedOptions: optionList,
-                                            //         ),
-                                            //       );
-                                            //     }
-                                            //
-                                            //     restaurantBloc.add(
-                                            //       CreateOrderEvent(
-                                            //         createOrderModel: CreateOrderModel(
-                                            //           userId: userId,
-                                            //           pickup: widget.pickup,
-                                            //           mealmeItems: data,
-                                            //           userAddress: UserAddress(
-                                            //             latitude:
-                                            //                 getUserAddress?.latitude,
-                                            //             longitude:
-                                            //                 getUserAddress?.longitude,
-                                            //             streetName:
-                                            //                 getUserAddress?.streetName,
-                                            //             streetNum:
-                                            //                 getUserAddress?.streetNum,
-                                            //             city: getUserAddress?.city,
-                                            //             country:
-                                            //                 getUserAddress?.country,
-                                            //             state: getUserAddress?.state,
-                                            //             zipcode:
-                                            //                 getUserAddress?.zipcode,
-                                            //           ),
-                                            //           userPhone: int.parse(
-                                            //             PreferenceUtils.getString(
-                                            //                         prefUserMobile)
-                                            //                     .isNotEmpty
-                                            //                 ? PreferenceUtils.getString(
-                                            //                     prefUserMobile)
-                                            //                 : '1234567890',
-                                            //           ),
-                                            //           driverTipCents: 0,
-                                            //           pickupTipCents: 0,
-                                            //           userDropoffNotes: notes.text,
-                                            //         ),
-                                            //       ),
-                                            //     );
-                                            //   } else {
-                                            /// Create Product / Create Checkout Api
-
+                                          onTap: () async {
                                             if (selectedCard == null) {
                                               showToast(
                                                 message:
@@ -1199,6 +1263,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 color: AppColors.black,
                                               );
                                             } else {
+                                              setState(() {
+                                                loadCreateOrder = true;
+                                              });
+                                              try {
+                                                final signalR = SignalRService();
+
+                                                final deliveryInstructions = notes.text.trim();
+                                                final userFullName        = fullNameController.text.trim();
+                                                final phoneNumber         = contactPhoneController.text.trim();
+                                                await signalR.editDeliveryInstructions(
+                                                  deliveryInstructions: deliveryInstructions,
+                                                  userFullName: userFullName,
+                                                  phoneNumber: phoneNumber,
+                                                );
+                                              } catch (e) {
+                                                showToast(
+                                                  message: 'Could not save delivery instructions. Please try again.',
+                                                  isSuccess: false,
+                                                  color: AppColors.black,
+                                                );
+                                              }
                                                 productMealMeData.clear();
 
                                                 List<CreateOrderMealmeItems> data = [];

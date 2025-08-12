@@ -161,14 +161,27 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         return;
       }
 
+      final token = PreferenceUtils.getString(prefToken);
       final apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
       print('[DailyCheck] Checking subscription: $apiURL');
 
+      Map<String, String> headers;
+      if (token.isEmpty) {
+        headers = {
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      } else {
+        headers = {
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+
       final response = await http.get(
         Uri.parse(apiURL),
-        headers: {
-          'Api_Key': ApiUrls.apiKey,
-        },
+        headers: headers,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

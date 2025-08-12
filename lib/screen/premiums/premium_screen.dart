@@ -77,14 +77,27 @@ class _PremiumScreenState extends State<PremiumScreen> {
         return;
       }
 
+      final token = PreferenceUtils.getString(prefToken);
       final apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
       print('Checking subscription: $apiURL');
 
+      Map<String, String> headers;
+      if (token.isEmpty) {
+        headers = {
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      } else {
+        headers = {
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+          'Api_Key': ApiUrls.apiKey,
+        };
+      }
+
       final response = await http.get(
         Uri.parse(apiURL),
-        headers: {
-          'Api_Key': ApiUrls.apiKey,
-        },
+        headers: headers,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -107,7 +120,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
         }
       } else {
         print('Error checking subscription: ${response.statusCode} - ${response.body}');
-                  final genderString = PreferenceUtils.getString('gender');
+        final genderString = PreferenceUtils.getString('gender');
 
         // Get.toNamed(
         //     '/RandomLoginScreen',

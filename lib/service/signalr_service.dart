@@ -28,17 +28,17 @@ class SignalRService {
   List<dynamic>? _selectedRestaurantCategories;
   String? _userId;
   Completer<void>? _customizationCompleter;
-  List<dynamic>? _customizationData;
+  Map<String, dynamic>? _customizationPayload;
   bool _hasShopRestaurant = false;
   Completer<void>? _restaurantSubcategoriesCompleter;
   List<dynamic>? _restaurantSubcategories = [];
   Completer<dynamic>? _addItemsToCartCompleter;
-  Completer<dynamic>? _editDeliveryInstructionsCompleter; 
   Completer<dynamic>? _getCartInformationCompleter;
   Completer<dynamic>? _goToCheckoutCompleter;  
   Completer<dynamic>? _getViewCartItemsCompleter;
   Completer<void>? _openRestaurantCartCompleter;
   Completer<void>? _selectQuantityCompleter;
+  Completer<void>? _editDeliveryInstructionsCompleter;
   
  Completer<dynamic>? _adjustCartItemCompleter;
   String? test = 'AC00C94BF33B895AFB3A43895897BCAC';
@@ -253,6 +253,15 @@ class SignalRService {
           _invokeSaveAddressClicked();
           break;
 
+        case "EditDeliveryInstructionsResponse":
+          print(' [SignalR] EditDeliveryInstructionsResponse');
+          print(data);
+          if (_editDeliveryInstructionsCompleter != null && !_editDeliveryInstructionsCompleter!.isCompleted) {
+            _editDeliveryInstructionsCompleter!.complete();
+            _editDeliveryInstructionsCompleter = null;
+          }
+          break;
+
         case "AddressSavedSuccessfully":
           print("[SignalR] Address saved successfully.");
           break;
@@ -443,13 +452,21 @@ class SignalRService {
               return;
             }
 
-            if (decoded["Customizations"] is List) {
-              _customizationData = decoded["Customizations"];
-              print(" Parsed Customizations: $_customizationData");
-            } else {
+            final customizations = decoded["Customizations"];
+            if (customizations is! List) {
               print(" Customizations key missing or not a list");
               return;
             }
+
+            final isUnavailable = decoded["IsItemsUnavailable"] == true;
+
+            _customizationPayload = {
+              "customizations": customizations,
+              "isItemsUnavailable": isUnavailable,
+            };
+
+            print(" Parsed Customizations: ${_customizationPayload!['customizations']}");
+            print(" IsItemsUnavailable: $isUnavailable");
 
             if (_customizationCompleter != null && !_customizationCompleter!.isCompleted) {
               print(" Completing _customizationCompleter...");
@@ -1552,7 +1569,7 @@ class SignalRService {
     }
   }
 
-  Future<dynamic> getCustomization(String menuItem) async {
+  Future<Map<String, dynamic>> getCustomization(String menuItem) async {
     await connect();
 
     if (_customizationCompleter == null || _customizationCompleter!.isCompleted) {
@@ -1566,22 +1583,25 @@ class SignalRService {
 
     try {
       print('beforeInvoking GetCustomization');
-      await _connection!.invoke("GetCustomization", args: [menuItem, _currentWindowReference!, _userId!]);
+      await _connection!.invoke(
+        "GetCustomization",
+        args: [menuItem, _currentWindowReference!, _userId!],
+      );
     } catch (e) {
       throw Exception("Error during GetCustomization invoke: $e");
     }
 
     await localCompleter.future.timeout(
-      Duration(seconds: 15),
+      const Duration(seconds: 15),
       onTimeout: () => throw Exception("Timeout while waiting for GetCustomizationResponse"),
     );
 
-    if (_customizationData == null) {
-      throw Exception("No customization data received");
+    if (_customizationPayload == null) {
+      throw Exception("No customization payload received");
     }
 
-    print('Customization data received');
-    return _customizationData;
+    print('Customization payload received');
+    return _customizationPayload!;
   }
 
   Future<dynamic> adjustCartItemQuantity(String itemUrl, String buttonType) async {
@@ -1620,7 +1640,11 @@ class SignalRService {
     return true; 
   }
 
-  Future<dynamic> editDeliveryInstructions(String itemUrl, String buttonType) async {
+  Future<bool> editDeliveryInstructions({
+    required String deliveryInstructions,
+    required String userFullName,
+    required String phoneNumber,
+  }) async {
     await connect();
 
     if (_editDeliveryInstructionsCompleter == null || _editDeliveryInstructionsCompleter!.isCompleted) {
@@ -1630,29 +1654,24 @@ class SignalRService {
 
     final localCompleter = _editDeliveryInstructionsCompleter!;
 
-    final storeItem = {
-      'ItemUrl': itemUrl,
-    };
-
-    final strStoreDetail = jsonEncode(storeItem);
-
-    print('Invoking editDeliveryInstructions with: $strStoreDetail and $buttonType');
+    print('[SignalR] Invoking EditDeliveryInstructions with args: '
+          'deliveryInstructions="$deliveryInstructions", userFullName="$userFullName", phoneNumber="$phoneNumber"');
 
     try {
       await _connection!.invoke(
-        "AdjustCartItemQuantity",
-        args: [strStoreDetail, buttonType, _currentWindowReference!, _userId!],
+        "EditDeliveryInstructions",
+        args: [deliveryInstructions, userFullName, phoneNumber, _currentWindowReference!, _userId!],
       );
     } catch (e) {
-      throw Exception("Error during AdjustCartItemQuantity invoke: $e");
+      throw Exception("Error during EditDeliveryInstructions invoke: $e");
     }
 
     await localCompleter.future.timeout(
-      Duration(seconds: 15),
-      onTimeout: () => throw Exception("Timeout while waiting for AdjustCartItemQuantity response"),
+      const Duration(seconds: 15),
+      onTimeout: () => throw Exception("Timeout while waiting for EditDeliveryInstructionsResponse"),
     );
 
-    print('AdjustCartItemQuantity completed');
+    print('[SignalR] EditDeliveryInstructions completed');
     return true;
   }
 
