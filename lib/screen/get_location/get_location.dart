@@ -71,6 +71,7 @@ class _GetUserAddressState extends State<GetUserAddress>
           await getBytesFromAsset(AssetsUtils.currentLocationMarker, 200));
 
       if (!serviceEnabled) {
+        print('SERVICE NOT ENABLED');
         LatLng defaultLatLng = LatLng(37.7749, -122.4194);
         currentPosition = CameraPosition(
           target: LatLng(defaultLatLng.latitude, defaultLatLng.longitude),
@@ -109,7 +110,9 @@ class _GetUserAddressState extends State<GetUserAddress>
           icon: customIcon,
         )
       ];
-
+      
+      print('GET CURRENT LOCATION');
+      print(currentPosition);
       setState(() {
         mapController
             ?.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
@@ -135,14 +138,19 @@ class _GetUserAddressState extends State<GetUserAddress>
   /// Permission Handler for location ---------------------------------------------------------
 
   Future<bool> _handleLocationPermission() async {
+    print('handleLocationPermission');
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    print('11');
     if (!serviceEnabled) {
+      print('22');
+
       await Geolocator.openLocationSettings().then((value) async {
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
+          print('33');
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied ||
               permission == LocationPermission.deniedForever) {
@@ -153,6 +161,7 @@ class _GetUserAddressState extends State<GetUserAddress>
           }
         }
         if (permission == LocationPermission.deniedForever) {
+          print('44');
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.deniedForever ||
               permission == LocationPermission.denied) {
@@ -167,11 +176,14 @@ class _GetUserAddressState extends State<GetUserAddress>
       });
       return false;
     } else {
+      print('55');
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        print('88');
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied ||
             permission == LocationPermission.deniedForever) {
+              print('66');
           showToast(
               message: permission == LocationPermission.deniedForever
                   ? 'Location permissions are permanently denied, we cannot request permissions.'
@@ -183,7 +195,7 @@ class _GetUserAddressState extends State<GetUserAddress>
       }
       if (permission == LocationPermission.deniedForever) {
         // await appSettingDialogBox();
-
+         print('77');
         permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.deniedForever) {
           showToast(
@@ -745,6 +757,7 @@ class _GetUserAddressState extends State<GetUserAddress>
                                           onTap: () async {
                                             final prefs = await SharedPreferences.getInstance();
                                             prefs.setBool('AddressUpdated', true);
+                                            print('✅ ADDDRESS UPDATED!');
 
                                             if (cartCount != 0) {
                                               dynamic result = await Constant.i

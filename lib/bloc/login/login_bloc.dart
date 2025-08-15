@@ -85,8 +85,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                 //   arguments: getGender.toString().capitalizeFirst);
               } else {
                 PreferenceUtils.setBool(subscriptionStatus, true);
-                Get.toNamed('/RandomLoginScreen',
-                  arguments: getGender.toString().capitalizeFirst);
+                Get.offAllNamed("/PremiumScreen", parameters: {
+                  "fromDashboard": 'true',
+                  "access_token": right.data!.token!.accessToken!,
+                });
+                // Get.toNamed('/RandomLoginScreen',
+                //   arguments: getGender.toString().capitalizeFirst);
               }
               
             });

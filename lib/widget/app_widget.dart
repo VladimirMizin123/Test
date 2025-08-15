@@ -132,7 +132,7 @@ Widget commonTextField({
           : false,
       keyboardType: textInputType,
       inputFormatters: inputFormatters,
-      readOnly: readOnly,
+      // readOnly: readOnly,
       onChanged: onChanged,
       maxLength: maxLength ?? 10000,
       decoration: InputDecoration(

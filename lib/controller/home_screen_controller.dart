@@ -104,6 +104,7 @@ class HomeScreenController extends GetxController {
       userId: Get.arguments?["userId"],
       referralCode: referralCode.text,
     );
+    print('here');
 
     await Get.toNamed('/GoogleMapScreen', arguments: {
       "string": 'isFromRegister',

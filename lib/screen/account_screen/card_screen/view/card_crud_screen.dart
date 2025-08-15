@@ -105,71 +105,47 @@ Future<void> initStripeCardFlow() async {
   }
 }
 
-Future<void> confirmCard() async {
+Future<bool> confirmCard() async {
   try {
     if (_cardFieldInput == null || !_cardFieldInput!.complete) {
-      print(_cardFieldInput);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill in all card details'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Please fill in all card details'), backgroundColor: Colors.red),
       );
-      return;
+      return false;
     }
 
     if (_clientSecret == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Stripe secret not initialized'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Stripe secret not initialized'), backgroundColor: Colors.red),
       );
-      return;
+      return false;
     }
 
     setState(() => saveLoader = true);
 
-    final billingDetails = BillingDetails(
-      name: cardName.text,
-    );
-
-    final paymentMethodData = PaymentMethodData(
-      billingDetails: billingDetails,
-    );
-
+    final billingDetails = BillingDetails(name: cardName.text);
     final params = PaymentMethodParams.card(
-      paymentMethodData: paymentMethodData,
+      paymentMethodData: PaymentMethodData(billingDetails: billingDetails),
     );
 
-    final result = await Stripe.instance.confirmSetupIntent(
+    await Stripe.instance.confirmSetupIntent(
       paymentIntentClientSecret: _clientSecret!,
       params: params,
     );
 
-    print('Card setup completed: ${result.id}');
-
+    // Успех — карта создана/привязана
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Card added successfully'),
-        backgroundColor: Colors.green,
-      ),
+      const SnackBar(content: Text('Card added successfully'), backgroundColor: Colors.green),
     );
-
-    await Future.delayed(Duration(seconds: 2));
-
-    Get.back(result: true); 
+    return true;
   } catch (e) {
-    print('Error saving card: $e');
-
+    debugPrint('Error saving card: $e');
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to save card'),
-        backgroundColor: Colors.red,
-      ),
+      const SnackBar(content: Text('Failed to save card'), backgroundColor: Colors.red),
     );
+    return false;
   } finally {
-    setState(() => saveLoader = false);
+    if (mounted) setState(() => saveLoader = false);
   }
 }
 
@@ -305,23 +281,50 @@ Widget build(BuildContext context) {
 
                    GestureDetector(
                       onTap: () async {
+                        final isEdit = widget.card != null;
+
+                        // 1) Вошли в режим редактирования — просто разблокируем поля
                         if (isEdit && !isUpdatingCard) {
-                          setState(() {
-                            isUpdatingCard = true;
-                          });
-                        } else {
-                          if (isEdit && isUpdatingCard) {
-                            widget.cardBloc.add(
-                              RemoveCardEvent(
-                                id: widget.card?.id ?? "",
-                                onSuccess: () {
-                                  confirmCard();
-                                },
-                              ),
+                          setState(() => isUpdatingCard = true);
+                          return;
+                        }
+
+                        // 2) Режим сохранения обновлённой карты (замена)
+                        if (isEdit && isUpdatingCard) {
+                          // Если пользователь ничего не менял (поле CardField пустое/не полное) — сохранять нечего
+                          if (_cardFieldInput == null || !_cardFieldInput!.complete) {
+                            // Оставляем старую карту без изменений
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('No changes to save'), backgroundColor: Colors.grey),
                             );
-                          } else {
-                            await confirmCard();
+                            setState(() => isUpdatingCard = false);
+                            return;
                           }
+
+                          // Сначала создаём новую карту
+                          final created = await confirmCard();
+                          if (!created) {
+                            // Новая карта не создалась — старую НЕ трогаем
+                            return;
+                          }
+
+                          // Новая карта есть — удаляем старую
+                          widget.cardBloc.add(
+                            RemoveCardEvent(
+                              id: widget.card?.id ?? "",
+                              onSuccess: () {
+                                // Закрываем экран и просим список обновиться
+                                Get.back(result: true);
+                              },
+                            ),
+                          );
+                          return;
+                        }
+
+                        // 3) Добавление новой карты
+                        final created = await confirmCard();
+                        if (created) {
+                          Get.back(result: true); // список обновится на экране CardsScreen
                         }
                       },
                       child: Container(
@@ -357,7 +360,7 @@ Widget build(BuildContext context) {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (_) => Obx(
+                    builder: (dialogCtx) => Obx(
                       () => Constant.i.deleteAlertDialog(
                         title: "Card",
                         desc: "Are you sure you want to delete this card?",
@@ -365,10 +368,8 @@ Widget build(BuildContext context) {
                           RemoveCardEvent(
                             id: widget.card?.id ?? "",
                             onSuccess: () {
-                              Get.back(); // close dialog
-                              if (Get.currentRoute.contains('CardCrudScreen')) {
-                                Get.back(); // close screen
-                              }
+                              Navigator.of(dialogCtx, rootNavigator: true).pop();
+                              Get.back(result: true);
                             },
                           ),
                         ),

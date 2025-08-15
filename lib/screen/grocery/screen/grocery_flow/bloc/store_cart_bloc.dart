@@ -14,6 +14,7 @@ class StoreCartBloc extends Bloc<StoreCartEvent, StoreCartState> {
     on<ChangeGroceryQty>(_onChangeQty);
   }
   _onModifyCart(ModifyCart event, Emitter<StoreCartState> emit) async {
+    print('_onModifyCart');
     Object s = state;
     if (s is StoreCheckoutState) {
       List<MenuItemList> actualList = s.menuItemList;
@@ -38,6 +39,7 @@ class StoreCartBloc extends Bloc<StoreCartEvent, StoreCartState> {
   }
 
   _getGroceryCartList(GetGroceryCartList event, Emitter<StoreCartState> emit) {
+    print('_getGroceryCartList');
     try {
       Object s = state;
       if (s is StoreCheckoutState) {

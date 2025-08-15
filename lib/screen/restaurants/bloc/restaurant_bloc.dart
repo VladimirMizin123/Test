@@ -293,6 +293,7 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       }
 
       Map<String, dynamic> req = {
+        
         "restrictions": [],
         "allergies": [],
         "calories": event.calories ?? 0.0,
@@ -475,12 +476,14 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
     print('ON CREATE CHECKOUT');
     try {
       print('inside TRY');
+      print(event.createCheckOutRequestModel.toJson());
       await _repository
           .createCheckout(
               createCheckOutRequestModel: event.createCheckOutRequestModel)
           .fold((left) {
         onFailError(emit: emit, text: left.errorMessage!);
         emit(CreateCheckoutErrorState());
+        print(left.errorMessage);
         showToast(isSuccess: false, message: left.errorMessage ?? "");
       }, (right) {
         emit(CreateCheckoutSuccessState(data: right.data));

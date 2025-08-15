@@ -225,10 +225,12 @@ class SignUpRepository {
 
   Future<Either<ErrorModel, LoginModel>> registerUser(
       Map<String, String> requestData) async {
+        print('REGISTER USER!!!!');
     try {
       final response =
           await apiServices.post(ApiUrls.registerUser, requestData);
       if (response.statusCode == 200 || response.statusCode == 201) {
+        print("RESPONSE: ${jsonDecode(response.body)}");
         return Right(LoginModel.fromJson(jsonDecode(response.body)));
       } else {
         return Left(ErrorModel.fromJson(jsonDecode(response.body)));

@@ -1132,7 +1132,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                                           GestureDetector(
                                             onTap: () {
                                               // Get.toNamed('/BestMatchRestaurantsScreen');
-
+                                              print('ON TAP!');
                                               log(
                                                   fetchModelData!.recipe!.name!
                                                       .toString(),

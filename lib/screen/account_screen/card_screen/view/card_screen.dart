@@ -26,12 +26,35 @@ class CardsScreen extends StatefulWidget {
 class _CardsScreenState extends State<CardsScreen> {
   final CardBloc _bloc = CardBloc();
   bool isLoading = false;
-
+  bool _triedFixDefault = false; // чтобы не зациклиться
   List<StripeCard> cardList = [];
+
   @override
   void initState() {
     _bloc.add(ListAllCardEvent());
     super.initState();
+  }
+
+  void _ensureDefaultIfNeeded() {
+    if (_triedFixDefault) return;
+    if (cardList.isEmpty) return;
+
+    final hasDefault = cardList.any((c) => (c.isPrimary ?? false));
+    if (hasDefault) return;
+
+    // Правило: делаем дефолтной последнюю карту в списке
+    final candidate = cardList.last;
+
+    _triedFixDefault = true;
+    _bloc.add(
+      SetDefaultCardEvent(
+        id: candidate.id ?? "",
+        onComplete: () {
+          // Можно показать тост по желанию
+          _bloc.add(ListAllCardEvent()); // подтянем обновлённое состояние
+        },
+      ),
+    );
   }
 
   @override
@@ -79,12 +102,14 @@ class _CardsScreenState extends State<CardsScreen> {
                 listener: (context, state) {
                   if (state is CardLoadingState) {
                     isLoading = state.isLoading;
+                    if (isLoading) _triedFixDefault = false; 
                     setState(() {});
                   }
 
                   if (state is CardFetchSuccessState) {
                     cardList = state.cardList;
                     setState(() {});
+                    _ensureDefaultIfNeeded();
                   }
                 },
                 builder: (_, __) {

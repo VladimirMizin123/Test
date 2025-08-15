@@ -96,6 +96,7 @@ import 'screen/create_new_password/create_new_password_screen.dart';
 import 'screen/login/login_screen.dart';
 import 'screen/reset_password/reset_password_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 final configuration = ValueNotifier<VideoControllerConfiguration>(
   const VideoControllerConfiguration(enableHardwareAcceleration: true),
@@ -117,55 +118,63 @@ Future<void> main() async {
 
   // Capture Dart Exceptions
   runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await FlutterBugfender.init(
-      "CYsHG8KWiT3K45gulDGTBThTR94cbkTr",
-      apiUri: Uri.parse("https://api.bugfender.com/"),
-      baseUri: Uri.parse("https://dashboard.bugfender.com/"),
-      enableCrashReporting: true,
-      enableUIEventLogging: true,
-      enableAndroidLogcatLogging: true,
-    );
+  WidgetsFlutterBinding.ensureInitialized();
 
-    MediaKit.ensureInitialized();
+  // Отключаем Firebase и другие сервисы, если они не поддерживаются на вебе.
+  await FlutterBugfender.init(
+    "CYsHG8KWiT3K45gulDGTBThTR94cbkTr",
+    apiUri: Uri.parse("https://api.bugfender.com/"),
+    baseUri: Uri.parse("https://dashboard.bugfender.com/"),
+    enableCrashReporting: true,
+    enableUIEventLogging: true,
+    enableAndroidLogcatLogging: true,
+  );
 
-    hiveSingleton = HiveSingleton();
-    await hiveSingleton.initHive();
+  MediaKit.ensureInitialized();
 
-    await PreferenceUtils.init();
+  hiveSingleton = HiveSingleton();
+  await hiveSingleton.initHive();
 
-    await Firebase.initializeApp();
-    await initDynamicLinks();
-    IapService.i.initialize();
+  await PreferenceUtils.init();
 
-    String? forgetPasswordToken;
-    bool? isFromConfirm;
-    if (PreferenceUtils.getBool(prefIsLogin)) {
-      if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
-        userId = PreferenceUtils.getString(prefUserData);
-      }
+  // Отключаем Firebase на вебе
+  // await Firebase.initializeApp();
+
+  await initDynamicLinks();
+  IapService.i.initialize();
+
+  String? forgetPasswordToken;
+  bool? isFromConfirm;
+  if (PreferenceUtils.getBool(prefIsLogin)) {
+    if (PreferenceUtils.getBool(prefIsConfirmEmail)) {
+      userId = PreferenceUtils.getString(prefUserData);
     }
+  }
 
-    await SentryFlutter.init(
-      (options) {
-        options.dsn =
-            'https://24f303bb3f375b9701cf72f9749679c6@o4508239741124608.ingest.us.sentry.io/4508239742304256';
-        options.tracesSampleRate = 1.0;
-        options.profilesSampleRate = 1.0;
-      },
-      appRunner: () => runApp(MyApp(
-        forgotPasswordToken: forgetPasswordToken,
-        isFromConfirm: isFromConfirm,
-      )),
-    );
-  }, (exception, stackTrace) async {
-    await Future.wait([
-      FirebaseCrashlytics.instance
-          .recordError(exception, stackTrace, fatal: true),
-      Sentry.captureException(exception, stackTrace: stackTrace),
-      FlutterBugfender.sendCrash(exception.toString(), stackTrace.toString())
-    ]);
-  });
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://24f303bb3f375b9701cf72f9749679c6@o4508239741124608.ingest.us.sentry.io/4508239742304256';
+      options.tracesSampleRate = 1.0;
+      options.profilesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(MyApp(
+      forgotPasswordToken: forgetPasswordToken,
+      isFromConfirm: isFromConfirm,
+    )),
+  );
+
+  Stripe.publishableKey = 'pk_test_51RU86zCzYrU5KJGaqQaPROyQaaACRnLLcTr3iuQHDbpIKJR5AIttR4MmYnNvJ9rp9s9bpokYM65iuQWu4vni6Nic0056P9rkq6' ; // или тестовый ключ
+  await Stripe.instance.applySettings();
+
+}, (exception, stackTrace) async {
+  // await Future.wait([
+  //   FirebaseCrashlytics.instance
+  //       .recordError(exception, stackTrace, fatal: true),
+  //   Sentry.captureException(exception, stackTrace: stackTrace),
+  //   FlutterBugfender.sendCrash(exception.toString(), stackTrace.toString())
+  // ]);
+});
 }
 
 class MyApp extends StatefulWidget {
@@ -296,7 +305,6 @@ class _MyAppState extends State<MyApp> {
         return GetMaterialApp(
           title: 'Gym Eats',
           debugShowCheckedModeBanner: false,
-
           theme: AppColors.lightTheme(),
           navigatorKey: navigatorKey,
           builder: FToastBuilder(),
@@ -315,7 +323,7 @@ class _MyAppState extends State<MyApp> {
                 )
               : null,
           navigatorObservers: [
-            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+            // FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
             SentryNavigatorObserver(),
           ],
           getPages: [

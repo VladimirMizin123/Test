@@ -811,12 +811,14 @@ class GroceryRepository {
 
   Future<Either<ErrorModel, SuccessModel>> createCheckout(
       {required CreateCheckOutRequestModel createCheckOutRequestModel}) async {
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!! CREATE CHECKOUT IN REPO !!!!!!!!!!!!!!!!!!!!!');
     final response = await apiServices.post(
       ApiUrls.createCheckout,
       createCheckOutRequestModel,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      print(jsonDecode(response.body));
       return Right(SuccessModel.fromJson(jsonDecode(response.body)));
     } else {
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));

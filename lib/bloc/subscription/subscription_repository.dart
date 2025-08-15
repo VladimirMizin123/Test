@@ -15,6 +15,7 @@ class SubscriptionRepository {
 
   Future<Either<ErrorModel, SubscriptionStatusModel>>
       fetchSubscriptionStatus() async {
+        print('FETCH SUBSCRIPTION ');
     String apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
     print(apiURL);
     final response = await apiServices.get(apiURL);
@@ -22,6 +23,7 @@ class SubscriptionRepository {
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(SubscriptionStatusModel.fromJson(jsonDecode(response.body)));
     } else {
+      print('error');
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

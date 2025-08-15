@@ -76,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 commonTextField(
                         context: context,
                         controller: emailController,
+                        // textInputType: TextInputType.visiblePassword,
                         hintText: StringUtils.email)
                     .paddingOnly(top: 20.h),
                 SizedBox(

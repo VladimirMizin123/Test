@@ -36,19 +36,29 @@ class MealPlanRepository {
     String apiURL = '';
     apiURL = '${ApiUrls.genMealPlan}/$userID';
     print('genMealPlan apiURL : $apiURL');
+    print("GET MEAL PLAN!!!");
     final response = await apiServices.get(apiURL);
+
+  
     // print('Meal response.body : ${response.body}');
     // print('Meal response.statusCode : ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      // print('Meal response.body123 : ${response.body}');
+      print("RESPONSE 200");
+      print('Meal response.body123 : ${response.body}');
+
+      await Future.delayed(const Duration(milliseconds: 500)); // задержка 0.5 сек
+
       await PreferenceUtils.setInt(userMealPlanCountState, 1);
       return Right(FetchMealPlanModel.fromJson(jsonDecode(response.body)));
     } else if (response.statusCode == 401) {
+      print('RESPONSE ERROR 401');
       PreferenceUtils.clearPrefs();
       Get.offAllNamed('/LoginScreen');
 
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     } else {
+      print('RESPONSE ERROR');
+      print(jsonDecode(response.body));
       return Left(ErrorModel.fromJson(jsonDecode(response.body)));
     }
   }

@@ -47,8 +47,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
     _initialize();
     super.initState();
     accessToken = Get.parameters['access_token'];
-    final alreadyActive =
-        PreferenceUtils.getBool(subscriptionStatus) == true;
+    print('[Params] access_token present: ${accessToken != null && accessToken!.isNotEmpty}');
+    final alreadyActive = PreferenceUtils.getBool(subscriptionStatus) == true;
 
     if (!alreadyActive) {
       _checkSubscriptionStatus();
@@ -60,9 +60,44 @@ class _PremiumScreenState extends State<PremiumScreen> {
   }
 
   Future<void> _initialize() async {
-    productList = await IapService.i.getProducts();
-    // IapService.i.fetchStatus();
-    selectedIndex = productList.length - 1;
+    try {
+      print('[IAP] Fetching products…');
+      productList = await IapService.i.getProducts();
+      print('[IAP] getProducts returned ${productList.length} items');
+
+      for (final p in productList) {
+        print('[IAP] Product: {id: ${p.id}, title: ${p.title}, price: ${p.price}, '
+            'rawPrice: ${p.rawPrice}, currency: ${p.currencyCode}, type: ${p.runtimeType}}');
+
+        if (p is GooglePlayProductDetails) {
+          final offers = p.productDetails.subscriptionOfferDetails;
+          print('[IAP][Android] offers count: ${offers?.length ?? 0}');
+          if (offers != null) {
+            for (var i = 0; i < offers.length; i++) {
+              final phases = offers[i].pricingPhases; // List<PricingPhaseWrapper>
+              print('[IAP][Android] offer #$i phases: ${phases.length}');
+              for (var j = 0; j < phases.length; j++) {
+                final ph = phases[j];
+                print('[IAP][Android]  phase #$j '
+                    'formattedPrice: ${ph.formattedPrice}, '
+                    'billingPeriod: ${ph.billingPeriod}, '
+                    'recurrenceMode: ${ph.recurrenceMode}, '
+                    'billingCycleCount: ${ph.billingCycleCount}');
+              }
+            }
+          }
+        } else if (p is AppStoreProductDetails) {
+          final period = p.skProduct.subscriptionPeriod;
+          print('[IAP][iOS] period: ${period?.numberOfUnits} ${period?.unit.name}');
+        }
+      }
+
+      selectedIndex = productList.isEmpty ? 0 : (productList.length - 1);
+    } catch (e, st) {
+      print('[IAP] Exception during getProducts: $e');
+      print('[IAP] StackTrace: $st');
+    }
+
     if (mounted) {
       setState(() {});
     }
@@ -79,7 +114,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
       final token = PreferenceUtils.getString(prefToken);
       final apiURL = '${ApiUrls.getSubscriptionStatus}/$userEmail';
-      print('Checking subscription: $apiURL');
+      print('[SUBS] Checking subscription: $apiURL');
 
       Map<String, String> headers;
       if (token.isEmpty) {
@@ -100,10 +135,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
         headers: headers,
       );
 
+      print('[SUBS] Response: ${response.statusCode} ${response.reasonPhrase}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final json = jsonDecode(response.body);
         final status = json['data']?.toString();
-        print('Subscription status: $status');
+        print('[SUBS] Parsed status: $status');
 
         if (status?.toLowerCase() == 'active' && !_hasRedirected) {
           _hasRedirected = true;
@@ -119,16 +155,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
           );
         }
       } else {
-        print('Error checking subscription: ${response.statusCode} - ${response.body}');
-        final genderString = PreferenceUtils.getString('gender');
-
-        // Get.toNamed(
-        //     '/RandomLoginScreen',
-        //     arguments: genderString.toString().capitalizeFirst,
-        //   );
+        print('[SUBS] Error body: ${response.body}');
       }
-    } catch (e) {
-      print('Exception checking subscription: $e');
+    } catch (e, st) {
+      print('[SUBS] Exception checking subscription: $e');
+      print('[SUBS] StackTrace: $st');
     }
   }
 
@@ -145,6 +176,20 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
     final TextTheme textTheme = Theme.of(context).textTheme;
 
+    // Диагностика на каждый билд
+    print('[UI] fromDashboard=$fromDashboard, alreadyItemPurchased=$alreadyItemPurchased, '
+        'products=${productList.length}, selectedIndex=$selectedIndex');
+    if (productList.isEmpty) {
+      print('[UI] productList is EMPTY => plan tile will NOT render (only the button is visible). '
+          'Check Play/App Store config or IapService.i.getProducts().');
+    } else {
+      final safeIndex = (selectedIndex >= 0 && selectedIndex < productList.length)
+          ? selectedIndex
+          : 0;
+      print('[UI] Rendering BASIC plan using product id=${productList[safeIndex].id}, '
+          'price=${productList[safeIndex].price}');
+    }
+
     return BlocConsumer<SubscriptionBloc, SubscriptionState>(
       bloc: IapService.i.bloc,
       listener: (context, state) {
@@ -155,9 +200,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
           if (IapService.i.isRestoreCheck) {
             IapService.i.isRestoreCheck = false;
           }
+          print('[SUBS][Bloc] SubscriptionStatusErrorState: ${state.message}');
         }
 
         if (state is SubscriptionStatusState) {
+          print('[SUBS][Bloc] SubscriptionStatusState: ${state.status?.data}');
           if (state.status?.data == "Active" && IapService.i.isRestoreCheck) {
             IapService.i.isRestoreCheck = false;
             showToast(message: "Item Restore Successfully !", isSuccess: true);
@@ -174,9 +221,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
         if (state is ReceiptDetailsLoadingState) {
           showLoader.value = state.isLoading;
+          print('[IAP] ReceiptDetailsLoadingState: isLoading=${state.isLoading}');
         }
 
         if (state is ReceiptDetailsSuccessState) {
+          print('[IAP] ReceiptDetailsSuccessState: purchase OK');
           showToast(message: "Item Purchased Successfully !", isSuccess: true);
           if (!fromDashboard) {
             if (Get.currentRoute.contains("/PremiumScreen")) {
@@ -261,68 +310,23 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      if (!alreadyItemPurchased)
-                        ...productList
-                            .asMap()
-                            .map((index, e) {
-                              String unit = "";
-                              if (e is GooglePlayProductDetails) {
-                                if (e
-                                    .productDetails
-                                    .subscriptionOfferDetails![
-                                        e.subscriptionIndex!]
-                                    .pricingPhases
-                                    .isNotEmpty) {
-                                  String period = e
-                                      .productDetails
-                                      .subscriptionOfferDetails![
-                                          e.subscriptionIndex!]
-                                      .pricingPhases
-                                      .first
-                                      .billingPeriod;
-                                  unit = IapService.i.billingPeriod(period);
-                                  if (unit.isEmpty) {
-                                    return MapEntry(
-                                        index, const SizedBox.shrink());
-                                  }
-                                }
-                              }
-                              if (e is AppStoreProductDetails) {
-                                unit =
-                                    "${e.skProduct.subscriptionPeriod?.numberOfUnits} ${e.skProduct.subscriptionPeriod?.unit.name}";
-                              }
-
-                              int? savePer;
-                              if (index != 0) {
-                                if (productList.length > 1) {
-                                  double actualPrice =
-                                      productList.first.rawPrice *
-                                          convertUnitInMonth(unit);
-                                  if (Platform.isIOS) {
-                                    savePer = (100 -
-                                            ((e.rawPrice * 100) / actualPrice))
-                                        .ceil();
-                                  }
-                                }
-                              }
-
-                              return MapEntry(
-                                  index,
-                                  PurchaseOptions(
-                                    month: unit,
-                                    price: e.price,
-                                    onTap: () {
-                                      setState(() {
-                                        selectedIndex = index;
-                                      });
-                                    },
-                                    isSelected: index == selectedIndex,
-                                    savePercentage:
-                                        savePer != null ? "$savePer" : null,
-                                  ).paddingSymmetric(horizontal: 4.w));
-                            })
-                            .values
-                            .toList(),
+                      if (!alreadyItemPurchased && productList.isNotEmpty)
+                        (() {
+                          final safeIndex = (selectedIndex >= 0 && selectedIndex < productList.length) ? selectedIndex : 0;
+                          final e = productList[safeIndex];
+                          return PurchaseOptions(
+                            month: 'Basic', // single Basic plan
+                            price: e.price, // show its price
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = safeIndex;
+                              });
+                              print('[UI] Basic plan tapped. Using product id=${e.id}, price=${e.price}');
+                            },
+                            isSelected: true,
+                            savePercentage: null,
+                          ).paddingSymmetric(horizontal: 4.w);
+                        })(),
                     ],
                   ).paddingSymmetric(),
                 ),
@@ -330,7 +334,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   () => buildButton(
                     context: context,
                     showLoader: showLoader.value,
-                    title: 'Start 14 days free trial',
+                    title: 'Start 7 days free trial',
                     bgColor: AppColors.appColor,
                     textColor: const Color(0xFFC1EACE),
                     onPressed: () async {
@@ -338,15 +342,19 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
                       if (accessToken == null || accessToken!.isEmpty) {
                         showToast(message: "Access token is missing", isSuccess: false);
+                        print('[BTN] Access token is missing');
                         return;
                       }
 
                       final url = 'https://gymeats.azurewebsites.net/manage-subscription?access_token=$accessToken';
+                      print('[BTN] Opening URL: $url');
 
                       if (await canLaunchUrl(Uri.parse(url))) {
-                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        print('[BTN] launchUrl result: $ok');
                       } else {
                         showToast(message: "Cannot open browser", isSuccess: false);
+                        print('[BTN] canLaunchUrl=false');
                       }
                     },
                   ).paddingOnly(
@@ -386,6 +394,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                           ..onTap = () async {
                             IapService.i.isRestoreCheck = true;
                             await IapService.i.restorePurchases();
+                            print('[IAP] Restore pressed');
                           },
                       ),
                       TextSpan(

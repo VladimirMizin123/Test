@@ -220,8 +220,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               );
             }
 
-            /// Create Checkout State ---------------------------------------------------
-
             if (state is CreateCheckoutLoadingState) {
               loadCreateOrder = true;
             }

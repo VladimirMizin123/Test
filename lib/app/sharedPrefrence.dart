@@ -211,6 +211,7 @@ class PreferenceUtils {
   static final GoogleMapSearchRepository _repo = GoogleMapSearchRepository();
 
   static void setFoodMenuAddress({Map<String, dynamic>? req}) async {
+    print('setFoodMenuAddress');
     try {
       if (!isManualLocation) {
         if (getString(foodMenuAddress).trim().isEmpty) {
@@ -222,11 +223,16 @@ class PreferenceUtils {
               .findAddressURL(lat: pos.$1?.toString(), lng: pos.$2?.toString());
           if (address.isRight) {
             Map<String, dynamic> req = setFromCurrentLocation(address.right);
+            print('address is right');
+            print(jsonEncode(req));
             await setString(foodMenuAddress, jsonEncode(req));
           }
+          print('After Address is right');
         }
       } else {
         if (req != null) {
+          print('req not null');
+          print(jsonEncode(req));
           await setString(foodMenuAddress, jsonEncode(req));
         }
       }
